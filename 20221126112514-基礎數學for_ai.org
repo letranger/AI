@@ -1,0 +1,137 @@
+:PROPERTIES:
+:ID:       3ce884c1-cd16-4310-b757-37cdd1ddcdef
+:END:
+#+title: 基礎數學for AI
+
+* 合成函數的微分
+函數 $f(x)=(x^2+x-1)^{10}$ 為合成函數，因為可視為
+- $$g(x) = (x^2+x-1)^{10} $$
+- $$f(x) = g(x)^{10} $$
+若要對合成函數 $f(x)=(x^2+x-1)^{10}$ 做微分，由於不可能將10次方展開，所以要採取間接的方法：鏈鎖律(Chain Rule)或稱Onion rule
+
+** Solution
+先假設 $f'(x) = \frac{dy}{dx}=\frac{dy}{dQ}\times\frac{dQ}{dx}$， $Q=x^2+x-1$
+\begin{align*}
+f'(x)&=\frac{dy}{dx}=\frac{dy}{dQ}\times\frac{dQ}{dx}\\
+&=10Q^9 \times (x^2+x-1)'\\
+&=10(x^2+x-1)^9 \times (2x+1)
+\end{align*}
+故
+$$f'(1)=10(1+1-1)^9\times3=30$$
+** 表示法
+合成函數 $f(x)$ (即$f(g(x))$)的微分: $\frac{\partial f(x)}{\partial x} = \frac{\partial y(g)}{\partial g}\frac{\partial g(x)}{\partial x}$
+
+* 自然常數e的由來
+假設於銀行存 a元本金:
+- 當銀行年利率為100%，則一年後本利和為 $a(1+\frac{100}{1100})=2a$
+- 當銀行半年利率50% ($\frac{1}{2}$)，則一年後本利和為 $a(1+\frac{50}{100})(1+\frac{50}{100})=a(1+\frac{50}{100}})^2$
+- 當銀行每季利率25% ($\frac{1}{4}$)，則一年後本利和為 $a(1+\frac{25}{100)})(1+\frac{25}{100)})(1+\frac{25}{100)})=(1+\frac{25}{100)})=(1+\frac{25}{100)})^4$
+- 當銀行每年計n次利息，每次的利率則為 $\fac{1}{n}$，則一年後本利和為
+  $$a(1+\frac{1}{n})(1+\frac{1}{n})\dots=a(1+\frac{1}{n})^n$$
+  當n接近於無限大時，上式記為 \[\lim_{n\to\infty} a(1+\frac{1}{n})^n \approx 2.71828\]
+  2.71828又被稱為自然對數$e$
+- 尤拉(Euler)將上式改為，為指數函數的最早定義
+  \[exp(x)=\lim_{n\to\infty}a(1+\frac{x}{n}})^n\]
+
+* 指數與對數
+** 指數函數
+指數函數以 $e^x$ 或 $exp(x)$ 表示，即 $y=e^x=exp(x)$，當x=1時，$y=e^1=2.71827$
+** 對數函數
+- 以2為底: 若 $2^y=x$ 則 $y=\log_2x$，當 x=1時， $y=\log_2 1=0$
+- 以e為底: $y=\log_e$，當x=1時，$y=\log_x 1=0$
+
+* 損失函數
+** 均方誤差(Mean Squared Error)
+可以用來比較「兩個」或「兩組」數值間的差異，例如以下為兩個學生的考試成績：
+| 考生    | 國文 | 英文 | 數學 |
+|---------+------+------+------|
+| James   |   78 |   92 |   96 |
+| Vanessa |   96 |   92 |   85 |
+| Ruby    |   96 |   78 |   76 |
+如何以數學式求出一個「數值」來代表這些學生之間的整體差異？
+
+$$ E=\frac{1}{2}\sum_k(y_k-t_k)^2$$
+以上表為例，三人彼此間的均方誤差為：
+#+begin_src python -r -n :results output :exports both
+from sklearn.metrics import mean_squared_error
+sc = {'James': {'ch':78, 'en':92, 'ma':96},
+      'Vanessa': {'ch':96, 'en':92, 'ma':85},
+      'Ruby': {'ch':96, 'en':78, 'ma':76},}
+for s in sc.keys():
+    for c in sc.keys():
+        if s != c:
+            sl, tl = list(sc[s].values()), list(sc[c].values())
+            print(f'{s} v.s. {c}:  {mean_squared_error(sl, tl):.2f}')
+#+end_src
+
+#+RESULTS:
+: James v.s. Vanessa:  148.33
+: James v.s. Ruby:  306.67
+: Vanessa v.s. James:  148.33
+: Vanessa v.s. Ruby:  92.33
+: Ruby v.s. James:  306.67
+: Ruby v.s. Vanessa:  92.33
+
+應用於機器學習中：
+- $y$ 為機器學習演算法的預測結果， $t$ 為代表正確答案的標籤
+- 為何要乘上 $\frac{1}{2}$ ? 未來對均方誤差進行微分時，前面的 $\frac{1}{2}$ 可以和次方項2相互抵消
+- 機器學習演算法經常視情況，為了方便而在式子中任意加東西進行調整
+** 交叉熵誤差(Cross Entropy Error)
+如果想要計算兩個群體間的差異，但群體內的值無法如上例直接相減求個別差異時，該如何處理？
+例如：給一張圖，讓讀者去猜這是貓或狗，但要求以機率來表示
+| 讀者    | 預測               | 圖片答案 |
+|---------+--------------------+----------|
+| James   | 貓: 0.37, 狗: 0.63 | 狗       |
+| Vanessa | 貓: 0.42, 狗: 0.58 | 狗       |
+| Ruby    | 貓: 0.28, 狗: 0.72 | 狗       |
+如何將這三人的猜測能力數值化?
+
+因為圖片的答案為標籤，無法計算，一般我們會將這類資料進行one hot encoding轉換。即：
+- 如果答案是貓，就寫為：(1, 0)
+- 如果答案是狗，就寫為：(0, 1)
+這樣就可以拿來和每個讀者的預測結果進行比較運算，計算每個人的猜測與正確答案的距離方式如下：
+#+begin_src python -r -n :results output :exports both
+import math
+
+def CrosEntLos(m, n):
+    res = 0
+    for x, y in zip(m, n):
+        res += y*math.log(x)
+    return -res
+
+sc = {'James': [0.37, 0.63],
+      'Vanessa': [0.42, 0.58],
+      'Ruby': [0.28, 0.72]}
+ans = (0, 1)
+for s in sc.keys():
+    print(f'{s}:  {CrosEntLos(sc[s], ans):.2f}')
+
+#+end_src
+
+#+RESULTS:
+: James:  0.46
+: Vanessa:  0.54
+: Ruby:  0.33
+
+交叉熵的公式如下：
+
+$$ E=-\sum_kt_k\log_e(y_k)$$
+#+begin_src python -r -n :results output :exports both
+import torch
+
+sc = {'James': [0.37, 0.63],
+      'Vanessa': [0.42, 0.58],
+      'Ruby': [0.28, 0.72]}
+ans = [0, 1]
+
+loss = torch.nn.CrossEntropyLoss()
+for s in sc.keys():
+    y1 = torch.FloatTensor(sc[s])
+    y2 = torch.FloatTensor(ans)
+    print(f'{s}:  {loss(y1, y2):.2f}')
+#+end_src
+
+#+RESULTS:
+: James:  0.57
+: Vanessa:  0.62
+: Ruby:  0.50

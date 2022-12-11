@@ -1,0 +1,1502 @@
+:PROPERTIES:
+:ID:       20221023T101414.457264
+:END:
+#+title: 卷積神經網路
+
+# -*- org-export-babel-evaluate: nil -*-
+#+TAGS: AI
+#+INCLUDE: ../pdf.org
+#+OPTIONS: toc:2 ^:nil num:5
+#+PROPERTY: header-args :eval never-export
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/white.css" />
+#+EXCLUDE_TAGS: noexport
+#+latex:\newpage
+
+* Read this
+- [[https://towardsdatascience.com/marathon-bib-identification-and-recognition-25ee7e08d118][Marathon Bib Identification and Recognition]]: number detection project
+- [[https://www.youtube.com/watch?v=D641Ucd_xuw][从“卷积”、到“图像卷积操作”、再到“卷积神经网络”，“卷积”意义的3次改变]]
+- [[https://ml4a.github.io/demos/][https://ml4a.github.io/demos/]]
+- [[https://www.youtube.com/watch?v=z6k_RMKExlQ][ml4a @ itp nyu :: 03 convolutional neural networks]]
+- [[https://ml4a.net/][https://ml4a.net/]]
+- [[https://www.youtube.com/watch?v=XTlwfDlyMAY][itp S19 02]]
+- [[https://openframeworks.cc/setup/emscripten/][emscripten setup]]
+- [[https://github.com/ml4a/ml4a-ofx][https://github.com/ml4a/ml4a-ofx]]
+- [[https://app.runwayml.com/video-tools/motion-tracking][runwayml]]
+- [[https://cycling74.com/forums/max-and-cnmat-osc-help-please][Max]]
+- [[https://openframeworks.cc/download/][OF]]
+- [[https://www.youtube.com/watch?v=ARnf4ilr9Hc][Intorduction to Runway]]
+- 研究OSC: 一種application間傳送message的protocol
+- [[https://www.youtube.com/c/GeneKogan/videos][Gene Kogan]]
+- [[https://affinelayer.com/pixsrv/][GAN DEMO: Image-to-Image Demo]]
+- [[https://hackmd.io/@tcirc39th/SkRgTXY15?print-pdf#/][AI人工智慧初探]]
+- [[https://stackoverflow.com/questions/2480650/what-is-the-role-of-the-bias-in-neural-networks][Why activation function?]]
+- [[https://hackmd.io/@joanne8826/B1zgGT2Fd][人工神經網路 Artificial Neural Network]] :神經元那張圖可以參考
+- [[https://zhuanlan.zhihu.com/p/95984057][Deep Learning A-Z™：人工神经网络实践-筆記2-Section3(ANN)]]
+- [[https://www.youtube.com/watch?v=fApFKmXcp2Y&t=19s][池化的影片]]
+- [[https://poloclub.github.io/cnn-explainer/][CNN Explainer]]
+- [[https://ml-playground.com/#][https://ml-playground.com/#]]
+- [[https://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html][ConvNetJS demo]]
+- [[https://www.youtube.com/watch?v=sWz4e-DM4JU][ Meta 語音對語音翻譯技術背後的黑科技 (在繪圖 AI 中也有用上喔!) ]]
+- [[https://github.com/lutzroeder/netron/releases/tag/v6.1.3][畫CNN圖的工具]]
+- [[https://github.com/ashishpatel26/Tools-to-Design-or-Visualize-Architecture-of-Neural-Network][ Tools-to-Design-or-Visualize-Architecture-of-Neural-Network]]
+- [[https://neptune.ai/blog/the-best-tools-for-machine-learning-model-visualization][https://neptune.ai/blog/the-best-tools-for-machine-learning-model-visualization]]
+- [[https://www.youtube.com/watch?v=Obbr5TdD3Bo][GNN]]: Graph Neural Network Tutorial: 給10000篇paper及cited references, 進行分類
+- [[https://www.youtube.com/watch?v=OP5HcXJg2Aw&t=78s][李宏毅CNN]]
+- [[https://www.youtube.com/watch?v=V9ZYDCnItr0][為什麼kernel size多是3*3]]
+- [[https://www.youtube.com/watch?v=pnkCEzwiSog][解釋的很清楚:神經網路講解40分鐘]]
+- [[https://www.youtube.com/watch?v=pjfnMgAnnIk][ “损失函数”是如何设计出来的？直观理解“最小二乘法”和“极大似然估计法” ]]
+- [[https://www.youtube.com/watch?v=pnkCEzwiSog][学习分享一年，对神经网络的理解全都在这40分钟里了 ]]
+
+* 神經網路解題步驟
+使用神經網路解決問題可大致分為兩個步驟：「學習」與「推論」。
+- 學習指使用訓練資料進行權重參數的學習
+- 推論指使用學習過的參數進行資料分類CNN
+而實際的動手實作可再細分為以下幾個步驟
+1. 收集資料 (Gathering data)
+2. 準備數據 (Preparing that data)
+3. 選擇模型 (Choosing a model)
+4. 訓練機器 (Training)
+5. 評估分析 (Evaluation)
+6. 調整參數 (Hyperparameter tuning)
+7. 預測推論 (Prediction)
+#+latex:\newpage
+實際動手玩一下神經網路架構: [[https://playground.tensorflow.org][Tensorflow Playground]]
+
+* 收集資料
+** 資料類型
+*** 人工收集
+- 預測股市股價: 開盤、收盤、成交量、技術指標、財務指標、籌碼指標等等
+- 以物品識別:大量物品照片並給予名稱(label)
+- 以注音符號手寫辨識: 大量手寫照片及其對應答案(label)
+*** 現成資料集
+**** MNIST
+資料集由 0~9 的數字影像構成(如圖[[fig:MNIST-set]])，共計 60000 張訓練影像、10000 張測試影像。
+#+CAPTION: MNIST 資料集內容範例
+#+LABEL:fig:Labl
+#+name: fig:MNIST-set
+#+ATTR_LATEX: :width 200
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/MNIST.jpg]]
+**** Boston housing
+Boston Housing數據集包含有關波士頓不同房屋的數據(數據，如年份、面積)，本資料集中有506個樣本和13個特徵變量，目標是使用給定的特徵預測房屋價格的價值。
+
+**** Iris
+鳶尾花資料集是非常著名的生物資訊資料集之一，由英國統計學家 Ronald Fisher 在1936年時，對加斯帕半島上的鳶尾屬花朵所提取的花瓣花萼的長寬數據資料，依照山鳶尾，變色鳶尾，維吉尼亞鳶尾三類進行標示，共150筆資料[fn:2]。每筆資料有五個欄位：花萼長度(Sepal Length)、花萼寬度(Sepal Width)、花瓣長度(Petal Length) 、花瓣寬度(Petal Width)、類別(Class)，其中類有Setosa，Versicolor和Virginica三個品種。
+#+CAPTION: Iris資料集
+#+LABEL:fig:Iris
+#+name: fig:Iris
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/cqy409dEexm96zavyuw.png]]
+**** Cifar-10
+由深度學習大師 Geoffrey Hinton 教授與其在加拿大多倫多大學的學生 Alex Krixhevsky 與 Vinoid Nair 所整理之影像資料集, 包含 6 萬筆 32*32 低解析度之彩色圖片, 其中 5 萬筆為訓練集; 1 萬筆為測試集, 是機器學習中常用的圖片辨識資料集
+#+CAPTION: Cifar-10
+#+LABEL:fig:Cifar10
+#+name: fig:Cifar10
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/cifar10-ten-categories.jpg]]
+
+** DEMO
+mnist.load_data(): 自網路下載資料集(內容會包含 *資料(x)* 和 *標籤(y)* 兩部份)，load_data()這個function會把整份資料集分割成兩個子集合：訓練集(training set)和測試集(testing set)。
+#+begin_src python :results output :exports both :noeval
+from keras.datasets import mnist
+(x_Train, y_Train), (x_Test, y_Test) = mnist.load_data()
+#+end_src
+#+latex:\newpage
+
+* 準備數據 (Preparing that data)
+當我們在比較分析兩組數據資料時，可能會遭遇因單位的不同(例如：身高與體重)，或數字大小的代表性不同(例如：粉專1萬人與滿足感0.8)，造成各自變化的程度不一，進而影響統計分析的結果[fn:1]。會造成什麼影響--那些變化量最大的因素（特徵）會主導分析結果。
+** 特徵(feature)
+什麼是特徵?每一筆資料由不同類型的資料(數值、字串、布林值...)組成，以Iris資料集為例，每朵花有四種數值，這些都是它的特徵(feature)，我們的目的就是藉由分析這些特徵來預測花的種類。
+
+下列程式利用scikit learn下載線上的資料集，先以pandas轉換Iris的四種特徵值為：
+#+begin_src python -r -n :async :results output :exports both :session iris
+from sklearn import datasets
+iris = datasets.load_iris()
+print(iris.data[:5])
+print(iris.feature_names)
+#+end_src
+
+#+RESULTS:
+: [[5.1 3.5 1.4 0.2]
+:  [4.9 3.  1.4 0.2]
+:  [4.7 3.2 1.3 0.2]
+:  [4.6 3.1 1.5 0.2]
+:  [5.  3.6 1.4 0.2]]
+: ['sepal length (cm)', 'sepal width (cm)', 'petal length (cm)', 'petal width (cm)']
+
+#+begin_src python -r -n :async :results output :exports both :session iris
+from sklearn import datasets
+import pandas as pd
+iris = datasets.load_iris()
+print(type(iris))
+
+df = pd.DataFrame(data=iris.data, columns=iris.feature_names)
+print(df.head())
+print(df.columns)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+<class 'sklearn.utils.Bunch'>
+   sepal length (cm)  sepal width (cm)  petal length (cm)  petal width (cm)
+0                5.1               3.5                1.4               0.2
+1                4.9               3.0                1.4               0.2
+2                4.7               3.2                1.3               0.2
+3                4.6               3.1                1.5               0.2
+4                5.0               3.6                1.4               0.2
+Index(['sepal length (cm)', 'sepal width (cm)', 'petal length (cm)',
+       'petal width (cm)'],
+      dtype='object')
+#+end_example
+上述程式將scikit learn所下載的資料集先以pandas轉換Iris的四種特徵值為：
+- sepal length (cm)
+- sepal width (cm)
+- petal length (cm)
+- petal width (cm)
+** 資料正規化
+資料的正規化(Normalization)是將原始資料的數據按比例縮放於 [0, 1] 區間中，且不改變其原本分佈。
+#+CAPTION: 資料正規化
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 600
+[[file:images/normalized.png]]
+
+正規化有兩種常用的方法，可以將不同規模的特徵轉化為相同的規模：常態化(normalization)和標準化(standardization)：
+** 常態化
+
+將特徵值縮化為 0~1 間，這是「最小最大縮放」(min-max scaling)的一個特例，某一特徵值的常態化做法如下：
+$$x_{norm}^i = \frac{x^i-x_{min}}{x_{max}-x_{min}}$$
+若以 scikit-learn 套件來完成實作，其程式碼如下：
+#+begin_src shell  :results output :exports both
+from sklearn.preprocessing import MinMaxScaler
+mms = MinMaxScaler()
+X_train_norm = mms.fit_transform(X_train)
+X_test_norm = mms.fit_transform(X_test)
+#+END_SRC
+** 標準化
+
+雖說常態化簡單實用，但對許多機器學習演算法來說(特別是梯度下降法的最佳化)，標準化則更為實際，我們可令標準化後的特徵值其平均數為 0、標準差為 1，這樣一來，特徵值會滿足常態分佈，進而使演算法對於離群值不那麼敏感。標準化的公式如下：
+$$x_{std}^i = \frac{x^i-\mu_x}{\sigma_x}$$
+若以 scikit-learn 套件來完成實作，其程式碼如下：
+#+BEGIN_SRC python  :results output :exports both :
+from sklearn.preprocessing import StandardScaler
+stdsc = StandardScaler()
+X_train_std = stdsc.fit_transform(X_train)
+X_test_std = stdsc.transform(X_test)
+#+END_SRC
+** DEMO
+#+begin_src python  :results output :exports both :noeval
+x_train = x_train.reshape(60000, 784)
+x_test = x_test.reshape(10000, 784)
+x_train = x_train.astype('float32')
+x_test = x_test.astype('float32')
+x_train /= 255
+x_test /= 255
+
+
+y_TrainOneHot = np_utils.to_categorical(y_Train)
+y_TestOneHot = np_utils.to_categorical(y_Test)
+#+end_src
+
+* 選擇模型 (Choosing a model)
+當數據都進行整理後，接下來就是要選擇訓練用的模型，像是決策樹、LSTM、RNN等等都是機器學習中常使用的訓練模型，其中目前較常拿來訓練股市的是「LSTM」，中文叫做長短期記憶，是屬於深度學習中的一個模型。另一種CNN模型則適合處理圖形資料。
+
+** 語法
+[[https://keras.io/api/models/model_training_apis/][Keras API reference / Models API / Model training APIs ]]
+** DEMO
+*** LSTM模型示例
+#+begin_src python  :results output :exports both :noeval
+model = Sequential()
+model.add(LSTM(128,
+               input_shape=(x_train.shape[1:]),
+               activation='relu',
+               return_sequences=True))
+model.add(Dropout(0.2))
+model.add(LSTM(128, activation='relu'))
+model.add(Dropout(0.1))
+model.add(Dense(32, activation='relu'))
+model.add(Dropout(0.2))
+model.add(Dense(10, activation='softmax'))
+
+
+#+end_src
+*** CNN模型示例
+#+begin_src python  :results output :exports both :noeval
+model = Sequential()
+model.add(Dense(units=128,
+                input_dim=784,
+                kernel_initializer='normal',
+                activation='relu'))
+model.add(Dense(64, activation='relu')
+model.add(Dense(units=10,
+                kernel_initializer='normal',
+                activation='softmax'))
+
+
+#+end_src
+#+CAPTION: MNIST-NeuralNet
+#+LABEL:fig:MNIST-NeuralNet
+#+ATTR_LATEX: :width 400px
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/MNIST-CNN.png]]
+
+* 訓練機器 (Training)
+
+選擇好訓練模型後，再來要將訓練集資料丟進去模型中做訓練，每層要放多少神經元、要跑幾層等等都會影響模型訓練出來的結果，這部分只能靠經驗跟不斷嘗試去學習，或是上網多爬文看別人怎麼撰寫訓練模型。
+
+在真正訓練前應該再設定好模型的loss function, optimizer。
+** 語法
+[[https://keras.io/api/models/model_training_apis/][Keras API reference / Models API / Model training APIs ]]
+** DEMO
+*** LSTM
+#+begin_src python  :results output :exports both :noeval
+# ptimizer, loss function
+model.compile(optimizer=Adam(lr=0.001),
+              loss='categorical_crossentropy',
+              metrics=['accuracy'])
+
+model.fit(x_train, y_train,
+          e pochs=3,
+          validation_data=(x_test, y_test))
+#+end_src
+*** CNN
+#+begin_src python  :results output :exports both :noeval
+# optimizer, loss function
+model.compile(loss='categorical_crossentropy',
+              optimizer='adam', metrics=['accuracy'])
+
+model.fit(x=x_Train,
+          y=y_TrainOneHot,
+          validation_split=0.2,
+          epochs=5, batch_size=30, verbose=2)
+#+end_src
+
+* 評估分析 (Evaluation)
+當模型訓練完成後，接下來就是判斷該模型是否有過度擬合(overfitting)，這裡就是帶入測試集的資料進行評估，也可以嘗試利用交叉驗證的方式進行模型的擬合性判斷，以及利用RESM、MSE等統計計算來判斷模型的準確度
+#+begin_src python  :results output :exports both :noeval
+scores = model.evaluate(x_Train, y_TestOneHot)
+#+end_src
+
+* 調整參數 (Hyperparameter tuning)
+到這大致上模型已經完成了50%，最後的一步就是進行參數的微調，我們也稱為「超參數 (Hyperparamters)」，讓整個模型更加的精準，但也不能過度的調整，因為會造成overfitting的結果，這個取捨就只能依照無窮盡的反覆迭帶去尋找了，這部分也是相對較耗時間的地方
+** model參數
+- 調整model架構: [[https://medium.com/%E9%9B%9E%E9%9B%9E%E8%88%87%E5%85%94%E5%85%94%E7%9A%84%E5%B7%A5%E7%A8%8B%E4%B8%96%E7%95%8C/%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92-ml-note-cnn%E6%BC%94%E5%8C%96%E5%8F%B2-alexnet-vgg-inception-resnet-keras-coding-668f74879306][[機器學習 ML NOTE] CNN演化史(AlexNet、VGG、Inception、ResNet)+Keras Coding]]
+- loss function: https://keras.io/api/losses/
+- optimizers: https://keras.io/api/optimizers/
+** Hyperparameters
+- batch size：一次迭代放入進行訓練或測試的影像數量。
+- epoch：一種單位，所有影像皆被計算過1次後即為1 epoch
+- [[http://elmer-storage.blogspot.com/2018/06/cnn-hyperparamters.html][CNN筆記 - 超參數 (Hyperparamters) ]]
+
+* 預測推論 (Prediction)
+到此，模型已經正式完成。那，怎麼知道這個模型夠不夠優秀？能不能正常運作？最簡單的評估方式是以一筆新的資料來測試。
+#+begin_src python  :results output :exports both
+prediction = model.predict_classes(x_Test4D_normalize)
+print(prediction[:10])
+#+end_src
+以MNIST手寫數字辨識為例，我們可以自已寫一個數字餵給模型，看看模型是否能正確預測。
+
+對於模型來說，這類全新的數據則是一個未知數，如果我們在訓練與測試階段都用同一批資料，這就好像上課與考試的內容都一樣，這會導致學生其實沒有學到真正的知識，而考試得到的分數也不會太準確。這種訓練資料與測試資料過於雷同而導致模型對新型別的資料欠缺處理能力的問題即為 *過度擬合(overfitting)* ；反之，如果我們的模型對於各種新型態資料都能辨識，則這個模型就具有 *泛化（Generalization）* 的預測能力。
+#+latex:\newpage
+
+* DEMO 1: Regression
+CNN雖然更多場合是用於處理影像相關的處理工作，然而他也可以用來幫我們解決一些數學問題，例如畫迴歸線。開啟colab、新增一個筆記本，逐一將下列程式碼複製、貼到colab執行，觀察結果。
+** colab :noexport:
+https://colab.research.google.com/drive/1tBJbV2_kpq6vPcA27MOxCQ5RAkVrulLM#scrollTo=hE4ch7l5qG77
+** 產生數據
+#+begin_src python  :results output :exports both :async
+import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.random.uniform(0.0, 3, (10))
+y = 78 + 7.8*x + np.random.normal(0.0, 3, len(x))
+
+plt.scatter(x, y)
+#+end_src
+
+#+RESULTS:
+
+結果如下圖，一共有10個點，如何畫出一條迴歸線代表這10個點的趨勢？這個題目本身是什麼意思？
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/cnn-regression-1.png]]
+
+想像一下，上面是10個學生的資料，X軸是學生對於數學的喜愛程度，Y軸是該生的數學期末考成績，看起來二者間是存在某種關係的。那，如果已知某生對數學的喜愛程為2.0，我們可以預測他的數學期末考成績嗎？---可以的，如果我們有一條像底下的迴歸線公式：
+$$ MathScore_i = a * MathLove_i + b $$
+如此一來，我們就能輸入喜愛程度，得到對數學成績的預測結果。
+
+當樣本數不太多，而你的計算能力也不弱時，也許你可以手動將上述公式中的a與b求出，得到一條 $y=ax+b$ 的迴歸線，但萬一樣本數有200個點呢
+#+begin_src python :session REG :results output :exports both
+import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.random.uniform(0.0, 3, (2000))
+y = 78 + 7.8*x + np.random.normal(0.0, 3, len(x))
+plt.cla()
+plt.scatter(x, y)
+plt.savefig("images/cnn-regression-2.png", dpi=300)
+
+#+end_src
+
+#+RESULTS:
+
+這段程式碼利用numpy套件的隨機函數產生2000個點，接下來我們想建一個CNN模型來幫我們畫一條迴歸線。
+#+RESULTS:
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/cnn-regression-2.png]]
+** 以scikit learn的線性迴歸模組來解決
+#+begin_src python :session REG :results output :exports both
+from sklearn import linear_model
+regr=linear_model.LinearRegression()
+
+x = x.reshape(-1, 1)
+# 改變x的格式形狀，
+# 原本x為 [x1, x2, x3, ...]
+# 要改格式符合scikit learn迴歸模組的需求，變成: [ [x1], [x2], [x3], ...]
+y = y.reshape(-1, 1)
+regr.fit(x, y)
+
+#短短兩行code，模型已經建構完成了! 接下來，我們來看看訓練集的成果。
+plt.clf()
+plt.scatter(x,y)
+plt.plot(x, regr.predict(x), color='red', linewidth=4)
+print("====實際(前三筆)====")
+print(y[:3])
+print("====預測(前三筆)====")
+print(regr.predict(x[:3]))
+#+end_src
+
+#+RESULTS:
+: ====實際(前三筆)====
+: [[91.12584105]
+:  [94.36218262]
+:  [92.10536141]]
+: ====預測(前三筆)====
+: [[92.70522144]
+:  [96.66162023]
+:  [89.95865672]]
+
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/cnn-regression-3.png]]
+
+** 建立model來畫迴歸線
+#+begin_src python :results output :exports both :session REG :async
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.layers import Dropout
+
+# A simple regression model
+model = Sequential()
+model.add(Dense(4, input_shape=(1,)))
+model.add(Dropout(0.5))
+model.add(Dense(8, input_shape=(1,)))
+model.add(Dropout(0.5))
+model.add(Dense(1, input_shape=(1,)))
+model.compile(loss='mse', optimizer='rmsprop')
+print(model)
+#+end_src
+
+#+RESULTS:
+: <keras.engine.sequential.Sequential object at 0x7f96fca66400>
+
+** 訓練model
+#+begin_src python  :results output :exports both :session REG
+# 將實際資料分為訓練集與測試集
+x_Train = x[:1500]
+x_Test = x[1500:]
+y_Train = y[:1500]
+y_Test = y[1500:]
+
+# The fit() method - trains the model
+train_history = model.fit(x=x_Train, y=y_Train,
+                          validation_split=0.2,
+                          epochs=100, batch_size=200,
+                          verbose=2)
+print(train_history)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Epoch 1/100
+6/6 - 1s - loss: 8163.1743 - val_loss: 8152.0234 - 676ms/epoch - 113ms/step
+Epoch 2/100
+6/6 - 0s - loss: 8130.1035 - val_loss: 8134.6201 - 18ms/epoch - 3ms/step
+Epoch 3/100
+6/6 - 0s - loss: 8115.6943 - val_loss: 8119.0532 - 19ms/epoch - 3ms/step
+Epoch 4/100
+6/6 - 0s - loss: 8093.0952 - val_loss: 8105.3452 - 22ms/epoch - 4ms/step
+Epoch 5/100
+6/6 - 0s - loss: 8088.0625 - val_loss: 8091.9082 - 21ms/epoch - 4ms/step
+Epoch 6/100
+6/6 - 0s - loss: 8076.4019 - val_loss: 8078.7568 - 21ms/epoch - 4ms/step
+Epoch 7/100
+6/6 - 0s - loss: 8065.8623 - val_loss: 8065.9023 - 22ms/epoch - 4ms/step
+Epoch 8/100
+6/6 - 0s - loss: 8049.2852 - val_loss: 8053.2207 - 21ms/epoch - 4ms/step
+Epoch 9/100
+6/6 - 0s - loss: 8037.1641 - val_loss: 8040.7090 - 21ms/epoch - 4ms/step
+Epoch 10/100
+6/6 - 0s - loss: 8017.3110 - val_loss: 8028.0156 - 22ms/epoch - 4ms/step
+Epoch 11/100
+6/6 - 0s - loss: 8007.4634 - val_loss: 8015.3794 - 21ms/epoch - 4ms/step
+Epoch 12/100
+6/6 - 0s - loss: 7997.4258 - val_loss: 8002.3467 - 22ms/epoch - 4ms/step
+Epoch 13/100
+6/6 - 0s - loss: 7980.9893 - val_loss: 7989.1118 - 21ms/epoch - 4ms/step
+Epoch 14/100
+6/6 - 0s - loss: 7971.9585 - val_loss: 7975.1201 - 22ms/epoch - 4ms/step
+Epoch 15/100
+6/6 - 0s - loss: 7952.8374 - val_loss: 7960.9668 - 23ms/epoch - 4ms/step
+Epoch 16/100
+6/6 - 0s - loss: 7943.7275 - val_loss: 7946.5649 - 21ms/epoch - 4ms/step
+Epoch 17/100
+6/6 - 0s - loss: 7924.2524 - val_loss: 7931.0952 - 21ms/epoch - 4ms/step
+Epoch 18/100
+6/6 - 0s - loss: 7918.0317 - val_loss: 7915.4448 - 21ms/epoch - 3ms/step
+Epoch 19/100
+6/6 - 0s - loss: 7889.4800 - val_loss: 7898.3384 - 21ms/epoch - 3ms/step
+Epoch 20/100
+6/6 - 0s - loss: 7884.0850 - val_loss: 7881.2534 - 21ms/epoch - 4ms/step
+Epoch 21/100
+6/6 - 0s - loss: 7857.5469 - val_loss: 7862.9492 - 21ms/epoch - 3ms/step
+Epoch 22/100
+6/6 - 0s - loss: 7836.8652 - val_loss: 7843.7798 - 20ms/epoch - 3ms/step
+Epoch 23/100
+6/6 - 0s - loss: 7831.5474 - val_loss: 7824.1558 - 21ms/epoch - 4ms/step
+Epoch 24/100
+6/6 - 0s - loss: 7799.3833 - val_loss: 7803.1401 - 21ms/epoch - 4ms/step
+Epoch 25/100
+6/6 - 0s - loss: 7788.5176 - val_loss: 7781.8169 - 21ms/epoch - 3ms/step
+Epoch 26/100
+6/6 - 0s - loss: 7762.7993 - val_loss: 7759.5225 - 21ms/epoch - 4ms/step
+Epoch 27/100
+6/6 - 0s - loss: 7742.5601 - val_loss: 7736.4365 - 21ms/epoch - 3ms/step
+Epoch 28/100
+6/6 - 0s - loss: 7710.9624 - val_loss: 7711.6831 - 20ms/epoch - 3ms/step
+Epoch 29/100
+6/6 - 0s - loss: 7686.9023 - val_loss: 7686.6118 - 21ms/epoch - 3ms/step
+Epoch 30/100
+6/6 - 0s - loss: 7654.4434 - val_loss: 7660.2993 - 22ms/epoch - 4ms/step
+Epoch 31/100
+6/6 - 0s - loss: 7616.2686 - val_loss: 7632.8784 - 21ms/epoch - 4ms/step
+Epoch 32/100
+6/6 - 0s - loss: 7601.3926 - val_loss: 7605.4316 - 21ms/epoch - 3ms/step
+Epoch 33/100
+6/6 - 0s - loss: 7580.7285 - val_loss: 7577.3242 - 21ms/epoch - 4ms/step
+Epoch 34/100
+6/6 - 0s - loss: 7539.0000 - val_loss: 7547.3091 - 21ms/epoch - 3ms/step
+Epoch 35/100
+6/6 - 0s - loss: 7543.3491 - val_loss: 7518.0386 - 21ms/epoch - 3ms/step
+Epoch 36/100
+6/6 - 0s - loss: 7490.0493 - val_loss: 7486.1777 - 21ms/epoch - 3ms/step
+Epoch 37/100
+6/6 - 0s - loss: 7471.3384 - val_loss: 7454.4219 - 22ms/epoch - 4ms/step
+Epoch 38/100
+6/6 - 0s - loss: 7425.4585 - val_loss: 7420.8564 - 21ms/epoch - 4ms/step
+Epoch 39/100
+6/6 - 0s - loss: 7391.1665 - val_loss: 7386.5859 - 21ms/epoch - 4ms/step
+Epoch 40/100
+6/6 - 0s - loss: 7364.9375 - val_loss: 7351.4951 - 21ms/epoch - 3ms/step
+Epoch 41/100
+6/6 - 0s - loss: 7325.8232 - val_loss: 7315.1899 - 19ms/epoch - 3ms/step
+Epoch 42/100
+6/6 - 0s - loss: 7300.6885 - val_loss: 7278.2241 - 20ms/epoch - 3ms/step
+Epoch 43/100
+6/6 - 0s - loss: 7231.8750 - val_loss: 7238.9932 - 21ms/epoch - 3ms/step
+Epoch 44/100
+6/6 - 0s - loss: 7228.6323 - val_loss: 7199.8735 - 21ms/epoch - 3ms/step
+Epoch 45/100
+6/6 - 0s - loss: 7155.6665 - val_loss: 7158.5669 - 21ms/epoch - 3ms/step
+Epoch 46/100
+6/6 - 0s - loss: 7117.6025 - val_loss: 7116.5669 - 21ms/epoch - 3ms/step
+Epoch 47/100
+6/6 - 0s - loss: 7098.7085 - val_loss: 7073.9907 - 20ms/epoch - 3ms/step
+Epoch 48/100
+6/6 - 0s - loss: 7033.6831 - val_loss: 7029.5801 - 20ms/epoch - 3ms/step
+Epoch 49/100
+6/6 - 0s - loss: 6993.9448 - val_loss: 6984.3750 - 20ms/epoch - 3ms/step
+Epoch 50/100
+6/6 - 0s - loss: 6963.6758 - val_loss: 6938.3232 - 21ms/epoch - 3ms/step
+Epoch 51/100
+6/6 - 0s - loss: 6873.2153 - val_loss: 6890.0005 - 21ms/epoch - 4ms/step
+Epoch 52/100
+6/6 - 0s - loss: 6834.0566 - val_loss: 6841.3877 - 21ms/epoch - 4ms/step
+Epoch 53/100
+6/6 - 0s - loss: 6839.6260 - val_loss: 6792.6797 - 21ms/epoch - 3ms/step
+Epoch 54/100
+6/6 - 0s - loss: 6761.8066 - val_loss: 6741.7358 - 20ms/epoch - 3ms/step
+Epoch 55/100
+6/6 - 0s - loss: 6719.5601 - val_loss: 6689.5752 - 21ms/epoch - 3ms/step
+Epoch 56/100
+6/6 - 0s - loss: 6646.5962 - val_loss: 6636.4600 - 21ms/epoch - 4ms/step
+Epoch 57/100
+6/6 - 0s - loss: 6676.9526 - val_loss: 6584.4219 - 21ms/epoch - 4ms/step
+Epoch 58/100
+6/6 - 0s - loss: 6580.0708 - val_loss: 6529.2104 - 21ms/epoch - 4ms/step
+Epoch 59/100
+6/6 - 0s - loss: 6487.5444 - val_loss: 6471.6338 - 22ms/epoch - 4ms/step
+Epoch 60/100
+6/6 - 0s - loss: 6457.2759 - val_loss: 6414.0923 - 21ms/epoch - 3ms/step
+Epoch 61/100
+6/6 - 0s - loss: 6427.3369 - val_loss: 6355.9165 - 21ms/epoch - 3ms/step
+Epoch 62/100
+6/6 - 0s - loss: 6307.2007 - val_loss: 6295.6885 - 21ms/epoch - 4ms/step
+Epoch 63/100
+6/6 - 0s - loss: 6279.2075 - val_loss: 6235.0156 - 21ms/epoch - 4ms/step
+Epoch 64/100
+6/6 - 0s - loss: 6201.4722 - val_loss: 6172.8394 - 21ms/epoch - 4ms/step
+Epoch 65/100
+6/6 - 0s - loss: 6166.4458 - val_loss: 6110.2739 - 21ms/epoch - 4ms/step
+Epoch 66/100
+6/6 - 0s - loss: 6121.9590 - val_loss: 6046.8467 - 21ms/epoch - 3ms/step
+Epoch 67/100
+6/6 - 0s - loss: 6035.1187 - val_loss: 5981.7637 - 20ms/epoch - 3ms/step
+Epoch 68/100
+6/6 - 0s - loss: 5963.8081 - val_loss: 5914.8799 - 21ms/epoch - 4ms/step
+Epoch 69/100
+6/6 - 0s - loss: 5909.1968 - val_loss: 5848.0874 - 22ms/epoch - 4ms/step
+Epoch 70/100
+6/6 - 0s - loss: 5834.0771 - val_loss: 5780.1626 - 21ms/epoch - 4ms/step
+Epoch 71/100
+6/6 - 0s - loss: 5818.0547 - val_loss: 5712.0708 - 21ms/epoch - 4ms/step
+Epoch 72/100
+6/6 - 0s - loss: 5704.0469 - val_loss: 5641.2202 - 22ms/epoch - 4ms/step
+Epoch 73/100
+6/6 - 0s - loss: 5635.4438 - val_loss: 5570.3872 - 21ms/epoch - 3ms/step
+Epoch 74/100
+6/6 - 0s - loss: 5617.6133 - val_loss: 5499.5791 - 21ms/epoch - 4ms/step
+Epoch 75/100
+6/6 - 0s - loss: 5510.1392 - val_loss: 5426.1143 - 21ms/epoch - 4ms/step
+Epoch 76/100
+6/6 - 0s - loss: 5570.2881 - val_loss: 5354.3345 - 21ms/epoch - 4ms/step
+Epoch 77/100
+6/6 - 0s - loss: 5350.2866 - val_loss: 5278.6997 - 21ms/epoch - 4ms/step
+Epoch 78/100
+6/6 - 0s - loss: 5355.6577 - val_loss: 5203.9951 - 21ms/epoch - 4ms/step
+Epoch 79/100
+6/6 - 0s - loss: 5297.9756 - val_loss: 5127.9634 - 21ms/epoch - 3ms/step
+Epoch 80/100
+6/6 - 0s - loss: 5180.0483 - val_loss: 5050.3447 - 20ms/epoch - 3ms/step
+Epoch 81/100
+6/6 - 0s - loss: 5090.1357 - val_loss: 4971.6045 - 21ms/epoch - 3ms/step
+Epoch 82/100
+6/6 - 0s - loss: 5164.4390 - val_loss: 4894.9121 - 22ms/epoch - 4ms/step
+Epoch 83/100
+6/6 - 0s - loss: 4894.6182 - val_loss: 4814.1953 - 21ms/epoch - 4ms/step
+Epoch 84/100
+6/6 - 0s - loss: 4890.4429 - val_loss: 4734.3540 - 21ms/epoch - 4ms/step
+Epoch 85/100
+6/6 - 0s - loss: 4905.8848 - val_loss: 4654.4956 - 21ms/epoch - 4ms/step
+Epoch 86/100
+6/6 - 0s - loss: 4844.4067 - val_loss: 4574.1255 - 21ms/epoch - 3ms/step
+Epoch 87/100
+6/6 - 0s - loss: 4684.1406 - val_loss: 4492.3540 - 21ms/epoch - 3ms/step
+Epoch 88/100
+6/6 - 0s - loss: 4663.4800 - val_loss: 4409.6147 - 21ms/epoch - 4ms/step
+Epoch 89/100
+6/6 - 0s - loss: 4559.1958 - val_loss: 4326.4302 - 22ms/epoch - 4ms/step
+Epoch 90/100
+6/6 - 0s - loss: 4456.0454 - val_loss: 4242.9165 - 21ms/epoch - 4ms/step
+Epoch 91/100
+6/6 - 0s - loss: 4430.0552 - val_loss: 4159.1265 - 21ms/epoch - 4ms/step
+Epoch 92/100
+6/6 - 0s - loss: 4312.1738 - val_loss: 4075.7549 - 21ms/epoch - 3ms/step
+Epoch 93/100
+6/6 - 0s - loss: 4350.4619 - val_loss: 3991.5483 - 21ms/epoch - 3ms/step
+Epoch 94/100
+6/6 - 0s - loss: 4146.0176 - val_loss: 3907.2200 - 21ms/epoch - 3ms/step
+Epoch 95/100
+6/6 - 0s - loss: 4132.5640 - val_loss: 3822.6509 - 21ms/epoch - 4ms/step
+Epoch 96/100
+6/6 - 0s - loss: 4140.9741 - val_loss: 3737.9851 - 21ms/epoch - 4ms/step
+Epoch 97/100
+6/6 - 0s - loss: 4031.6101 - val_loss: 3652.7029 - 21ms/epoch - 3ms/step
+Epoch 98/100
+6/6 - 0s - loss: 3974.0295 - val_loss: 3570.1226 - 21ms/epoch - 4ms/step
+Epoch 99/100
+6/6 - 0s - loss: 3862.4404 - val_loss: 3484.5674 - 21ms/epoch - 3ms/step
+Epoch 100/100
+6/6 - 0s - loss: 3791.4417 - val_loss: 3399.6299 - 21ms/epoch - 3ms/step
+<keras.callbacks.History object at 0x7f96fca9c760>
+#+end_example
+
+** 查看訓練過程
+#+begin_src python  :results output :exports both :async :session REG
+print(train_history.history)
+print(train_history.history.keys())
+
+import matplotlib.pyplot as plt
+plt.cla()
+plt.title('Train History')
+plt.ylabel('loss')
+plt.xlabel('Epoch')
+plt.plot(train_history.history['loss'])
+plt.plot(train_history.history['val_loss'])
+#plt.show()
+plt.savefig("images/cnn-regression-4.png", dpi=300)
+#+end_src
+
+#+RESULTS:
+: {'loss': [8163.17431640625, 8130.103515625, 8115.6943359375, 8093.09521484375, 8088.0625, 8076.40185546875, 8065.8623046875, 8049.28515625, 8037.1640625, 8017.31103515625, 8007.46337890625, 7997.42578125, 7980.9892578125, 7971.95849609375, 7952.83740234375, 7943.7275390625, 7924.25244140625, 7918.03173828125, 7889.47998046875, 7884.0849609375, 7857.546875, 7836.865234375, 7831.54736328125, 7799.38330078125, 7788.517578125, 7762.79931640625, 7742.56005859375, 7710.96240234375, 7686.90234375, 7654.443359375, 7616.2685546875, 7601.392578125, 7580.728515625, 7539.0, 7543.34912109375, 7490.04931640625, 7471.33837890625, 7425.45849609375, 7391.16650390625, 7364.9375, 7325.8232421875, 7300.6884765625, 7231.875, 7228.63232421875, 7155.66650390625, 7117.6025390625, 7098.70849609375, 7033.68310546875, 6993.94482421875, 6963.67578125, 6873.21533203125, 6834.056640625, 6839.6259765625, 6761.806640625, 6719.56005859375, 6646.59619140625, 6676.95263671875, 6580.07080078125, 6487.54443359375, 6457.27587890625, 6427.3369140625, 6307.20068359375, 6279.20751953125, 6201.47216796875, 6166.44580078125, 6121.958984375, 6035.11865234375, 5963.80810546875, 5909.19677734375, 5834.0771484375, 5818.0546875, 5704.046875, 5635.44384765625, 5617.61328125, 5510.13916015625, 5570.2880859375, 5350.28662109375, 5355.65771484375, 5297.9755859375, 5180.04833984375, 5090.1357421875, 5164.43896484375, 4894.6181640625, 4890.44287109375, 4905.884765625, 4844.40673828125, 4684.140625, 4663.47998046875, 4559.19580078125, 4456.04541015625, 4430.05517578125, 4312.173828125, 4350.4619140625, 4146.017578125, 4132.56396484375, 4140.97412109375, 4031.610107421875, 3974.029541015625, 3862.4404296875, 3791.441650390625], 'val_loss': [8152.0234375, 8134.6201171875, 8119.05322265625, 8105.34521484375, 8091.908203125, 8078.7568359375, 8065.90234375, 8053.220703125, 8040.708984375, 8028.015625, 8015.37939453125, 8002.3466796875, 7989.11181640625, 7975.1201171875, 7960.966796875, 7946.56494140625, 7931.09521484375, 7915.44482421875, 7898.33837890625, 7881.25341796875, 7862.94921875, 7843.77978515625, 7824.15576171875, 7803.14013671875, 7781.81689453125, 7759.5224609375, 7736.4365234375, 7711.68310546875, 7686.61181640625, 7660.29931640625, 7632.87841796875, 7605.431640625, 7577.32421875, 7547.30908203125, 7518.03857421875, 7486.177734375, 7454.421875, 7420.8564453125, 7386.5859375, 7351.4951171875, 7315.18994140625, 7278.22412109375, 7238.9931640625, 7199.87353515625, 7158.56689453125, 7116.56689453125, 7073.99072265625, 7029.580078125, 6984.375, 6938.3232421875, 6890.00048828125, 6841.3876953125, 6792.6796875, 6741.73583984375, 6689.5751953125, 6636.4599609375, 6584.421875, 6529.21044921875, 6471.6337890625, 6414.09228515625, 6355.91650390625, 6295.6884765625, 6235.015625, 6172.83935546875, 6110.27392578125, 6046.8466796875, 5981.763671875, 5914.8798828125, 5848.08740234375, 5780.16259765625, 5712.07080078125, 5641.22021484375, 5570.38720703125, 5499.5791015625, 5426.1142578125, 5354.33447265625, 5278.69970703125, 5203.9951171875, 5127.96337890625, 5050.3447265625, 4971.6044921875, 4894.912109375, 4814.1953125, 4734.35400390625, 4654.49560546875, 4574.12548828125, 4492.35400390625, 4409.61474609375, 4326.43017578125, 4242.91650390625, 4159.12646484375, 4075.7548828125, 3991.54833984375, 3907.219970703125, 3822.65087890625, 3737.985107421875, 3652.702880859375, 3570.12255859375, 3484.5673828125, 3399.6298828125]}
+: dict_keys(['loss', 'val_loss'])
+
+
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 400
+#+ATTR_HTML: :width 500
+[[file:images/cnn-regression-4.png]]
+
+** 評估model
+#+begin_src python  :results output :exports both :async :session REG
+# The evaluate() method - gets the loss statistics
+score = model.evaluate(x_Test, y_Test, batch_size=200)
+print(score)
+#+end_src
+
+#+RESULTS:
+: 3/3 [==============================] - 0s 897us/step - loss: 3321.0034
+: 3321.00341796875
+
+** 預測結果
+#+begin_src python  :results output :exports both :async :session REG
+# The predict() method - predict the outputs for the given inputs
+print(y_Test[:5])
+print(model.predict(x_Test[:5]))
+#+end_src
+
+#+RESULTS:
+#+begin_example
+[[79.18318665]
+ [76.04753786]
+ [95.92318028]
+ [92.51954163]
+ [81.48265046]]
+1/1 [==============================] - 0s 14ms/step
+[[13.401583]
+ [14.596603]
+ [46.890038]
+ [36.758396]
+ [21.054796]]
+#+end_example
+
+** 調整model/參數
+*** model架構
+*** loss function
+*** optimizer
+*** hyper parameters
+*** #1
+#+begin_src python  :results output :exports both :async :session REG
+# A simple regression model
+model = Sequential()
+model.add(Dense(4, input_shape=(1,)))
+model.add(Dense(8, input_shape=(1,)))
+model.add(Dense(4, input_shape=(1,)))
+model.add(Dense(1, input_shape=(1,)))
+model.compile(loss='mean_squared_error', optimizer='rmsprop')
+#mean_squared_logarithmic_error
+#mean_absolute_percentage_error
+train_history = model.fit(x=x_Train, y=y_Train,
+                          validation_split=0.2,
+                          epochs=100, batch_size=200,
+                          verbose=0)
+score = model.evaluate(x_Test, y_Test, batch_size=200)
+print(score)
+print(y_Test[:5])
+print(model.predict(x_Test[:5]))
+#+end_src
+
+#+RESULTS:
+#+begin_example
+3/3 [==============================] - 0s 1ms/step - loss: 396.9111
+396.91107177734375
+[[79.18318665]
+ [76.04753786]
+ [95.92318028]
+ [92.51954163]
+ [81.48265046]]
+1/1 [==============================] - 0s 42ms/step
+[[ 39.586174]
+ [ 42.389393]
+ [118.141884]
+ [ 94.375534]
+ [ 57.538727]]
+#+end_example
+
+*** #2
+#+begin_src python  :results output :exports both :async :session REG
+model = Sequential()
+model.add(Dense(4, input_shape=(1,)))
+model.add(Dense(8, input_shape=(1,)))
+model.add(Dense(16, input_shape=(1,)))
+model.add(Dense(32, input_shape=(1,)))
+model.add(Dense(16, input_shape=(1,)))
+model.add(Dense(4, input_shape=(1,)))
+model.add(Dense(1, input_shape=(1,)))
+model.compile(loss='mse', optimizer='rmsprop')
+train_history = model.fit(x=x_Train, y=y_Train,
+                          validation_split=0.2,
+                          epochs=100, batch_size=200,
+                          verbose=0)
+score = model.evaluate(x_Test, y_Test, batch_size=200)
+print(score)
+print(y_Test[:5])
+print(model.predict(x_Test[:5]))
+#+end_src
+
+#+RESULTS:
+#+begin_example
+3/3 [==============================] - 0s 838us/step - loss: 10.2370
+10.237029075622559
+[[79.18318665]
+ [76.04753786]
+ [95.92318028]
+ [92.51954163]
+ [81.48265046]]
+WARNING:tensorflow:5 out of the last 25 calls to <function Model.make_predict_function.<locals>.predict_function at 0x7f9711ad11f0> triggered tf.function retracing. Tracing is expensive and the excessive number of tracings could be due to (1) creating @tf.function repeatedly in a loop, (2) passing tensors with different shapes, (3) passing Python objects instead of tensors. For (1), please define your @tf.function outside of the loop. For (2), @tf.function has reduce_retracing=True option that can avoid unnecessary retracing. For (3), please refer to https://www.tensorflow.org/guide/function#controlling_retracing and https://www.tensorflow.org/api_docs/python/tf/function for  more details.
+1/1 [==============================] - 0s 55ms/step
+[[76.99616]
+ [77.70199]
+ [96.77555]
+ [90.79147]
+ [81.51641]]
+#+end_example
+
+* 課堂練習: Regression
+現在來看看另一組較複雜的數據資料，請你試著自己建個模型來預測這些詭異的資料...
+請參考[[id:6ae7fb7a-0b38-4448-b19f-073d262513f2][Regression]]
+** colab :noexport:
+https://colab.research.google.com/drive/1tBJbV2_kpq6vPcA27MOxCQ5RAkVrulLM#scrollTo=hE4ch7l5qG77
+** 數據
+#+begin_src python  :results output :exports both
+import numpy as np
+
+# Seed the random number generator for reproducibility
+np.random.seed(0)
+
+x_data = np.linspace(-10, 10, num=2000)
+y_data = 2.9 * np.sin(1.5 * x_data) + np.random.normal(size=len(x_data))
+
+plt.scatter(x_data, y_data)
+#+end_src
+#+CAPTION: CNN練習
+#+LABEL:fig:CNN_practice
+#+name: fig:CNN_practice
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/random_curve.png]]
+#+latex:\newpage
+
+* DEMO 2: MNIST 資料集
+:PROPERTIES:
+:CUSTOM_ID: Hi-MNIST
+:END:
+** colab :noexport:
+- https://colab.research.google.com/drive/156RHtxeqf5NsnT6JYCepIVoWKtCRmSAM#scrollTo=0-ks138Tr1zT
+- [[https://medium.com/bryanyang0528/deep-learning-keras-%E6%89%8B%E5%AF%AB%E8%BE%A8%E8%AD%98-mnist-b41757567684][[Deep Learning] Keras 手寫辨識 MNIST]]
+- https://colab.research.google.com/drive/1go1-ffHVJF2WESb6M44GVdk1fD1VgRuS#scrollTo=tjmg2UlMIwVl
+
+** MNIST
+- MNIST 是機器學習領域中相當著名的資料集，號稱機器學習領域的「Hello world.」，其重要性不言可喻。
+- MNIST 資料集由 0~9 的數字影像構成(如圖[[fig:MNIST-set]])，共計 60000 張訓練影像、10000 張測試影像。
+- 一般的 MMIST 資料集的用法為：使用訓練影像進行學習，再利用學習後的模型預測能否正確分類測試影像。
+
+準備資料是訓練模型的第一步，基礎資料可以是網上公開的資料集，也可以是自己的資料集。視覺、語音、語言等各種型別的資料在網上都能找到相應的資料集。
+
+** 準備 MNIST 資料
+MNIST 數據集來自美國國家標準與技術研究所, National Institute of Standards and Technology (NIST). 訓練集 (training set) 由來自 250 個不同人手寫的數字構成, 其中 50% 是高中學生, 50% 來自人口普查局 (the Census Bureau) 的工作人員. 測試集(test set) 也是同樣比例的手寫數字數據。MNIST 數據集可在 http://yann.lecun.com/exdb/mnist/ 獲取, 它包含了四個部分:
+1. Training set images: train-images-idx3-ubyte.gz (9.9 MB, 解壓後 47 MB, 包含 60,000 個樣本)
+1. Training set labels: train-labels-idx1-ubyte.gz (29 KB, 解壓後 60 KB, 包含 60,000 個標籤)
+1. Test set images: t10k-images-idx3-ubyte.gz (1.6 MB, 解壓後 7.8 MB, 包含 10,000 個樣本)
+1. Test set labels: t10k-labels-idx1-ubyte.gz (5KB, 解壓後 10 KB, 包含 10,000 個標籤)
+
+雖然自己手動下載是個不錯的主意，可以讓你練習如何從網路抓檔案、解壓、設定這些檔案的下載路徑、然後再讀進來變成numpy的array或是pandas的dataframe，再把這些資料餵給tensorflow模組去建模型.....不過這對初學者來說著實是一件很麻煩的事，所以多數的套件都很貼心的幫你準備好了直接從網路抓下資料集的function，像tensorflow的load_data。
+*** load data
+MNIST 資料集是一個適合拿來當作 TensotFlow 的練習素材，在 Tensorflow 的現有套件中，也已經有內建好的 MNIST 資料集，我們只要在安裝好 TensorFlow 的 Python 環境中執行以下程式碼，即可將 MNIST 資料成功讀取進來。
+#+BEGIN_SRC python  -n -r :results output :exports both :session mnist :async
+import tensorflow as tf
+mnist = tf.keras.datasets.mnist
+(x_train, y_train), (x_test, y_test) = mnist.load_data()    (ref:get-keras-mnist)
+print(x_train.shape)
+#+END_SRC
+
+#+RESULTS:
+: (60000, 28, 28)
+
+在訓練模型之前，需要將樣本資料劃分為訓練集、測試集，有些情況下還會劃分為訓練集、測試集、驗證集。由上述程式第[[(get-keras-mnist)]]行可知，下載後的 MNIST 資料分成訓練資料(training data)與測試資料(testing data)，其中 x 為圖片、y為所對應數字。
+#+BEGIN_SRC python :results output :exports both :session mnist :async
+import tensorflow as tf
+mnist = tf.keras.datasets.mnist
+(x_train, y_train), (x_test, y_test) = mnist.load_data()
+# =====================================
+# 判斷資料形狀
+print(x_train.shape)
+print(x_test.shape)
+# 第一個label的內容
+print(y_train[0])
+# 顯示影像內容
+import matplotlib.pylab as plt
+img = x_train[0]
+plt.imshow(img)
+plt.savefig("MNIST-Image.png")
+#+END_SRC
+#+RESULTS[301ed277c778e588011f39c44ec8462a701a3a8f]:
+: (60000, 28, 28)
+: (10000, 28, 28)
+: 5
+
+由上述程式輸出結果可以看到載入的 x 為大小為 28*28 的圖片共 60000 張，每一筆 MNIST 資料的照片(x)由 784 個 pixels 組成（28*28），照片內容如圖[[fig:MNIST-Image]]，訓練集的標籤(y)則為其對應的數字(0～9)，此例為 5。
+#+CAPTION: MNIST 影像示例
+#+name: fig:MNIST-Image
+#+ATTR_LATEX: :width 200px
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 300
+[[file:images/MNIST-Image.png]]
+
+x 的影像資料為灰階影像，每個像素的數值介於 0~255 之間，矩陣裡每一項的資料則是代表每個 pixel 顏色深淺的數值，如下圖[[fig:MNIST-Matrix]]所示：
+#+CAPTION: MNIST 資料矩陣
+#+name: fig:MNIST-Matrix
+#+ATTR_LATEX: :width 500
+#+ATTR_ORG: :width 500
+#+ATTR_HTML: :width 500
+[[file:images/MNIST-Matrix.png]]
+*** 資料預處理
+**** 影像數值資料的[[https://aifreeblog.herokuapp.com/posts/54/data_science_203/][正規化]]
+此例中每張圖被存成28X28個0~255的數值，分別代表影像中每個點(pixel)的灰階深度，在把影像丟進模型前，最好先將數值資料做正規化或標準化，讓數值都變為介於0到1間的數值。
+
+以此狀況為例，把所有的數值除上255是個不錯的解決方案。
+#+BEGIN_SRC python :results output :exports both :session mnist :async
+print("====第0張圖的第七列原始內容===")
+print(x_train[0][7])
+x_train = x_train / 255
+x_test = x_test / 255
+print("====第0張圖的第七列正規化後的內容===")
+print(x_train[0][7])
+x_Train=x_train.reshape(x_train.shape[0],28,28,1).astype('float32')
+x_Test=x_test.reshape(x_test.shape[0],28,28,1).astype('float32')
+print(x_train.shape)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+====第0張圖的第七列原始內容===
+[  0   0   0   0   0   0   0  49 238 253 253 253 253 253 253 253 253 251
+  93  82  82  56  39   0   0   0   0   0]
+====第0張圖的第七列正規化後的內容===
+[0.         0.         0.         0.         0.         0.
+ 0.         0.19215686 0.93333333 0.99215686 0.99215686 0.99215686
+ 0.99215686 0.99215686 0.99215686 0.99215686 0.99215686 0.98431373
+ 0.36470588 0.32156863 0.32156863 0.21960784 0.15294118 0.
+ 0.         0.         0.         0.        ]
+(60000, 28, 28)
+#+end_example
+
+另，每張圖都要以一個二維陣列來存數值也有點問題，一來麻煩，二來圖片就要一張一張的丟進模型中，效率太低。一個不錯的想法是：把28*28的二維陣列 *攤平* 成一個784個點的一維陣列，再把所有的圖合併成一個更大的二維陣列(如60000*784)....
+#+BEGIN_SRC python :results output :exports both :session mnist :async
+print("====訓練集的原始資料架構===")
+print(x_train.shape)
+x_train = x_train.reshape(60000, 784).astype('float32')
+x_test = x_test.reshape(10000, 784).astype('float32')
+print("====合併後的訓練集資料架構===")
+print(x_train.shape)
+#+end_src
+
+#+RESULTS:
+: ====訓練集的原始資料架構===
+: (60000, 28, 28)
+: ====合併後的訓練集資料架構===
+: (60000, 784)
+
+**** Label的格式轉換
+載入的 y 為所對應的數字 0~9，在這我們要運用 keras 中的 np_under_utils.to_under_categorical 將 y 轉成 one-hot 的形式，將他轉為一個 10 維的 vector，例如：我們所拿到的資料為 y=3，經過 np_utils.to_categorical，會轉換為 y=[0,0,0,1,0,0,0,0,0,0]。這部份的轉換程式碼如下：
+#+BEGIN_SRC python :results output :exports both :session mnist :async
+# 將y轉換成one-hot encoding
+from keras.utils import np_utils
+
+print(y_train[0])
+y_train = np_utils.to_categorical(y_train, 10)
+y_test = np_utils.to_categorical(y_test, 10)
+# 回傳處理完的資料
+print(y_train[0])
+#+END_SRC
+結果可以看出第0張圖的label為5，表示這張圖不管寫的好或不好，像或不像，其真正的答案為5。
+#+RESULTS[c45bb1bd15ec5aacfdcc5b8fdfd319b4d98b163d]:
+: 5
+: [0. 0. 0. 0. 0. 1. 0. 0. 0. 0.]
+
+** MNIST 的推論處理
+如圖[[fig:MNIST-NeuralNet]]所示，MNIST 的推論神經網路最前端的輸入層有 784 (\(28*28=784\))個神經元，最後的輸出端有 10 個神經元(\(0~9\)個數字)，至於中間的隠藏層有兩個，第 1 個隱藏層有 50 個神經元，第 2 層有 100 個。此處的 50、100 可以設定為任意數（如，也可以是 128、64）。
+#+CAPTION: MNIST-NeuralNet
+#+LABEL:fig:MNIST-NeuralNet
+#+ATTR_LATEX: :width 400px
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/MNIST-CNN.png]]
+
+** MNIST 資料集:以 DNN Sequential 模型為例
+
+此處以最簡單的 NN (Neural Net[[id:20221023T101414.457264][卷積神經網路]][[id:20221023T101414.457264][卷積神經網路]]work) 作為範例。以 Keras 的核心為模型，應用最常使用 Sequential 模型。藉由.add()我們可以一層一層的將神經網路疊起。在每一層之中我們只需要簡單的設定每層的大小(units)與激勵函數(activation function)。需要特別記得的是：第一層要記得寫輸入的向量大小、最後一層的 units 要等於輸出的向量大小。在這邊我們最後一層使用的激活函數(activation function)為 softmax。
+
+*** Import Library
+#+BEGIN_SRC python :results output :exports both :session mnist :async
+from keras.datasets import mnist
+from keras.utils import np_utils
+import numpy as np
+np.random.seed(10)
+#+end_src
+
+#+RESULTS:
+
+*** 建立模型
+- Keras的模型有Sequential與Model兩類
+- 決定好要設計的模型類別，還要決定模型裡的layer如何叠力，layer有許多選擇，例如[[https://keras.io/api/layers/][Layer]]的種類就有Dense layer, Activation layer, Conv1D layer, Dropout layer.....
+- 決定好layer,還要再選activation function，如 relu, sigmoid, softmax.....
+- [[https://keras.io/api/layers/activations/][Keras API reference / Layers API / Layer activation functions ]]
+#+BEGIN_SRC python :results output :exports both :session mnist :async
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.layers import Dropout
+
+model = Sequential()
+#將模型疊起
+model.add(Dense(input_dim=28*28,units=128,activation='relu'))
+model.add(Dense(units=64,activation='relu'))
+model.add(Dense(units=10,activation='softmax'))
+model.summary()
+#+end_src
+
+此例中叠了三個Dense層，第一層為每張圖的輸入(28*28個點)，有784個神經元(或node)，第二層有64個神經元，這是隱藏層，最後一層有10神經元，分別代表10種數字的可能性。
+#+RESULTS:
+#+begin_example
+2022-07-06 14:19:40.336135: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+Model: "sequential"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #
+=================================================================
+ dense (Dense)               (None, 128)               100480
+
+ dense_1 (Dense)             (None, 64)                8256
+
+ dense_2 (Dense)             (None, 10)                650
+
+=================================================================
+Total params: 109,386
+Trainable params: 109,386
+Non-trainable params: 0
+_________________________________________________________________
+#+end_example
+藉由model.summary()可以簡略輸出模型的大概架構與所使用的參數總數。
+*** 訓練模型
+訓練模型時要決定使用何種loss function、使用何種optimizer，可以到官網([[https://keras.io/api/models/model_training_apis/][Model training APIs]])查看有哪些選項可使用以及何種選項適合哪些類型的資料集與問題。
+#+BEGIN_SRC python :results output :exports both :session mnist :async
+model.compile(loss='categorical_crossentropy',
+              optimizer='adam', metrics=['accuracy'])
+
+train_history = model.fit(x=x_train, y=y_train, validation_split=0.2,
+                          epochs=100, batch_size=300, verbose=2)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Epoch 1/100
+160/160 - 1s - loss: 0.4983 - accuracy: 0.8650 - val_loss: 0.2168 - val_accuracy: 0.9396 - 704ms/epoch - 4ms/step
+Epoch 2/100
+160/160 - 0s - loss: 0.1982 - accuracy: 0.9419 - val_loss: 0.1607 - val_accuracy: 0.9558 - 305ms/epoch - 2ms/step
+Epoch 3/100
+160/160 - 0s - loss: 0.1432 - accuracy: 0.9587 - val_loss: 0.1393 - val_accuracy: 0.9595 - 292ms/epoch - 2ms/step
+Epoch 4/100
+160/160 - 0s - loss: 0.1135 - accuracy: 0.9668 - val_loss: 0.1288 - val_accuracy: 0.9628 - 305ms/epoch - 2ms/step
+Epoch 5/100
+160/160 - 0s - loss: 0.0940 - accuracy: 0.9728 - val_loss: 0.1163 - val_accuracy: 0.9667 - 439ms/epoch - 3ms/step
+Epoch 6/100
+160/160 - 0s - loss: 0.0787 - accuracy: 0.9768 - val_loss: 0.1081 - val_accuracy: 0.9680 - 388ms/epoch - 2ms/step
+Epoch 7/100
+160/160 - 0s - loss: 0.0671 - accuracy: 0.9803 - val_loss: 0.1037 - val_accuracy: 0.9698 - 288ms/epoch - 2ms/step
+Epoch 8/100
+160/160 - 0s - loss: 0.0564 - accuracy: 0.9835 - val_loss: 0.1011 - val_accuracy: 0.9692 - 318ms/epoch - 2ms/step
+Epoch 9/100
+160/160 - 0s - loss: 0.0491 - accuracy: 0.9857 - val_loss: 0.0974 - val_accuracy: 0.9712 - 293ms/epoch - 2ms/step
+Epoch 10/100
+160/160 - 0s - loss: 0.0406 - accuracy: 0.9888 - val_loss: 0.0982 - val_accuracy: 0.9711 - 304ms/epoch - 2ms/step
+Epoch 11/100
+160/160 - 0s - loss: 0.0362 - accuracy: 0.9895 - val_loss: 0.0978 - val_accuracy: 0.9724 - 321ms/epoch - 2ms/step
+Epoch 12/100
+160/160 - 0s - loss: 0.0316 - accuracy: 0.9913 - val_loss: 0.0949 - val_accuracy: 0.9731 - 306ms/epoch - 2ms/step
+Epoch 13/100
+160/160 - 0s - loss: 0.0264 - accuracy: 0.9933 - val_loss: 0.0946 - val_accuracy: 0.9734 - 375ms/epoch - 2ms/step
+Epoch 14/100
+160/160 - 0s - loss: 0.0218 - accuracy: 0.9948 - val_loss: 0.0953 - val_accuracy: 0.9747 - 313ms/epoch - 2ms/step
+Epoch 15/100
+160/160 - 0s - loss: 0.0182 - accuracy: 0.9955 - val_loss: 0.0960 - val_accuracy: 0.9753 - 331ms/epoch - 2ms/step
+Epoch 16/100
+160/160 - 0s - loss: 0.0172 - accuracy: 0.9957 - val_loss: 0.0985 - val_accuracy: 0.9743 - 347ms/epoch - 2ms/step
+Epoch 17/100
+160/160 - 0s - loss: 0.0134 - accuracy: 0.9970 - val_loss: 0.0968 - val_accuracy: 0.9749 - 301ms/epoch - 2ms/step
+Epoch 18/100
+160/160 - 0s - loss: 0.0111 - accuracy: 0.9978 - val_loss: 0.1007 - val_accuracy: 0.9744 - 299ms/epoch - 2ms/step
+Epoch 19/100
+160/160 - 0s - loss: 0.0097 - accuracy: 0.9984 - val_loss: 0.1024 - val_accuracy: 0.9745 - 295ms/epoch - 2ms/step
+Epoch 20/100
+160/160 - 0s - loss: 0.0075 - accuracy: 0.9990 - val_loss: 0.1061 - val_accuracy: 0.9746 - 437ms/epoch - 3ms/step
+Epoch 21/100
+160/160 - 0s - loss: 0.0068 - accuracy: 0.9989 - val_loss: 0.1042 - val_accuracy: 0.9749 - 361ms/epoch - 2ms/step
+Epoch 22/100
+160/160 - 0s - loss: 0.0058 - accuracy: 0.9992 - val_loss: 0.1047 - val_accuracy: 0.9755 - 298ms/epoch - 2ms/step
+Epoch 23/100
+160/160 - 0s - loss: 0.0044 - accuracy: 0.9994 - val_loss: 0.1060 - val_accuracy: 0.9765 - 322ms/epoch - 2ms/step
+Epoch 24/100
+160/160 - 0s - loss: 0.0038 - accuracy: 0.9997 - val_loss: 0.1099 - val_accuracy: 0.9751 - 356ms/epoch - 2ms/step
+Epoch 25/100
+160/160 - 0s - loss: 0.0029 - accuracy: 0.9999 - val_loss: 0.1092 - val_accuracy: 0.9752 - 343ms/epoch - 2ms/step
+Epoch 26/100
+160/160 - 0s - loss: 0.0025 - accuracy: 0.9999 - val_loss: 0.1153 - val_accuracy: 0.9757 - 324ms/epoch - 2ms/step
+Epoch 27/100
+160/160 - 0s - loss: 0.0024 - accuracy: 0.9998 - val_loss: 0.1126 - val_accuracy: 0.9754 - 333ms/epoch - 2ms/step
+Epoch 28/100
+160/160 - 0s - loss: 0.0018 - accuracy: 1.0000 - val_loss: 0.1156 - val_accuracy: 0.9765 - 321ms/epoch - 2ms/step
+Epoch 29/100
+160/160 - 0s - loss: 0.0022 - accuracy: 0.9998 - val_loss: 0.1245 - val_accuracy: 0.9743 - 320ms/epoch - 2ms/step
+Epoch 30/100
+160/160 - 0s - loss: 0.0064 - accuracy: 0.9983 - val_loss: 0.1552 - val_accuracy: 0.9695 - 352ms/epoch - 2ms/step
+Epoch 31/100
+160/160 - 0s - loss: 0.0221 - accuracy: 0.9921 - val_loss: 0.1441 - val_accuracy: 0.9707 - 404ms/epoch - 3ms/step
+Epoch 32/100
+160/160 - 0s - loss: 0.0102 - accuracy: 0.9964 - val_loss: 0.1267 - val_accuracy: 0.9724 - 325ms/epoch - 2ms/step
+Epoch 33/100
+160/160 - 0s - loss: 0.0045 - accuracy: 0.9988 - val_loss: 0.1194 - val_accuracy: 0.9762 - 343ms/epoch - 2ms/step
+Epoch 34/100
+160/160 - 0s - loss: 0.0019 - accuracy: 0.9998 - val_loss: 0.1228 - val_accuracy: 0.9768 - 345ms/epoch - 2ms/step
+Epoch 35/100
+160/160 - 0s - loss: 9.3505e-04 - accuracy: 1.0000 - val_loss: 0.1231 - val_accuracy: 0.9770 - 375ms/epoch - 2ms/step
+Epoch 36/100
+160/160 - 0s - loss: 6.2748e-04 - accuracy: 1.0000 - val_loss: 0.1239 - val_accuracy: 0.9772 - 340ms/epoch - 2ms/step
+Epoch 37/100
+160/160 - 0s - loss: 5.0131e-04 - accuracy: 1.0000 - val_loss: 0.1239 - val_accuracy: 0.9775 - 307ms/epoch - 2ms/step
+Epoch 38/100
+160/160 - 0s - loss: 4.3261e-04 - accuracy: 1.0000 - val_loss: 0.1261 - val_accuracy: 0.9779 - 305ms/epoch - 2ms/step
+Epoch 39/100
+160/160 - 0s - loss: 3.8797e-04 - accuracy: 1.0000 - val_loss: 0.1268 - val_accuracy: 0.9772 - 339ms/epoch - 2ms/step
+Epoch 40/100
+160/160 - 0s - loss: 3.5213e-04 - accuracy: 1.0000 - val_loss: 0.1278 - val_accuracy: 0.9772 - 301ms/epoch - 2ms/step
+Epoch 41/100
+160/160 - 0s - loss: 3.2207e-04 - accuracy: 1.0000 - val_loss: 0.1288 - val_accuracy: 0.9773 - 300ms/epoch - 2ms/step
+Epoch 42/100
+160/160 - 0s - loss: 2.9654e-04 - accuracy: 1.0000 - val_loss: 0.1290 - val_accuracy: 0.9776 - 440ms/epoch - 3ms/step
+Epoch 43/100
+160/160 - 0s - loss: 2.8087e-04 - accuracy: 1.0000 - val_loss: 0.1317 - val_accuracy: 0.9771 - 366ms/epoch - 2ms/step
+Epoch 44/100
+160/160 - 0s - loss: 2.6634e-04 - accuracy: 1.0000 - val_loss: 0.1315 - val_accuracy: 0.9772 - 410ms/epoch - 3ms/step
+Epoch 45/100
+160/160 - 0s - loss: 2.5377e-04 - accuracy: 1.0000 - val_loss: 0.1325 - val_accuracy: 0.9774 - 410ms/epoch - 3ms/step
+Epoch 46/100
+160/160 - 0s - loss: 2.2676e-04 - accuracy: 1.0000 - val_loss: 0.1332 - val_accuracy: 0.9778 - 380ms/epoch - 2ms/step
+Epoch 47/100
+160/160 - 0s - loss: 2.0921e-04 - accuracy: 1.0000 - val_loss: 0.1340 - val_accuracy: 0.9776 - 333ms/epoch - 2ms/step
+Epoch 48/100
+160/160 - 0s - loss: 1.9687e-04 - accuracy: 1.0000 - val_loss: 0.1351 - val_accuracy: 0.9774 - 431ms/epoch - 3ms/step
+Epoch 49/100
+160/160 - 0s - loss: 1.8509e-04 - accuracy: 1.0000 - val_loss: 0.1369 - val_accuracy: 0.9770 - 382ms/epoch - 2ms/step
+Epoch 50/100
+160/160 - 0s - loss: 1.6824e-04 - accuracy: 1.0000 - val_loss: 0.1388 - val_accuracy: 0.9772 - 307ms/epoch - 2ms/step
+Epoch 51/100
+160/160 - 0s - loss: 1.5474e-04 - accuracy: 1.0000 - val_loss: 0.1388 - val_accuracy: 0.9775 - 396ms/epoch - 2ms/step
+Epoch 52/100
+160/160 - 0s - loss: 1.4295e-04 - accuracy: 1.0000 - val_loss: 0.1397 - val_accuracy: 0.9775 - 397ms/epoch - 2ms/step
+Epoch 53/100
+160/160 - 0s - loss: 1.3336e-04 - accuracy: 1.0000 - val_loss: 0.1405 - val_accuracy: 0.9777 - 337ms/epoch - 2ms/step
+Epoch 54/100
+160/160 - 0s - loss: 1.2277e-04 - accuracy: 1.0000 - val_loss: 0.1417 - val_accuracy: 0.9774 - 308ms/epoch - 2ms/step
+Epoch 55/100
+160/160 - 0s - loss: 1.1436e-04 - accuracy: 1.0000 - val_loss: 0.1429 - val_accuracy: 0.9772 - 328ms/epoch - 2ms/step
+Epoch 56/100
+160/160 - 0s - loss: 1.0277e-04 - accuracy: 1.0000 - val_loss: 0.1445 - val_accuracy: 0.9777 - 411ms/epoch - 3ms/step
+Epoch 57/100
+160/160 - 0s - loss: 9.6433e-05 - accuracy: 1.0000 - val_loss: 0.1439 - val_accuracy: 0.9775 - 360ms/epoch - 2ms/step
+Epoch 58/100
+160/160 - 0s - loss: 9.0766e-05 - accuracy: 1.0000 - val_loss: 0.1469 - val_accuracy: 0.9774 - 321ms/epoch - 2ms/step
+Epoch 59/100
+160/160 - 0s - loss: 8.1810e-05 - accuracy: 1.0000 - val_loss: 0.1476 - val_accuracy: 0.9774 - 336ms/epoch - 2ms/step
+Epoch 60/100
+160/160 - 0s - loss: 7.5422e-05 - accuracy: 1.0000 - val_loss: 0.1483 - val_accuracy: 0.9778 - 329ms/epoch - 2ms/step
+Epoch 61/100
+160/160 - 0s - loss: 6.9086e-05 - accuracy: 1.0000 - val_loss: 0.1507 - val_accuracy: 0.9775 - 334ms/epoch - 2ms/step
+Epoch 62/100
+160/160 - 0s - loss: 6.5373e-05 - accuracy: 1.0000 - val_loss: 0.1521 - val_accuracy: 0.9774 - 318ms/epoch - 2ms/step
+Epoch 63/100
+160/160 - 0s - loss: 6.0070e-05 - accuracy: 1.0000 - val_loss: 0.1523 - val_accuracy: 0.9776 - 319ms/epoch - 2ms/step
+Epoch 64/100
+160/160 - 0s - loss: 0.0133 - accuracy: 0.9971 - val_loss: 0.3391 - val_accuracy: 0.9442 - 298ms/epoch - 2ms/step
+Epoch 65/100
+160/160 - 0s - loss: 0.0379 - accuracy: 0.9885 - val_loss: 0.1499 - val_accuracy: 0.9722 - 296ms/epoch - 2ms/step
+Epoch 66/100
+160/160 - 0s - loss: 0.0082 - accuracy: 0.9971 - val_loss: 0.1455 - val_accuracy: 0.9747 - 323ms/epoch - 2ms/step
+Epoch 67/100
+160/160 - 0s - loss: 0.0017 - accuracy: 0.9996 - val_loss: 0.1455 - val_accuracy: 0.9756 - 301ms/epoch - 2ms/step
+Epoch 68/100
+160/160 - 0s - loss: 5.7886e-04 - accuracy: 1.0000 - val_loss: 0.1429 - val_accuracy: 0.9769 - 288ms/epoch - 2ms/step
+Epoch 69/100
+160/160 - 0s - loss: 2.6052e-04 - accuracy: 1.0000 - val_loss: 0.1432 - val_accuracy: 0.9773 - 309ms/epoch - 2ms/step
+Epoch 70/100
+160/160 - 0s - loss: 1.9376e-04 - accuracy: 1.0000 - val_loss: 0.1451 - val_accuracy: 0.9772 - 338ms/epoch - 2ms/step
+Epoch 71/100
+160/160 - 0s - loss: 1.6814e-04 - accuracy: 1.0000 - val_loss: 0.1456 - val_accuracy: 0.9772 - 300ms/epoch - 2ms/step
+Epoch 72/100
+160/160 - 0s - loss: 1.4988e-04 - accuracy: 1.0000 - val_loss: 0.1467 - val_accuracy: 0.9777 - 307ms/epoch - 2ms/step
+Epoch 73/100
+160/160 - 0s - loss: 1.3428e-04 - accuracy: 1.0000 - val_loss: 0.1470 - val_accuracy: 0.9778 - 382ms/epoch - 2ms/step
+Epoch 74/100
+160/160 - 0s - loss: 1.2249e-04 - accuracy: 1.0000 - val_loss: 0.1477 - val_accuracy: 0.9781 - 319ms/epoch - 2ms/step
+Epoch 75/100
+160/160 - 0s - loss: 1.1236e-04 - accuracy: 1.0000 - val_loss: 0.1482 - val_accuracy: 0.9781 - 296ms/epoch - 2ms/step
+Epoch 76/100
+160/160 - 0s - loss: 1.0326e-04 - accuracy: 1.0000 - val_loss: 0.1488 - val_accuracy: 0.9783 - 308ms/epoch - 2ms/step
+Epoch 77/100
+160/160 - 0s - loss: 9.5545e-05 - accuracy: 1.0000 - val_loss: 0.1491 - val_accuracy: 0.9781 - 297ms/epoch - 2ms/step
+Epoch 78/100
+160/160 - 0s - loss: 8.8943e-05 - accuracy: 1.0000 - val_loss: 0.1498 - val_accuracy: 0.9781 - 329ms/epoch - 2ms/step
+Epoch 79/100
+160/160 - 0s - loss: 8.2183e-05 - accuracy: 1.0000 - val_loss: 0.1508 - val_accuracy: 0.9783 - 305ms/epoch - 2ms/step
+Epoch 80/100
+160/160 - 0s - loss: 7.7140e-05 - accuracy: 1.0000 - val_loss: 0.1511 - val_accuracy: 0.9783 - 322ms/epoch - 2ms/step
+Epoch 81/100
+160/160 - 0s - loss: 7.2073e-05 - accuracy: 1.0000 - val_loss: 0.1519 - val_accuracy: 0.9782 - 323ms/epoch - 2ms/step
+Epoch 82/100
+160/160 - 0s - loss: 6.7032e-05 - accuracy: 1.0000 - val_loss: 0.1525 - val_accuracy: 0.9783 - 382ms/epoch - 2ms/step
+Epoch 83/100
+160/160 - 0s - loss: 6.2253e-05 - accuracy: 1.0000 - val_loss: 0.1533 - val_accuracy: 0.9783 - 308ms/epoch - 2ms/step
+Epoch 84/100
+160/160 - 0s - loss: 5.8669e-05 - accuracy: 1.0000 - val_loss: 0.1541 - val_accuracy: 0.9785 - 305ms/epoch - 2ms/step
+Epoch 85/100
+160/160 - 0s - loss: 5.4922e-05 - accuracy: 1.0000 - val_loss: 0.1542 - val_accuracy: 0.9783 - 296ms/epoch - 2ms/step
+Epoch 86/100
+160/160 - 0s - loss: 5.1603e-05 - accuracy: 1.0000 - val_loss: 0.1548 - val_accuracy: 0.9786 - 295ms/epoch - 2ms/step
+Epoch 87/100
+160/160 - 0s - loss: 4.8387e-05 - accuracy: 1.0000 - val_loss: 0.1555 - val_accuracy: 0.9783 - 320ms/epoch - 2ms/step
+Epoch 88/100
+160/160 - 0s - loss: 4.5215e-05 - accuracy: 1.0000 - val_loss: 0.1563 - val_accuracy: 0.9785 - 306ms/epoch - 2ms/step
+Epoch 89/100
+160/160 - 0s - loss: 4.3681e-05 - accuracy: 1.0000 - val_loss: 0.1571 - val_accuracy: 0.9786 - 313ms/epoch - 2ms/step
+Epoch 90/100
+160/160 - 0s - loss: 3.9952e-05 - accuracy: 1.0000 - val_loss: 0.1575 - val_accuracy: 0.9787 - 301ms/epoch - 2ms/step
+Epoch 91/100
+160/160 - 0s - loss: 3.7684e-05 - accuracy: 1.0000 - val_loss: 0.1589 - val_accuracy: 0.9784 - 363ms/epoch - 2ms/step
+Epoch 92/100
+160/160 - 0s - loss: 3.4916e-05 - accuracy: 1.0000 - val_loss: 0.1594 - val_accuracy: 0.9783 - 311ms/epoch - 2ms/step
+Epoch 93/100
+160/160 - 0s - loss: 3.2872e-05 - accuracy: 1.0000 - val_loss: 0.1602 - val_accuracy: 0.9788 - 297ms/epoch - 2ms/step
+Epoch 94/100
+160/160 - 0s - loss: 3.0917e-05 - accuracy: 1.0000 - val_loss: 0.1602 - val_accuracy: 0.9783 - 309ms/epoch - 2ms/step
+Epoch 95/100
+160/160 - 0s - loss: 2.9598e-05 - accuracy: 1.0000 - val_loss: 0.1609 - val_accuracy: 0.9784 - 330ms/epoch - 2ms/step
+Epoch 96/100
+160/160 - 0s - loss: 2.7308e-05 - accuracy: 1.0000 - val_loss: 0.1621 - val_accuracy: 0.9784 - 312ms/epoch - 2ms/step
+Epoch 97/100
+160/160 - 0s - loss: 2.5537e-05 - accuracy: 1.0000 - val_loss: 0.1621 - val_accuracy: 0.9783 - 300ms/epoch - 2ms/step
+Epoch 98/100
+160/160 - 0s - loss: 2.3787e-05 - accuracy: 1.0000 - val_loss: 0.1629 - val_accuracy: 0.9786 - 323ms/epoch - 2ms/step
+Epoch 99/100
+160/160 - 0s - loss: 2.2440e-05 - accuracy: 1.0000 - val_loss: 0.1639 - val_accuracy: 0.9783 - 324ms/epoch - 2ms/step
+Epoch 100/100
+160/160 - 0s - loss: 2.0801e-05 - accuracy: 1.0000 - val_loss: 0.1640 - val_accuracy: 0.9785 - 301ms/epoch - 2ms/step
+#+end_example
+
+
+
+*** 查看訓練過程
+#+BEGIN_SRC python :results output :exports both :session mnist :async
+import matplotlib.pyplot as plt
+def show_train_history(train_acc,test_acc,fn):
+    plt.cla()
+    plt.plot(train_history.history[train_acc])
+    plt.plot(train_history.history[test_acc])
+    plt.title('Train History')
+    plt.ylabel('Accuracy')
+    plt.xlabel('Epoch')
+    plt.legend(['train', 'test'], loc='upper ')
+    plt.savefig("images/"+fn, dpi=300)
+    plt.show()
+
+show_train_history('accuracy','val_accuracy','mnist-acc-val.png')
+show_train_history('loss','val_loss','mnist-loss-val.png')
+#+end_src
+
+#+RESULTS:
+
+訓練完就可以透過accuracy與loss來評估模型的效能，可以粗略看出隨著epoch的增加，精確度也隨之提升、loss則隨之下降。
+#+RESULTS:
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/mnist-acc-val.png]]
+
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/mnist-loss-val.png]]
+
+*** 評估模型準確率
+#+BEGIN_SRC python :results output :exports both :session mnist :async
+scores = model.evaluate(x_test , y_test, batch_size = 200)
+print(scores[1])
+#+end_src
+
+#+RESULTS:
+: 50/50 [==============================] - 0s 2ms/step - loss: 0.1345 - accuracy: 0.9798
+: 0.9797999858856201
+
+*** 實際預測結果
+#+BEGIN_SRC python :results output :exports both :session mnist
+prediction=model.predict(x_test)
+print(prediction.shape)
+print(prediction[:2])
+#+end_src
+
+#+RESULTS:
+:   1/313 [..............................] - ETA: 3s 72/313 [=====>........................] - ETA: 0s141/313 [============>.................] - ETA: 0s211/313 [===================>..........] - ETA: 0s286/313 [==========================>...] - ETA: 0s313/313 [==============================] - 0s 699us/step
+: (10000, 10)
+: [[5.02e-19 1.65e-19 1.16e-14 1.12e-11 1.41e-28 9.37e-21 5.59e-30 1.00e+00
+:   7.96e-19 2.25e-15]
+:  [6.04e-18 2.16e-16 1.00e+00 6.55e-15 0.00e+00 7.46e-29 2.51e-22 2.14e-34
+:   1.22e-18 2.02e-30]]
+
+#+BEGIN_SRC python :results output :exports both :session mnist :async
+import matplotlib.pyplot as plt
+import numpy as np
+def oneHotDecode(number):
+    return np.argmax(number)
+def plot_images_labels_prediction(images, labels, prediction, num, fn):
+    plt.cla()
+    fig = plt.gcf()
+
+    fig.set_size_inches(10, 14)
+
+    idx = 0
+    for i in range(0, num):
+        ax=plt.subplot(5, 5, 1+i)
+        ax.imshow(images[idx].reshape(28, 28), cmap='binary')
+
+        ax.set_title("label=" +str(oneHotDecode(labels[idx]))+
+                     ",\npredict="+str(np.argmax(prediction[idx]))
+                     ,fontsize=10)
+        idx+=1
+    plt.savefig("images/"+fn, dpi=300, bbox_inches='tight',pad_inches = 0.2)
+plot_images_labels_prediction(x_test, y_test, prediction, 20, 'mnist-predic-perf.png')
+
+#+end_src
+
+#+RESULTS:
+
+最後輸出測試資料集的前20筆資料的圖、label以及預測結果
+#+RESULTS:
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 500
+#+ATTR_ORG: :width 500
+#+ATTR_HTML: :width 600
+[[file:images/mnist-predic-perf.png]]
+
+*** confusion matrix
+#+begin_src python  :results output :exports both
+import pandas as pd
+pd.crosstab(y_Test,prediction,
+            rownames=['label'],colnames=['predict'])
+#+end_src
+#+BEGIN_SRC python  :results output :exports both :noeval
+# 載入資料
+from keras.datasets import mnist
+from keras.utils import np_utils
+
+def load_data():
+    # 載入minst的資料
+    (x_train, y_train), (x_test, y_test) = mnist.load_data()
+    # 將圖片轉換為一個60000*784的向量，並且標準化
+    x_train = x_train.reshape(x_train.shape[0], 28*28)
+    x_test = x_test.reshape(x_test.shape[0], 28*28)
+    x_train = x_train.astype('float32')
+    x_test = x_test.astype('float32')
+    x_train = x_train/255
+    x_test = x_test/255
+    # 將y轉換成one-hot encoding
+    y_train = np_utils.to_categorical(y_train, 10)
+    y_test = np_utils.to_categorical(y_test, 10)
+    # 回傳處理完的資料
+    return (x_train, y_train), (x_test, y_test)
+
+import numpy as np
+from keras.models import Sequential
+from keras.layers.core import Dense,Activation
+from keras.optimizers import  Adam
+
+def build_model():#建立模型
+    model = Sequential()
+    #將模型疊起
+    model.add(Dense(input_dim=28*28,units=128,activation='relu'))
+    model.add(Dense(units=64,activation='relu'))
+    model.add(Dense(units=10,activation='softmax'))
+    model.summary()
+    return model
+
+# 開始訓練模型，此處使用了Adam做為我們的優化器，loss function選用了categorical_crossentropy。
+(x_train,y_train),(x_test,y_test)=load_data()
+model = build_model()
+#開始訓練模型
+model.compile(loss='categorical_crossentropy',optimizer="adam",metrics=['accuracy'])
+model.fit(x_train,y_train,batch_size=100,epochs=5)
+#顯示訓練結果
+score = model.evaluate(x_train,y_train)
+print ('\nTrain Acc:', score[1])
+score = model.evaluate(x_test,y_test)
+print ('\nTest Acc:', score[1])
+
+### 進行預測
+prediction = model.predict_classes(x_Test4D_normalize)
+print(prediction[:10])
+plot_images_labels_prediction("CNN_MNist", x_Test, y_Test, prediction, idx=0)
+import pandas as pd
+p = pd.crosstab(y_Test, prediction, rownames=['label'], colnames=['predict'])
+print(p)
+
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #
+=================================================================
+dense_1 (Dense)              (None, 500)               392500
+_________________________________________________________________
+dense_2 (Dense)              (None, 500)               250500
+_________________________________________________________________
+dense_3 (Dense)              (None, 500)               250500
+_________________________________________________________________
+dense_4 (Dense)              (None, 10)                5010
+=================================================================
+Total params: 898,510
+Trainable params: 898,510
+Non-trainable params: 0
+_________________________________________________________________
+Epoch 1/20
+
+  100/60000 [..............................] - ETA: 2:55 - loss: 2.2917 - acc: 0.1300
+  800/60000 [..............................] - ETA: 25s - loss: 1.6424 - ACM: 0.5362
+.......
+16300/60000 [=======>......................] - ETA: 4s - loss: 0.3752 - acc: 0.8898
+17000/60000 [=======>......................] - ETA: 4s - loss: 0.3681 - acc: 0.8916
+.......
+50600/60000 [========================>.....] - ETA: 0s - loss: 0.2232 - acc: 0.9335
+51300/60000 [========================>.....] - ETA: 0s - loss: 0.2220 - acc: 0.9338
+.......
+59700/60000 [============================>.] - ETA: 0s - loss: 0.2078 - acc: 0.9377
+60000/60000 [==============================] - 5s 81us/step - loss: 0.2074 - acc: 0.9379
+Epoch 2/20
+
+  100/60000 [..............................] - ETA: 5s - loss: 0.0702 - acc: 0.9800
+......
+60000/60000 [==============================] - 5s 77us/step - loss: 0.0832 - acc: 0.9740
+Epoch 3/20
+......
+Epoch 29/20
+
+   32/60000 [..............................] - ETA: 1:10
+ 1440/60000 [..............................] - ETA: 3s
+......
+58496/60000 [============================>.] - ETA: 0s
+60000/60000 [==============================] - 2s 34us/step
+
+Train Acc: 0.9981666666666666
+
+   32/10000 [..............................] - ETA: 0s
+ 1568/10000 [===>..........................] - ETA: 0s
+ 3104/10000 [========>.....................] - ETA: 0s
+ 4640/10000 [============>.................] - ETA: 0s
+ 6176/10000 [=================>............] - ETA: 0s
+ 7680/10000 [======================>.......] - ETA: 0s
+ 9184/10000 [==========================>...] - ETA: 0s
+10000/10000 [==============================] - 0s 33us/step
+
+Test Acc: 0.9823
+#+end_example
+
+
+#+latex:\newpage
+
+* 個人作業二
+:PROPERTIES:
+:CUSTOM_ID: HomeWork-2
+:END:
+** 背景
+某醫學研究中心針對旗下醫院800名疑似患有「無定向喪心病狂間歇性全身機能失調症」的患者做了一份病徵研究，針對以下這些可能病徵進行程度檢驗
+1. 抑鬱
+2. 癲癇
+3. 精神分裂
+4. 輕挑驕傲
+5. 沒大沒小
+6. 有犯罪傾向
+7. 月經前緊張(男患者嚴重的話也有)
+8. 有自殺傾向
+這800份資料可以[[https://letranger.github.io/downloads/qq.csv][點選這裡]]下載，每筆資料有九個欄位，前八欄分別對應到上述八項病徵，最後一欄為0/1，代表病患是否患有該病。
+
+請你建立一個預測MODEL，以利該中心將來遇到類似病情的患者時只要先針對這些特徵值進行檢驗，即可了解該病例是否為此病患者，並即時予以適當治療。
+
+** 作業要求
+- 嗯，基本上就是自由心證，你能交多少就交多少，你想只交一張圖也行，你要從頭交待你在做什麼、每一個步驟有啥意義、一共測了幾種CASE、最後成果如何、你的心得....也行，看你的誠意啦-_-(這向來是最坑人的一句話)
+- 我是這樣覺得啦...model隨便叠一叠，精確度至少也不應該低於 *0.8* 吧...QQ
+
+** 參考答案 :noexport:
+- [[https://colab.research.google.com/drive/1RjvgCt_QUPB7CQVTQ7DHL6qzfdfR1EYx][05.Keras糖尿病預測.ipynb]]
+- https://www.kaggle.com/saurabh00007/diabetescsv?select=diabetes.csv
+
+* 小組作業三
+** Resources
+*** 如何讀取自己的資料:  [[https://towardsdatascience.com/loading-custom-image-dataset-for-deep-learning-models-part-1-d64fa7aaeca6][Loading Custom Image Dataset for Deep Learning Models: Part 1]]
+*** Typical steps for loading custom dataset for Deep Learning Models
+1. Open the image file. The format of the file can be JPEG, PNG, BMP, etc.
+1. Resize the image to match the input size for the Input layer of the Deep Learning model.
+1. Convert the image pixels to float datatype.
+1. Normalize the image to have pixel values scaled down between 0 and 1 from 0 to 255.
+1. Image data for Deep Learning models should be either a numpy array or a tensor object.
+*** Data augmentation
+- [[https://www.gushiciku.cn/pl/pL8p/zh-tw][Kaggle知識點：資料擴增方法]]
+- [[https://tw.leaderg.com/article/index?sn=11132][影像資料擴增 (Image Data Augmentation) 的原理與實作]]
+- [[https://iter01.com/465481.html][深度學習領域的資料增強]]
+
+* Next Subject :noexport:
+Kaggle: https://www.kaggle.com/ryanholbrook/overfitting-and-underfitting
+
+* Footnotes
+[fn:2] [[https://blog.yeshuanova.com/2018/10/dataset-iris/][ 機器學習資料集 - Iris dataset ]]
+
+[fn:1] [[https://aifreeblog.herokuapp.com/posts/54/data_science_203/][資料的正規化(Normalization)及標準化(Standardization)]]

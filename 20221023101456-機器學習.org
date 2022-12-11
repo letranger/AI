@@ -1,0 +1,788 @@
+:PROPERTIES:
+:ID:       20221023T101456.955364
+:END:
+#+title: 機器學習
+
+#+INCLUDE: ../pdf.org
+#+TAGS: AI, Machine Learning
+#+OPTIONS: toc:2 ^:nil num:5
+#+PROPERTY: header-args :eval never-export
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/white.css" />
+
+* 機器學習
+** 機器學習簡介影片
+[[https://www.youtube.com/watch?v=OXNC_sefxi4][机器学习简介（机器学习从零到一第一集)]]
+[[https://www.youtube.com/watch?v=ifj5bAzrzMw][机器学习中的基本计算机视觉概念（机器学习从零到一第二集）]]
+** 簡介
+- 機器學習是[[id:20221023T101138.945879][人工智慧]]的一個分支，在[[id:20221023T101138.945879][人工智慧]]的研究歷史有著一條從以「推理」為重點，到以「知識」為重點，再到以 「學習」為重點的自然、清晰的脈絡。
+- 機器學習是實現[[file:AI-Introduction.org][人工智慧]]的一個途徑，即以機器學習為手段解決[[file:AI-Introduction.org][人工智慧]]中的問題。
+- 機器學習理論主要是設計和分析一些讓電腦可以自動「學習」 的演算法。機器學習演算法是一類從資料中自動分析獲得規 律，並利用規律對未知資料進行預測的演算法。
+- 機器學習已廣泛應用於資料探勘、電腦視覺、自然語言處理、
+- 生物特徵辨識、搜尋引擎、醫學診斷、檢測信用卡欺詐、證券市場分析、DNA 序列測序、語音和手寫辨識、戰略遊戲和機器人等領域
+- 機器學習是一門[[file:AI-Introduction.org][人工智慧]]的科學，該領域的主要研究物件是[[file:AI-Introduction.org][人工智慧]]，特別是如何=在經驗學習中=改善具體演算法的效能。
+- 機器學習是對能通過經驗=自動改進=的電腦演算法研究
+- 機器學習是用資料或以往的經驗，以此最佳化電 腦程式的效能標準。
+
+** 何謂機器學習
+機器學習的定義之一：一個可以與其環境做互動的系統。具有感知器(sensor)，可以讓機器了解它們所處的環境，以及它們也具有相關的工具可以讓機器做出回應[fn:1]。
+機器學習可以大致分為三類：監督式學習、非監督式學習、強化學習，如圖[[fig:DifferentLearningTypes]][fn:1]。
+#+CAPTION: 三種不同的機器學習
+#+name: fig:DifferentLearningTypes
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 600
+#+RESULTS:
+[[file:images/DifferentLearningTypes.png]]
+** 何謂機器學習[李宏毅]
+機器學習就是從一組function中找出一個最合適的function的過程。
+
+* 機器學習概念釐清
+** Machine Learning v.s. Statistics
+- 統計: 目的在由樣本(sample)找出真相(universe)，如，由台灣 2350 萬人口中，只選出 1000 人，得知全台生活型態、政治傾向。
+- Machine learning: 目的在讓電腦由歷史資料中學習處理新的資料以解決問題。如，由醫生判讀 X 光片的資料學習判讀新的 X 光片；由一個人的刷卡及繳費行為預測他的信貸是否能準時還款？
+- Machine learning 不在意真實資料的分佈，而在於根據已知推測未知。
+
+** Machine Learning v.s. Traditional Programming
+- 傳統的程式設計pattern是將資料及規則餵給程式，經由程式判斷(if-else)產生答案
+- Meachine learning是將資料(features)和答案(label)餵給model，然後由model學習出規則
+#+BEGIN_SRC ditaa :file images/MLTP.png  :cmdline -r -s 0.8
+              +-----------------+
+     Rules    |                 |
+   ---------->|   Traditional   |   Answers
+     Data     |   Programming   +------------>
+   ---------->|      cBLK       |
+              +-----------------+
+
+              +-----------------+
+     Answers  |                 |
+   ---------->|     Machine     |   Rules
+     Data     |     Learning    +------------>
+   ---------->|      cGRE       |
+              +-----------------+
+#+END_SRC
+#+RESULTS:
+#+CAPTION: Traditional Programming v.s. Machine Learning
+#+name: fig:NLTP
+#+ATTR_HTML: :width 600
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+[[file:images/MLTP.png]]
+
+** Training Phase v.s. Inference Phase
+#+BEGIN_SRC ditaa :file images/TPIP.png  :cmdline -r -s 0.8
+
+Training Phase
+-=------------
+              +-----------------+
+     Answers  |                 |
+   ---------->|     Machine     |   Rules
+     Data     |     Learning    +------------>
+   ---------->|      cGRE       |
+              +-----------------+
+
+Inference Phase
+-=-------------
+              +-----------------+
+              |                 |
+     Data     |                 | Predictions
+   ---------->|      Model      +------------>
+              |      c1AB       |
+              +-----------------+
+
+#+END_SRC
+#+CAPTION: Training and Inference Phase of ML
+#+name: fig: TPIP
+#+ATTR_HTML: :width 600
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+RESULTS:
+[[file:images/TPIP.png]]
+
+* 典型的機器學習MODEL Training
+以"rock, paper, and scissors"辨識為例[fn:2]:
+1. 將三種圖案的image讀入model中
+2. 於model中建立神經元(可視為function)，學習不同image的特徵
+3. 根據上述神經元讀取的特徵值(features)，配合該image之答案(label)，進行學習
+#+begin_src python -r -n :results output :exports both
+model = tf.keras.models.Sequence([
+    tf.keras.layers.Flatten(input_shape=(150, 150, 3)),
+    tf.keras.layers.Dense(512, activation='relu),
+    tf.keras.layers.Dense(3, activatio='softmax')
+])
+
+model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
+
+model.fit(...., epochs=100)
+#+end_src
+** Process of learning
+可先將512個神經元視為512個function，每個function裡有許多變數，這些變數的初始值為random assign，接下來每個function陸續讀取image的所有feature(即圖的每個pixel，這裡可以將之視為傳入該function的parameters)，然後根據function中的變數值，開始學習要如何調整function裡的變數值才能輸出這個image的正確答案(label)，每個神經元同時進行學習與變數值調校。
+*** function 示意圖
+#+BEGIN_SRC ditaa :file images/function-dg.png  :cmdline -r
+Neuron
+-=------------
+                   +------------------------+
+     parameter 1   |                        |
+   --------------->|       variable 1       |
+     parameter 2   |       variable 2       |
+   --------------->|          ...           |  Results
+          ...      |          ...           +----------->
+   --------------->|          ...           |
+     parameter n   |       variable n       |
+   --------------->|                        |
+                   +------------------------+
+#+END_SRC
+#+CAPTION: Function
+#+name: fig: Function
+#+ATTR_HTML: :width 500
+#+ATTR_LATEX: :width 500
+#+ATTR_ORG: :width 500
+#+RESULTS:
+[[file:images/function-dg.png]]
+
+在訓練的過程中，我們根據每個function所輸入的參數(parameters)，調整function裡的變數值(這些最初是random得來的)，希望能得到與該輸入值(所有的parameters)所相對應的答案。
+
+在傳統的程式設計觀點，輸入function的數值為參數；但在神經網路的觀點，輸入值為features，function稱為neuron，neuron裡的變數稱為parameters，所有neuron裡的parameter均為神經網路訓練過程中要調整的對象。
+#+BEGIN_SRC ditaa :file images/neuron-dg.png
+Neuron
+-=------------
+                   +------------------------+
+       feature 1   |                        |
+   --------------->|      parameter 1       |
+       feature 2   |      parameter 2       |
+   --------------->|          ...           |  Results
+          ...      |          ...           +----------->
+   --------------->|          ...           |
+       feature n   |      parameter n       |
+   --------------->|                        |
+                   +------------------------+
+#+END_SRC
+#+CAPTION: Neuron
+#+name: fig: Neuron
+#+ATTR_HTML: :width 500
+#+ATTR_LATEX: :width 500
+#+ATTR_ORG: :width 500
+#+RESULTS:
+[[file:images/neuron-dg.png]]
+** Example of training
+- 輸入image為rock
+  #+CAPTION: Stone
+  #+LABEL:fig:Stone
+  #+name: fig:Stone
+  #+ATTR_LATEX: :width 600
+  #+ATTR_ORG: :width 600
+  #+ATTR_HTML: :width 500
+  [[file:images/stone.jpg]]
+- 輸入image為paper
+  #+CAPTION: Paper
+  #+LABEL:fig:Paper
+  #+name: fig:Paper
+  #+ATTR_LATEX: :width 600
+  #+ATTR_ORG: :width 600
+  #+ATTR_HTML: :width 500
+  [[file:images/paper.jpg]]
+
+接下來，
+** Model v.s. Layer: Training step by step
+- Input layer
+  此的輸入為image，對model來說，其feature為150*150*3
+  #+CAPTION: input_shape
+  #+LABEL:fig:input_shape
+  #+name: fig:input_shape
+  #+ATTR_LATEX: :width 600
+  #+ATTR_ORG: :width 600
+  #+ATTR_HTML: :width 500
+  [[file:images/input_shape.jpg]]
+- Hidden layer
+  中間層(hidden layer)有512個神經元，可視為512個function
+  #+CAPTION: hidden_layer
+  #+LABEL:fig:hidden_layer
+  #+name: fig:hidden_layer
+  #+ATTR_LATEX: :width 600
+  #+ATTR_ORG: :width 600
+  #+ATTR_HTML: :width 500
+  [[file:images/hidden_layer.jpg]]
+- Output layer
+  輸出層(output layer)則輸出三種可能的答案
+  #+CAPTION: output_layer
+  #+LABEL:fig:output_layer
+  #+name: fig:output_layer
+  #+ATTR_LATEX: :width 600
+  #+ATTR_ORG: :width 600
+  #+ATTR_HTML: :width 500
+  [[file:images/output_layer.jpg]]
+** compile v.s. fit
+- compile: Compile與傳統程式設計概念不同，此處旨在訂定兩個model training中最重要的關鍵: loss function與optimizer。剛才提及每個function(或neuron)都對於產生答案(label)做出了貢獻，然而這個答案到底好或不好，必須要有一個評估機制，loss function的目的就在評估每一次所有neuron所產生的答案是否足夠好(以此例來看至少正確率必須高過1/3)，然後把評估結果丟給optimizer，由它來決定下一次猜測時neuron裡的parameters要如何調整。
+- fit: 如此重複不斷的進行"輸入feature->猜測答案->評估答案->修正parameter->輸入features->猜測答案->評估答案->修正parameter...."，希望最終能找到各neuron中最佳的parameters值，每一次的訓練稱為一次epoch。這就是fit在做的事，也是實際訓練的動作，訓練所需時間視輸入值、model複雜程度與硬體效能而定，也許僅需數分鐘，也許要耗時數週。
+#+CAPTION: compile-phase
+#+LABEL:fig:compile-phase
+#+name: fig:compile-phase
+#+ATTR_LATEX: :width 600
+#+ATTR_ORG: :width 600
+#+ATTR_HTML: :width 500
+[[file:images/compile_phase.jpg]]
+
+* 機器學習如何解決問題
+** 使用機器學習處理問題的幾個步驟：
+- 數據收集(Data Collection): 在監督式學習下還要蒐集正確的標記
+- 數據處理(Data Processing): 包含「數據清理」，例如：刪除「冗餘」或「高度相關的特徵」，或補滿「遺漏值」。
+- 建立測試案例(Creation of the test case): 通常包括：「訓練數據集」(training dataset)用來訓練演算法、「測試數據集」(test dataset)用來測試訓練完成的演算法、以及「驗證數據集」(validation dataset)用來進行最終測試(在不斷的訓練-測試之後)。
+** 現實生活中的應用
+近年來的機器學習範例：
+- AlphaGo: 基於深度學習所製作的「[[file:AI-Introduction.org][人工智慧]]機」，在 2016 年擊敗世界圍棋冠軍 Lee Sedol。AlphaGo 的優勢在於這個程式並不是專門開發來下圍棋的，而是運用「強化學習」與「深度學習」，透過下了數以千計次的圍棋，學習到如何下圍棋。
+- 澳大利亞：2015 年舉辦一場「預測西澳大利亞租屋價錢」的比賽
+- 2009 年 Netflix 推出一項總奬金 100 萬美元的競賽，用來改進預測使用者喜愛影片的正確性
+- AlhpaGo Zero: 2017 年 10 月 19 日，AlphaGo 團隊在《自然》上發表文章介紹了 AlphaGo Zero，文中指出此版本不採用人類玩家的棋譜，且比之前的所有版本都要強大。透過自我對弈，AlphaGo Zero 在三天內以 100 比 0 的戰績戰勝了 AlphaGo Lee，花了 21 天達到 AlphaGo Master 的水平，用 40 天超越了所有舊版本。DeepMind 聯合創始人兼 CEO 傑米斯·哈薩比斯說，AlphaGo Zero「不再受限於人類認知」，很強大。由於專家數據「經常很貴、不可靠或是無法取得」，不藉助人類專家的數據集訓練[[file:AI-Introduction.org][人工智慧]]，對於[[file:AI-Introduction.org][人工智慧]]開發超人技能具有重大意義[4]，因為這樣的 AI 不是學習人，是透過對自我的反思和獨有的創造力直接超越人類[fn:3]。
+- 繼 AlphaGo 後，同一團隊(DeepMind)繼續打造出 AlphaZero，不再依賴人類棋士的知識與棋譜，只給遊戲規則。在 34 小時的訓練後（約自我訓練 2100 萬局[1]:Table S3），AlphaZero 以 60 勝 40 敗的成績打敗 AlphaGo Zero[fn:4]。
+#+latex:\newpage
+
+* 機器學習的類型
+:PROPERTIES:
+:ID:       20221023T110646.714031
+:END:
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/2022-10-03_09-26-40.png]]
+
+** [[id:20221023T101626.420918][監督式學習]](Supervised learning)
+- 目前九成以上的機器學習應用均屬此類
+- 監督式學習指在訓練過程中直接告訴機器答案，也就是將資料進行標註(label)，例如，在 1000 張訓練集照片中標註「貓/狗」。
+- 從給定的訓練資料集中學習出一個函式，當新的資料到來時，可以根據這個函式預測結果。
+- 監督學習的訓練集要求是包括輸入和輸出， 也可以說是特徵和目標。 訓練集中的目標是由人標註的。
+- 為迄今為止最常見的機器學習，泛指一群的機器學習演算法，是從一組「已標記」的「訓練數據集」(training dataset)來學習(訓練)，並導出模型。然後，以此一模型對「未標記」的類似數據進行預測分類，其運作流程如圖[[fig:FlowChartOfSupervisedLearning]][fn:1]所示。典型的例子為早期電子郵件的垃圾信件是讓使用者先去標記某些信為垃圾郵件，然後藉由這些被標記的郵件來推論找出其他可能的垃圾郵件；由此看來，我們以為 Gmail 很好心的提供給我們為信件加註「垃圾」、「廣告」的功能，其實是 Google 利用我們當免費勞工為他們提供信件加註標籤的工作。
+#+CAPTION: 監督式學習流程圖
+#+name: fig:FlowChartOfSupervisedLearning
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 600
+#+Results:
+[[file:images/FlowChartOfSupervisedLearning.png]]
+*** 方法
+- 類神經網路
+- 單純貝氏分類器(Naive Bayes Classifier)
+- 邏輯迴歸(Logisitc Regression)
+- 決策樹(Decision tree)
+- 支援向量機(SVM, Support Vector Machine)
+*** 典型應用
+- Credit/loan approval:信用評比與貸款通過
+- Medical diagnosis: if a tumor is cancerous or benign(是否有 XX 癌症)
+- Fraud detection: if a transaction is fraudulent 詐騙或正常交易
+- 垃圾郵件(SPAM)或正常郵件
+- Web page categorization 網站分類: which category it is
+- 資安應用: 取得有漏洞程式碼資料集(label)，評估其他程式是否有漏洞
+*** 範例：
+- 分類：基於從訓練集資料觀測到的分類類別來標籤、預測新數據的類別，如上述的垃圾郵件即為典型的二元分類工作(如圖[[fig:01_03]])，類別分類工作也可以進行「多類別分類」(multi-class classification)，如典型的 MNist 手寫數字辨識，即是將手寫的 0-9 數字進行預測辨識，並給出一個 0-9 的類別標籤。
+#+CAPTION: 典型的分類
+#+name: fig:01_03
+#+ATTR_LATEX: :width 200
+#+ATTR_ORG: :width 200
+#+ATTR_HTML: :width 600
+#+RESULTS:
+[[file:images/01_03.png]]
+- 線性迴歸: 利用輸入數據的「特徵」來預測出一個「值」，例如，根據房屋的地點、坪數、樓層、房間數等變數, 發掘出這些變數之間的關係，進而預測房價，如圖[[fig:01_04]]。
+#+CAPTION: 典型的迴歸
+#+name: fig:01_04
+#+ATTR_LATEX: :width 200一火
+#+ATTR_ORG: :width 200
+#+ATTR_HTML: :width 600
+#+RESULTS:
+[[file:images/01_04.png]]
+- 決策樹: 精典例子為「鳶尾花數據集」(http://archive.ics.uci.deu/ml/datasets/Iris)。
+- 支援向量機: 主要用來處理分類問題，它不僅能將數據分門別類，甚至遇可以找到最大化的「分離超平面」（類似於三維以上空間中的一個平面），會最大化每個樣本點與該「超平面」的差。此外，當數據是「不可線性分離」時，支援向量機還可以透過「軟邊界」(soft margin)和「核技巧」(kernel trick)來處理。
+
+** [[id:20221023T101716.467694][非監督式學習]](Unsupervised learning)
+- 非監親式學習只有觀測值，單純給電腦大量觀測資料，然後從這些資料找出潛在規則。例如：將 10 萬張片依據電腦自己歸納的規則分為數個不同的群組。
+- 在「監督式學習」中，我們事先會知道訓練集數據的正確答案(label)，並依此訓練我們的模型；在強化學習的環境中，我們會為代理人定義如何度量特定行動的奬勵；然而，在「非監督式學習」的環境中，我們面對的是未標記類別的數據或未知結構的數據。而是讓演算法導出結論。最典型的例子就是「集群」(clustering)，即，讓演算法自己根據數據的特性把它們依某種特質分類為不同子集合，這裡的子集合不一定要是有限集合，也可能是無界子集(unbounded subsets)。「受限玻爾茲曼機」以及「深度信念網路」(deep belief networks, DBN)都屬此類。
+- 非監督式學習經常被運用於資料分析的前置階段，用來先將資料分群或降低維度(減少變數量)，以利後續的分析或監督式學習的進行。
+*** 方法：
+- K平均法(K-means): Clustering
+- 自動編碼器(Autoencoder)
+*** 範例：
+- 集群(cluster): 是一種「探索式數據分析」(exploratory data analysis)技術，它允許我們先組織一堆資訊到一個有意義的「子集群」(clusters)中，而無需任何先驗知識。
+- Cluster analysis (or clustering, data segmentation, ...): Finding similarities between data according to the characteristics found in the data and grouping similar data objects into clusters
+- K-means: 將數據集中的每個樣本分類到 k 個不同的子集合中，它隨機選擇 k 個點，這些點稱為「質心」(centroid)，代表這 k 個不同子集合的中心點，然後對於每個「質心」，我們選擇最接近它的一點，群組起來.....。
+- 生成對抗網路(GAN)
+- 資料沒有答案(如解讀古文)
+- Principal Component Analysis 主成份分析
+*** 非監督式學習分群的原理
+**** Linear projection
+- PCA: Principal component analysis，用來識別整個feature set中哪些特徵最為重要，且最能解釋資料實例間的可變性。
+  + standard PCA
+  + incremental PCA
+  + sparse PCA
+  + kernel PCA
+- SVD: Singular value decomposition，降低原來features matrix的rank，使原來的matrix可以分解成數個較小rank的matrix。
+- Random projection
+- PCA
+#+CAPTION: PCA
+#+name: fig:DimensionalityReduction-1
+#+ATTR_LATEX: :width 200
+#+ATTR_ORG: :width 200
+#+ATTR_HTML: :width 600
+#+RESULTS:
+[[file:images/PCA.jpg]]
+**** Nonlinear dimensionality reduction
+- Isomap
+- t-SNE: t-distributed stochastic neighbor embedding
+- Dictionary learning
+- ICA: Independent component analysis
+- LDA: Latent Dirichlet allocation
+- MDS: Multidimensional scaling
+- LLE: Locally linear embedding
+**** Dimensionality reduction
+- 找出原始資料裡最主要的方面來代替原始資料，使得在損失少部分原始資訊的基礎上，最大程度的降低原始資料的維度。
+- 維度縮減讓非監督式學習能更正確地辨識patterns，並更有效率地解決大規模資料所導致的昂貴運算問題
+- 降維原理
+#+CAPTION: 基本的降維#1
+#+name: fig:DimensionalityReduction-1
+#+ATTR_LATEX: :width 200
+#+ATTR_ORG: :width 200
+#+ATTR_HTML: :width 600
+#+RESULTS:
+[[file:images/DimensionalityReduction-1.jpg]]
+- 降維的選擇
+#+CAPTION: 基本的降維#2
+#+name: fig:DimensionalityReduction-1
+#+ATTR_LATEX: :width 200
+#+ATTR_ORG: :width 200
+#+ATTR_HTML: :width 600
+#+RESULTS:
+[[file:images/DimensionalityReduction-2.jpg]]
+*** face recognition 做法
+1. 2D 圖形 轉 1 維向量
+2. 經由 PCA 計算，取得主要 factor，進行降維度(projection)
+3. 取得合理的維度，進行特徵描述
+
+** 強化學習(<<Reinforcement learning>>Reinforcement learning)
+- 機器為了達成目標，隨著環境的變動，而逐步調整其行為，並評估每一個行動之後所到 的回饋是正向的或負向的，即，在 try-and-error 的過程中一步步從失敗中找出成功的路徑。
+- 較常用於以下領域：電腦遊戲、下棋、自駕車、機器人。
+- AlphaGo：先以監督式學習(以人類棋譜來訓練)訓練出早期版的 AlphaGo，接下來以增強式學習兩個最期版的 AlphaGo 對奕(40 天內對奕 3000 萬盤棋)。
+- 2017 年的 AlphaZero 則放棄監督式學習(人類棋譜)，完全採取強化學習的模式，三天後摸索出自己的圍棋下法，成為有史以來棋力最強的版本。(不再以人類為師，所以才能超越人類？)
+- Google 也將強化學習用於機房伺服器管理，持續偵測機房室內外用電、溫度、建立模型，由模型決定每台伺服器的運轉(全速、低速、休眠、關機)，並達到省電 40%的目標。
+- 強化學習的效果之所以優於監督式學習，主要原因是：監督式學習是人示範給電腦看，電腦照著做，但如果人做的不夠好，電腦再厲害也無法超越(例如，醫師給的 X 光片在判讀上本身就出現誤解 )；而強化學習則是在做中學，進一步脫離人的指導(或人類的經驗限制)，自行發展出更好的規則。
+- 強化學習其實就是訓練一個 AI 可以通過每一次的錯誤來學習，就跟我們小時候學騎腳踏車一樣，一開始學的時候會一直跌倒，然後經過幾次的失敗後，我們就可以上手也不會跌倒了[fn:1]。強化學習在過去曾被長期忽視，但在 Google DeepMind 成功將其應用來玩 Atari 遊戲後，就開始受到許多關注。
+- 強化學習的目標在於開發一個系統（或代理人，agent）,他會藉由與環境的互動來改進自身的效能。由於當前的環境狀態資訊通常就包含了所謂「奬勵信號」(reward signal)，強化學習的目的就是找到一個最好的 Policy(策略)，可以讓 reward 最多。所以也可以把「強化學習」視為與「監督式學習」相關聯的領域，然而在強化學習中，環境回饋不能視為真實正的事實（或是說，正確的標籤），只能將之視為：測量函數對特定行動所觀測到並回報的一個度量值。如圖[[fig:ReinforcementLearning]]，Agent
+- 最常見的應用是教機器如何「玩遊戲」，在這種情境下，我們不會對某個動作貼標籤說它是「好」或「壞」，而是根據遊戲的結果（輸或是贏）或是遊戲中的信號（得分或失分）來做為回饋。
+
+#+BEGIN_SRC ditaa :file ReinforcementLearning.png
+                  +-------------+
+         +--------+ Environment |
+         |  +-----+     cRED    |
+         |  |     +-------------+
+ Reward  |  |State      ^
+         v  V           |
+    +-----------+       |Action(This is a test)
+    |  Agent    +-------+
+    |   cYEL    |
+    +-----------+
+#+END_SRC
+#+CAPTION: 強化學習流程圖
+#+name: fig:ReinforcementLearning
+#+ATTR_LATEX: :width 300
+#+ATTR_HTML: :width 600
+#+ATTR_ORG: :width 300
+#+RESULTS:
+[[file:ReinforcementLearning.png]]
+*** 範例
+典型的 reinforcement learning 包括
+- DQN
+- q-learning
+*** Flappy bird: 在這個遊戲中，我們需要簡單的點擊操作來控制小鳥，躲過各種水管，飛的越遠越好，因為飛的越遠就能獲得更高的積分獎勵。這就是一個典型的強化學習場景：
+- 機器有一個明確的小鳥角色——代理
+- 需要控制小鳥飛的更遠——目標
+- 整個遊戲過程中需要躲避各種水管——環境
+- 躲避水管的方法是讓小鳥用力飛一下——行動
+- 飛的越遠，就會獲得越多的積分——獎勵
+#+CAPTION: 強化學習流程圖
+#+name: fig:ReinforcementLearning
+#+ATTR_LATEX: :width 600
+#+ATTR_ORG: :width 600
+#+RESULTS:
+[[file:images/ReinforceLearningGame.jpg]]
+
+** 自監督式學習(Self-supervised learning)
+這是監督式學習的特例，是一種沒有人工標註標籤的監督式學習，它們的標籤是從輸入資料自己生成的，通常是使用啟發式演算法(heuristic algorithm)。例如：自動編碼器(autoencoders)，它生成的標籤是從未經修改的輸入資料取得的，同樣的，從影片之前的影像來預測下一幅影格(frame)、從文章之前的字詞來預測下一個字詞等，都是這類應用。
+
+Yann Lecun 在 IJCAI 2018 上的演講中提及自監督學習的特色在於能通過輸入的某一部分預測其它部分。在空間層面上包括圖像補全、圖像變換等，在時間層面上包括時序數據預測、視頻幀預測等。Yann LeCun 總結了三類學習範式，分別是強化學習、監督學習和自監督學習，相比於強化學習和監督學習，自監督學習將輸入和輸出當成完整的整體。它們的區別和聯繫在於反饋信息的逐漸增多，模型表徵複雜度、適用任務類型也大幅增加，同時任務中涉及的人類工程比重也大大減少，意味著自動化程度的增加。
+
+在這場演講中，LeCun 認為機器學習的未來不會是監督學習，當然也不會純粹是強化學習，它應該是包含了深度模塊的自監督學習。那麼下一個問題是，自監督學習能夠產生一般的背景知識嗎？這裡重點是模型需要推斷出背景知識，它需要從真實世界收集的背景知識推理出當前它希望預測的任務。如下 LeCun 舉了一個例子，如果接收到一個自然語句，模型應該推斷出當前場景的各種背景知識。對於基於模型的經典最優控制，我們可能需要初始化一個序列來模擬世界，並通過梯度下降調整控制序列來最優化目標函數。而目前我們可以通過強化學習的方式模擬世界，這些模型不僅需要預測下一個可能的動作，同時還需要預測一系列可能的未來。
+
+(原文網址：https://kknews.cc/tech/2lryvjz.html)
+
+** [[file:Deeplearning.org][深度學習]] v.s.強化學習
+
+深度學習：Deep Learning,是一種機器學習的技術，由於深度學習在現代機器學習中的比重和價值非常巨大，因此常常將深度學習單獨拿出來說。最初的深度學習網絡是利用神經網絡來解決特徵層分佈的一種學習過程。通常我們瞭解的 DNN（深度神經網絡），CNN（卷積神經網絡），RNN（循環神經網絡），LSTM（長短期記憶網絡）都是隸屬於深度學習的範疇。也是現代機器學習最常用的一些手段。通過這些手段，深度學習在視覺識別，語音識別，[[id:20221023T101534.642520][自然語言處理]]（NLP）等領域取得了使用傳統機器學習算法所無法取得的成就。
+
+強化學習：[[Reinforcement Learning]]，又稱再勵學習或者評價學習。也是機器學習的技術之一。所謂強化學習就是智能系統從環境到行為映射的學習，以使獎勵信號（強化信號）函數值最大，由於外部給出的信息很少，強化學習系統必須依靠自身的經歷進行自我學習。通過這種學習獲取知識，改進行動方案以適應環境。強化學習最關鍵的三個因素是狀態，行為和環境獎勵。關於強化學習和深度學習的實例，最典型的莫過於谷歌的 AlphaGo 和 AlphaZero 兩位了，前者通過深度學習中的深度卷積神經網絡，在訓練了大約三千萬組人類的下棋數據，無數度電的情況下才搞出來的模型，而後者使用強化學習的方式，通過自己和自己下棋的方式搞出來的模型。而最終的實驗結果也很讓人震撼。AlphaGo 干敗了人類圍棋頂尖高手,而 AlphaZero 干敗了 AlphaGo.
+
+(原文網址：https://kknews.cc/tech/xln95b8.html)
+#+latex:\newpage
+
+** Batch and Online Learning[fn:5]
+*** Batch learning: In /batch learning/, the system is incapable of learning incrementally; it must be trained using all the available data.
+*** Online learning:
+- In /online learning/, you train the system incrementally by feeding it data instances sequentially, either individually or in small groups called /mini-batches/.
+- Online learning is great for systems that receive data as a continuous flow (e.g., stock prices) and need to adapt to change rapidly or autonomously.
+- Online learning algorithms can also be used to train systems on huge datasets that cannot fit in one machine's main memory (this is called /out-of-core/ learning).
+
+** Instance-Based Versus model-Based Learning[fn:5]
+*** Instance-based learning: the system learns the examples by heart, then generalizes to new cases by using a similarity measure to compare them the the learned examples.
+- 以垃圾郵件偵測為例，早期做法是由使用者將特定寄件人設定為垃圾來源，之後將同一寄件者寄出之郵件全標為垃圾；
+- 而 AI 的做法則是可以找出與現有被標為垃圾郵件十分「相似」的郵件，也將之標為垃圾郵件。
+- 重點在於相似性的計算
+*** Model-based learning: Another way to generalize from a set of examples is to build a model of these examples and then use that model to make /predictions/.
+- 例，以 linear model 來預測人圴生產總值與該國人民滿意度的關係：
+  1. model selection: decide to select what kind of model: $$lifeSatisfaction = \theta_0 + \theta_1 \times GDP $$
+  2. define parameter value: how do you know which vsalues ($$\theta_0, \theta_1$$) will make your model perform best?
+  3. evaluate model performance: you can either define a utility function (or /fitness function/) that measures how /good/ your model is, or you can define a /cost function/ that measures how /bad/ it is.
+#+CAPTION: The linear model that fits the training data best
+#+name: fig:GDP
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 600
+#+RESULTS:
+[[file:images/GDP.jpg]]
+- CODE
+#+begin_src python -r -n :results output :exports both
+# Download the data
+import urllib.request
+import os
+datapath = os.path.join("datasets", "lifesat", "")
+
+def prepare_country_stats(oecd_bli, gdp_per_capita):
+    oecd_bli = oecd_bli[oecd_bli["INEQUALITY"]=="TOT"]
+    oecd_bli = oecd_bli.pivot(index="Country", columns="Indicator", values="Value")
+    gdp_per_capita.rename(columns={"2015": "GDP per capita"}, inplace=True)
+    gdp_per_capita.set_index("Country", inplace=True)
+    full_country_stats = pd.merge(left=oecd_bli, right=gdp_per_capita,
+                                  left_index=True, right_index=True)
+    full_country_stats.sort_values(by="GDP per capita", inplace=True)
+    remove_indices = [0, 1, 6, 8, 33, 34, 35]
+    keep_indices = list(set(range(36)) - set(remove_indices))
+    return full_country_stats[["GDP per capita", 'Life satisfaction']].iloc[keep_indices]
+
+DOWNLOAD_ROOT = "https://raw.githubusercontent.com/ageron/handson-ml2/master/"
+os.makedirs(datapath, exist_ok=True)
+for filename in ("oecd_bli_2015.csv", "gdp_per_capita.csv"):
+    print("Downloading", filename)
+    url = DOWNLOAD_ROOT + "datasets/lifesat/" + filename
+    urllib.request.urlretrieve(url, datapath + filename)
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import sklearn.linear_model
+
+# Load the data
+oecd_bli = pd.read_csv("./datasets/lifesat/oecd_bli_2015.csv", thousands=',')
+gdp_per_capita = pd.read_csv("./datasets/lifesat/gdp_per_capita.csv",thousands=',',delimiter='\t', encoding='latin1', na_values="n/a")
+
+
+# Prepare the data
+country_stats = prepare_country_stats(oecd_bli, gdp_per_capita)
+X = np.c_[country_stats["GDP per capita"]]
+y = np.c_[country_stats["Life satisfaction"]]
+
+# Visualize the data
+plt.clf()
+
+country_stats.plot(kind='scatter', x="GDP per capita", y='Life satisfaction')
+import matplotlib as mpl
+mpl.rc('axes', labelsize=14)
+mpl.rc('xtick', labelsize=12)
+mpl.rc('ytick', labelsize=12)
+plt.plot()
+
+plt.savefig("images/GDP.png")
+# Select a linear model
+model = sklearn.linear_model.LinearRegression()
+
+# Train the model
+model.fit(X, y)
+
+# Make a prediction for Cyprus
+X_new = [[22587]]  # Cyprus's GDP per capita
+print(model.predict(X_new)) # outputs [[ 5.96242338]]
+
+#+end_src
+
+#+RESULTS:
+: Downloading oecd_bli_2015.csv
+: Downloading gdp_per_capita.csv
+: [[5.96242338]]
+#+CAPTION: The linear model that fits the training data best
+#+name: fig:GDP1
+#+ATTR_LATEX: :width 600
+#+ATTR_ORG: :width 600
+#+ATTR_HTML: :width 600
+[[file:images/GDP.png]]
+
+* Data Representations
+How can we represent data (images, text, user preferences, etc.) in a way that computers can understand? -> Organize information into a vector[fn:2].
+- A vector is a 1-dimensional array of numbers. It has both a magnitude(length) and a direction.
+- A feature vector is a vector whose entries represent the "features" of some object.
+  #+CAPTION: Feature Vector
+  #+LABEL:fig:feature-vector
+  #+name: fig:feature-vector
+  #+ATTR_LATEX: :width 300
+  #+ATTR_ORG: :width 300
+  #+ATTR_HTML: :width 500
+  [[file:images/feature-vector.jpg]]
+** Images
+In black and white images, *black and white pixels* correspond to 0s and 1s. Grayscale pixels are numbers between 0 and 255. Both assemble into a 1-dimensional array of numbers.
+#+CAPTION: Image data representations
+#+LABEL:fig:Image-data-representation
+#+name: fig:Image-data-representation
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/image-data-rep.jpg]]
+** Words and Documents
+Given a collection of doucments (e.g. Wikipedia articles), assign to every word a vector whose $i^{th}$ entry is the number of times the word appears in the $i^{th}$ document.
+#+CAPTION: Words and documents representations
+#+LABEL:fig:word-representation
+#+name: fig:word-representation
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/word-rep.jpg]]
+These vectors can assemble into a large matrix, useful for *latent semantic analysis*.
+** Yes/No or Ratings
+Given users and items (e.g. movies), vectors can indicate if a user has interacted with the item (1=yes, 0=no) or the user's ratings, say a number between 0 and 5.
+#+CAPTION: Y/N or Ratings
+#+LABEL:fig:YN-rep
+#+name: fig:YN-rep
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/yn-rep.jpg]]
+** One-Hot Encodings
+Assign to each word a vector with one 1 and 0s elsewhere. This is called a one-hot encoding (or a "standard basis vector"). For example, suppose our language only has four words:
+#+CAPTION: words one-hot encoding
+#+LABEL:fig:woh
+#+name: fig:woh
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/word-one-hot.jpg]]
+*** drawbacks to consider:
+**** These vectors can be very sparse
+- A "sparse" vector is one with lots of zeros
+- 500,000 users and 1,000,000 movies
+**** Possible lack lf *meaningful relationships between* vectors
+- One-hot encodings are never "similar."
+- Similarity is measured by the *dot product.*
+
+* 機器學習的主要挑戰[fn:5]
+** Insufficient quantity of training data
+Even for very simple problems you typically need thousands of examples, and for complex problems such as image or speech recognition you may need millions of examples. The idea that data matters more than algorithms for complex problems was further popularized by Peter norvig et al. in a paper titled "The Unreasonable Effectiveness of Data", published in 2009.
+
+** Nonrepresentative training data
+- In order to generalize well, it is crucial that your training data be representative of the new cases you want to generalize to.
+- Perhaps the most famous example of sampling bias happened during the US presidential election in 1936, which pitted Landon against Roosevelt: the /Literary Digest/ conducted a very large poll, sending mail to about 10 million people. The flaw was in the /Literary Digest's/ sampling method:
+  1. First, to obtain the addresses to send the polls to, the /Literary Digest/ use telephone directories, lists of magazine subscribers, club membership lists, and the like.
+  2. Second, less than 25% of the people who were polled answered.
+#+CAPTION: 加入更多資料會使 modle 更具代表性
+#+name: fig:GDP1
+#+ATTR_LATEX: :width 600
+#+ATTR_ORG: :width 600
+#+ATTR_HTML: :width 600
+[[file:images/GDP2.jpg]]
+
+** Poor-quality data
+Obviously, if your training data is full of errors, outliers, and noise (e.g., due to poor-quality measurements), it will make it harder for the system to detect the underlying patterns, so your system is less likely to perform well.
+
+** Irrelevant features
+
+** Overfitting the training data
+- Overfitting happens when the model is too complex relative to the amount and noisiness of the training data. Here are possible solutions:
+  1. Simplify the model by selecting one with fewer parameters.
+  2. Gather more training data.
+  3. Reduce the noise in the training data (e.g., fix data errors and remove outliers).
+- Constraining a model to make it simpler and reduce the risk of overfitting is called /regularization/.
+- The amount of regularization to apply during learning can be controlled by a /hyperparameter/. A hyperparameter is a parameter of a learning algorithm (not of the model).
+
+** Underfitting the training data
+Underfitting occurs when your model is too simple to learn the underlying structure of the data.
+
+* Machine Learning 的基本類型
+** Nonlinear Models 非線性模型
+*** 常用的 Nonlinear Models
+**** Supervised Learning
+- Decision tree
+- Ensemble models: Random forest, XGBoost
+- Neural network
+**** Unsupervised Learning
+- tSNE(t-Distributed Stochastic Neighbor Embedding)
+*** Decision Tree
+**** example: https://en.akinator.com
+**** 要定義很多 rule 才能把 tree 建起來
+*** Ensemble Models
+**** 用多棵樹來決定，做法為
+1. Get a set of classifiers, f1(x),f2(x),f3(x),...
+2. Aggregate the classifiers (properly)
+*** 選取 model 的考量
+- Bias v.s. Variance
+- Error from bias
+- Error from variance
+- Error observed
+- underfitting v.s. overfitting
+  overfitting: 完全符合 training data, 但 testing data 效果很差
+*** Bagging
+**** This approach would be helpful when your model is complex, easy to overfit.
+**** 適用系統:
+- decision tree: 只要樹夠深，可以 train 到 100%，但是對新進來的資料完全無用，即 overfitting
+**** Random Forest
+- 將 decision tree 應用到 bagging 的方式
+- 做法：每次從 M 個特徵抽出 m 個來建 decision tree
+*** XGBoost
+**** eXtreme Gradient Boosting
+**** Kaggle 機器學習競賽常用 solution
+**** 為一種集思廣益的策略
+- hello $$E=mc^2$$
+- test
+**** 一次一次加入一棵新的 tree,每加一棵新 tree 都要讓 loss 降低
+*** CNN
+**** 目的在減少類神經網路每一個 layer 的 feature 數量，以減化連結複雜度
+**** CNN 主要用來處理圖片: A neuron does not have to see the whole image to discover the pattern.
+*** CNN in Keras
+
+** Reinforcement Learning
+*** 談機器與環境之間的互動，如圍棋、走迷宮、玩遊戲
+*** 監督式學習 v.s. 增強式學習
+**** 監督式學習會有一個 tutor 或判斷依據，以圍棋來說是有一個棋譜
+**** 增強式學習沒有依據，完全從行為的經驗去自行判斷，以 alpha-go 為例，是以兩台 alpha-go 多次互相對奕來訓練，用這種方式的好處是可以生成大量資料
+**** Reinforcement Learning 的應用實例
+- 開直升機
+- 玩賽車
+- 打 GAME
+*** Reinforcement Learning 的性質
+**** Reward delay
+***** space invader: 只有 fire 才有 reward
+**** 機器人的行為會影響後續.....
+*** Critic 是評估 actor 的方式
+*** How to estimate V
+1. Monte-Carlo based approach
+2. Temporal-difference approach
+*** Asynchronous: A3C
+
+* Classfication
+兩步驟
+** Model construction: describing a set of predetermined classes
+- Each tuple/sample is assumed to belong to a predefined class, as determined by the class label attribute
+- The set of tuples used for model construction is training set
+- The model is represented as classfication urles, decision trees, or mathematical formulae.
+** Model usage: for classifying future or unknown objects
+- Estimate accuracy of the model
+  + The Known label of test sample is compared with the classified result from the model
+  + Accuracy rate is the percentage of test set samples that are conrrectly classified by the model
+  + Test set is independent of training set (otherwise overfitting)
+- If the test set is used to select models, it is called validation (set) set.
+
+* 學習資源
+** Machine Learning [台大李宏毅]
+*** Lecture 0
+- [[http://speech.ee.ntu.edu.tw/~tlkagk/courses_ML19.html][ML19: 台大機器學習課程大綱]]
+- [[https://www.youtube.com/watch?v=CXgbekl66jc][ML Lecture 0-1: Introduction of Machine Learning]]
+- [[https://www.youtube.com/watch?v=On1N8u1z2Ng][ML Lecture 0-2: Why we need to learn machine learning?]]
+*** Lecture 1
+- [[https://www.youtube.com/watch?v=fegAeph9UaA][ML Lecture 1: Regression - Case Study]]
+- [[https://www.youtube.com/watch?v=1UqCjFQiiy0][ML Lecture 1: Regression - Demo]]
+*** Lecture 2
+- [[https://www.youtube.com/watch?v=D_S6y0Jm6dQ][ML Lecture 2: Where does the error come from?]]
+*** Lecture 3
+- [[https://www.youtube.com/watch?v=yKKNr-QKz2Q][ML Lecture 3-1: Gradient Descent]]
+- [[https://www.youtube.com/watch?v=1_HBTJyWgNA][ML Lecture 3-2: Gradient Descent (Demo by AOE)]]
+- [[https://www.youtube.com/watch?v=wzPAInDF_gI][ML Lecture 3-3: Gradient Descent (Demo by Minecraft)]]
+*** Lecture 4
+- [[https://www.youtube.com/watch?v=fZAZUYEeIMg][ML Lecture 4: Classification]]
+*** Lecture 5
+- [[https://www.youtube.com/watch?v=hSXFuypLukA][ML Lecture 5: Logistic Regression]]
+*** Lecture 6
+- [[https://www.youtube.com/watch?v=Dr-WRlEFefw][ML Lecture 6: Brief Introduction of Deep Learning]]
+*** Lecture 7
+- [[https://www.youtube.com/watch?v=ibJpTrp5mcE][ML Lecture 7: Backpropagation]]
+- [[https://www.youtube.com/watch?v=gDp2LXGnVLQ&list=PLJV_el3uVTsOK_ZK5L0Iv_EQoL1JefRL4&index=3&t=0s][Anomaly Detection (1/7)]]
+- [[https://www.youtube.com/playlist?list=PLJV_el3uVTsOK_ZK5L0Iv_EQoL1JefRL4][Next Step of Machine Learning (Hung-yi Lee, NTU, 2019)]]
+*** Lecture 8
+- [[https://www.youtube.com/watch?v=Lx3l4lOrquw][ML Lecture 8-1: “Hello world” of deep learning]]
+- [[https://www.youtube.com/watch?v=5BJDJd-dzzg][ML Lecture 8-2: Keras 2.0]]
+- [[https://www.youtube.com/watch?v=L8unuZNpWw8][ML Lecture 8-3: Keras Demo]]
+*** Explainable ML
+  1) [[https://www.youtube.com/watch?v=lnjrn3bF9lA][Explainable ML (1/8)]]
+  2) [[https://www.youtube.com/watch?v=pNpk6DPYUh8&list=PL9McrqOpq3mUCXF5E8rVLjw8f878zkBfX&index=16][Explainable ML (2/8)]]
+  3) Explainable ML (3/8)
+  4) [[https://www.youtube.com/watch?v=yORbWn7UsBs][Explainable ML (4/8)]]
+  5) [[https://www.youtube.com/watch?v=1xnhQbAV1m0][Explainable ML (5/8)]]
+  6) [[https://www.youtube.com/watch?v=K1mWgthGS-A][Explainable ML (6/8)]]
+  7) [[https://www.youtube.com/watch?v=1xnhQbAV1m0][Explainable ML (7/8)]]
+  8) [[https://www.youtube.com/watch?v=ah_Ttx6cIVU][Explainable ML (8/8)]]
+*** TODO Attack ML Models
+  1) [[https://www.youtube.com/watch?v=NI6yb0WgMBM][Attack ML Models (1/8)]]
+  2) [[https://www.youtube.com/watch?v=zOdg05BwE7I][Attack ML Models (2/8)]]
+  3) [[https://www.youtube.com/watch?v=F9N5zF7N0qY][Attack ML Models (3/8)]]
+  4) [[https://www.youtube.com/watch?v=qjnMoWmn1FQ][Attack ML Models (4/8)]]
+  5) [[https://www.youtube.com/watch?v=2mgLPZJOHNk][Attack ML Models (5/8)]]
+  6) [[https://www.youtube.com/watch?v=z2nmPDLEXI0][Attack ML Models (6/8)]]
+  7) [[https://www.youtube.com/watch?v=KH48zq2RfBA&t=1s][Attack ML Models (7/8)]]
+  8) [[https://www.youtube.com/watch?v=ah_Ttx6cIVU][Attack ML Models (8/8)]]
+*** Lecture 9
+- [[https://www.youtube.com/watch?v=xki61j7z-30][ML Lecture 9-1: Tips for Training DNN]]
+- [[https://www.youtube.com/watch?v=Ky1ku1miDow][ML Lecture 9-2: Keras Demo 2]]
+- [[https://www.youtube.com/watch?v=F1vek6ULo9w][ML Lecture 9-3: Fizz Buzz in Tensorflow (sequel)]]
+*** Lecture 10
+- [[https://www.youtube.com/watch?v=FrKWiRv254g][ML Lecture 10: Convolutional Neural Network]]
+- [[https://www.youtube.com/watch?v=XsC9byQkUH8][ML Lecture 11: Why Deep?]]
+- [[https://www.youtube.com/watch?v=fX_guE7JNnY][ML Lecture 12: Semi-supervised]]
+- [[https://www.youtube.com/watch?v=iwh5o_M4BNU][ML Lecture 13: Unsupervised Learning - Linear Methods]]
+- [[https://www.youtube.com/watch?v=X7PH3NuYW0Q][ML Lecture 14: Unsupervised Learning - Word Embedding]]
+- [[https://www.youtube.com/watch?v=GBUEjkpoxXc][ML Lecture 15: Unsupervised Learning - Neighbor Embedding]]
+- [[https://www.youtube.com/watch?v=yyKaACh_j3M&list=PLJV_el3uVTsOK_ZK5L0Iv_EQoL1JefRL4&index=45&t=0s][Meta Learning – Metric-based (1/3)]]
+- [[https://www.youtube.com/watch?v=Tk5B4seA-AU][ML Lecture 16: Unsupervised Learning - Auto-encoder]]
+- [[https://www.youtube.com/watch?v=YNUek8ioAJk][ML Lecture 17: Unsupervised Learning - Deep Generative Model (Part I)]]
+- [[https://www.youtube.com/watch?v=8zomhgKrsmQ][ML Lecture 18: Unsupervised Learning - Deep Generative Model (Part II)]]
+- [[https://www.youtube.com/watch?v=6ZWu4L7XOiQ&list=PLJV_el3uVTsOK_ZK5L0Iv_EQoL1JefRL4&index=48&t=0s][More about Auto-encoder (1/4)]]
+- [[https://www.youtube.com/watch?v=qD6iD4TFsdQ][ML Lecture 19: Transfer Learning]]
+- [[https://www.youtube.com/watch?v=7qT5P9KJnWo&list=PLJV_el3uVTsOK_ZK5L0Iv_EQoL1JefRL4&index=25][Life Long Learning (1/7)]]
+- [[https://www.youtube.com/watch?v=ZjfjPzXw6og&feature=youtu.be][Sequence-to-sequence Learning]]
+- [[https://www.youtube.com/watch?v=EkAqYbpCYAc&list=PLJV_el3uVTsOK_ZK5L0Iv_EQoL1JefRL4&index=33&t=0s][Meta Learning – MAML (1/9)]]
+- [[https://www.youtube.com/watch?v=QSEPStBgwRQ][ML Lecture 20: Support Vector Machine (SVM)]]
+- [[https://www.youtube.com/watch?v=xCGidAeyS4M][ML Lecture 21-1: Recurrent Neural Network (Part I)]]
+- [[https://www.youtube.com/watch?v=rTqmWlnwz_0][ML Lecture 21-2: Recurrent Neural Network (Part II)]]
+- [[https://www.youtube.com/watch?v=YIuBHB9Ejok&feature=youtu.be][Unsupervised Syntactic Parsing (ft. 莊永松同學)]]
+- [[https://www.youtube.com/watch?v=tH9FH1DH5n0][ML Lecture 22: Ensemble]]
+- [[https://www.youtube.com/watch?v=W8XF3ME8G2I][ML Lecture 23-1: Deep Reinforcement Learning]]
+- [[https://www.youtube.com/watch?v=y8UPGr36ccI][ML Lecture 23-2: Policy Gradient (Supplementary Explanation)]]
+- [[https://www.youtube.com/watch?v=2-JNBzCq77c][ML Lecture 23-3: Reinforcement Learning (including Q-learning)]]
+- [[https://www.youtube.com/playlist?list=PLJV_el3uVTsODxQFgzMzPLa16h6B8kWM_][Deep Reinforcement Learning, 2018]]
+- [[https://www.youtube.com/watch?v=dPp8rCAnU_A&list=PLJV_el3uVTsOK_ZK5L0Iv_EQoL1JefRL4&index=52&t=0s][Network Compression (1/6)]]
+- [[https://www.youtube.com/watch?v=ufcKFjdpT98&list=PLJV_el3uVTsOK_ZK5L0Iv_EQoL1JefRL4&index=58&t=0s][GAN (Quick Review)]]
+- [[https://www.youtube.com/playlist?list=PLJV_el3uVTsMq6JEFPW35BCiOQTsoqwNw][Generative Adversarial Network (GAN), 2018]]
+- [[https://www.youtube.com/watch?v=ugWDIIOHtPA&list=PLJV_el3uVTsOK_ZK5L0Iv_EQoL1JefRL4&index=58][Transformer]]
+- [[https://www.youtube.com/watch?v=UYPa347-DdE&list=PLJV_el3uVTsOK_ZK5L0Iv_EQoL1JefRL4&index=62&t=0s][ELMO, BERT, GPT]]
+- [[https://www.youtube.com/watch?v=uXY18nzdSsM&list=PLJV_el3uVTsOK_ZK5L0Iv_EQoL1JefRL4&index=59][Flow-based Generative Model]]
+- [[https://brohrer.mcknote.com/zh-Hant/statistics/how_bayesian_inference_works.html][貝葉斯推斷的運作原理]]
+** Digital Speech Processing
+- [[http://ocw.aca.ntu.edu.tw/ntu-ocw/ocw/cou/104S204/1][第一章 Introduction to Digital Speech Processing  ]]
+
+* code references
+- [[https://towardsdatascience.com/visualizing-intermediate-activation-in-convolutional-neural-networks-with-keras-260b36d60d0][Visualizing intermediate activation in Convolutional Neural Networks with Keras]]: 查看 training 中 image 的成像
+
+* Footnotes
+
+[fn:1] [[https://github.com/rasbt/python-machine-learning-book-2nd-edition][python-machine-learning-book-2nd-edition]]
+
+[fn:2] [[https://youtu.be/LlKAna21fLE][A friendly introduction to linear algebra for ML (ML Tech Talks)]]
+
+[fn:3] [[https://zh.wikipedia.org/zh-tw/AlphaGo_Zero][AlphaGo Zero]]
+
+[fn:4] [[https://zh.wikipedia.org/wiki/AlphaZero][AlphaZero]]
+
+[fn:5] [[https://www.books.com.tw/products/F014278520][Hands-On Machine Learning with Scikit-Learn, Keras, and Tensorflow: Concepts, Tools, and Techniques to Build Intelligent Systems]]
+
+[fn:7] [[https://www.books.com.tw/products/0010821934?sloc=main][[[file:AI-Introduction.org][人工智慧]]在台灣：產業轉型的契機與挑戰]]
+
+[fn:6] [[https://www.hindawi.com/journals/mpe/2019/2053156/][A Multi-GPU Parallel Algorithm in Hypersonic Flow Computations]]

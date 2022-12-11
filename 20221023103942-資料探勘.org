@@ -1,0 +1,131 @@
+:PROPERTIES:
+:ID:       20221023T103942.753704
+:END:
+#+title: 資料探勘
+
+#+INCLUDE: ../pdf.org
+#+TAGS: AI
+#+OPTIONS: toc:2 ^:nil num:5
+#+PROPERTY: header-args :eval never-export
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/white.css" />
+#+EXCLUDE_TAGS: noexport
+#+latex:\newpage
+
+
+* What is Data Mining
+
+Discover knowledge from data, or, knowledge discovery from data (KDD).
+
+Extraction of interesting, non-trivial, implicit, previously unknown and potentially useful patterns of knowledge from huge data.
+
+* Why Data Mininng
+雖然資料量大，取得容易，但是其中夾雜太多無關資料
+
+* 資料類型
+** Database-oriented data set
+** Advanced data set
+*** Data streams
+
+持續產生的，如天氣、氣溫，所以要即時處理
+*** Time-series data, sequence data, bio-sequences
+
+有因果關係、順序關係、或生物資料(DNA)
+*** Graphs, social networks and multi-linked data
+
+graph(社群網路關係)
+*** Spatial data and spatiotemporal data
+
+GPS 軌跡記錄
+*** Multimedia database
+*** Text
+*** The World-Wide Web
+
+* 背後會用到的技術
+- Database
+- Machine Learning
+- Neural Network
+
+* Data Mining Process
+** Preprocessing([[id:82e219c3-6ca0-43b0-bb11-e3a8454f089d][資料預處理]])
+*** Data collection
+*** Data cleaning
+*** Data integration
+** Exploration
+*** Data warehousing
+決定使用哪一種儲存方式
+*** Data selection
+如：feature selection
+** Data Mining
+*** Pattern evaluation
+找到常常發生的現象
+*** Knowledge discovery
+** Post processing
+*** Information presentation
+將所發掘的知識以簡單易懂的方式呈現出來，這點較少人留意，但最有助於後續決策，即，如 data visualization
+*** Decision making
+
+* General Types of Data Mining
+** Association rule mining
+- a -> b
+- 由大賣場的銷售記錄，發現買了 a 的人都買了 b。決策: 把兩種商品擺在一起
+- 某種資訊出現 -> 下雨機率高
+** Classification
+- A:Y
+- B:N
+- C:Y
+- D:Y
+- E:N
+- F:Y
+- decision tree
+** Clustering
+- {AB}
+- {CDE}
+- {F}
+
+* Association rule mining
+- min_support = 2
+- min_conf = 2/3
+** Mining implications between items
+|-----+------------|
+| Tid | Items      |
+|-----+------------|
+| 100 | A, B, D    |
+| 200 | B, C, E    |
+| 300 | A, D       |
+| 400 | A, B, C, D |
+|-----+------------|
+
+** Frequent item sets
+- 把所有元素的全部排列組合全部列出，每種可能都去計算次數，出現次數>=min_support 才留下
+- ex: {A}, {B}, {C}, {D}, {B,C}, {A,B}, {A,D}, {B,D}, {A,B,D}
+- 單一的集合沒有意義，故排除前四項
+- 接下來看{B,C}，但是倒底是 B -> C 還是 C -> B? 於是兩個假設都去做做看，結果兩項都成立
+- 那{A,B,D}如何判斷？就每一種可能性都去檢查....
+** Strong rules (同時符合 min_support, min_conf)
+- {A,D} -> B(2/3) : A,D 發生的狀況下，B也發生
+- 目的在於自動將所有 Strong rules 自動列出
+- B -> C(2/3)
+- C -> B(2/2)
+- 要從 frequent item set 轉換到 String rules:
+** 產生 Strong rules 用到的演算法: Apriori Algorithm
+
+* Downward Closure Property
+- Any subset of a frequent itemset must be frequent
+- If there is any imteset which is infrequent, its superset should not be frequent
+
+* Sequential Pattern Mining
+** Mining sequential implications between items
+強調 item 的前後順序
+|-----+---------------------------|
+| SID | Sequences                 |
+|-----+---------------------------|
+| 100 | < (1) (2,5) (3) (4) >     |
+| 200 | < (1) (3) (4) (2) (3,5) > |
+| 300 | < (1,3,5) (4) (2) (3) >   |
+| 400 | < (1) (3) (5) >           |
+| 500 | < (4) (3,5,6) >           |
+|-----+---------------------------|
+
+- min_support = 2
+- Some frequent sequential patterns:
+{1,4,3,2}, {1,3,5},{4,5}

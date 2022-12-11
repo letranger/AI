@@ -1,0 +1,2761 @@
+:PROPERTIES:
+:ID:       20221023T101716.467694
+:END:
+#+title: 非監督式學習
+
+# -*- org-export-babel-evaluate: nil -*-
+#+TAGS: AI
+#+OPTIONS: toc:2 ^:nil num:5
+#+PROPERTY: header-args :eval never-export
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/white.css" />
+#+EXCLUDE_TAGS: noexport
+
+#+latex:\newpage
+
+* 非監督式學習
+** 目的
+非監督式學習演算法嚐試學習 *資料的基礎結構* ，而非 *做出預測* 。
+- 將網站訪客進行分類: 40%為男性、愛看漫畫、通常晚上造訪網站....
+- 將一堆圖片分類：cat、automobile、truck、frog、ship...
+  #+CAPTION: Caption
+  #+LABEL:fig:Labl
+  #+name: fig:Name
+  #+ATTR_LATEX: :width 300
+  #+ATTR_ORG: :width 300
+  #+ATTR_HTML: :width 500
+  [[file:images/2022-04-30_10-57-36.jpg]]
+
+** 非監督式學習的任務
+如何協助儘量保留非監督式學習資料的重要特徵以利將來進行有效辨識[fn:2]：
+- 降維(dimensionality reduction): 目的是在不損失過多資訊的前提下簡化資料，將多個特徵合併成一個。例如，汽車的里程數與車齡就有合併的依據。
+- 異常檢測(Anamaly Detection): 例如，找出不尋常的信用卡交易以防止詐騙、找出製程中有缺陷的產品、將資料組中的離群值挑出來再傳給另一個演算法
+- 新穎檢測(Novelty Detection): 檢測與訓練組中所有實例(instance)看起來不一樣的新實例。前提是訓練組的數據非常乾淨（clean）。例如，有1000張狗的照片，裡面只有10張吉娃娃，則Novelty就 *不應該* 把這10張標為novelty，而是找出裡面不小心誤放的貓的照片。
+  #+CAPTION: Caption
+  #+LABEL:fig:Labl
+  #+name: fig:Name
+  #+ATTR_LATEX: :width 300
+  #+ATTR_ORG: :width 300
+  #+ATTR_HTML: :width 500
+  [[file:images/2022-04-30_11-35-44.jpg]]
+- 關聯規則學習(association rule learning): 超市中售出貨物間的關連，可以將常常一起買的物品擺近一點
+
+* 非監督式學習的常見演算法
+** 降維
+There are two major branches of dimensionality reduction. The first is known as linear projection, which involves linearly projecting data from a high- dimensional space to a low-dimensional space. This includes techniques such as[fn:1]:
+- principal component analysis
+- singular value decomposition
+- random projection.
+
+The second is known as manifold learning, which is also referred to as nonlinear dimensionality reduction. This involves techniques such as[fn:1]:
+- isomap: which learns the curved distance (also called the geodesic distance) between points rather than the Euclidean distance
+- multidimensional scaling (MDS)
+- locally linear embedding (LLE)
+- t-distributed stochastic neighbor embedding (t-SNE)
+- dictionary learning
+- random trees embedding
+- independent component analysis
+
+維度縮減演算法(dimensionality reduction algorithm)將原始的高維度輸入資料映射到一個低維度空間，同時過濾掉與整體資料不那麼相關的特徵，並儘可能保留資料中令人感興趣的特徵。主要有兩個分支：線性投影、非線性投影:
+*** 線性投影
+**** 主成份分析(Principal component analysis, PCA)
+PCA有數種變形：mini-batch變形式PCA(incremental PCA)、非線性變形(kernel PCA)、稀疏變形(sparse PCA)
+**** 奇異值分解(Singular value decomposition, SVD)
+降低原來特徵所組成的矩陣的秩（rank)，使得原來的矩陣可以使用擁有較小的秩的矩陣所組成的線性組合來表示。
+**** 隨機投影(Random projection)
+由高維投影至低維空間，但同時保留點與點間的矩離，可以使用隨機高斯矩陣（random Gaussian matrix)或隨機稀疏矩陣(random sparse matrix)來實現。
+*** 流形學習(Manifold learning)
+**** Isomap
+透過估算點與粌近點的捷線(geodesic)或曲線距離(curved distance)，而非使用歐式距離(Euclidean distance)來學習資料流形的內蘊幾何。
+**** t-distributed stochastic neighbor embedding(t-SNE)
+將高維度空間的資料嵌入至二維或三維的空間
+** 分群
+- K-Means
+- DBSCAN
+- 階層式分群分析(Hierarchical Cluster Analysis, HCA)
+** 異常檢測與新穎檢測
+- One-class SVM
+- 孤立森林(Isolation Forest)
+** 視覺化與降維
+- 主成份分析(Principal Component Analysis, PCA)
+- kernel PCA
+- 局部線性嵌入法(Locally Linear Embedding, LLE)
+- t-隨機隣近嵌入法(t-Distributed Stochastic Neighbor Emgedding, t-SNE)
+** 關聯規則學習
+- 先驗
+- Eclat
+
+* K-Means
+:PROPERTIES:
+:CUSTOM_ID: NS-KM-Image
+:END:
+** 簡介
+從資料中找出 K 個分類的非監督式機器學習演算法
+#+begin_src python -r :results output :exports both
+sklearn.datasets.samples_generator import make_blobs
+X, y_true = make_blobs(n_samples=300, centers=4, cluster_std=0.60, random_state=0)
+plt.scatter(X[:, 0], X[:, 1], s=50);
+plt.show() 
+#+end_src
+#+begin_src python -r :results output :exports both
+from sklearn.cluster import KMeans 
+kmeans = KMeans(n_clusters=3) 
+kmeans.fit(X) cluster = kmeans.predict(X) 
+plt.scatter(X[:,0], X[:,1], c=cluster, cmap=plt.cm.Set1) 
+plt.show()
+#+end_src
+
+** 應用: 壓縮影像
+:PROPERTIES:
+:CUSTOM_ID: NS-KM-Image
+:END:
+#+begin_src python -r -n :results output :exports both
+import numpy as np
+import matplotlib.pyplot as plt # 需安裝 pillow 才能讀 JPEG
+from matplotlib import image
+from sklearn.cluster import MiniBatchKMeans
+
+# K 值 (要保留的顏色數量)
+K = 2
+
+# 讀取圖片
+image = image.imread(r'./images/Photo42.jpg')
+w, h, d = tuple(image.shape)
+print(w,h,d)
+image_data = np.reshape(image, (w * h, d))/ 255
+print(image_data.shape)
+print(image_data[0])
+print(image_data[1])
+# 將顏色分類為 K 種
+kmeans = MiniBatchKMeans(n_clusters=K, batch_size=10)
+labels = kmeans.fit_predict(image_data)
+print(labels[:10])
+centers = kmeans.cluster_centers_
+print(centers[:10])
+# 根據分類將顏色寫入新的影像陣列
+image_compressed = np.zeros(image.shape)
+label_idx = 0
+for i in range(w):
+  for j in range(h):
+    image_compressed[i][j] = centers[labels[label_idx]]
+    label_idx += 1
+
+plt.imsave(r'images/compressTest.jpg', image_compressed)
+#+end_src
+
+#+RESULTS:
+: 480 640 3
+: (307200, 3)
+: [0.2        0.16470588 0.23921569]
+: [0.21176471 0.17647059 0.25098039]
+: [1 1 1 1 1 1 1 1 1 1]
+: [[0.61803922 0.37591036 0.37204482]
+:  [0.23843137 0.15398693 0.18973856]]
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/compressTest.jpg]]
+
+* Hierarchical clustering
+:PROPERTIES:
+:CUSTOM_ID: NS-Hie-cluster
+:END:
+階層式分群法（Hierarchical Clustering）透過一種階層架構的方式，將資料層層反覆地進行分裂或聚合，以產生最後的樹狀結構，常見的方式有兩種：
+
+** 聚合式階層分群法 (Bottom-up, agglomerative)
+如果採用聚合的方式，階層式分群法可由樹狀結構的底部開始，將資料或群聚逐次合併。
+定義兩個群聚之間的距離
+- 單一連結聚合演算法(single-linkage agglomerative algorithm)：群聚與群聚間的距離可以定義為不同群聚中最接近兩點間的距離。
+- 完整連結聚合演算法(complete-linkage agglomerative algorithm）：群聚間的距離定義為不同群聚中最遠兩點間的距離，這樣可以保證這兩個集合合併後, 任何一對的距離不會大於 d。
+- 平均連結聚合演算法(average-linkage agglomerative algorithm)：群聚間的距離定義為不同群聚間各點與各點間距離總和的平均。沃德法（Ward's method）：群聚間的距離定義為在將兩群合併後，各點到合併後的群中心的距離平方和。
+
+*** 分群
+1. Agglomerative Clustering Sample
+#+begin_src python -r :results output :exports both
+from sklearn.cluster import AgglomerativeClustering
+import numpy as np
+
+# randomly chosen dataset
+X = np.array([[1, 2], [1, 4], [1, 0],
+              [4, 2], [4, 4], [4, 0]])
+
+# here we need to mention the number of clusters
+# otherwise the result will be a single cluster
+# containing all the data
+clustering = AgglomerativeClustering(n_clusters = 2).fit(X)
+
+# print the class labels
+print(clustering.labels_)
+#+end_src
+
+#+RESULTS:
+: [1 1 1 0 0 0]
+2. 畫圖
+#+begin_src python -r :results output :exports both
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.cluster.hierarchy as sch
+
+# randomly chosen dataset
+X = np.array([[1, 2], [1, 4], [1, 0],
+              [4, 2], [4, 4], [4, 0]])
+y = np.array(['cat3', 'cat1', 'cat2', 'dog2', 'dog3', 'cat3'])
+
+dis=sch.linkage(X,metric='euclidean', method='ward')
+#metric: 距離的計算方式
+#method: 群與群之間的計算方式，”single”, “complete”, “average”, “weighted”, “centroid”, “median”, “ward”
+
+sch.dendrogram(dis, labels = y)
+plt.title('Hierarchical Clustering')
+plt.show()
+
+#+end_src
+
+#+RESULTS:
+: [1 1 1 2 2 2]
+: [1 1 1 2 2 2]
+
+*** 利用距離決定群數，或直接給定群數。
+建構好聚落樹狀圖後，我們可以依照距離的切割來進行分類，也可以直接給定想要分類的群數，讓系統自動切割到相對應的距離。
+- 距離切割
+  所給出的樹狀圖，y軸代表距離，我們可以用特徵之間的距離進行分群的切割。
+  #+begin_src python -r :results output :exports both
+max_dis=5
+clusters=sch.fcluster(dis,max_dis,criterion='distance')
+  #+end_src
+- 直接給定群數
+  同時，我們也可以像sklearn一樣，直接給定我們所想要分出的群數。
+  #+begin_src python -r :results output :exports both
+k=5
+clusters=sch.fcluster(dis,k,criterion='maxclust')
+  #+end_src
+*** 如何評估最佳分群數:K
+- [[https://jimmy-huang.medium.com/kmeans%E5%88%86%E7%BE%A4%E6%BC%94%E7%AE%97%E6%B3%95-%E8%88%87-silhouette-%E8%BC%AA%E5%BB%93%E5%88%86%E6%9E%90-8be17e634589][Kmeans分群演算法 與 Silhouette 輪廓分析]]
+- [[https://www.geeksforgeeks.org/implementing-agglomerative-clustering-using-sklearn/][Implementing Agglomerative Clustering using Sklearn]]
+
+** 聚合式分群作業
+請利用聚合式分群的模型幫 *鳶尾花* 分類，
+1. 將階層圖畫出來
+2. 將K值設為3，輸出分群組果
+
+** 分裂式階層分群法 (Top-down, divisible) :
+如果採用分裂的方式，則由樹狀結構的頂端開始，將群聚逐次分裂。
+Divisive clustering : Also known as top-down approach. This algorithm also does not require to prespecify the number of clusters. Top-down clustering requires a method for splitting a cluster that contains the whole data and proceeds by splitting clusters recursively until individual data have been splitted into singleton cluster.
+
+#+latex:\newpage
+
+* 信用卡詐欺偵測
+- 資料來源: Hands-On Unsupervised Learning Using Python: How to Build Applied Machine Learning Solutions from Ulabled Data
+- Code: https://github.com/aapatel09/handson-unsupervised-learning/blob/master/02_end_to_end_machine_learning_project.ipynb
+** 資料取得
+*** for Google colab
+#+begin_src python -r -n :results output :exports both
+# Define functions to connect to Google and change directories
+def connectDrive():
+    from google.colab import drive
+    drive.mount('/content/drive', force_remount=True)
+
+def changeDirectory(path):
+    import os
+    original_path = os.getcwd()
+    os.chdir(path)
+    new_path = os.getcwd()
+    print("Original path: ",original_path)
+    print("New path: ",new_path)
+
+# Connect to Google Drive
+connectDrive()
+
+# Change path
+changeDirectory("/content/drive/My Drive/github/handson-unsupervised-learning/")
+#+end_src
+*** Import Libraries
+#+begin_src python -r -n :results output :exports both :session creditCard
+'''Main'''
+import numpy as np
+import pandas as pd
+import os
+
+'''Data Viz'''
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+import seaborn as sns
+color = sns.color_palette()
+
+#%matplotlib inline
+
+'''Data Prep'''
+from sklearn import preprocessing as pp
+from scipy.stats import pearsonr
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import log_loss
+from sklearn.metrics import precision_recall_curve, average_precision_score
+from sklearn.metrics import roc_curve, auc, roc_auc_score
+from sklearn.metrics import confusion_matrix, classification_report
+
+'''Algos'''
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+# import xgboost as xgb
+import lightgbm as lgb
+#+end_src
+
+#+RESULTS:
+** 資料準備
+*** 取得資料
+#+begin_src python -r -n :results output :exports both :session creditCard
+# Acquire Data
+data = pd.read_csv("https://raw.githubusercontent.com/aapatel09/handson-unsupervised-learning/master/datasets/credit_card_data/correlationMatrix.csv")
+#+end_src
+*** 資料探索
+#+begin_src python -r -n :results output :exports both :session creditCard
+print(data.shape)
+print(data.head())
+print(data.describe())
+print(data.columns)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+(30, 31)
+  Unnamed: 0  Time    V1    V2    V3    V4    V5    V6    V7    V8    V9   V10   V11   V12  ...   V16   V17   V18   V19   V20   V21   V22   V23   V24   V25   V26   V27   V28  Amount
+0       Time  1.00  0.12 -0.01 -0.42 -0.11  0.17 -0.06  0.08 -0.04 -0.01  0.03 -0.25  0.12  ...  0.01 -0.07  0.09  0.03 -0.05  0.04  0.14  0.05 -0.02 -0.23 -0.04 -0.01 -0.01   -0.01
+1         V1  0.12  1.00 -0.00 -0.00 -0.00  0.00  0.00  0.00 -0.00  0.00  0.00  0.00  0.00  ...  0.00 -0.00  0.00  0.00  0.00 -0.00  0.00  0.00 -0.00 -0.00 -0.00  0.00  0.00   -0.23
+2         V2 -0.01 -0.00  1.00  0.00 -0.00  0.00  0.00 -0.00 -0.00 -0.00 -0.00  0.00 -0.00  ...  0.00 -0.00  0.00  0.00  0.00  0.00  0.00  0.00 -0.00  0.00  0.00 -0.00 -0.00   -0.53
+3         V3 -0.42 -0.00  0.00  1.00 -0.00 -0.00  0.00  0.00 -0.00  0.00  0.00  0.00  0.00  ...  0.00  0.00  0.00  0.00  0.00 -0.00 -0.00 -0.00  0.00  0.00 -0.00  0.00  0.00   -0.21
+4         V4 -0.11 -0.00 -0.00 -0.00  1.00 -0.00 -0.00 -0.00  0.00  0.00 -0.00 -0.00 -0.00  ... -0.00 -0.00 -0.00 -0.00 -0.00 -0.00  0.00  0.00  0.00  0.00 -0.00 -0.00 -0.00    0.10
+
+[5 rows x 31 columns]
+            Time         V1         V2         V3         V4         V5         V6         V7  ...        V22        V23        V24        V25        V26        V27        V28     Amount
+count  30.000000  30.000000  30.000000  30.000000  30.000000  30.000000  30.000000  30.000000  ...  30.000000  30.000000  30.000000  30.000000  30.000000  30.000000  30.000000  30.000000
+mean    0.006333   0.029667   0.015333   0.012333   0.033000   0.026000   0.038667   0.049333  ...   0.036000   0.031333   0.033000   0.024000   0.032000   0.034000   0.033333   0.013667
+std     0.224599   0.189454   0.209593   0.204765   0.184711   0.200062   0.186358   0.194173  ...   0.184234   0.184311   0.182684   0.189202   0.182972   0.182541   0.182593   0.257166
+min    -0.420000  -0.230000  -0.530000  -0.420000  -0.110000  -0.390000  -0.060000   0.000000  ...  -0.060000  -0.110000  -0.020000  -0.230000  -0.040000  -0.010000  -0.010000  -0.530000
+25%    -0.067500   0.000000   0.000000   0.000000   0.000000   0.000000   0.000000   0.000000  ...   0.000000   0.000000   0.000000  -0.000000   0.000000   0.000000  -0.000000  -0.060000
+50%    -0.010000   0.000000   0.000000   0.000000   0.000000   0.000000   0.000000   0.000000  ...   0.000000   0.000000   0.000000   0.000000  -0.000000   0.000000   0.000000  -0.000000
+75%     0.047500  -0.000000   0.000000   0.000000  -0.000000   0.000000   0.000000   0.000000  ...   0.000000   0.000000  -0.000000   0.000000   0.000000   0.000000   0.000000   0.030000
+max     1.000000   1.000000   1.000000   1.000000   1.000000   1.000000   1.000000   1.000000  ...   1.000000   1.000000   1.000000   1.000000   1.000000   1.000000   1.000000   1.000000
+
+[8 rows x 30 columns]
+Index(['Unnamed: 0', 'Time', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8',
+       'V9', 'V10', 'V11', 'V12', 'V13', 'V14', 'V15', 'V16', 'V17', 'V18',
+       'V19', 'V20', 'V21', 'V22', 'V23', 'V24', 'V25', 'V26', 'V27', 'V28',
+       'Amount'],
+      dtype='object')
+#+end_example
+**** 找出非數值資料
+#+begin_src python -r -n :results output :exports both :session creditCard
+import numpy as np
+import pandas as pd
+data = pd.read_csv("./credit_card.csv")
+nanCounter = pd.isna(data).sum() #將np.isnan以pd.isna取代
+print(nanCounter)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Time      0
+V1        0
+V2        0
+V3        0
+V4        0
+V5        0
+V6        0
+V7        0
+V8        0
+V9        0
+V10       0
+V11       0
+V12       0
+V13       0
+V14       0
+V15       0
+V16       0
+V17       0
+V18       0
+V19       0
+V20       0
+V21       0
+V22       0
+V23       0
+V24       0
+V25       0
+V26       0
+V27       0
+V28       0
+Amount    0
+Class     0
+dtype: int64
+#+end_example
+**** 找出缺漏值
+#+begin_src python -r -n :results output :exports both :session creditCard
+distinctCounter = data.apply(lambda x: len(x.unique()))
+print(distinctCounter)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Time      124592
+V1        275663
+V2        275663
+V3        275663
+V4        275663
+V5        275663
+V6        275663
+V7        275663
+V8        275663
+V9        275663
+V10       275663
+V11       275663
+V12       275663
+V13       275663
+V14       275663
+V15       275663
+V16       275663
+V17       275663
+V18       275663
+V19       275663
+V20       275663
+V21       275663
+V22       275663
+V23       275663
+V24       275663
+V25       275663
+V26       275663
+V27       275663
+V28       275663
+Amount     32767
+Class          2
+dtype: int64
+#+end_example
+*** 建立feature matrix和labels array
+#+begin_src python -r -n :results output :exports both :session creditCard
+# Generate feature matrix and labels array
+dataX = data.copy().drop(['Class'],axis=1)
+dataY = data['Class'].copy()
+print(dataX.describe())
+print(dataY.head())
+#+end_src
+
+#+RESULTS:
+#+begin_example
+                Time            V1            V2            V3            V4            V5  ...           V24           V25           V26           V27           V28         Amount
+count  284807.000000  2.848070e+05  2.848070e+05  2.848070e+05  2.848070e+05  2.848070e+05  ...  2.848070e+05  2.848070e+05  2.848070e+05  2.848070e+05  2.848070e+05  284807.000000
+mean    94813.859575  1.168375e-15  3.416908e-16 -1.379537e-15  2.074095e-15  9.604066e-16  ...  4.473266e-15  5.340915e-16  1.683437e-15 -3.660091e-16 -1.227390e-16      88.349619
+std     47488.145955  1.958696e+00  1.651309e+00  1.516255e+00  1.415869e+00  1.380247e+00  ...  6.056471e-01  5.212781e-01  4.822270e-01  4.036325e-01  3.300833e-01     250.120109
+min         0.000000 -5.640751e+01 -7.271573e+01 -4.832559e+01 -5.683171e+00 -1.137433e+02  ... -2.836627e+00 -1.029540e+01 -2.604551e+00 -2.256568e+01 -1.543008e+01       0.000000
+25%     54201.500000 -9.203734e-01 -5.985499e-01 -8.903648e-01 -8.486401e-01 -6.915971e-01  ... -3.545861e-01 -3.171451e-01 -3.269839e-01 -7.083953e-02 -5.295979e-02       5.600000
+50%     84692.000000  1.810880e-02  6.548556e-02  1.798463e-01 -1.984653e-02 -5.433583e-02  ...  4.097606e-02  1.659350e-02 -5.213911e-02  1.342146e-03  1.124383e-02      22.000000
+75%    139320.500000  1.315642e+00  8.037239e-01  1.027196e+00  7.433413e-01  6.119264e-01  ...  4.395266e-01  3.507156e-01  2.409522e-01  9.104512e-02  7.827995e-02      77.165000
+max    172792.000000  2.454930e+00  2.205773e+01  9.382558e+00  1.687534e+01  3.480167e+01  ...  4.584549e+00  7.519589e+00  3.517346e+00  3.161220e+01  3.384781e+01   25691.160000
+
+[8 rows x 30 columns]
+0    0
+1    0
+2    0
+3    0
+4    0
+Name: Class, dtype: int64
+#+end_example
+*** 特徵工程與特徵選擇
+#+begin_src python -r -n :results output :exports both :session creditCard
+correlationMatrix = pd.DataFrame(data=[],index=dataX.columns,columns=dataX.columns)
+for i in dataX.columns:
+    for j in dataX.columns:
+        correlationMatrix.loc[i,j] = np.round(pearsonr(dataX.loc[:,i],dataX.loc[:,j])[0],2)
+
+count_classes = pd.value_counts(data['Class'],sort=True).sort_index()
+ax = sns.barplot(x=count_classes.index, y=[tuple(count_classes/len(data))[0],tuple(count_classes/len(data))[1]])
+ax.set_title('Frequency Percentage by Class')
+ax.set_xlabel('Class')
+ax.set_ylabel('Frequency Percentage')
+#plt.show()
+plt.savefig('images/creditCardFreq.png', dpi=300)
+#+end_src
+
+#+RESULTS:
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 500
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/creditCardFreq.png]]
+** 模型準備
+*** 切分訓練集與測試集
+#+begin_src python -r -n :results output :exports both :session creditCard
+X_train, X_test, y_train, y_test = train_test_split(dataX,
+                                    dataY, test_size=0.33,
+                                    random_state=2018, stratify=dataY)
+
+print(len(X_train))
+print(len(X_test))
+#+end_src
+
+#+RESULTS:
+: 190820
+: 93987
+*** 選擇成本函數(loss function)
+這是監督式分類問題，可以使用二元分類對數損失來計算實際label與模型預測二者間的交叉熵。
+$$ log loss=-\frac{1}{N}\sum_{i=1}^N{\sum^M_{j=1}{y_{i,j}log(P_{i,j})} $$
+其中
+- N為資料數量
+- M為label數量
+- 若第 $i$ 項為 $j$ 類別， $y_{i,j}$ 值為1，反之為0
+- $P_{i,j}$ 為預測類別項目 $i$ 為 $j$ 類別的機率
+*** k-Fold交叉驗證
+為了有效評估「模型演算法預測未曾見過的樣本」的表現成效，訓練集可再進一步拆成訓練集與驗證集，可以用 /k-fold/ 交叉驗證來實作。
+#+begin_src python -r -n :results output :exports both :session creditCard
+k_fold = StratifiedKFold(n_splits=5,shuffle=True,random_state=2018)
+print(k_fold)
+#+end_src
+
+#+RESULTS:
+: StratifiedKFold(n_splits=5, random_state=2018, shuffle=True)
+
+*** Feature scaling
+** 模型訓練-1
+先從最簡單的分類法做起：Logistic Regression分類
+*** 模型1: Logistic Regression
+- 懲罰項設為L2對離群值較不敏感，且會給全部特徵值分配非零權重，較為穩定；L1則會對最重要的特徵值分配最高權重，其他特徵值則給予接近零的權重，較不穩定。
+- C為正規化的強度，正規化主要用來解決過度擬合的問題。C為一正浮點數，其值越小，正規化強度越強，預設值為1。
+- 模型class_weight設為balanced，目的在告訴演算法這個訓練集的label類別分佈不平衡，在訓練時演算法就會對正向label加大權重。
+#+begin_src python -r -n :results output :exports both :creditCard
+#設定超參數
+from sklearn.linear_model import LogisticRegression
+penalty = 'l2'
+C = 1.0
+class_weight = 'balanced'
+random_state = 2018
+solver = 'liblinear'
+n_jobs = 1
+
+logReg = LogisticRegression(penalty=penalty, C=C,
+            class_weight=class_weight, random_state=random_state, solver=solver, n_jobs=n_jobs)
+print(logReg)
+#+end_src
+
+#+RESULTS:
+: LogisticRegression(class_weight='balanced', n_jobs=1, random_state=2018,
+:                    solver='liblinear')
+
+*** 訓練模型
+#+begin_src python -r -n :results output :exports both :session creditCard
+trainingScores = []
+cvScores = []
+predictionsBasedOnKFolds = pd.DataFrame(data=[], index=y_train.index,columns=[0,1])
+
+model = logReg
+print(model)
+for train_index, cv_index in k_fold.split(np.zeros(len(X_train)),y_train.ravel()):
+    X_train_fold, X_cv_fold = X_train.iloc[train_index,:], X_train.iloc[cv_index,:]
+    y_train_fold, y_cv_fold = y_train.iloc[train_index], y_train.iloc[cv_index]
+
+    model.fit(X_train_fold, y_train_fold)
+    loglossTraining = log_loss(y_train_fold, model.predict_proba(X_train_fold)[:,1])
+    trainingScores.append(loglossTraining)
+
+    predictionsBasedOnKFolds.loc[X_cv_fold.index,:] = model.predict_proba(X_cv_fold)
+    loglossCV = log_loss(y_cv_fold, predictionsBasedOnKFolds.loc[X_cv_fold.index,1])
+    cvScores.append(loglossCV)
+
+    print('Training Log Loss: ', loglossTraining)
+    print('CV Log Loss: ', loglossCV)
+
+loglossLogisticRegression = log_loss(y_train, predictionsBasedOnKFolds.loc[:,1])
+print('Logistic Regression Log Loss: ', loglossLogisticRegression)
+#+end_src
+
+#+RESULTS:
+完整版程式碼(trainCreditCard-1.py)
+#+begin_src python -r -n :results output :exports both :session creditCard
+#!/usr/bin/env python3
+'''Main'''
+import numpy as np
+import pandas as pd
+import os
+
+'''Data Viz'''
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+import seaborn as sns
+color = sns.color_palette()
+
+#%matplotlib inline
+
+'''Data Prep'''
+from sklearn import preprocessing as pp
+from scipy.stats import pearsonr
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import log_loss
+from sklearn.metrics import precision_recall_curve, average_precision_score
+from sklearn.metrics import roc_curve, auc, roc_auc_score
+from sklearn.metrics import confusion_matrix, classification_report
+
+'''Algos'''
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+# import xgboost as xgb
+#import lightgbm as lgb
+
+
+data = pd.read_csv("./credit_card.csv")
+nanCounter = pd.isna(data).sum() #將np.isnan以pd.isna取代
+
+dataX = data.copy().drop(['Class'],axis=1)
+dataY = data['Class'].copy()
+
+X_train, X_test, y_train, y_test = train_test_split(dataX,
+                                    dataY, test_size=0.33,
+                                    random_state=2018, stratify=dataY)
+
+k_fold = StratifiedKFold(n_splits=5,shuffle=True,random_state=2018)
+
+from sklearn.linear_model import LogisticRegression
+penalty = 'l2'
+C = 1.0
+class_weight = 'balanced'
+random_state = 2018
+solver = 'liblinear'
+n_jobs = 1
+
+logReg = LogisticRegression(penalty=penalty, C=C,
+            class_weight=class_weight, random_state=random_state, solver=solver, n_jobs=n_jobs)
+
+trainingScores = []
+cvScores = []
+predictionsBasedOnKFolds = pd.DataFrame(data=[], index=y_train.index,columns=[0,1])
+
+model = logReg
+print(model)
+for train_index, cv_index in k_fold.split(np.zeros(len(X_train)),y_train.ravel()):
+    X_train_fold, X_cv_fold = X_train.iloc[train_index,:], X_train.iloc[cv_index,:]
+    y_train_fold, y_cv_fold = y_train.iloc[train_index], y_train.iloc[cv_index]
+
+    model.fit(X_train_fold, y_train_fold)
+    loglossTraining = log_loss(y_train_fold, model.predict_proba(X_train_fold)[:,1])
+    trainingScores.append(loglossTraining)
+
+    predictionsBasedOnKFolds.loc[X_cv_fold.index,:] = model.predict_proba(X_cv_fold)
+    loglossCV = log_loss(y_cv_fold, predictionsBasedOnKFolds.loc[X_cv_fold.index,1])
+    cvScores.append(loglossCV)
+
+    print('Training Log Loss: ', loglossTraining)
+    print('CV Log Loss: ', loglossCV)
+
+loglossLogisticRegression = log_loss(y_train, predictionsBasedOnKFolds.loc[:,1])
+print('Logistic Regression Log Loss: ', loglossLogisticRegression)
+
+#+end_src
+
+#+RESULTS:
+#+begin_example
+LogisticRegression(class_weight='balanced', n_jobs=1, random_state=2018,
+                   solver='liblinear')
+Training Log Loss:  0.10939361490760419
+CV Log Loss:  0.10853402466643607
+Training Log Loss:  0.10453309543196382
+CV Log Loss:  0.10404365007856392
+Training Log Loss:  0.11558188743919326
+CV Log Loss:  0.11799026783957066
+Training Log Loss:  0.11560666592384615
+CV Log Loss:  0.11818686208380477
+Training Log Loss:  0.09707169357423985
+CV Log Loss:  0.0969591251780277
+Logistic Regression Log Loss:  0.10914278596928062
+#+end_example
+
+正常而言，Training Log Loss應該會略低於CV Log Loss，二者的值相近，表示未發生過擬合狀況（Training Log Loss很低但CV Log Loss很高）。
+** 評估指標
+- 召回率(recall): 找出了幾筆在訓練集中的詐欺交易？
+- 精確率(precision): 被模型標示為詐欺的交易中，有幾筆為真的詐欺交易
+*** 混淆矩陣(Confusion Matrix)
+此例的label分類高度不平衡，使用混淆矩陣意義不大。若預測所有的交易均非詐欺，則結果會有284315筆真陰性、492筆偽陰性、0筆真陽性、0筆偽陽性，精確度為0。
+*** 精確率-召回率曲線
+對於類別不平衡的資料集，比較好的效能評估方案為精準率與召回率。
+*** precision=真陽性個數/(真陽性個數+偽陽性個數)
+即，所有的陽性預測中，有多少是對的預測？
+*** recall=真陽性個數/(真陽性個數+偽陰性個數)
+即，模型能捕捉到多少個詐欺交易？
+*** 取捨
+- 高recall低precision: 雖然預測中會有很多真的詐欺，但也會出現太多誤判
+- 低precision高recall: 因為標記許多詐欺案例，因此能捕捉到許多詐欺交易，但也有許多被詐欺交易的case並不是真的詐欺
+- 權衡：precision-recall curve，可以在每個門檻值下計算出最佳的average precision
+*** 接收者操作特徵(Receiver Operating Characteristic)
+ROC將真陽性率當Y軸、將偽陽性率當X軸，真陽性率也可以被當成敏感度，而偽陽性率也乭以被當作l-specificity。
+#+begin_src python -r -n :results output :exports both :session creditCard
+preds = pd.concat([y_train,predictionsBasedOnKFolds.loc[:,1]], axis=1)
+preds.columns = ['trueLabel','prediction']
+predictionsBasedOnKFoldsLogisticRegression = preds.copy()
+
+precision, recall, thresholds = precision_recall_curve(preds['trueLabel'],
+                                                       preds['prediction'])
+average_precision = average_precision_score(preds['trueLabel'],
+                                            preds['prediction'])
+plt.step(recall, precision, color='k', alpha=0.7, where='post')
+plt.fill_between(recall, precision, step='post', alpha=0.3, color='k')
+
+plt.xlabel('Recall')
+plt.ylabel('Precision')
+plt.ylim([0.0, 1.05])
+plt.xlim([0.0, 1.0])
+plt.title('Precision-Recall curve: Average Precision = {0:0.2f}'.format(average_precision))
+plt.savefig('images/prec-recall.png', dpi=300)
+fpr, tpr, thresholds = roc_curve(preds['trueLabel'],preds['prediction'])
+areaUnderROC = auc(fpr, tpr)
+plt.figure()
+plt.plot(fpr, tpr, color='r', lw=2, label='ROC curve')
+plt.plot([0, 1], [0, 1], color='k', lw=2, linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver operating characteristic: \
+          Area under the curve = {0:0.2f}'.format(areaUnderROC))
+plt.legend(loc="lower right")
+plt.savefig('images/auROC.png', dpi=300)
+
+#+end_src
+由圖[[fig:prec-recall]]可以看出此模型能達到近80%的recall(捕捉到了80%的詐欺交易)，以及近乎70%的precision(所有被標記為詐欺的case中，有70%為真的詐欺，但仍有30$交易被不正確的標記為詐欺)
+#+RESULTS:
+#+CAPTION: Caption
+#+LABEL:fig:prec-recall
+#+name: fig:prec-recall
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/prec-recall.png]]
+圖[[fig:auROC]]的auROC曲線充許我們在盡可能保持偽陽率低的情況下，決定有多少的詐欺案例能被捕捉到。
+#+CAPTION: Caption
+#+LABEL:fig:auROC
+#+name: fig:auROC
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/auROC.png]]
+** 模型訓練#2
+*** 模型#2: 隨機森林
+**** 設定超參數
+- n_estimators = 10: 建立十顆樹並將這十顆樹的預測結果平均
+- 這個case有30個特徵值，每顆樹會取總特徵值數的平方根值作為特徵數量，此例每顆樹會取5個特徵值
+#+begin_src python -r -n :results output :exports both :session creditCard
+n_estimators = 10
+max_features = 'auto'
+max_depth = None
+min_samples_split = 2
+min_samples_leaf = 1
+min_weight_fraction_leaf = 0.0
+max_leaf_nodes = None
+bootstrap = True
+oob_score = False
+n_jobs = -1
+random_state = 2018
+class_weight = 'balanced'
+
+RFC = RandomForestClassifier(n_estimators=n_estimators,
+        max_features=max_features, max_depth=max_depth,
+        min_samples_split=min_samples_split, min_samples_leaf=min_samples_leaf,
+        min_weight_fraction_leaf=min_weight_fraction_leaf,
+        max_leaf_nodes=max_leaf_nodes, bootstrap=bootstrap,
+        oob_score=oob_score, n_jobs=n_jobs, random_state=random_state,
+        class_weight=class_weight)
+#+end_src
+
+#+RESULTS:
+**** 訓練模型
+執行k-fold交叉驗證五次，每次用4/5訓練集做為訓練、1/5作為預測
+#+begin_src python -r -n :results output :exports both :session creditCard
+trainingScores = []
+cvScores = []
+predictionsBasedOnKFolds = pd.DataFrame(data=[],
+                                        index=y_train.index,columns=[0,1])
+
+model = RFC
+
+for train_index, cv_index in k_fold.split(np.zeros(len(X_train)),
+                                          y_train.ravel()):
+    X_train_fold, X_cv_fold = X_train.iloc[train_index,:], \
+        X_train.iloc[cv_index,:]
+    y_train_fold, y_cv_fold = y_train.iloc[train_index], \
+        y_train.iloc[cv_index]
+
+    model.fit(X_train_fold, y_train_fold)
+    loglossTraining = log_loss(y_train_fold, \
+                                model.predict_proba(X_train_fold)[:,1])
+    trainingScores.append(loglossTraining)
+
+    predictionsBasedOnKFolds.loc[X_cv_fold.index,:] = \
+        model.predict_proba(X_cv_fold)
+    loglossCV = log_loss(y_cv_fold, \
+        predictionsBasedOnKFolds.loc[X_cv_fold.index,1])
+    cvScores.append(loglossCV)
+
+    print('Training Log Loss: ', loglossTraining)
+    print('CV Log Loss: ', loglossCV)
+
+loglossRandomForestsClassifier = log_loss(y_train,
+                                          predictionsBasedOnKFolds.loc[:,1])
+print('Random Forests Log Loss: ', loglossRandomForestsClassifier)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Training Log Loss:  0.0004566021382946814
+CV Log Loss:  0.009090297680965084
+Training Log Loss:  0.0004082945215246006
+CV Log Loss:  0.01262610549231437
+Training Log Loss:  0.00038853441430403824
+CV Log Loss:  0.010809571632524845
+Training Log Loss:  0.0003910895192496393
+CV Log Loss:  0.006617990788005817
+Training Log Loss:  0.00042118560357566983
+CV Log Loss:  0.013463844755711074
+Random Forests Log Loss:  0.010521562069904237
+#+end_example
+- 可以看出Training Log Loss明顯低於CV Log Loss，表示可能有過擬合的現象
+- 但這兩個Loss指標仍明顯優於Logistic Regression模型(大概為後者的1/10)
+**** 評估結果
+#+begin_src python -r -n :results output :exports both :session creditCard
+plt.cla()
+preds = pd.concat([y_train,predictionsBasedOnKFolds.loc[:,1]], axis=1)
+preds.columns = ['trueLabel','prediction']
+predictionsBasedOnKFoldsRandomForests = preds.copy()
+
+precision, recall, thresholds = precision_recall_curve(preds['trueLabel'],
+                                                       preds['prediction'])
+average_precision = average_precision_score(preds['trueLabel'],
+                                            preds['prediction'])
+
+plt.step(recall, precision, color='k', alpha=0.7, where='post')
+plt.fill_between(recall, precision, step='post', alpha=0.3, color='k')
+
+plt.xlabel('Recall')
+plt.ylabel('Precision')
+plt.ylim([0.0, 1.05])
+plt.xlim([0.0, 1.0])
+
+plt.title('Precision-Recall curve: Average Precision = {0:0.2f}'.format(
+          average_precision))
+plt.savefig('images/prec-recall-2.png', dpi=300)
+
+fpr, tpr, thresholds = roc_curve(preds['trueLabel'],preds['prediction'])
+areaUnderROC = auc(fpr, tpr)
+
+plt.figure()
+plt.plot(fpr, tpr, color='r', lw=2, label='ROC curve')
+plt.plot([0, 1], [0, 1], color='k', lw=2, linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver operating characteristic: \
+          Area under the curve = {0:0.2f}'.format(
+          areaUnderROC))
+plt.legend(loc="lower right")
+plt.savefig('images/auROC-2.png', dpi=300)
+#+end_src
+
+#+RESULTS:
+#+CAPTION: Caption
+#+LABEL:fig:prec-recal-2
+#+name: fig:prec-recal-2
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/prec-recall-2.png]]
+- 但隨機森林的auROC為0.92，不如Logistic Regression模型的0.97
+#+CAPTION: Caption
+#+LABEL:fig:auROC-2
+#+name: fig:auROC-2
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/auROC-2.png]]
+*** 模型#3: Gradient Boosting Machine (XGBoost)
+Gradient boosting有兩種版本: XBGoost和微軟的LightGBM(效能較快)
+**** 設定超參數
+#+begin_src python -r -n :results output :exports both :session creditCard
+params_xGB = {
+    'nthread':16, #number of cores
+    'learning rate': 0.3, #range 0 to 1, default 0.3
+    'gamma': 0, #range 0 to infinity, default 0
+        # increase to reduce complexity (increase bias, reduce variance)
+    'max_depth': 6, #range 1 to infinity, default 6
+    'min_child_weight': 1, #range 0 to infinity, default 1
+    'max_delta_step': 0, #range 0 to infinity, default 0
+    'subsample': 1.0, #range 0 to 1, default 1
+        # subsample ratio of the training examples
+    'colsample_bytree': 1.0, #range 0 to 1, default 1
+        # subsample ratio of features
+    'objective':'binary:logistic',
+    'num_class':1,
+    'eval_metric':'logloss',
+    'seed':2018,
+    'silent':1
+}
+#+end_src
+
+#+RESULTS:
+**** 訓練模型
+#+begin_src python -r -n :results output :exports both :session creditCard
+trainingScores = []
+cvScores = []
+predictionsBasedOnKFolds = pd.DataFrame(data=[],
+                                    index=y_train.index,columns=['prediction'])
+
+for train_index, cv_index in k_fold.split(np.zeros(len(X_train)), y_train.ravel()):
+    X_train_fold, X_cv_fold = X_train.iloc[train_index,:], X_train.iloc[cv_index,:]
+    y_train_fold, y_cv_fold = y_train.iloc[train_index], y_train.iloc[cv_index]
+
+    dtrain = xgb.DMatrix(data=X_train_fold, label=y_train_fold)
+    dCV = xgb.DMatrix(data=X_cv_fold)
+
+    bst = xgb.cv(params_xGB, dtrain, num_boost_round=2000,
+                 nfold=5, early_stopping_rounds=200, verbose_eval=50)
+
+    best_rounds = np.argmin(bst['test-logloss-mean'])
+    bst = xgb.train(params_xGB, dtrain, best_rounds)
+
+    loglossTraining = log_loss(y_train_fold, bst.predict(dtrain))
+    trainingScores.append(loglossTraining)
+
+    predictionsBasedOnKFolds.loc[X_cv_fold.index,'prediction'] = bst.predict(dCV)
+    loglossCV = log_loss(y_cv_fold, predictionsBasedOnKFolds.loc[X_cv_fold.index,'prediction'])
+    cvScores.append(loglossCV)
+
+    print('Training Log Loss: ', loglossTraining)
+    print('CV Log Loss: ', loglossCV)
+
+loglossXGBoostGradientBoosting = log_loss(y_train, predictionsBasedOnKFolds.loc[:,'prediction'])
+print('XGBoost Gradient Boosting Log Loss: ', loglossXGBoostGradientBoosting)
+#+end_src
+完整程式版(trainXGBoost.py)
+#+begin_src python -r -n :results output :exports both :session XGBoost
+'''Main'''
+import numpy as np
+import pandas as pd
+import os
+
+'''Data Viz'''
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+import seaborn as sns
+color = sns.color_palette()
+
+#%matplotlib inline
+
+'''Data Prep'''
+from sklearn import preprocessing as pp
+from scipy.stats import pearsonr
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import log_loss
+from sklearn.metrics import precision_recall_curve, average_precision_score
+from sklearn.metrics import roc_curve, auc, roc_auc_score
+from sklearn.metrics import confusion_matrix, classification_report
+
+'''Algos'''
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+import xgboost as xgb
+import lightgbm as lgb
+
+
+data = pd.read_csv("./credit_card.csv")
+nanCounter = pd.isna(data).sum() #將np.isnan以pd.isna取代
+
+dataX = data.copy().drop(['Class'],axis=1)
+dataY = data['Class'].copy()
+
+X_train, X_test, y_train, y_test = train_test_split(dataX,
+                                    dataY, test_size=0.33,
+                                    random_state=2018, stratify=dataY)
+
+k_fold = StratifiedKFold(n_splits=5,shuffle=True,random_state=2018)
+
+# 超參數
+params_xGB = {
+    'nthread':16, #number of cores
+    'learning_rate':0.3, #range 0 to 1, default 0.3
+    'gamma':0, #range 0 to infinity, default 0
+        # increase to reduce complexity (increase bias, reduce variance)
+    'max_depth': 6, #range 1 to infinity, default 6
+    'min_child_weight': 1, #range 0 to infinity, default 1
+    'max_delta_step': 0, #range 0 to infinity, default 0
+    'subsample': 1.0, #range 0 to 1, default 1
+        # subsample ratio of the training examples
+    'colsample_bytree': 1.0, #range 0 to 1, default 1
+        # subsample ratio of features
+    'objective':'binary:logistic',
+    'num_class':1,
+    'eval_metric':'logloss',
+    'seed':2018,
+    'silent':1
+}
+
+# 訓練模型
+trainingScores = []
+cvScores = []
+predictionsBasedOnKFolds = pd.DataFrame(data=[],
+                                    index=y_train.index,columns=['prediction'])
+
+for train_index, cv_index in k_fold.split(np.zeros(len(X_train)), y_train.ravel()):
+    X_train_fold, X_cv_fold = X_train.iloc[train_index,:], X_train.iloc[cv_index,:]
+    y_train_fold, y_cv_fold = y_train.iloc[train_index], y_train.iloc[cv_index]
+
+    dtrain = xgb.DMatrix(data=X_train_fold, label=y_train_fold)
+    dCV = xgb.DMatrix(data=X_cv_fold)
+
+    bst = xgb.cv(params_xGB, dtrain, num_boost_round=2000,
+                 nfold=5, early_stopping_rounds=200, verbose_eval=50)
+
+    best_rounds = np.argmin(bst['test-logloss-mean'])
+    bst = xgb.train(params_xGB, dtrain, best_rounds)
+
+    loglossTraining = log_loss(y_train_fold, bst.predict(dtrain))
+    trainingScores.append(loglossTraining)
+
+    predictionsBasedOnKFolds.loc[X_cv_fold.index,'prediction'] = bst.predict(dCV)
+    loglossCV = log_loss(y_cv_fold, predictionsBasedOnKFolds.loc[X_cv_fold.index,'prediction'])
+    cvScores.append(loglossCV)
+
+    print('Training Log Loss: ', loglossTraining)
+    print('CV Log Loss: ', loglossCV)
+
+loglossXGBoostGradientBoosting = log_loss(y_train, predictionsBasedOnKFolds.loc[:,'prediction'])
+print('XGBoost Gradient Boosting Log Loss: ', loglossXGBoostGradientBoosting)
+
+
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Training Log Loss:  0.0009698748139954727
+CV Log Loss:  0.0023983441021591216
+Training Log Loss:  0.000872351723518117
+CV Log Loss:  0.0031189630212595408
+Training Log Loss:  0.0007123358367720159
+CV Log Loss:  0.002299779731184769
+Training Log Loss:  0.0009144685956787081
+CV Log Loss:  0.0026294304116304865
+Training Log Loss:  0.0005772056222738951
+CV Log Loss:  0.003686224309306172
+XGBoost Gradient Boosting Log Loss:  0.002826548315108018
+#+end_example
+會跑很久....中間會出現Warning
+Training Log Loss與CV Log Loss都較Random Forest有巨大改善
+**** 評估結果
+#+begin_src python -r -n :results output :exports both :session XGBoost
+plt.cla()
+preds = pd.concat([y_train,predictionsBasedOnKFolds.loc[:,'prediction']], axis=1)
+preds.columns = ['trueLabel','prediction']
+predictionsBasedOnKFoldsXGBoostGradientBoosting = preds.copy()
+
+precision, recall, thresholds = \
+    precision_recall_curve(preds['trueLabel'],preds['prediction'])
+average_precision = \
+    average_precision_score(preds['trueLabel'],preds['prediction'])
+
+plt.step(recall, precision, color='k', alpha=0.7, where='post')
+plt.fill_between(recall, precision, step='post', alpha=0.3, color='k')
+
+plt.xlabel('Recall')
+plt.ylabel('Precision')
+plt.ylim([0.0, 1.05])
+plt.xlim([0.0, 1.0])
+
+plt.title('Precision-Recall curve: Average Precision = {0:0.2f}'.format(
+          average_precision))
+plt.savefig('images/prec-recall-3.png', dpi=300)
+
+fpr, tpr, thresholds = roc_curve(preds['trueLabel'],preds['prediction'])
+areaUnderROC = auc(fpr, tpr)
+
+plt.figure()
+plt.plot(fpr, tpr, color='r', lw=2, label='ROC curve')
+plt.plot([0, 1], [0, 1], color='k', lw=2, linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver operating characteristic: \
+        Area under the curve = {0:0.2f}'.format(areaUnderROC))
+plt.legend(loc="lower right")
+plt.savefig('images/auROC-3.png', dpi=300)
+
+#+end_src
+
+#+RESULTS:
+#+CAPTION: Caption
+#+LABEL:fig:prec-recal-3
+#+name: fig:prec-recal-3
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/prec-recall-3.png]]
+- 但隨機森林的auROC為0.92，不如Logistic Regression模型的0.97
+#+CAPTION: Caption
+#+LABEL:fig:auROC-3
+#+name: fig:auROC-3
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/auROC-3.png]]
+*** 模型#4: Gradient Boosting Machine (LightGBM)
+**** 讀資料
+#+begin_src python -r -n :results output :exports both :session LightGBM
+'''Main'''
+import numpy as np
+import pandas as pd
+import os
+
+'''Data Viz'''
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+import seaborn as sns
+color = sns.color_palette()
+
+#%matplotlib inline
+
+'''Data Prep'''
+from sklearn import preprocessing as pp
+from scipy.stats import pearsonr
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import log_loss
+from sklearn.metrics import precision_recall_curve, average_precision_score
+from sklearn.metrics import roc_curve, auc, roc_auc_score
+from sklearn.metrics import confusion_matrix, classification_report
+
+'''Algos'''
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+import xgboost as xgb
+import lightgbm as lgb
+
+
+data = pd.read_csv("./credit_card.csv")
+nanCounter = pd.isna(data).sum() #將np.isnan以pd.isna取代
+
+dataX = data.copy().drop(['Class'],axis=1)
+dataY = data['Class'].copy()
+
+X_train, X_test, y_train, y_test = train_test_split(dataX,
+                                    dataY, test_size=0.33,
+                                    random_state=2018, stratify=dataY)
+
+k_fold = StratifiedKFold(n_splits=5,shuffle=True,random_state=2018)
+
+#+end_src
+
+#+RESULTS:
+
+**** 設定超參數
+#+begin_src python -r -n :results output :exports both :session LightGBM
+params_lightGB = {
+    'task': 'train',
+    'num_class':1,
+    'boosting': 'gbdt',
+    'objective': 'binary',
+    'metric': 'binary_logloss',
+    'metric_freq':50,
+    'is_training_metric':False,
+    'max_depth':4,
+    'num_leaves': 31,
+    'learning_rate': 0.01,
+    'feature_fraction': 1.0,
+    'bagging_fraction': 1.0,
+    'bagging_freq': 0,
+    'bagging_seed': 2018,
+    'verbose': -1,
+    'num_threads':16
+}
+#+end_src
+
+#+RESULTS:
+
+**** 訓練模型
+#+begin_src python -r -n :results output :exports both  :session LightGBM
+
+trainingScores = []
+cvScores = []
+predictionsBasedOnKFolds = pd.DataFrame(data=[],
+                                index=y_train.index,columns=['prediction'])
+
+for train_index, cv_index in k_fold.split(np.zeros(len(X_train)),
+                                          y_train.ravel()):
+    X_train_fold, X_cv_fold = X_train.iloc[train_index,:], \
+        X_train.iloc[cv_index,:]
+    y_train_fold, y_cv_fold = y_train.iloc[train_index], \
+        y_train.iloc[cv_index]
+
+    lgb_train = lgb.Dataset(X_train_fold, y_train_fold)
+    lgb_eval = lgb.Dataset(X_cv_fold, y_cv_fold, reference=lgb_train)
+    gbm = lgb.train(params_lightGB, lgb_train, num_boost_round=2000,
+                   valid_sets=lgb_eval, early_stopping_rounds=200)
+
+    loglossTraining = log_loss(y_train_fold, \
+                gbm.predict(X_train_fold, num_iteration=gbm.best_iteration))
+    trainingScores.append(loglossTraining)
+
+    predictionsBasedOnKFolds.loc[X_cv_fold.index,'prediction'] = \
+        gbm.predict(X_cv_fold, num_iteration=gbm.best_iteration)
+    loglossCV = log_loss(y_cv_fold, \
+        predictionsBasedOnKFolds.loc[X_cv_fold.index,'prediction'])
+    cvScores.append(loglossCV)
+
+    print('Training Log Loss: ', loglossTraining)
+    print('CV Log Loss: ', loglossCV)
+
+loglossLightGBMGradientBoosting = \
+    log_loss(y_train, predictionsBasedOnKFolds.loc[:,'prediction'])
+print('LightGBM Gradient Boosting Log Loss: ', loglossLightGBMGradientBoosting)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Training Log Loss:  0.0003947673377921407
+CV Log Loss:  0.002662918492530588
+Training Log Loss:  0.0004295118076208872
+CV Log Loss:  0.002917044383361585
+Training Log Loss:  0.0005351430169195703
+CV Log Loss:  0.0026303365660141687
+Training Log Loss:  0.0006123639756391712
+CV Log Loss:  0.003627373853307207
+LightGBM Gradient Boosting Log Loss:  0.002816067500582217
+#+end_example
+**** 評估結果
+#+begin_src python -r -n :results output :exports both  :session LightGBM
+plt.cla()
+reds = pd.concat([y_train,predictionsBasedOnKFolds.loc[:,'prediction']], axis=1)
+preds.columns = ['trueLabel','prediction']
+predictionsBasedOnKFoldsLightGBMGradientBoosting = preds.copy()
+
+precision, recall, thresholds = \
+    precision_recall_curve(preds['trueLabel'],preds['prediction'])
+average_precision = \
+    average_precision_score(preds['trueLabel'],preds['prediction'])
+
+plt.step(recall, precision, color='k', alpha=0.7, where='post')
+plt.fill_between(recall, precision, step='post', alpha=0.3, color='k')
+plt.savefig('images/prec-recall-4.png', dpi=300)
+plt.xlabel('Recall')
+plt.ylabel('Precision')
+plt.ylim([0.0, 1.05])
+plt.xlim([0.0, 1.0])
+
+plt.title('Precision-Recall curve: Average Precision = {0:0.2f}'.format(
+          average_precision))
+
+fpr, tpr, thresholds = roc_curve(preds['trueLabel'],preds['prediction'])
+areaUnderROC = auc(fpr, tpr)
+
+plt.figure()
+plt.plot(fpr, tpr, color='r', lw=2, label='ROC curve')
+plt.plot([0, 1], [0, 1], color='k', lw=2, linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver operating characteristic: \
+Area under the curve = {0:0.2f}'.format(areaUnderROC))
+plt.legend(loc="lower right")
+plt.savefig('images/auROC-4.png', dpi=300)
+#+end_src
+
+#+RESULTS:
+結果跑不出來，用session跑，除錯有問題，看不到過程
+#+CAPTION: Caption
+#+LABEL:fig:prec-recal-3
+#+name: fig:prec-recal-3
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/prec-recall-4.png]]
+- 但隨機森林的auROC為0.92，不如Logistic Regression模型的0.97
+#+CAPTION: Caption
+#+LABEL:fig:auROC-3
+#+name: fig:auROC-3
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/auROC-4.png]]
+** Stack
+可以將不同家族的模型Stack來改善單一模型的效能，從每個單一模型中取得k-fold交叉驗證的預測結果（第一層預測），將這些預測結果加到原始訓練資料集中，再採用k-fold交叉驗證，利用原始的特徵和第一層預測資料集進行訓練。
+*** 合併
+#+begin_src python -r -n :results output :exports both
+# Without XGBoost
+predictionsBasedOnKFoldsFourModels = pd.DataFrame(data=[],index=y_train.index)
+predictionsBasedOnKFoldsFourModels = predictionsBasedOnKFoldsFourModels.join(
+    predictionsBasedOnKFoldsLogisticRegression['prediction'].astype(float), \
+    how='left').join(predictionsBasedOnKFoldsRandomForests['prediction'] \
+    .astype(float),how='left',rsuffix="2").join( \
+    predictionsBasedOnKFoldsLightGBMGradientBoosting['prediction'].astype(float), \
+    how='left',rsuffix="4")
+predictionsBasedOnKFoldsFourModels.columns = \
+    ['predsLR','predsRF','predsLightGBM']
+
+predictionsBasedOnKFoldsFourModels = pd.DataFrame(data=[],index=y_train.index)
+predictionsBasedOnKFoldsFourModels = predictionsBasedOnKFoldsFourModels.join(
+    predictionsBasedOnKFoldsLogisticRegression['prediction'].astype(float), \
+    how='left').join(predictionsBasedOnKFoldsRandomForests['prediction'] \
+    .astype(float),how='left',rsuffix="2").join( \
+    predictionsBasedOnKFoldsXGBoostGradientBoosting['prediction'].astype(float), \
+    how='left',rsuffix="3").join( \
+    predictionsBasedOnKFoldsLightGBMGradientBoosting['prediction'].astype(float), \
+    how='left',rsuffix="4")
+predictionsBasedOnKFoldsFourModels.columns = \
+    ['predsLR','predsRF','predsXGB','predsLightGBM']
+X_trainWithPredictions = \
+    X_train.merge(predictionsBasedOnKFoldsFourModels,
+                  left_index=True,right_index=True)
+params_lightGB = {
+    'task': 'train',
+    'num_class':1,
+    'boosting': 'gbdt',
+    'objective': 'binary',
+    'metric': 'binary_logloss',
+    'metric_freq':50,
+    'is_training_metric':False,
+    'max_depth':4,
+    'num_leaves': 31,
+    'learning_rate': 0.01,
+    'feature_fraction': 1.0,
+    'bagging_fraction': 1.0,
+    'bagging_freq': 0,
+    'bagging_seed': 2018,
+    'verbose': -1,
+    'num_threads':16
+}
+#+end_src
+
+* 降維
+** 讀入資料
+#+begin_src python -r -n :results output :exports both :session DD
+'''Main'''
+import numpy as np
+import pandas as pd
+import os, time, pickle, gzip
+import datetime
+
+'''Data Prep'''
+from sklearn import preprocessing as pp
+
+'''Data Viz'''
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+import seaborn as sns
+color = sns.color_palette()
+# Load the datasets
+current_path = os.getcwd()
+file = os.path.sep.join(['', 'dataset', 'mnist.pkl.gz'])
+
+f = gzip.open(current_path+file, 'rb')
+train_set, validation_set, test_set = pickle.load(f, encoding='latin1')
+f.close()
+
+X_train, y_train = train_set[0], train_set[1]
+X_validation, y_validation = validation_set[0], validation_set[1]
+X_test, y_test = test_set[0], test_set[1]
+
+# Create Pandas DataFrames from the datasets
+train_index = range(0,len(X_train))
+validation_index = range(len(X_train), \
+                         len(X_train)+len(X_validation))
+test_index = range(len(X_train)+len(X_validation), \
+                   len(X_train)+len(X_validation)+len(X_test))
+
+X_train = pd.DataFrame(data=X_train,index=train_index)
+y_train = pd.Series(data=y_train,index=train_index)
+
+X_validation = pd.DataFrame(data=X_validation,index=validation_index)
+y_validation = pd.Series(data=y_validation,index=validation_index)
+
+X_test = pd.DataFrame(data=X_test,index=test_index)
+y_test = pd.Series(data=y_test,index=test_index)
+
+def one_hot(series):
+    label_binarizer = pp.LabelBinarizer()
+    label_binarizer.fit(range(max(series)+1))
+    return label_binarizer.transform(series)
+# Define reversal of one-hot encoder function
+def reverse_one_hot(originalSeries, newSeries):
+    label_binarizer = pp.LabelBinarizer()
+    label_binarizer.fit(range(max(originalSeries)+1))
+    return label_binarizer.inverse_transform(newSeries)
+# Create one-hot vectors for the labels
+y_train_oneHot = one_hot(y_train)
+y_validation_oneHot = one_hot(y_validation)
+y_test_oneHot = one_hot(y_test)
+#+end_src
+
+#+RESULTS:
+** 線性投影
+** 主成分分析
+*** PCA
+PCA會找資料在低維度空間的表示方法，同時盡可能保留資料的變異性。
+#+begin_src python -r -n :results output :exports both :session DD
+# Principal Component Analysis
+from sklearn.decomposition import PCA
+
+n_components = 784
+whiten = False
+random_state = 2018
+
+pca = PCA(n_components=n_components, whiten=whiten, \
+          random_state=random_state)
+
+X_train_PCA = pca.fit_transform(X_train)
+X_train_PCA = pd.DataFrame(data=X_train_PCA, index=train_index)
+# Percentage of Variance Captured by 784 principal components
+print("Variance Explained by all 784 principal components: ", \
+      sum(pca.explained_variance_ratio_))
+# Percentage of Variance Captured by X principal components
+importanceOfPrincipalComponents = \
+    pd.DataFrame(data=pca.explained_variance_ratio_)
+importanceOfPrincipalComponents = importanceOfPrincipalComponents.T
+
+print('Variance Captured by First 10 Principal Components: ',
+      importanceOfPrincipalComponents.loc[:,0:9].sum(axis=1).values)
+print('Variance Captured by First 20 Principal Components: ',
+      importanceOfPrincipalComponents.loc[:,0:19].sum(axis=1).values)
+print('Variance Captured by First 50 Principal Components: ',
+      importanceOfPrincipalComponents.loc[:,0:49].sum(axis=1).values)
+print('Variance Captured by First 100 Principal Components: ',
+      importanceOfPrincipalComponents.loc[:,0:99].sum(axis=1).values)
+print('Variance Captured by First 200 Principal Components: ',
+      importanceOfPrincipalComponents.loc[:,0:199].sum(axis=1).values)
+print('Variance Captured by First 300 Principal Components: ',
+      importanceOfPrincipalComponents.loc[:,0:299].sum(axis=1).values)
+#+end_src
+
+#+RESULTS:
+: Variance Explained by all 784 principal components:  0.9999999571231906
+: Variance Captured by First 10 Principal Components:  [0.48876157]
+: Variance Captured by First 20 Principal Components:  [0.6439795]
+: Variance Captured by First 50 Principal Components:  [0.8248605]
+: Variance Captured by First 100 Principal Components:  [0.91465825]
+: Variance Captured by First 200 Principal Components:  [0.9665006]
+: Variance Captured by First 300 Principal Components:  [0.9862488]
+由結果看，若將MNIST的原始784個特徵值縮減至300個，仍有近99%的解釋力，即，能捕捉到99%的變異量。PCA能讓我們縮減原始資料的維度，同時保持最多的顯著資訊。
+
+如果只拿第1、第二個主成份特徵來進行預測，圖示結果如下：
+#+begin_src python -r -n :results output :exports both :session DD
+# Define scatterplot function
+def scatterPlot(xDF, yDF, algoName):
+    tempDF = pd.DataFrame(data=xDF.loc[:,0:1], index=xDF.index)
+    tempDF = pd.concat((tempDF,yDF), axis=1, join="inner")
+    tempDF.columns = ["First Vector", "Second Vector", "Label"]
+    sns.lmplot(x="First Vector", y="Second Vector", hue="Label", \
+               data=tempDF, fit_reg=False)
+    ax = plt.gca()
+    ax.set_title("Separation of Observations using "+algoName)
+
+# View scatterplot
+scatterPlot(X_train_PCA, y_train, "PCA")
+#plt.show()
+plt.savefig('images/PCA-MNIST-1.png', dpi=300)
+#+end_src
+
+#+RESULTS:
+
+#+CAPTION: Caption
+#+LABEL:fig:PCA-MNIST-1
+#+name: fig:PCA-MNIST-1
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/PCA-MNIST-1.png]]
+
+由上圖可以看出PCA光找出最有價值的兩個特徵值就能對大致區分數0~9的不同類別，這在非監督式學習中是大分有用的。當資料集有數百萬個特徵、數十億筆資籵時，PCA可以大幅減少機器學習的訓練時間。
+*** Incremental PCA
+當資枓集大到無法載入記憶體時，可以小批次的遞增使用PCA，將資料集逐批送入記憶體，其結果與PCA相仿。
+#+begin_src python -r -n :results output :exports both :session DD
+# Incremental PCA
+plt.cla()
+from sklearn.decomposition import IncrementalPCA
+
+n_components = 784
+batch_size = none
+
+incrementalPCA = IncrementalPCA(n_components=n_components, \
+                                batch_size=batch_size)
+
+X_train_incrementalPCA = incrementalPCA.fit_transform(X_train)
+X_train_incrementalPCA = \
+    pd.DataFrame(data=X_train_incrementalPCA, index=train_index)
+
+X_validation_incrementalPCA = incrementalPCA.transform(X_validation)
+X_validation_incrementalPCA = \
+    pd.DataFrame(data=X_validation_incrementalPCA, index=validation_index)
+
+scatterPlot(X_train_incrementalPCA, y_train, "Incremental PCA")
+plt.savefig('images/PCA-MNIST-2.png', dpi=300)
+#+end_src
+
+#+RESULTS:
+
+#+CAPTION: Caption
+#+LABEL:fig:PCA-MNIST-2
+#+name: fig:PCA-MNIST-2
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/PCA-MNIST-2.png]]
+*** Sparse PCA
+一般的PCA希望儘量縮小特徵空間，提高空間中資枓點的密度。但有些機器學習可能需要讓資料點的密度更稀疏，此時可使用Sparse PCA，其稀疏程度中aplha控制。
+- 計算速度會較慢，故只取10000個樣本訓練
+#+begin_src python -r -n :results output :exports both :session DD
+# Sparse PCA
+plt.cla()
+from sklearn.decomposition import SparsePCA
+
+n_components = 100
+alpha = 0.0001
+random_state = 2018
+n_jobs = -1
+
+sparsePCA = SparsePCA(n_components=n_components, \
+                alpha=alpha, random_state=random_state, n_jobs=n_jobs)
+
+sparsePCA.fit(X_train.loc[:10000,:])
+X_train_sparsePCA = sparsePCA.transform(X_train)
+X_train_sparsePCA = pd.DataFrame(data=X_train_sparsePCA, index=train_index)
+
+X_validation_sparsePCA = sparsePCA.transform(X_validation)
+X_validation_sparsePCA = \
+    pd.DataFrame(data=X_validation_sparsePCA, index=validation_index)
+
+scatterPlot(X_train_sparsePCA, y_train, "Sparse PCA")
+plt.savefig('images/PCA-MNIST-3.png', dpi=300)
+
+#+end_src
+
+#+RESULTS:
+
+#+CAPTION: Caption
+#+LABEL:fig:PCA-MNIST-3
+#+name: fig:PCA-MNIST-3
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/PCA-MNIST-3.png]]
+*** Kernel PCA
+非線性投影PCA，透過學習相似度函數(kernel function)，kernel PCA找出大多數資枓點聚集的隱含特徵空間，使用kernel PCA需要設定預期的成分數量、kernel的型態、kernel的係數(gamma)，常見的kernel PCA有radial basis function kernel、RBF kernel。
+#+begin_src python -r -n :results output :exports both :session
+# Kernel PCA
+plt.cla()
+from sklearn.decomposition import KernelPCA
+
+n_components = 100
+kernel = 'rbf'
+gamma = None
+random_state = 2018
+n_jobs = 1
+
+kernelPCA = KernelPCA(n_components=n_components, kernel=kernel, \
+                      gamma=gamma, n_jobs=n_jobs, random_state=random_state)
+
+kernelPCA.fit(X_train.loc[:10000,:])
+X_train_kernelPCA = kernelPCA.transform(X_train)
+X_train_kernelPCA = pd.DataFrame(data=X_train_kernelPCA,index=train_index)
+
+X_validation_kernelPCA = kernelPCA.transform(X_validation)
+X_validation_kernelPCA = \
+    pd.DataFrame(data=X_validation_kernelPCA, index=validation_index)
+
+scatterPlot(X_train_kernelPCA, y_train, "Kernel PCA")
+plt.savefig('images/PCA-MNIST-4.png', dpi=300)
+#+end_src
+
+#+RESULTS:
+: Python 3.8.12 (default, Oct 12 2021, 06:23:56)
+: [Clang 10.0.0 ] :: Anaconda, Inc. on darwin
+: Type "help", "copyright", "credits" or "license" for more information.
+: >>>
+
+#+CAPTION: Caption
+#+LABEL:fig:PCA-MNIST-4
+#+name: fig:PCA-MNIST-4
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/PCA-MNIST-4.png]]
+** 奇異值分解
+目的在減少原始特徵值矩陣的秩
+#+begin_src python -r -n :results output :exports both :session DD
+# Singular Value Decomposition
+plt.cla()
+from sklearn.decomposition import TruncatedSVD
+
+n_components = 200
+algorithm = 'randomized'
+n_iter = 5
+random_state = 2018
+
+svd = TruncatedSVD(n_components=n_components, algorithm=algorithm, \
+                   n_iter=n_iter, random_state=random_state)
+
+X_train_svd = svd.fit_transform(X_train)
+X_train_svd = pd.DataFrame(data=X_train_svd, index=train_index)
+
+X_validation_svd = svd.transform(X_validation)
+X_validation_svd = pd.DataFrame(data=X_validation_svd, index=validation_index)
+
+scatterPlot(X_train_svd, y_train, "Singular Value Decomposition")
+plt.savefig('images/SVD-MNIST.png', dpi=300)
+#+end_src
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/SVD-MNIST.png]]
+** 隨機投影
+也是線性投影，將高維度空間裡的點嵌到較低維度的空間中，但仍維持點與點間的距離。有兩種版本：
+- 高斯隨機投影
+- 稀疏隨機投影
+*** 高斯隨機投影(Gaussian Random Projection)
+可以指定在縮減的特徵空間中想要擁有的元素數量(eps值), eps控制了嵌入的品質，其值越高、維度數量也越高。
+- 實驗結果：改eps後看不出來圖的差異....
+**** pes=0.4
+#+begin_src python -r -n :results output :exports both :session DD
+# Gaussian Random Projection
+plt.cla()
+from sklearn.random_projection import GaussianRandomProjection
+
+n_components = 'auto'
+eps = 0.01
+random_state = 2018
+
+GRP = GaussianRandomProjection(n_components=n_components, eps=eps, \
+                               random_state=random_state)
+
+X_train_GRP = GRP.fit_transform(X_train)
+X_train_GRP = pd.DataFrame(data=X_train_GRP, index=train_index)
+
+X_validation_GRP = GRP.transform(X_validation)
+X_validation_GRP = pd.DataFrame(data=X_validation_GRP, index=validation_index)
+
+scatterPlot(X_train_GRP, y_train, "Gaussian Random Projection")
+plt.savefig('images/GRP-MNIST-1.png', dpi=300)
+#+end_src
+
+#+RESULTS:
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/GRP-MNIST-1.png]]
+**** eps=0.8
+#+begin_src python -r -n :results output :exports both :session DD
+# Gaussian Random Projection
+plt.cla()
+from sklearn.random_projection import GaussianRandomProjection
+
+n_components = 'auto'
+eps = 0.95
+random_state = 2018
+
+GRP = GaussianRandomProjection(n_components=n_components, eps=eps, \
+                               random_state=random_state)
+
+X_train_GRP = GRP.fit_transform(X_train)
+X_train_GRP = pd.DataFrame(data=X_train_GRP, index=train_index)
+
+X_validation_GRP = GRP.transform(X_validation)
+X_validation_GRP = pd.DataFrame(data=X_validation_GRP, index=validation_index)
+
+scatterPlot(X_train_GRP, y_train, "Gaussian Random Projection")
+plt.savefig('images/GRP-MNIST-2.png', dpi=300)
+#+end_src
+
+#+RESULTS:
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/GRP-MNIST-2.png]]
+*** 稀疏矩陣投影
+在轉換過程中保留了一定程度的資料點稀疏度，也較有效率
+#+begin_src python -r -n :results output :exports both :session DD
+# Sparse Random Projection
+plt.cla()
+from sklearn.random_projection import SparseRandomProjection
+
+n_components = 'auto'
+density = 'auto'
+eps = 0.5
+dense_output = False
+random_state = 2018
+
+SRP = SparseRandomProjection(n_components=n_components, \
+        density=density, eps=eps, dense_output=dense_output, \
+        random_state=random_state)
+
+X_train_SRP = SRP.fit_transform(X_train)
+X_train_SRP = pd.DataFrame(data=X_train_SRP, index=train_index)
+
+X_validation_SRP = SRP.transform(X_validation)
+X_validation_SRP = pd.DataFrame(data=X_validation_SRP, index=validation_index)
+
+scatterPlot(X_train_SRP, y_train, "Sparse Random Projection")
+plt.savefig('images/SRP-MNIST.png', dpi=300)
+#+end_src
+
+#+RESULTS:
+:   fig = plt.figure(figsize=figsize)
+
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/SRP-MNIST.png]]
+** Isomap
+非線性投影，基本的流形學習方法為isometric mapping，簡稱isomap。Isomap透過計算點與點間的成對距離（曲線距離或捷線距離，而非歐幾里德距離）來學習能代表原始特徵集的一個新低維度embedding。
+#+begin_src python -r -n :results output :exports both :session DD
+# Isomap
+plt.cla()
+from sklearn.manifold import Isomap
+
+n_neighbors = 5
+n_components = 10
+n_jobs = 4
+
+isomap = Isomap(n_neighbors=n_neighbors, \
+                n_components=n_components, n_jobs=n_jobs)
+
+isomap.fit(X_train.loc[0:5000,:])
+X_train_isomap = isomap.transform(X_train)
+X_train_isomap = pd.DataFrame(data=X_train_isomap, index=train_index)
+
+X_validation_isomap = isomap.transform(X_validation)
+X_validation_isomap = pd.DataFrame(data=X_validation_isomap, \
+                                   index=validation_index)
+
+scatterPlot(X_train_isomap, y_train, "Isomap")
+plt.savefig('images/ISOMAP-MNIST.png', dpi=300)
+#+end_src
+
+#+RESULTS:
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/ISOMAP-MNIST.png]]
+** 多維標度(Multidimensional Scaling)
+MDS，學習原始資料集點點與點間的相似度，將相似度塑模至低維度空間
+#+begin_src python -r -n :results output :exports both :session DD
+# Multidimensional Scaling
+plt.cla()
+from sklearn.manifold import MDS
+
+n_components = 2
+n_init = 12
+max_iter = 1200
+metric = True
+n_jobs = 4
+random_state = 2018
+
+mds = MDS(n_components=n_components, n_init=n_init, max_iter=max_iter, \
+          metric=metric, n_jobs=n_jobs, random_state=random_state)
+
+X_train_mds = mds.fit_transform(X_train.loc[0:1000,:])
+X_train_mds = pd.DataFrame(data=X_train_mds, index=train_index[0:1001])
+
+scatterPlot(X_train_mds, y_train, "Multidimensional Scaling")
+plt.savefig('images/MDS-MNIST.png', dpi=300)
+#+end_src
+
+#+RESULTS:
+
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/MDS-MNIST.png]]
+** 局部線性嵌入法(Locally Linear Embedding)
+LLE透過以下方式來找出高維資枓中的非線性結構
+- 分割資料成為較小的子集（包含數個點的鄰近區域）
+- 將每個子集塑模成一個線性的embedding
+#+begin_src python -r -n :results output :exports both :session DD
+# Locally Linear Embedding (LLE)
+plt.cla()
+from sklearn.manifold import LocallyLinearEmbedding
+
+n_neighbors = 10
+n_components = 2
+method = 'modified'
+n_jobs = 4
+random_state = 2018
+
+lle = LocallyLinearEmbedding(n_neighbors=n_neighbors, \
+        n_components=n_components, method=method, \
+        random_state=random_state, n_jobs=n_jobs)
+
+lle.fit(X_train.loc[0:5000,:])
+X_train_lle = lle.transform(X_train)
+X_train_lle = pd.DataFrame(data=X_train_lle, index=train_index)
+
+X_validation_lle = lle.transform(X_validation)
+X_validation_lle = pd.DataFrame(data=X_validation_lle, index=validation_index)
+
+scatterPlot(X_train_lle, y_train, "Locally Linear Embedding")
+plt.savefig('images/LLE-MNIST.png', dpi=300)
+#+end_src
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/LLE-MNIST.png]]
+** t-Distributed Stochastic Neighbor Embedding
+t-SNE建立兩個機率分佈來將高維資料點塑模至二維或三維空間，並使在此空間中彼此相似的點靠近、不相似的點疏遠。
+#+begin_src python -r -n :results output :exports both :session DD
+# t-SNE
+plt.cla()
+from sklearn.manifold import TSNE
+
+n_components = 2
+learning_rate = 300
+perplexity = 30
+early_exaggeration = 12
+init = 'random'
+random_state = 2018
+
+tSNE = TSNE(n_components=n_components, learning_rate=learning_rate, \
+            perplexity=perplexity, early_exaggeration=early_exaggeration, \
+            init=init, random_state=random_state)
+
+X_train_tSNE = tSNE.fit_transform(X_train_PCA.loc[:5000,:9])
+X_train_tSNE = pd.DataFrame(data=X_train_tSNE, index=train_index[:5001])
+
+scatterPlot(X_train_tSNE, y_train, "t-SNE")
+plt.savefig('images/tSNE-MNIST.png', dpi=300)
+#+end_src
+
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/tSNE-MNIST.png]]
+** 字典學習
+不依賴幾何指標或距離指標
+#+begin_src python -r -n :results output :exports both :session DD
+# Mini-batch dictionary learning
+plt.cla()
+from sklearn.decomposition import MiniBatchDictionaryLearning
+
+n_components = 50
+alpha = 1
+batch_size = 200
+n_iter = 25
+random_state = 2018
+
+miniBatchDictLearning = MiniBatchDictionaryLearning( \
+                        n_components=n_components, alpha=alpha, \
+                        batch_size=batch_size, n_iter=n_iter, \
+                        random_state=random_state)
+
+miniBatchDictLearning.fit(X_train.loc[:,:10000])
+X_train_miniBatchDictLearning = miniBatchDictLearning.fit_transform(X_train)
+X_train_miniBatchDictLearning = pd.DataFrame( \
+    data=X_train_miniBatchDictLearning, index=train_index)
+
+X_validation_miniBatchDictLearning = \
+    miniBatchDictLearning.transform(X_validation)
+X_validation_miniBatchDictLearning = \
+    pd.DataFrame(data=X_validation_miniBatchDictLearning, \
+    index=validation_index)
+
+scatterPlot(X_train_miniBatchDictLearning, y_train, \
+            "Mini-batch Dictionary Learning")
+plt.savefig('images/DIC-MNIST.png', dpi=300)
+#+end_src
+
+
+#+RESULTS:
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/DIC-MNIST.png]]
+
+** 獨立成份分析
+Independent component analysis
+#+begin_src python -r -n :results output :exports both :session DD
+# Independent Component Analysis
+plt.cla()
+from sklearn.decomposition import FastICA
+
+n_components = 25
+algorithm = 'parallel'
+whiten = True
+max_iter = 100
+random_state = 2018
+
+fastICA = FastICA(n_components=n_components, algorithm=algorithm, \
+                  whiten=whiten, max_iter=max_iter, random_state=random_state)
+
+X_train_fastICA = fastICA.fit_transform(X_train)
+X_train_fastICA = pd.DataFrame(data=X_train_fastICA, index=train_index)
+
+X_validation_fastICA = fastICA.transform(X_validation)
+X_validation_fastICA = pd.DataFrame(data=X_validation_fastICA, \
+                                    index=validation_index)
+
+scatterPlot(X_train_fastICA, y_train, "Independent Component Analysis")
+plt.savefig('images/ICA-MNIST.png', dpi=300)
+#+end_src
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/ICA-MNIST.png]]
+
+* 異常偵測
+在現實的狀況下，詐欺的樣式會隨時間改變，如果只依賴訓練集的label來判斷，時間一久效能就會下降。故需要非監督式學習的詐欺偵測系統來協助。
+** 準備資料
+共有284807筆信用卡交易、其中有492筆詐欺交易(class=1)
+#+begin_src python -r -n :results output :exports both :session AD
+# Import libraries
+'''Main'''
+import numpy as np
+import pandas as pd
+import os, time
+import pickle, gzip
+
+'''Data Viz'''
+import matplotlib.pyplot as plt
+import seaborn as sns
+color = sns.color_palette()
+import matplotlib as mpl
+
+'''Data Prep and Model Evaluation'''
+from sklearn import preprocessing as pp
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import precision_recall_curve, average_precision_score
+from sklearn.metrics import roc_curve, auc, roc_auc_score
+
+import numpy as np
+import pandas as pd
+data = pd.read_csv("./credit_card.csv")
+# Count total fraud
+print("Number of fraudulent transactions:", data['Class'].sum())
+
+# Suppress warnings
+pd.set_option('mode.chained_assignment', None)
+
+# Split to train and test and scale features
+dataX = data.drop(['Class'],axis=1)
+dataY = data.loc[:,'Class'].copy()
+
+X_train, X_test, y_train, y_test = \
+    train_test_split(dataX, dataY, test_size=0.33, \
+                    random_state=2018, stratify=dataY)
+
+featuresToScale = X_train.columns
+sX = pp.StandardScaler(copy=True)
+X_train.loc[:,featuresToScale] = sX.fit_transform(X_train.loc[:,featuresToScale])
+X_test.loc[:,featuresToScale] = sX.transform(X_test.loc[:,featuresToScale])
+#+end_src
+
+#+RESULTS:
+: Number of fraudulent transactions: 492
+** 定義異常評分函數
+降維演算法在縮減維度時，會試圖將重建誤差最小化；對於信用卡交易資料來說，那些難以被塑模的交易會產生最大的重建誤差。
+#+begin_src python -r -n :results output :exports both :session AD
+# Calculate reconstruction error
+def anomalyScores(originalDF, reducedDF):
+    loss = np.sum((np.array(originalDF)-np.array(reducedDF))**2, axis=1)
+    loss = pd.Series(data=loss,index=originalDF.index)
+    loss = (loss-np.min(loss))/(np.max(loss)-np.min(loss))
+    return loss
+#+end_src
+
+#+RESULTS:
+
+** 評估指標：畫圖
+使用precision-recall曲線、average precision和auROC做為評估指標。
+#+begin_src python -r -n :results output :exports both :session AD
+# Plot results
+def setPlot():
+    import matplotlib.pyplot as plt
+    from matplotlib import rcParams
+    rcParams.update({'figure.autolayout': True})
+    plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
+    plt.rcParams['axes.unicode_minus'] = False
+
+def plotResults(trueLabels, anomalyScores, returnPreds = False, imgName=''):
+    plt.cla()
+    setPlot()
+    preds = pd.concat([trueLabels, anomalyScores], axis=1)
+    preds.columns = ['trueLabel', 'anomalyScore']
+    precision, recall, thresholds = \
+        precision_recall_curve(preds['trueLabel'],preds['anomalyScore'])
+    average_precision = \
+        average_precision_score(preds['trueLabel'],preds['anomalyScore'])
+
+    plt.step(recall, precision, color='k', alpha=0.7, where='post')
+    plt.fill_between(recall, precision, step='post', alpha=0.3, color='k')
+
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.ylim([0.0, 1.05])
+    plt.xlim([0.0, 1.0])
+
+    plt.title('Precision-Recall curve: 平均精確率:{0:0.2f}'.format(average_precision))
+
+    plt.savefig('images/'+imgName+'-1.png', dpi=300, bbox_inches='tight')
+
+    fpr, tpr, thresholds = roc_curve(preds['trueLabel'], \
+                                     preds['anomalyScore'])
+    areaUnderROC = auc(fpr, tpr)
+    plt.cla()
+    setPlot()
+    plt.plot(fpr, tpr, color='r', lw=2, label='ROC curve')
+    plt.plot([0, 1], [0, 1], color='k', lw=2, linestyle='--')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('Receiver operating characteristic: 曲線以下面積:{0:0.2f}'.format(areaUnderROC))
+    plt.legend(loc="lower right")
+    plt.savefig('images/'+imgName+'-2.png', dpi=300, bbox_inches='tight')
+    if returnPreds==True:
+        return preds
+
+
+# View scatterplot
+def scatterPlot(xDF, yDF, algoName, imgName=''):
+    plt.cla()
+    setPlot()
+    tempDF = pd.DataFrame(data=xDF.loc[:,0:1], index=xDF.index)
+    tempDF = pd.concat((tempDF,yDF), axis=1, join="inner")
+    tempDF.columns = ["First Vector", "Second Vector", "Label"]
+    sns.lmplot(x="First Vector", y="Second Vector", hue="Label", \
+               data=tempDF, fit_reg=False)
+    ax = plt.gca()
+    ax.set_title("演算法:"+algoName)
+    plt.savefig('images/'+imgName+'.png', dpi=300, bbox_inches='tight')
+#+end_src
+
+#+RESULTS:
+** PCA異常偵測
+使用PCA模型來重建信用卡交易、計算重交的交易與原始交易的差異，那些PCA重建的較差的交易就是異常(可能為詐欺)。對於PCA來說，保留越多主成份、越有助於PCA學習到原始交易的資料結構，但若保留太多主成份，PCA可能太容易重建原始交易，反而讓所有的重建誤差都變小。
+#+begin_src python -r -n :results output :exports both :session AD
+# 30 principal components
+from sklearn.decomposition import PCA
+
+n_components = 30 #保留30o固主成份
+whiten = False
+random_state = 2018
+
+pca = PCA(n_components=n_components, whiten=whiten, \
+          random_state=random_state)
+
+X_train_PCA = pca.fit_transform(X_train)
+X_train_PCA = pd.DataFrame(data=X_train_PCA, index=X_train.index)
+
+X_train_PCA_inverse = pca.inverse_transform(X_train_PCA)
+X_train_PCA_inverse = pd.DataFrame(data=X_train_PCA_inverse, index=X_train.index)
+
+scatterPlot(X_train_PCA, y_train, 'AD-PCA', 'AD-PCA')
+anomalyScoresPCA = anomalyScores(X_train, X_train_PCA_inverse)
+preds = plotResults(y_train, anomalyScoresPCA, True, 'AD-PCA')
+
+#+end_src
+
+#+RESULTS:
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/AD-PCA.png]]
+
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/AD-PCA-1.png]]
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/AD-PCA-2.png]]
+平均精確率不到1%，太差，必須不斷實驗找出最佳的PCA成份(http://bit.ly/2Gd4v7e)
+*** 最後找出27個
+#+begin_src python -r -n :results output :exports both :session AD
+# 27 principal components
+from sklearn.decomposition import PCA
+
+n_components = 27
+whiten = False
+random_state = 2018
+
+pca = PCA(n_components=n_components, whiten=whiten, \
+          random_state=random_state)
+
+X_train_PCA = pca.fit_transform(X_train)
+X_train_PCA = pd.DataFrame(data=X_train_PCA, index=X_train.index)
+
+X_train_PCA_inverse = pca.inverse_transform(X_train_PCA)
+X_train_PCA_inverse = pd.DataFrame(data=X_train_PCA_inverse, \
+                                   index=X_train.index)
+
+scatterPlot(X_train_PCA, y_train, 'AD-PCA', 'AD-PCA1')
+# View plot
+anomalyScoresPCA = anomalyScores(X_train, X_train_PCA_inverse)
+preds = plotResults(y_train, anomalyScoresPCA, True, 'AD-PCA1')
+#+end_src
+#+RESULTS:
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/AD-PCA1.png]]
+
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/AD-PCA1-1.png]]
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/AD-PCA1-2.png]]
+*** 分析結果
+#+begin_src python -r -n :results output :exports both :session AD
+# Analyze results
+preds.sort_values(by="anomalyScore",ascending=False,inplace=True)
+cutoff = 350
+predsTop = preds[:cutoff]
+print("Precision: ",np.round(predsTop. \
+            anomalyScore[predsTop.trueLabel==1].count()/cutoff,2))
+print("Recall: ",np.round(predsTop. \
+            anomalyScore[predsTop.trueLabel==1].count()/y_train.sum(),2))
+print("Fraud Caught out of 330 Cases:", predsTop.trueLabel.sum())
+#+end_src
+
+#+RESULTS:
+: Precision:  0.75
+: Recall:  0.79
+: Fraud Caught out of 330 Cases: 261
+*** <完整>
+#+begin_src python -r -n :results output :exports both
+# Import libraries
+
+'''Main'''
+import numpy as np
+import pandas as pd
+import os, time
+import pickle, gzip
+
+'''Data Viz'''
+import matplotlib.pyplot as plt
+import seaborn as sns
+color = sns.color_palette()
+import matplotlib as mpl
+
+'''Data Prep and Model Evaluation'''
+from sklearn import preprocessing as pp
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import precision_recall_curve, average_precision_score
+from sklearn.metrics import roc_curve, auc, roc_auc_score
+
+import numpy as np
+import pandas as pd
+data = pd.read_csv("./credit_card.csv")
+# Count total fraud
+print("Number of fraudulent transactions:", data['Class'].sum())
+
+# Suppress warnings
+pd.set_option('mode.chained_assignment', None)
+
+# Split to train and test and scale features
+dataX = data.drop(['Class'],axis=1)
+dataY = data.loc[:,'Class'].copy()
+
+X_train, X_test, y_train, y_test = \
+    train_test_split(dataX, dataY, test_size=0.33, \
+                    random_state=2018, stratify=dataY)
+
+featuresToScale = X_train.columns
+sX = pp.StandardScaler(copy=True)
+X_train.loc[:,featuresToScale] = sX.fit_transform(X_train.loc[:,featuresToScale])
+X_test.loc[:,featuresToScale] = sX.transform(X_test.loc[:,featuresToScale])
+
+
+def anomalyScores(originalDF, reducedDF):
+    loss = np.sum((np.array(originalDF)-np.array(reducedDF))**2, axis=1)
+    loss = pd.Series(data=loss,index=originalDF.index)
+    loss = (loss-np.min(loss))/(np.max(loss)-np.min(loss))
+    return loss
+
+# Plot results
+def setPlot():
+    import matplotlib.pyplot as plt
+    from matplotlib import rcParams
+    rcParams.update({'figure.autolayout': True})
+    plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
+    plt.rcParams['axes.unicode_minus'] = False
+
+def plotResults(trueLabels, anomalyScores, returnPreds = False, imgName=''):
+    plt.cla()
+    setPlot()
+    preds = pd.concat([trueLabels, anomalyScores], axis=1)
+    preds.columns = ['trueLabel', 'anomalyScore']
+    precision, recall, thresholds = \
+        precision_recall_curve(preds['trueLabel'],preds['anomalyScore'])
+    average_precision = \
+        average_precision_score(preds['trueLabel'],preds['anomalyScore'])
+
+    plt.step(recall, precision, color='k', alpha=0.7, where='post')
+    plt.fill_between(recall, precision, step='post', alpha=0.3, color='k')
+
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.ylim([0.0, 1.05])
+    plt.xlim([0.0, 1.0])
+
+    plt.title('Precision-Recall curve: 平均精確率:{0:0.2f}'.format(average_precision))
+
+    plt.savefig('images/'+imgName+'-1.png', dpi=300, bbox_inches='tight')
+
+    fpr, tpr, thresholds = roc_curve(preds['trueLabel'], \
+                                     preds['anomalyScore'])
+    areaUnderROC = auc(fpr, tpr)
+    plt.cla()
+    setPlot()
+    plt.plot(fpr, tpr, color='r', lw=2, label='ROC curve')
+    plt.plot([0, 1], [0, 1], color='k', lw=2, linestyle='--')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('Receiver operating characteristic: 曲線以下面積:{0:0.2f}'.format(areaUnderROC))
+    plt.legend(loc="lower right")
+    plt.savefig('images/'+imgName+'-2.png', dpi=300, bbox_inches='tight')
+
+
+    if returnPreds==True:
+        return preds
+
+# View scatterplot
+def scatterPlot(xDF, yDF, algoName, imgName=''):
+    plt.cla()
+    setPlot()
+    tempDF = pd.DataFrame(data=xDF.loc[:,0:1], index=xDF.index)
+    tempDF = pd.concat((tempDF,yDF), axis=1, join="inner")
+    tempDF.columns = ["First Vector", "Second Vector", "Label"]
+    sns.lmplot(x="First Vector", y="Second Vector", hue="Label", \
+               data=tempDF, fit_reg=False)
+    ax = plt.gca()
+    ax.set_title("演算法:"+algoName)
+    plt.savefig('images/'+imgName+'.png', dpi=300, bbox_inches='tight')
+
+from sklearn.decomposition import PCA
+
+n_components = 30 #保留30o固主成份
+whiten = False
+random_state = 2018
+
+pca = PCA(n_components=n_components, whiten=whiten, \
+          random_state=random_state)
+
+X_train_PCA = pca.fit_transform(X_train)
+X_train_PCA = pd.DataFrame(data=X_train_PCA, index=X_train.index)
+
+X_train_PCA_inverse = pca.inverse_transform(X_train_PCA)
+X_train_PCA_inverse = pd.DataFrame(data=X_train_PCA_inverse, index=X_train.index)
+
+scatterPlot(X_train_PCA, y_train, 'AD-PCA', 'AD-PCA')
+anomalyScoresPCA = anomalyScores(X_train, X_train_PCA_inverse)
+preds = plotResults(y_train, anomalyScoresPCA, True, 'AD-PCA')
+
+
+#+end_src
+
+#+RESULTS:
+: Number of fraudulent transactions: 492
+** Sparse PCA異常偵測
+#+begin_src python -r -n :results output :exports both :session AD
+# Sparse PCA
+from sklearn.decomposition import SparsePCA
+
+n_components = 27
+alpha = 0.0001
+random_state = 2018
+n_jobs = -1
+
+sparsePCA = SparsePCA(n_components=n_components, \
+                alpha=alpha, random_state=random_state, n_jobs=n_jobs)
+
+sparsePCA.fit(X_train.loc[:,:])
+X_train_sparsePCA = sparsePCA.transform(X_train)
+X_train_sparsePCA = pd.DataFrame(data=X_train_sparsePCA, index=X_train.index)
+
+scatterPlot(X_train_sparsePCA, y_train, "Sparse PCA", "AD-SPCA")
+# View plot
+X_train_sparsePCA_inverse = np.array(X_train_sparsePCA). \
+    dot(sparsePCA.components_) + np.array(X_train.mean(axis=0))
+X_train_sparsePCA_inverse = \
+    pd.DataFrame(data=X_train_sparsePCA_inverse, index=X_train.index)
+
+anomalyScoresSparsePCA = anomalyScores(X_train, X_train_sparsePCA_inverse)
+preds = plotResults(y_train, anomalyScoresSparsePCA, True, 'AD-SPCA')
+#+end_src
+
+#+RESULTS:
+
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/AD-SPCA.png]]
+
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/AD-SPCA-1.png]]
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/AD-SPCA-2.png]]
+*** 分析結果
+#+begin_src python -r -n :results output :exports both :session AD
+# Analyze results
+preds.sort_values(by="anomalyScore",ascending=False,inplace=True)
+cutoff = 350
+predsTop = preds[:cutoff]
+print("Precision: ",np.round(predsTop. \
+            anomalyScore[predsTop.trueLabel==1].count()/cutoff,2))
+print("Recall: ",np.round(predsTop. \
+            anomalyScore[predsTop.trueLabel==1].count()/y_train.sum(),2))
+print("Fraud Caught out of 330 Cases:", predsTop.trueLabel.sum())
+#+end_src
+
+#+RESULTS:
+: Precision:  0.75
+: Recall:  0.79
+: Fraud Caught out of 330 Cases: 261
+** Kernel PCA異常偵測
+#+begin_src python -r -n :results output :exports both :session AD
+# Kernel PCA
+from sklearn.decomposition import KernelPCA
+
+n_components = 27
+kernel = 'rbf'
+gamma = None
+fit_inverse_transform = True
+random_state = 2018
+n_jobs = 1
+
+kernelPCA = KernelPCA(n_components=n_components, kernel=kernel, \
+                gamma=gamma, fit_inverse_transform= \
+                fit_inverse_transform, n_jobs=n_jobs, \
+                random_state=random_state)
+
+kernelPCA.fit(X_train.iloc[:2000])
+X_train_kernelPCA = kernelPCA.transform(X_train)
+X_train_kernelPCA = pd.DataFrame(data=X_train_kernelPCA, \
+                                 index=X_train.index)
+
+X_train_kernelPCA_inverse = kernelPCA.inverse_transform(X_train_kernelPCA)
+X_train_kernelPCA_inverse = pd.DataFrame(data=X_train_kernelPCA_inverse, \
+                                         index=X_train.index)
+
+scatterPlot(X_train_kernelPCA, y_train, "Kernel PCA", "AD-KPCA")
+# View plot
+# View plot
+anomalyScoresKernelPCA = anomalyScores(X_train, X_train_kernelPCA_inverse)
+preds = plotResults(y_train, anomalyScoresKernelPCA, True, 'AD-KPCA')
+#+end_src
+
+#+RESULTS:
+
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/AD-KPCA.png]]
+
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/AD-KPCA-1.png]]
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/AD-KPCA-2.png]]
+*** 分析結果
+#+begin_src python -r -n :results output :exports both :session AD
+# Analyze results
+preds.sort_values(by="anomalyScore",ascending=False,inplace=True)
+cutoff = 350
+predsTop = preds[:cutoff]
+print("Precision: ",np.round(predsTop. \
+            anomalyScore[predsTop.trueLabel==1].count()/cutoff,2))
+print("Recall: ",np.round(predsTop. \
+            anomalyScore[predsTop.trueLabel==1].count()/y_train.sum(),2))
+print("Fraud Caught out of 330 Cases:", predsTop.trueLabel.sum())
+# Write dimensions to CSV
+X_train_kernelPCA.loc[sample_indices,:].to_csv('kernel_pca_data.tsv', sep = '\t', index=False, header=False)
+#+end_src
+
+#+RESULTS:
+: Precision:  0.22
+: Recall:  0.23
+: Fraud Caught out of 330 Cases: 77
+結果不如普通的PCA與sparse PCA
+** 高斯隨機投影異常偵測
+#+begin_src python -r -n :results output :exports both :session AD
+# Gaussian Random Projection
+from sklearn.random_projection import GaussianRandomProjection
+
+n_components = 27
+eps = None
+random_state = 2018
+
+GRP = GaussianRandomProjection(n_components=n_components, \
+                               eps=eps, random_state=random_state)
+
+X_train_GRP = GRP.fit_transform(X_train)
+X_train_GRP = pd.DataFrame(data=X_train_GRP, index=X_train.index)
+
+scatterPlot(X_train_GRP, y_train, "Gaussian Random Projection", "AD-GRP")
+# View plot
+X_train_GRP_inverse = np.array(X_train_GRP).dot(GRP.components_)
+X_train_GRP_inverse = pd.DataFrame(data=X_train_GRP_inverse, \
+                                   index=X_train.index)
+
+anomalyScoresGRP = anomalyScores(X_train, X_train_GRP_inverse)
+preds = plotResults(y_train, anomalyScoresGRP, True, "AD-GRP")
+#+end_src
+
+#+RESULTS:
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/AD-GRP.png]]
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/AD-GRP-1.png]]
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/AD-GRP-2.png]]
+*** 分析結果
+#+begin_src python -r -n :results output :exports both :session AD
+# Analyze results
+preds.sort_values(by="anomalyScore",ascending=False,inplace=True)
+cutoff = 350
+predsTop = preds[:cutoff]
+print("Precision: ",np.round(predsTop. \
+            anomalyScore[predsTop.trueLabel==1].count()/cutoff,2))
+print("Recall: ",np.round(predsTop. \
+            anomalyScore[predsTop.trueLabel==1].count()/y_train.sum(),2))
+print("Fraud Caught out of 330 Cases:", predsTop.trueLabel.sum())
+# Write dimensions to CSV
+
+X_train_GRP.loc[sample_indices,:].to_csv('gaussian_random_projection_data.tsv', sep = '\t', index=False, header=False)
+#+end_src
+
+#+RESULTS:
+: Precision:  0.22
+: Recall:  0.23
+: Fraud Caught out of 330 Cases: 76
+** 稀疏隨機投影異常偵測
+#+begin_src python -r -n :results output :exports both :session AD
+# Sparse Random Projection
+from sklearn.random_projection import SparseRandomProjection
+
+n_components = 27
+density = 'auto'
+eps = .01
+dense_output = True
+random_state = 2018
+
+SRP = SparseRandomProjection(n_components=n_components, \
+        density=density, eps=eps, dense_output=dense_output, \
+                                random_state=random_state)
+
+X_train_SRP = SRP.fit_transform(X_train)
+X_train_SRP = pd.DataFrame(data=X_train_SRP, index=X_train.index)
+
+scatterPlot(X_train_SRP, y_train, "Sparse Random Projection", "AD-SRP")
+# View plot
+X_train_SRP_inverse = np.array(X_train_SRP).dot(SRP.components_.todense())
+X_train_SRP_inverse = pd.DataFrame(data=X_train_SRP_inverse, index=X_train.index)
+
+anomalyScoresSRP = anomalyScores(X_train, X_train_SRP_inverse)
+preds = plotResults(y_train, anomalyScoresSRP, True, "AD-SRP")
+#+end_src
+
+#+RESULTS:
+
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/AD-SRP.png]]
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/AD-SRP-1.png]]
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/AD-SRP-2.png]]
+*** 分析結果
+#+begin_src python -r -n :results output :exports both :session AD
+# Analyze results
+preds.sort_values(by="anomalyScore",ascending=False,inplace=True)
+cutoff = 350
+predsTop = preds[:cutoff]
+print("Precision: ",np.round(predsTop. \
+            anomalyScore[predsTop.trueLabel==1].count()/cutoff,2))
+print("Recall: ",np.round(predsTop. \
+            anomalyScore[predsTop.trueLabel==1].count()/y_train.sum(),2))
+print("Fraud Caught out of 330 Cases:", predsTop.trueLabel.sum())
+# Write dimensions to CSV
+X_train_SRP.loc[sample_indices,:].to_csv('sparse_random_projection_data.tsv', sep = '\t', index=False, header=False)
+#+end_src
+
+#+RESULTS:
+: Precision:  0.21
+: Recall:  0.22
+: Fraud Caught out of 330 Cases: 73
+** 字典學習異常偵測
+#+begin_src python -r -n :results output :exports both :session AD
+# Mini-batch dictionary learning
+from sklearn.decomposition import MiniBatchDictionaryLearning
+
+n_components = 28
+alpha = 1
+batch_size = 200
+n_iter = 10
+random_state = 2018
+
+miniBatchDictLearning = MiniBatchDictionaryLearning( \
+    n_components=n_components, alpha=alpha, batch_size=batch_size, \
+    n_iter=n_iter, random_state=random_state)
+
+miniBatchDictLearning.fit(X_train)
+X_train_miniBatchDictLearning = \
+    miniBatchDictLearning.fit_transform(X_train)
+X_train_miniBatchDictLearning = \
+    pd.DataFrame(data=X_train_miniBatchDictLearning, index=X_train.index)
+
+scatterPlot(X_train_miniBatchDictLearning, y_train, \
+            "Mini-batch Dictionary Learning", "AD-MBDL")
+# View plot
+X_train_miniBatchDictLearning_inverse = \
+    np.array(X_train_miniBatchDictLearning). \
+    dot(miniBatchDictLearning.components_)
+
+X_train_miniBatchDictLearning_inverse = \
+    pd.DataFrame(data=X_train_miniBatchDictLearning_inverse, \
+                 index=X_train.index)
+
+anomalyScoresMiniBatchDictLearning = anomalyScores(X_train, \
+    X_train_miniBatchDictLearning_inverse)
+preds = plotResults(y_train, anomalyScoresMiniBatchDictLearning, True, "AD-MBDL")
+#+end_src
+
+#+RESULTS:
+
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/AD-MBDL.png]]
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/AD-MBDL-1.png]]
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/AD-MBDL-2.png]]
+*** 分析結果
+#+begin_src python -r -n :results output :exports both :session AD
+# Analyze results
+preds.sort_values(by="anomalyScore",ascending=False,inplace=True)
+cutoff = 350
+predsTop = preds[:cutoff]
+print("Precision: ",np.round(predsTop. \
+            anomalyScore[predsTop.trueLabel==1].count()/cutoff,2))
+print("Recall: ",np.round(predsTop. \
+            anomalyScore[predsTop.trueLabel==1].count()/y_train.sum(),2))
+print("Fraud Caught out of 330 Cases:", predsTop.trueLabel.sum())
+# Write dimensions to CSV
+X_train_miniBatchDictLearning.loc[sample_indices,:].to_csv('dictionary_learning_data.tsv', sep = '\t', index=False, header=False)
+#+end_src
+
+#+RESULTS:
+: Precision:  0.43
+: Recall:  0.46
+: Fraud Caught out of 330 Cases: 151
+** ICA異常偵測
+#+begin_src python -r -n :results output :exports both :session AD
+# Independent Component Analysis
+
+from sklearn.decomposition import FastICA
+
+n_components = 27
+algorithm = 'parallel'
+whiten = True
+max_iter = 200
+random_state = 2018
+
+fastICA = FastICA(n_components=n_components, \
+    algorithm=algorithm, whiten=whiten, max_iter=max_iter, \
+    random_state=random_state)
+
+X_train_fastICA = fastICA.fit_transform(X_train)
+X_train_fastICA = pd.DataFrame(data=X_train_fastICA, index=X_train.index)
+
+X_train_fastICA_inverse = fastICA.inverse_transform(X_train_fastICA)
+X_train_fastICA_inverse = pd.DataFrame(data=X_train_fastICA_inverse, \
+                                       index=X_train.index)
+
+scatterPlot(X_train_fastICA, y_train, "Independent Component Analysis", "AD-ICA")
+# View plot
+anomalyScoresFastICA = anomalyScores(X_train, X_train_fastICA_inverse)
+preds = plotResults(y_train, anomalyScoresFastICA, True, "AD-ICA")
+#+end_src
+
+#+RESULTS:
+
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/AD-ICA.png]]
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/AD-ICA-1.png]]
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/AD-ICA-2.png]]
+*** 分析結果
+#+begin_src python -r -n :results output :exports both :session AD
+# Analyze results
+preds.sort_values(by="anomalyScore",ascending=False,inplace=True)
+cutoff = 350
+predsTop = preds[:cutoff]
+print("Precision: ",np.round(predsTop. \
+            anomalyScore[predsTop.trueLabel==1].count()/cutoff,2))
+print("Recall: ",np.round(predsTop. \
+            anomalyScore[predsTop.trueLabel==1].count()/y_train.sum(),2))
+print("Fraud Caught out of 330 Cases:", predsTop.trueLabel.sum())
+# Write dimensions to CSV
+# Write dimensions to CSV
+X_train_fastICA.loc[sample_indices,:].to_csv('independent_component_analysis_data.tsv', sep = '\t', index=False, header=False)
+#+end_src
+
+#+RESULTS:
+: Precision:  0.75
+: Recall:  0.79
+: Fraud Caught out of 330 Cases: 261
+** 結論
+普通PCA與ICA能捕捉到超過80%的已知詐欺，並有80%的精確率，較之監督式學習能捕捉到90%，已十分難得。
+
+* 分群
+** K-Means
+** Hierarchical Clustering
+** DBSCAN
+
+* 群組區隔
+
+* Footnotes
+[fn:1] [[https://www.oreilly.com/library/view/hands-on-unsupervised-learning/9781492035633/][Hands-On Unsupervised Learning Using Python]]
+[fn:2] Hands-On Machine Learning with Scikit-Learn: Aurelien Geron

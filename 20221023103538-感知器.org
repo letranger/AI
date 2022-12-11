@@ -1,0 +1,915 @@
+:PROPERTIES:
+:ID:       20221023T103538.640537
+:END:
+#+title: 感知器
+
+* Story of gate: From perceptron to MLP
+:PROPERTIES:
+:CUSTOM_ID: FromPerceptrionToMLP
+:END:
+** Example #1
+*** Question
+有三個A、一個B，如何進行分類?
+#+CAPTION: 分類任務:問題
+#+LABEL:fig:orGate1
+#+name: fig:orGate1
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/2021-05-24_00-48-56.jpg]]
+*** Idea
+最簡單的分類方式是在A和B中間直接找條直線(\(w_1x_1+w_2x_2+b=0\))就可以將A和B完整切出兩個區塊，然後再搭配階梯函數(step function)將>0與<=0分別設為1與0，用來代表類別0與1。該直線方程式如下：
+#+NAME: eqn:orRegFn
+\begin{equation}
+y = \begin{cases}
+1, & w_1x_1 + w_2x_2-b>0 \\
+0, & w_1x_1 + w_2x_2-b\leq0 \\
+\end{cases}
+\end{equation}
+*** Solution
+經過無數的嚐試錯誤，也許我們可以矇到一個如下的方程式
+#+CAPTION: 分類任務:Solution
+#+LABEL:fig:orGate2
+#+name: fig:orGate2
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/2021-05-24_00-50-07.jpg]]
+
+如果畫成Perceptron的圖:
+#+BEGIN_SRC dot :file ./images/orGatePerceptron.png :cmdline -Kdot -Tpng
+digraph perceptron {
+  rankdir=LR
+  sigma [label="weighted\n sum"]
+  output [label="output" shape="record"]
+  x1 -> sigma [label = 1]
+  x2 -> sigma [label = 1]
+  1 -> sigma[label = -0.5]
+  sigma -> "step\nfunction" -> output
+}
+#+END_SRC
+#+CAPTION: Perceptron presentation
+#+LABEL:fig:Perceptron4
+#+name: fig:Perceptron4
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 400
+#+ATTR_HTML: :width 500
+#+RESULTS:
+[[file:./images/orGatePerceptron.png]]
+如果將圖[[fig:orGate2]]的四點點代入y(方程式[[eqn:orRegFn]]):
+\begin{align*}
+A(0,1) \rightarrow y &= f(0,1) = f(1\times0+1\times1-0.5) = f(0.5) = 1 \\
+A(1,0) \rightarrow y &= f(1,0) = f(1\times1+1\times0–0.5) = f(0.5) = 1\\
+A(1,1) \rightarrow y &= f(1,1) = f(1\times1+1\times1–0.5) = f(1.5) = 1\\
+B(0,0) \rightarrow y &= f(0,0) = f(1\times0+1\times0–0.5) = f(-0.5) = 0\\
+\end{align*}
+*** OR gate
+有點計概基礎的同學，應該可以發現圖[[fig:orGate1]]與OR邏輯閘一致，其真值表如下
+| A | B | A OR B |
+|---+---+--------|
+| 0 | 0 |      0 |
+| 0 | 1 |      1 |
+| 1 | 0 |      1 |
+| 1 | 1 |      1 |
+*** Python實作
+上述 OR gate的python實作如下
+#+begin_src python -r -n :results output :exports both
+import numpy as np
+
+def step_function(x):
+    return np.array(x>0, dtype=np.int)
+
+def OR(x1, x2):
+    x = np.array([x1, x2])
+    w = np.array([1, 1])
+    b = -0.5
+    theta = 0
+    y = np.sum(w*x) + b
+    return step_function(y)
+
+print("0 OR 0 -> ", OR(0,0))
+print("0 OR 1 -> ", OR(0,1))
+print("1 OR 0 -> ", OR(1,0))
+print("1 OR 1 -> ", OR(1,1))
+#+end_src
+
+#+RESULTS:
+: 0 OR 0 ->  0
+: 0 OR 1 ->  1
+: 1 OR 0 ->  1
+: 1 OR 1 ->  1
+** Example #2
+上述範例中，我們以瞎貓精神找出了一組solution解決了OR gate的分類問題，請比照辦理，解決AND gate，建構出perceptro，實作出python code.
+已知AND gate真值表如下
+| A | B | A AND B |
+|---+---+---------|
+| 0 | 0 |       0 |
+| 0 | 1 |       0 |
+| 1 | 0 |       0 |
+| 1 | 1 |       1 |
+
+*** Solution :noexport:
+**** perceptron
+#+BEGIN_SRC dot :file ./images/andGatePerceptron.png :cmdline -Kdot -Tpng
+digraph perceptron {
+  rankdir=LR
+  sigma [label="weighted\n sum"]
+  output [label="output" shape="record"]
+  x1 -> sigma [label = 0.5]
+  x2 -> sigma [label = 0.5]
+  1 -> sigma[label = -0.7]
+  sigma -> "step\nfunction" -> output
+}
+#+END_SRC
+#+CAPTION: Perceptron presentation
+#+LABEL:fig:Perceptron4
+#+name: fig:Perceptron4
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 400
+#+ATTR_HTML: :width 500
+#+RESULTS:
+[[file:./images/andGatePerceptron.png]]
+**** Python實作
+#+begin_src python -r -n :results output :exports both
+import numpy as np
+
+def step_function(x):
+    return np.array(x>0, dtype=np.int)
+
+def AND(x1, x2):
+    x = np.array([x1, x2])
+    w = np.array([0.5, 0.5])
+    b = -0.7
+    y = np.sum(w*x) + b
+    return(step_function(y))
+
+print("0 AND 0 -> ",AND(0,0))
+print("0 AND 1 -> ",AND(0,1))
+print("1 AND 0 -> ",AND(1,0))
+print("1 AND 1 -> ",AND(1,1))
+#+end_src
+
+#+RESULTS:
+: 0 AND 0 ->  0
+: 0 AND 1 ->  0
+: 1 AND 0 ->  0
+: 1 AND 1 ->  1
+** XOR Problem
+*** Question
+XOR(互斥或)真值表如下:
+| A | B | A XOR B |
+|---+---+---------|
+| 0 | 0 |       0 |
+| 0 | 1 |       1 |
+| 1 | 0 |       1 |
+| 1 | 1 |       1 |
+其輸入/輸出分佈圖為
+#+CAPTION: XOR Gate
+#+LABEL:fig:xorGate1
+#+name: fig:xorGate1
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/2021-05-24_14-15-53.jpg]]
+*** Idea
+這個時候一般線性的分類就沒有辦法很完美分割(如下圖)，所以就需要一些變形的方法來達到目的。
+#+CAPTION: XOR Gate Solution ideas
+#+LABEL:fig:xorGate2
+#+name: fig:xorGate2
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/2021-05-24_14-18-51.jpg]]
+
+#+begin_verse
+一個便當吃不飽那就吃兩個阿
+--馬惠帝
+#+end_verse
+即便一個人再如何bumbler，仍有可能提出一些明智的話語，就如同星爺告訴我們的
+#+CAPTION: 就算是一張衛生紙...
+#+LABEL:fig:joke1
+#+name: fig:joke1
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/2021-05-24_14-25-08.jpg]]
+所以，一條線無法分割--那就用兩條啊
+*** Solution #1
+#+CAPTION: XOR Gate Solution
+#+LABEL:fig:joke1
+#+name: fig:joke1
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/2021-05-24_14-28-04.jpg]]
+如前所述，一條線為一個perceptron，這裡會用到兩個
+- \(h_1(x) = x_1 + x_2 - 0.5\)
+- \(h_2(x) = x_1 + x_2 - 1.5\)
+#+CAPTION: XOR Gate Solution 2
+#+LABEL:fig:joke1
+#+name: fig:joke1
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/2021-05-24_14-36-07.jpg]]
+
+將圖[[fig:xorGate2]]的4個點代入\(h_1\):
+\begin{align*}
+h_1(0,0) &= f(1\times0+1\times0–0.5) = f(-0.5) = 0\\
+h_1(0,1) &= f(1\times0+1\times1-0.5) = f(0.5) = 1\\
+h_1(1,0) &= f(1\times1+1\times0–0.5) = f(0.5) = 1\\
+h_1(1,1) &= f(1\times1+1\times1–0.5) = f(1.5) = 1\\
+\end{align*}
+
+將圖[[fig:xorGate2]]的4個點代入\(h_2\):
+\begin{align*}
+h_2(0,0) &= f(1\times0+1\times0–1.5) = f(-1.5) = 0\\
+h_2(0,1) &= f(1\times0+1\times1-1.5) = f(-0.5) = 0\\
+h_2(1,0) &= f(1\times1+1\times0–1.5) = f(-0.5) = 0\\
+h_2(1,1) &= f(1\times1+1\times1–1.5) = f(0.5) = 1\\
+\end{align*}
+
+由上可知:
+- (0, 0)帶入第1個perceptron \(h_1(0,0)\)輸出-0.5、帶入第2個perceptron \(h_2(0,0)\)輸出-1.5；(-0.5, -1.5)再經由step function轉換輸出(0,0)
+- (0, 1)帶入第1個perceptron \(h_1(0,1)\)輸出0.5、帶入第2個perceptron \(h_2(0,1)\)輸出-0.5；(0.5, -0.5)再經由step function轉換輸出(1,0)
+- (1, 0)帶入第1個perceptron \(h_1(1,0)\)輸出0.5、帶入第2個perceptron \(h_2(1,0)\)輸出-0.5；(0.5, -0.5)再經由step function轉換輸出(1,0)
+- (1, 1)帶入第1個perceptron \(h_1(1,1)\)輸出1.5、帶入第2個perceptron \(h_2(1,1)\)輸出0.5；(1.5, 0.5)再經由step function轉換輸出(1,1)
+
+即
+\begin{align*}
+data(0,0) &= f(h_1,h_2) = (0,0) \\
+data(0,1) &= f(h_1,h_2) = (1,0) \\
+data(1,0) &= f(h_1,h_2) = (1,0) \\
+data(1,1) &= f(h_1,h_2) = (1,1) \\
+\end{align*}
+
+這相當於透過兩個perceptron將原本的輸入做特徵空間轉換，如圖[[fig:xorGateSolution3]]:
+#+CAPTION: XOR Gate Solution 3
+#+LABEL:fig:xorGateSolution3
+#+name: fig:xorGateSolution3
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/2021-05-24_16-12-36.jpg]]
+
+這個時候只要設計一個線性分類器就可以完美分割兩類的資料了阿，如圖[[fig:xorGateSolution4]]:
+#+CAPTION: XOR Gate Solution 4
+#+LABEL:fig:xorGateSolution4
+#+name: fig:xorGateSolution4
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/2021-05-24_16-13-44.jpg]]
+
+XOR問題的神經網路結構如下圖:
+#+CAPTION: XOR Gate Solution 5
+#+LABEL:fig:xorGateSolution5
+#+name: fig:xorGateSolution5
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/2021-05-24_16-15-02.jpg]]
+*** Solution #2
+當資料分布如同開頭的XOR(線性不可分的案例)，仍是不可解的，即使找個絕頂聰明的人仍無法以一條直線分割非線性的資料分布。因此我們會藉由多層感知器處理這個問題，也就是利用feature transform的概念，將原本線性不可分的輸入資料映射到線性可分的特徵平面上，特徵轉換的效果也就是造就深層網路效果能優異的原因[fn:7]。如下圖是原本不可分的XOR例子：
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/b01.PNG]]
+
+為了處理這個問題，我們只需要使用介紹激活函數時使用的兩層感知器就可以做出XOR的效果，下圖是經過feature transform後四個點在y1-y2平面上的位置，我們可以輕易地使用圖中的綠色直線將兩個類別切開。所使用的感知器為(當然這組解只是個例子而已，答案非唯一解)：
+
+$$w_1 = [0.2, -0.3], b_1 = 0.2$$
+$$w_2 = [-0.8, 1.1], b_2 = 1$$
+
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/b02.png]]
+
+#+begin_src python -r -n :async :results output :exports both
+# -*- coding: utf-8 -*-
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+def Perceptron(w, x, b):
+    return Sigmoid(np.dot(w, x) + b)
+
+
+def Sigmoid(x):
+    return 1/(1+np.exp(-x))
+
+# 畫出原始XOR
+plt.figure()
+pts = np.array([[0, 0], [1, 1], [0, 1], [1, 0]])
+plt.title("Original XOR")
+plt.xlabel("x1")
+plt.ylabel("x2")
+plt.plot(pts[0:2,0], pts[0:2,1], 'bx', pts[2:4,0], pts[2:4,1], 'ro');
+plt.show()
+
+# 人為給定w與b
+w1 = [0.2, -0.3]
+b1 = 0.2
+w2 = [-0.8, 1.1]
+b2 = 1
+
+for pt in pts:
+    # 計算feature transform後的輸出 (y1 and y2)
+    if "y" not in dir():
+        y = np.array([Perceptron(w1, pt, b1), Perceptron(w2, pt, b2)])
+    else:
+        y = np.row_stack((y, np.array([Perceptron(w1, pt, b1), Perceptron(w2, pt, b2)])))
+
+# 畫出轉換到y1-y2平面上的四個點
+plt.figure()
+plt.title("Transfomed XOR")
+plt.xlabel("y1")
+plt.ylabel("y2")
+plt.plot(y[0:2,0], y[0:2,1], 'bx', y[2:4,0], y[2:4,1], 'ro');
+
+# 舉個能切割開兩類別的直線例子
+plt.plot([0.48, 0.6], [0.9, 0.57], 'g-', linewidth=1.5)
+plt.show()
+
+del y
+#+end_src
+** MLP (Multilayer perceptron)
+由XOR問題的例子可以知道，第一層兩個Perceptron在做的事情其實是將資料投影到另一個特徵空間去,最後再把h1和h2的結果當作另一個Perceptron的輸入，再做一個下一層的Perceptron就可以完美分類XOR問題。
+
+上例其實就是一個Two-Layer Perceptrons，第一層的Perceptron輸出其實就是每個hidden node，所以如果hidden layer再多一層就是Three-Layer Perceptrons，所以很多層的Perceptrons組合起來就是多層感知機 (Multilayer perceptron, MLP)。MLP其實就是可以用多層和多個Perceptron來達到最後目的，有點像用很多個回歸方法/線性分類器一層一層疊加來達到目的。
+
+中間一堆的hidden layer其實就是在做資料的特徵擷取，可以降維，也可以增加維度，而這個過程不是經驗法則去設計，而是由資料去學習得來，最後的輸出才是做分類，所以最後一層也可以用SVM來分類。
+
+如果層數再多也可以稱為深度神經網路(deep neural network, DNN)，所以現在稱的DNN其實就是人工神經網路的MLP。有一說法是說因為MLP相關的神經網路在之前因為電腦限制所以performance一直都沒有很好的突破，所以相關研究沒有像SVM這麼的被接受，因此後來Deep learning的聲名大噪，MLP也換個較酷炫的名字(deep neural network)來反轉神經網路這個名稱的聲勢。
+
+多層感知機是一種前向傳遞類神經網路，至少包含三層結構(輸入層、隱藏層和輸出層)，並且利用到「倒傳遞」的技術達到學習(model learning)的監督式學習，以上是傳統的定義。現在深度學習的發展，其實MLP是深度神經網路(deep neural network, DNN)的一種special case，概念基本上一樣，DNN只是在學習過程中多了一些手法和層數會更多更深[fn:1]。
+
+本章參考來源:[[https://chih-sheng-huang821.medium.com/%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92-%E7%A5%9E%E7%B6%93%E7%B6%B2%E8%B7%AF-%E5%A4%9A%E5%B1%A4%E6%84%9F%E7%9F%A5%E6%A9%9F-multilayer-perceptron-mlp-%E9%81%8B%E4%BD%9C%E6%96%B9%E5%BC%8F-f0e108e8b9af][機器學習- 神經網路(多層感知機 Multilayer perceptron, MLP)運作方式]]
+
+* 感知器(Perception)
+** 何謂感知器
+#+begin_verse
+Perceptron is a single layer neural network and a multi-layer perceptron is called Neural Networks([[id:d6daa102-05bb-475d-b619-db8b61e86030][神經網路]]).
+#+end_verse
+收到多個輸入訊號之後，再當作一個訊號輸出，如圖[[fig:perception]]所示，\(x_1, x_2\)為輸入訊號，\(y\)為輸出訊號，\(w_1, w_2\)代表權重(weight)，圖中的圓圈稱為「神經元」或稱作「節點」。神經元\(x_1, x_2\)的訊號是否會觸發神經元\(y\)使其輸出訊號則取決於\(w_1x_1+w_2x_2\)是否會超過某個臨界值\(\theta\)。
+#+BEGIN_SRC dot :file images/sensor1.png :cmdline -Kdot -Tpng
+digraph sensor1{
+  rankdir=LR;
+  x1[label=x1];
+  x2[label=x2];
+  y[label=y];
+  x1 -> y[label = w1];
+  x2 -> y[label = w2];
+}
+#+END_SRC
+#+CAPTION: 收到兩組輸入訊號的感知器
+#+LABEL:fig:perception
+#+NAME: fig:perception
+#+ATTR_LATEX: :width 300
+#+ATTR_HTML: :width 300
+#+ATTR_ORG: :width 300
+#+RESULTS:
+[[file:images/sensor1.png]]
+
+若以算式表示此一觸發條件則如公式[[eqn:perc-eq]]所示。
+#+NAME: eqn:perc-eq
+\begin{equation}
+y = \begin{cases} 0 & \text (w_1x_1+w_2x_2 \leq 0)
+\\ 1 & \text (w_1x_1 + w_2x_2 > 0) \end{cases}
+\end{equation}
+
+** 感知器工作原理
+*** Version #1: 使用weight
+感知器（perceptron）是 人造神經元（artificial neuron）的一種，也是最基本的一種。它接受一些輸入，產生一個輸出。
+#+BEGIN_SRC dot :file ./images/perceptron-1.png :cmdline -Kdot -Tpng
+digraph perceptron {
+  rankdir=LR
+  sigma [label="weighted\n sum"]
+  output [label="output" shape="record"]
+  x1 -> sigma [label = w1]
+  x2 -> sigma [label = w2]
+  sigma -> output
+}
+#+END_SRC
+#+CAPTION: Perceptron version 1
+#+LABEL:fig:Perceptron1
+#+name: fig:Perceptron1
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 400
+#+RESULTS:
+[[file:./images/perceptron-1.png]]
+- 這種架構的輸入/輸出關係為線性
+- 神經網路中再多的線性perceptron叠加，仍為線性
+- 無法解決 *線性不可分* 的問題
+**** 線性可分 v.s. 線性不可分
+簡而言之，如果存在一個超平面完全分離H元素和M元素，那麼上面的表達式表示H和M是線性可分的[fn:4]。
+#+CAPTION: 線性和非線性分類
+#+LABEL:fig:linear-nonLinear
+#+name: fig:linear-nonLinear
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/2021-05-23_14-10-30.jpg]]
+
+在圖[[fig:linear-nonLinear]]中，A顯示了一個線性分類問題，B顯示了一個非線性的分類問題。在A中，我們的決策邊界是一個線性的，它將藍色的點和綠色的點完全分開。在這個場景中，可以實現幾個線性分類器。
+**** 低維映射至高維
+在SVM的解決方案中，可以透過一個非線性的映射將低維空間線性不可分的樣本轉換至高維空間，使其成為線性可分   [fn:5]，例如:
+#+CAPTION: Kernal function mapping
+#+LABEL:fig:SVM-KF
+#+name: fig:SVM-KF
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/2021-05-23_14-14-31.jpg]]
+
+*** Version #2: 加入bias
+#+BEGIN_SRC dot :file ./images/perceptron-2.png :cmdline -Kdot -Tpng
+digraph perceptron {
+  rankdir=LR
+  sigma [label="weighted\n sum"]
+  output [label="output" shape="record"]
+  x1 -> sigma [label = w1]
+  x2 -> sigma [label = w2]
+  1 -> sigma[label = b]
+  sigma -> output
+}
+#+END_SRC
+#+CAPTION: Perceptron version 2
+#+LABEL:fig:Perceptron2
+#+name: fig:Perceptron2
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 400
+#+ATTR_HTML: :width 500
+#+RESULTS:
+[[file:./images/perceptron-2.png]]
+- 不加 bias 你的分類線(面)就必須過原點，這顯然是不靈活的
+- 透過bias，可以將NN進行左右調整，以適應(fit)更多情況
+- 可以將bias視為一個activate perceptron的threshold
+- bias也可以視為當輸入均為0時的輸出值
+- 從仿生學的角度，刺激生物神經元使它興奮需要刺激強度超過一定的閾值，同樣神經元模型也仿照這點設置了bias
+
+*** Version #3: 加入activation function
+加入activation function
+#+BEGIN_SRC dot :file ./images/perceptron-3.png :cmdline -Kdot -Tpng
+digraph perceptron {
+  rankdir=LR
+  sigma [label="weighted\n sum"]
+  av [label="activation\n function"]
+  output [label="output" shape="record"]
+  x1 -> sigma [label = w1]
+  x2 -> sigma [label = w2]
+  1 -> sigma[label = b]
+  sigma -> av -> output
+}
+#+END_SRC
+#+CAPTION: Perceptron version 2
+#+LABEL:fig:Perceptron2
+#+name: fig:Perceptron2
+#+ATTR_LATEX: :width 500
+#+ATTR_ORG: :width 500
+#+ATTR_HTML: :width 600
+#+RESULTS:
+[[file:./images/perceptron-3.png]]
+
+*** 結論: 什麼是perceptron
+其實Perceptron就只是一個兩層的神經網路，輸入層和輸出層
+
+** 執行感知器: 邏輯閘實作
+*** AND gate(版本#1：只設定權重)
+以上述感知器的運作方式來模擬 AND 邏輯閘的功能，可由以下程式碼實現出來。
+#+BEGIN_SRC python -n -r :results output :exports both
+def AND(x1, x2):
+    w1, w2, theta = 0.5, 0.5, 0.7
+    tmp = x1*w1 + x2*w2
+    if tmp <= theta:
+        return 0
+    else:
+        return 1
+
+print("AND(1, 0): ", AND(1,0))         (ref:run-and)
+print("AND(1, 0): ", AND(1,1))
+#+END_SRC
+
+#+RESULTS:
+: AND(1, 0):  0
+: AND(1, 0):  1
+
+如程式碼第[[(run-and)]]行所示，傳入\(1, 0\)為輸入訊號，而根據計算結果是否達到臨界值(\(\theta=0.7\))來決定最終的輸出訊號\(0\)。
+
+*** AND gate(版本#2: 導入權重及偏權值)
+在版本#1 的實作中，我們只透過輸入訊號與權重的計算來實現感知器的運作，事實上，這個感知器也可以用公式[[eqn:biasPerc-eq]]來表示，這裡利用\(b\)這個被稱作「偏移值」或「偏權值」的參數來控制神經元的觸發難度，此時的感知器如圖[[fig:biaspercep]]所示。
+#+NAME: eqn:biasPerc-eq
+\begin{equation}
+y = \begin{cases} 0 & \text (b+w_1x_1+w_2x_2 \leq 0)
+\\ 1 & \text (b+w_1x_1 + w_2x_2 > 0) \end{cases}
+\end{equation}
+
+#+BEGIN_SRC dot :file images/biassensor2.png :cmdline -Kdot -Tpng
+digraph biasG{
+  rankdir=LR;
+  node[style=filled];
+  one[label = 1];
+  node[style=empty];
+  x1[label = x1];
+  x2[label = x2];
+  one -> y[label = b];
+  x1 -> y[label = w1];
+  x2 -> y[label = w2];
+}
+#+END_SRC
+#+CAPTION: 加入偏移值\(b\)的感知器
+#+LABEL:fig:biaspercep
+#+name: fig:biaspercep
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 300
+#+RESULTS:
+[[file:images/biassensor2.png]]
+
+在圖[[fig:biaspercep]]中，增加了一個權重為\(b\)、輸入值為 1 的訊號，偏權值的作用與權重\(w_1\)及\(w_2\)不同，\(w_1\)與\(w_2\)的功能是控制輸入訊號重要程度的參數，但是\(b\)的功能是調整輸出訊號 1 的參數，偏權值也包含了「偏移」的意思。這是指在沒有輸入時，輸出究竟會產生多少偏移量。此外，由於偏移值的輸入訊號固定為 1，以圖形表示時，會用灰色填滿神經元，藉此區隔其他神經元。
+
+以下為針對上述版本#1 的 AND 邏輯閘模擬程式碼進行的修正，將偏移值的機制加入感知器的運作流程中。
+#+CAPTION: And Gate perceptron
+#+LABEL:fig:biaspercep
+#+name: fig:biaspercep
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+#+RESULTS:
+[[file:images/AndGate.jpg]]
+#+BEGIN_SRC python -n -r :results output :exports both
+  import numpy as np
+  def AND(x1, x2):
+      x = np.array([x1, x2])
+      w = np.array([0.5, 0.5])
+      b = -0.7
+      theta = 0
+      tmp = np.sum(w*x) + b
+      if tmp <= theta:
+          return 0
+      else:
+          return 1
+
+  print("1 AND 0 -> ",AND(1,0))
+  print("1 AND 1 -> ",AND(1,1))
+
+  #draw corresponding dots
+  import matplotlib.pyplot as plt
+  xs = np.array([0, 0, 1, 1])
+  ys = np.array([0, 1, 0, 1])
+  for xi, yi in zip(xs, ys):
+      print(AND(x, y))
+
+#+END_SRC
+
+#+RESULTS:
+: 1 AND 0 ->  0
+: 1 AND 1 ->  1
+
+*** OR, NAND gates
+同樣的感知器架構亦可實作出 OR 邏輯閘的功能：
+#+BEGIN_SRC python -n -r :results output :exports both
+  import numpy as np
+  def OR(x1, x2):
+      x = np.array([x1, x2])
+      w = np.array([0.5, 0.5])
+      b = -0.2
+      theta = 0
+      tmp = np.sum(w*x) + b
+      if tmp <= theta:
+          return 0
+      else:
+          return 1
+  print(OR(0,0))
+#+END_SRC
+
+也可實作出 NAND 邏輯閘的原理。
+#+BEGIN_SRC python -n -r :results output :exports both
+  import numpy as np
+  def NAND(x1, x2):
+      x = np.array([x1, x2])
+      w = np.array([-0.5, -0.5])
+      b = 0.7
+      tmp = np.sum(w*x) + b
+      if tmp <= 0:
+          return 0
+      else:
+          return 1
+  print(NAND(0,0))
+#+END_SRC
+
+* 以感知器解決分類問題(監督式學習範例)
+:PROPERTIES:
+:CUSTOM_ID: PerceptronDemo
+:END:
+從「鳶尾花資料集」取出兩類花(Setosa, Versicolor)，藉由不同的兩個屬性（花萼長、花瓣長）對其行分類，如圖[[fig:02_06]]。
+#+BEGIN_SRC python -n -r :results output :exports both
+  # coding: utf-8
+  import numpy as np
+  import pandas as pd
+  import matplotlib.pyplot as plt
+  from matplotlib.colors import ListedColormap
+  ### 感知器模型
+  class Perceptron(object):
+      """Perceptron classifier.
+      參數：
+      ------------
+      eta : float: 學習率 (0.0 ~ 1.0)
+      n_iter : int: 訓練次數
+        Passes over the training dataset.
+      random_state : int
+      屬性
+      -----------
+      w_ : 1d-array: 訓練後的權重
+        Weights after fitting.
+      errors_ : list: 每次訓練的錯誤次數
+
+      """
+      def __init__(self, eta=0.01, n_iter=50, random_state=1):
+          self.eta = eta
+          self.n_iter = n_iter
+          self.random_state = random_state
+
+      def fit(self, X, y):
+          """Fit training data.
+          Parameters
+          ----------
+          X : {array-like}, shape = [n_samples, n_features]
+            Training vectors, where n_samples is the number of samples and
+            n_features is the number of features.
+          y : array-like, shape = [n_samples]
+            Target values.
+
+          Returns
+          -------
+          self : object
+
+          """
+          rgen = np.random.RandomState(self.random_state)
+          self.w_ = rgen.normal(loc=0.0, scale=0.01, size=1 + X.shape[1])
+          self.errors_ = []
+
+          for _ in range(self.n_iter):
+              errors = 0
+              for xi, target in zip(X, y):
+                  update = self.eta * (target - self.predict(xi))
+                  self.w_[1:] += update * xi
+                  self.w_[0] += update
+                  errors += int(update != 0.0)
+              self.errors_.append(errors)
+          return self
+
+      def net_input(self, X):
+          """Calculate net input"""
+          return np.dot(X, self.w_[1:]) + self.w_[0]
+
+      def predict(self, X):
+          """Return class label after unit step"""
+          return np.where(self.net_input(X) >= 0.0, 1, -1)
+
+  v1 = np.array([1, 2, 3])
+  v2 = 0.5 * v1
+  np.arccos(v1.dot(v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)))
+
+  # 讀入訓練集資料
+  df = pd.read_csv('https://archive.ics.uci.edu/ml/'
+          'machine-learning-databases/iris/iris.data', header=None)
+  print(df.tail())
+
+  # select setosa and versicolor
+  y = df.iloc[0:100, 4].values
+  y = np.where(y == 'Iris-setosa', -1, 1)
+
+  # extract sepal length and petal length
+  X = df.iloc[0:100, [0, 2]].values
+
+  # plot data
+  plt.clf()
+  plt.scatter(X[:50, 0], X[:50, 1],
+              color='red', marker='o', label='setosa')
+  plt.scatter(X[50:100, 0], X[50:100, 1],
+              color='blue', marker='x', label='versicolor')
+
+  plt.xlabel('sepal length [cm]')
+  plt.ylabel('petal length [cm]')
+  plt.legend(loc='upper left')
+
+  plt.savefig('02_06.png', dpi=300)
+  # plt.show()
+
+  # 訓練感知器模型
+  ppn = Perceptron(eta=0.1, n_iter=10)
+  ppn.fit(X, y)
+  plt.clf()
+  plt.plot(range(1, len(ppn.errors_) + 1), ppn.errors_, marker='o')
+  plt.xlabel('Epochs')
+  plt.ylabel('Number of updates')
+
+  plt.savefig('02_07.png', dpi=300)
+  #plt.show()
+
+  # ### A function for plotting decision regions
+  def plot_decision_regions(X, y, classifier, resolution=0.02):
+
+      # setup marker generator and color map
+      markers = ('s', 'x', 'o', '^', 'v')
+      colors = ('red', 'blue', 'lightgreen', 'gray', 'cyan')
+      cmap = ListedColormap(colors[:len(np.unique(y))])
+
+      # plot the decision surface
+      x1_min, x1_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+      x2_min, x2_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+      xx1, xx2 = np.meshgrid(np.arange(x1_min, x1_max, resolution),
+                             np.arange(x2_min, x2_max, resolution))
+      Z = classifier.predict(np.array([xx1.ravel(), xx2.ravel()]).T)
+      Z = Z.reshape(xx1.shape)
+      plt.contourf(xx1, xx2, Z, alpha=0.3, cmap=cmap)
+      plt.xlim(xx1.min(), xx1.max())
+      plt.ylim(xx2.min(), xx2.max())
+
+      # plot class samples
+      for idx, cl in enumerate(np.unique(y)):
+          plt.scatter(x=X[y == cl, 0],
+                      y=X[y == cl, 1],
+                      alpha=0.8,
+                      c=colors[idx],
+                      marker=markers[idx],
+                      label=cl,
+                      edgecolor='black')
+  plt.clf()
+  plot_decision_regions(X, y, classifier=ppn)
+  plt.xlabel('sepal length [cm]')
+  plt.ylabel('petal length [cm]')
+  plt.legend(loc='upper left')
+
+
+  plt.savefig('02_08.png', dpi=300)
+  #plt.show()
+
+#+END_SRC
+
+#+RESULTS:
+:        0    1    2    3               4
+: 145  6.7  3.0  5.2  2.3  Iris-virginica
+: 146  6.3  2.5  5.0  1.9  Iris-virginica
+: 147  6.5  3.0  5.2  2.0  Iris-virginica
+: 148  6.2  3.4  5.4  2.3  Iris-virginica
+: 149  5.9  3.0  5.1  1.8  Iris-virginica
+
+#+CAPTION: 待分類的兩種花依其不同屬性之分佈狀況
+#+LABEL:fig:02_06
+#+name: fig:02_06
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/02_06.png]]
+
+#+CAPTION: 感知器訓練過程
+#+LABEL:fig:02_07
+#+name: fig:02_07
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/02_07.png]]
+
+#+CAPTION: 訓練後的分類結果
+#+LABEL:fig:02_08
+#+name: fig:02_08
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/02_08.png]]
+
+#+latex:\newpage*
+
+* 單層感知器的極限與多層感知器: XOR gate
+
+到目前為止，透過權重及偏權值可以設計 AND、NAND、OR, 但無法完成 XOR。然而，其實我們可以透過 NAND、OR 及 AND 三個功能組合出 XOR 還輯閘，其組合方式如圖[[fig:xor-gate]]所示，顯然，若要再以感知器來模擬其運作原理，單層感知器已不敷使用。
+#+CAPTION: XOR 還輯閘的組合
+#+LABEL:fig:xor-gate
+#+name: fig:xor-gate
+#+ATTR_LATEX: :width 300
+#+ATTR_HTML: :width 400
+#+ATTR_ORG: :width 300
+[[file:images/xor.jpg]]
+
+** 多層感知器(Multilayer perceptron, MLP): XOR gate 實作
+#+CAPTION: MLP解決XOR Gate
+#+LABEL:fig:xor-gate
+#+name: fig:xor-gate
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+[[file:images/XORMLP.jpg]]
+
+#+CAPTION: Linearly Separable
+#+LABEL:fig:xor-gate
+#+name: fig:xor-gate
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/LinearlySeparable.jpg]]
+
+參考圖[[fig:xor-gate]]的架構，我們可以藉由增加感知器的層數來實現 XOR 的功能，其結構如圖[[fig:TLayerSensor]]所示。
+#+BEGIN_SRC dot :file ./2LayerSensor.png :cmdline -Kdot -Tpng
+  digraph TLS{
+    rankdir=LR;
+    x1 -> NAND -> AND;
+    x1 -> OR -> AND;
+    x2 -> NAND;
+    x2 -> OR;
+  }
+#+END_SRC
+#+CAPTION: 多層感知器模擬 XOR 還輯閘
+#+LABEL:fig:TLayerSensor
+#+name: fig:TLayerSensor
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+#+RESULTS:
+[[file:images/2LayerSensor.png]]
+
+至於其實作程式碼則如下。
+#+BEGIN_SRC python -n -r :results output :exports both
+#python code for XOR gate simulation
+import numpy as np
+
+def AND(x1, x2):
+    x = np.array([x1, x2])
+    w = np.array([0.5, 0.5])
+    b = -0.7
+    theta = 0
+    tmp = np.sum(w*x) + b
+    if tmp <= theta:
+        return 0
+    else:
+        return 1
+
+def OR(x1, x2):
+    x = np.array([x1, x2])
+    w = np.array([0.5, 0.5])
+    b = -0.2
+    theta = 0
+    tmp = np.sum(w*x) + b
+    if tmp <= theta:
+        return 0
+    else:
+        return 1
+
+def NAND(x1, x2):
+    x = np.array([x1, x2])
+    w = np.array([-0.5, -0.5])
+    b = 0.7
+    tmp = np.sum(w*x) + b
+    if tmp <= 0:
+        return 0
+    else:
+        return 1
+
+def XOR(x1, x2):
+    s1 = NAND(x1, x2)
+    s2 = OR(x1, x2)
+    y = AND(s1, s2)
+    return y
+
+print("XOR(0,0): ", XOR(0,0))
+print("XOR(0,1): ", XOR(0,1))
+print("XOR(1,0): ", XOR(1,0))
+print("XOR(1,1): ", XOR(1,1))
+#+END_SRC
+
+#+RESULTS[87f37ec3364308fc99ff6301646186c1497b27e8]:
+: XOR(0,0):  0
+: XOR(0,1):  1
+: XOR(1,0):  1
+: XOR(1,1):  0
+
+* Footnotes
+
+[fn:7] [[http://elmer-storage.blogspot.com/2018/07/cnn-activation-function-feature.html][ CNN筆記 - 激活函數 (Activation Function)與特徵轉換 (Feature Transform) ]]
+
+[fn:1] [[https://chih-sheng-huang821.medium.com/%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92-%E7%A5%9E%E7%B6%93%E7%B6%B2%E8%B7%AF-%E5%A4%9A%E5%B1%A4%E6%84%9F%E7%9F%A5%E6%A9%9F-multilayer-perceptron-mlp-%E5%90%AB%E8%A9%B3%E7%B4%B0%E6%8E%A8%E5%B0%8E-ee4f3d5d1b41][機器學習- 神經網路(多層感知機 Multilayer perceptron, MLP) 含倒傳遞( Backward propagation)詳細推導]]
+
+[fn:2] [[https://kknews.cc/code/o8m4gpq.html][五分鐘理解深度學習中激活函數以及不同激活函數的使用場景]]
+
+[fn:3] [[https://towardsdatascience.com/what-the-hell-is-perceptron-626217814f53][What the Hell is Perceptron?]]
+
+[fn:4] [[https://kknews.cc/code/o8qaazo.html][機器學習：Python測試線性可分性的方法]]
+
+[fn:5] [[https://s-top.github.io/blog/2018-04-19-svm][Support Vector Machine（全面推导）]]
+
+[fn:6] [[https://chih-sheng-huang821.medium.com/%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92-%E7%A5%9E%E7%B6%93%E7%B6%B2%E8%B7%AF-%E5%A4%9A%E5%B1%A4%E6%84%9F%E7%9F%A5%E6%A9%9F-multilayer-perceptron-mlp-%E9%81%8B%E4%BD%9C%E6%96%B9%E5%BC%8F-f0e108e8b9af][機器學習- 神經網路(多層感知機 Multilayer perceptron, MLP)運作方式]]
+
+[fn:12][[https://ithelp.ithome.com.tw/articles/10191820][Day 06：處理影像的利器 -- 卷積神經網路(Convolutional Neural Network) ]]
+
+[fn:13][[https://ujjwalkarn.me/2016/08/11/intuitive-explanation-convnets/][An Intuitive Explanation of Convolutional Neural Networks]]
+
+[fn:14][[https://medium.com/@syshen/%E5%85%A5%E9%96%80%E6%B7%B1%E5%BA%A6%E5%AD%B8%E7%BF%92-2-d694cad7d1e5][入門深度學習 — 2]]
+
+[fn:15][[https://www.books.com.tw/products/0010822932][Deep learning 深度學習必讀：Keras 大神帶你用 Python 實作]]
+[fn:47] [[https://chih-sheng-huang821.medium.com/%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92-%E7%A5%9E%E7%B6%93%E7%B6%B2%E8%B7%AF-%E5%A4%9A%E5%B1%A4%E6%84%9F%E7%9F%A5%E6%A9%9F-multilayer-perceptron-mlp-%E5%90%AB%E8%A9%B3%E7%B4%B0%E6%8E%A8%E5%B0%8E-ee4f3d5d1b41][機器學習- 神經網路(多層感知機 Multilayer perceptron, MLP) 含倒傳遞( Backward propagation)詳細推導]]

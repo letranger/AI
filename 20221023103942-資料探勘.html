@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2022-10-23 Sun 10:40 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>資料探勘</title>
+<meta name="author" content="Yung Chin, Yen" />
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<link rel="stylesheet" type="text/css" href="../css/white.css" />
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">資料探勘</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org49d9f1b">1. What is Data Mining</a></li>
+<li><a href="#org98a9fb1">2. Why Data Mininng</a></li>
+<li><a href="#org39430c7">3. 資料類型</a>
+<ul>
+<li><a href="#org62e6b15">3.1. Database-oriented data set</a></li>
+<li><a href="#org87c14fc">3.2. Advanced data set</a></li>
+</ul>
+</li>
+<li><a href="#org8d2ded8">4. 背後會用到的技術</a></li>
+<li><a href="#org6fd9d5f">5. Data Mining Process</a>
+<ul>
+<li><a href="#org4749e4e">5.1. Preprocessing</a></li>
+<li><a href="#org70116cd">5.2. Exploration</a></li>
+<li><a href="#orgc212373">5.3. Data Mining</a></li>
+<li><a href="#org9cea157">5.4. Post processing</a></li>
+</ul>
+</li>
+<li><a href="#org43cfc02">6. General Types of Data Mining</a>
+<ul>
+<li><a href="#org6b2fb3c">6.1. Association rule mining</a></li>
+<li><a href="#org7a90235">6.2. Classification</a></li>
+<li><a href="#orgd8022c7">6.3. Clustering</a></li>
+</ul>
+</li>
+<li><a href="#org2c6b43f">7. Association rule mining</a>
+<ul>
+<li><a href="#org31872c6">7.1. Mining implications between items</a></li>
+<li><a href="#org4591eaf">7.2. Frequent item sets</a></li>
+<li><a href="#org25ed290">7.3. Strong rules (同時符合 min_support, min_conf)</a></li>
+<li><a href="#orgba8bdd2">7.4. 產生 Strong rules 用到的演算法: Apriori Algorithm</a></li>
+</ul>
+</li>
+<li><a href="#orgc275df0">8. Downward Closure Property</a></li>
+<li><a href="#org810803a">9. Sequential Pattern Mining</a>
+<ul>
+<li><a href="#org7b7f515">9.1. Mining sequential implications between items</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+<div id="outline-container-org49d9f1b" class="outline-2">
+<h2 id="org49d9f1b"><span class="section-number-2">1.</span> What is Data Mining</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+Discover knowledge from data, or, knowledge discovery from data (KDD).<br />
+</p>
+
+<p>
+Extraction of interesting, non-trivial, implicit, previously unknown and potentially useful patterns of knowledge from huge data.<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org98a9fb1" class="outline-2">
+<h2 id="org98a9fb1"><span class="section-number-2">2.</span> Why Data Mininng</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+雖然資料量大，取得容易，但是其中夾雜太多無關資料<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org39430c7" class="outline-2">
+<h2 id="org39430c7"><span class="section-number-2">3.</span> 資料類型</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-org62e6b15" class="outline-3">
+<h3 id="org62e6b15"><span class="section-number-3">3.1.</span> Database-oriented data set</h3>
+</div>
+<div id="outline-container-org87c14fc" class="outline-3">
+<h3 id="org87c14fc"><span class="section-number-3">3.2.</span> Advanced data set</h3>
+<div class="outline-text-3" id="text-3-2">
+</div>
+<ol class="org-ol">
+<li><a id="org67126f8"></a>Data streams<br />
+<div class="outline-text-4" id="text-3-2-1">
+<p>
+持續產生的，如天氣、氣溫，所以要即時處理<br />
+</p>
+</div>
+</li>
+<li><a id="orgdd9be86"></a>Time-series data, sequence data, bio-sequences<br />
+<div class="outline-text-4" id="text-3-2-2">
+<p>
+有因果關係、順序關係、或生物資料(DNA)<br />
+</p>
+</div>
+</li>
+<li><a id="orgcbb3e97"></a>Graphs, social networks and multi-linked data<br />
+<div class="outline-text-4" id="text-3-2-3">
+<p>
+graph(社群網路關係)<br />
+</p>
+</div>
+</li>
+<li><a id="orgd909e6e"></a>Spatial data and spatiotemporal data<br />
+<div class="outline-text-4" id="text-3-2-4">
+<p>
+GPS 軌跡記錄<br />
+</p>
+</div>
+</li>
+<li><a id="org4a8de9b"></a>Multimedia database<br /></li>
+<li><a id="org1641d00"></a>Text<br /></li>
+<li><a id="org0cbb3f9"></a>The World-Wide Web<br /></li>
+</ol>
+</div>
+</div>
+
+<div id="outline-container-org8d2ded8" class="outline-2">
+<h2 id="org8d2ded8"><span class="section-number-2">4.</span> 背後會用到的技術</h2>
+<div class="outline-text-2" id="text-4">
+<ul class="org-ul">
+<li>Database<br /></li>
+<li>Machine Learning<br /></li>
+<li>Neural Network<br /></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org6fd9d5f" class="outline-2">
+<h2 id="org6fd9d5f"><span class="section-number-2">5.</span> Data Mining Process</h2>
+<div class="outline-text-2" id="text-5">
+</div>
+<div id="outline-container-org4749e4e" class="outline-3">
+<h3 id="org4749e4e"><span class="section-number-3">5.1.</span> Preprocessing</h3>
+<div class="outline-text-3" id="text-5-1">
+</div>
+<ol class="org-ol">
+<li><a id="org9cb3e7a"></a>Data collection<br /></li>
+<li><a id="org103e368"></a>Data cleaning<br /></li>
+<li><a id="orgea9e4e6"></a>Data integration<br /></li>
+</ol>
+</div>
+<div id="outline-container-org70116cd" class="outline-3">
+<h3 id="org70116cd"><span class="section-number-3">5.2.</span> Exploration</h3>
+<div class="outline-text-3" id="text-5-2">
+</div>
+<ol class="org-ol">
+<li><a id="org761b4c8"></a>Data warehousing<br />
+<div class="outline-text-4" id="text-5-2-1">
+<p>
+決定使用哪一種儲存方式<br />
+</p>
+</div>
+</li>
+<li><a id="org176f58b"></a>Data selection<br />
+<div class="outline-text-4" id="text-5-2-2">
+<p>
+如：feature selection<br />
+</p>
+</div>
+</li>
+</ol>
+</div>
+<div id="outline-container-orgc212373" class="outline-3">
+<h3 id="orgc212373"><span class="section-number-3">5.3.</span> Data Mining</h3>
+<div class="outline-text-3" id="text-5-3">
+</div>
+<ol class="org-ol">
+<li><a id="org6bf9503"></a>Pattern evaluation<br />
+<div class="outline-text-4" id="text-5-3-1">
+<p>
+找到常常發生的現象<br />
+</p>
+</div>
+</li>
+<li><a id="orgfff7554"></a>Knowledge discovery<br /></li>
+</ol>
+</div>
+<div id="outline-container-org9cea157" class="outline-3">
+<h3 id="org9cea157"><span class="section-number-3">5.4.</span> Post processing</h3>
+<div class="outline-text-3" id="text-5-4">
+</div>
+<ol class="org-ol">
+<li><a id="org1f3d4a4"></a>Information presentation<br />
+<div class="outline-text-4" id="text-5-4-1">
+<p>
+將所發掘的知識以簡單易懂的方式呈現出來，這點較少人留意，但最有助於後續決策，即，如 data visualization<br />
+</p>
+</div>
+</li>
+<li><a id="orgbcbc8db"></a>Decision making<br /></li>
+</ol>
+</div>
+</div>
+
+<div id="outline-container-org43cfc02" class="outline-2">
+<h2 id="org43cfc02"><span class="section-number-2">6.</span> General Types of Data Mining</h2>
+<div class="outline-text-2" id="text-6">
+</div>
+<div id="outline-container-org6b2fb3c" class="outline-3">
+<h3 id="org6b2fb3c"><span class="section-number-3">6.1.</span> Association rule mining</h3>
+<div class="outline-text-3" id="text-6-1">
+<ul class="org-ul">
+<li>a -&gt; b<br /></li>
+<li>由大賣場的銷售記錄，發現買了 a 的人都買了 b。決策: 把兩種商品擺在一起<br /></li>
+<li>某種資訊出現 -&gt; 下雨機率高<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org7a90235" class="outline-3">
+<h3 id="org7a90235"><span class="section-number-3">6.2.</span> Classification</h3>
+<div class="outline-text-3" id="text-6-2">
+<ul class="org-ul">
+<li>A:Y<br /></li>
+<li>B:N<br /></li>
+<li>C:Y<br /></li>
+<li>D:Y<br /></li>
+<li>E:N<br /></li>
+<li>F:Y<br /></li>
+<li>decision tree<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgd8022c7" class="outline-3">
+<h3 id="orgd8022c7"><span class="section-number-3">6.3.</span> Clustering</h3>
+<div class="outline-text-3" id="text-6-3">
+<ul class="org-ul">
+<li>{AB}<br /></li>
+<li>{CDE}<br /></li>
+<li>{F}<br /></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org2c6b43f" class="outline-2">
+<h2 id="org2c6b43f"><span class="section-number-2">7.</span> Association rule mining</h2>
+<div class="outline-text-2" id="text-7">
+<ul class="org-ul">
+<li>min_support = 2<br /></li>
+<li>min_conf = 2/3<br /></li>
+</ul>
+</div>
+<div id="outline-container-org31872c6" class="outline-3">
+<h3 id="org31872c6"><span class="section-number-3">7.1.</span> Mining implications between items</h3>
+<div class="outline-text-3" id="text-7-1">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Tid</th>
+<th scope="col" class="org-left">Items</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">100</td>
+<td class="org-left">A, B, D</td>
+</tr>
+
+<tr>
+<td class="org-right">200</td>
+<td class="org-left">B, C, E</td>
+</tr>
+
+<tr>
+<td class="org-right">300</td>
+<td class="org-left">A, D</td>
+</tr>
+
+<tr>
+<td class="org-right">400</td>
+<td class="org-left">A, B, C, D</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="outline-container-org4591eaf" class="outline-3">
+<h3 id="org4591eaf"><span class="section-number-3">7.2.</span> Frequent item sets</h3>
+<div class="outline-text-3" id="text-7-2">
+<ul class="org-ul">
+<li>把所有元素的全部排列組合全部列出，每種可能都去計算次數，出現次數&gt;=min_support 才留下<br /></li>
+<li>ex: {A}, {B}, {C}, {D}, {B,C}, {A,B}, {A,D}, {B,D}, {A,B,D}<br /></li>
+<li>單一的集合沒有意義，故排除前四項<br /></li>
+<li>接下來看{B,C}，但是倒底是 B -&gt; C 還是 C -&gt; B? 於是兩個假設都去做做看，結果兩項都成立<br /></li>
+<li>那{A,B,D}如何判斷？就每一種可能性都去檢查&#x2026;.<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org25ed290" class="outline-3">
+<h3 id="org25ed290"><span class="section-number-3">7.3.</span> Strong rules (同時符合 min_support, min_conf)</h3>
+<div class="outline-text-3" id="text-7-3">
+<ul class="org-ul">
+<li>{A,D} -&gt; B(2/3) : A,D 發生的狀況下，B也發生<br /></li>
+<li>目的在於自動將所有 Strong rules 自動列出<br /></li>
+<li>B -&gt; C(2/3)<br /></li>
+<li>C -&gt; B(2/2)<br /></li>
+<li>要從 frequent item set 轉換到 String rules:<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgba8bdd2" class="outline-3">
+<h3 id="orgba8bdd2"><span class="section-number-3">7.4.</span> 產生 Strong rules 用到的演算法: Apriori Algorithm</h3>
+</div>
+</div>
+
+<div id="outline-container-orgc275df0" class="outline-2">
+<h2 id="orgc275df0"><span class="section-number-2">8.</span> Downward Closure Property</h2>
+<div class="outline-text-2" id="text-8">
+<ul class="org-ul">
+<li>Any subset of a frequent itemset must be frequent<br /></li>
+<li>If there is any imteset which is infrequent, its superset should not be frequent<br /></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org810803a" class="outline-2">
+<h2 id="org810803a"><span class="section-number-2">9.</span> Sequential Pattern Mining</h2>
+<div class="outline-text-2" id="text-9">
+</div>
+<div id="outline-container-org7b7f515" class="outline-3">
+<h3 id="org7b7f515"><span class="section-number-3">9.1.</span> Mining sequential implications between items</h3>
+<div class="outline-text-3" id="text-9-1">
+<p>
+強調 item 的前後順序<br />
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">SID</th>
+<th scope="col" class="org-left">Sequences</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">100</td>
+<td class="org-left">&lt; (1) (2,5) (3) (4) &gt;</td>
+</tr>
+
+<tr>
+<td class="org-right">200</td>
+<td class="org-left">&lt; (1) (3) (4) (2) (3,5) &gt;</td>
+</tr>
+
+<tr>
+<td class="org-right">300</td>
+<td class="org-left">&lt; (1,3,5) (4) (2) (3) &gt;</td>
+</tr>
+
+<tr>
+<td class="org-right">400</td>
+<td class="org-left">&lt; (1) (3) (5) &gt;</td>
+</tr>
+
+<tr>
+<td class="org-right">500</td>
+<td class="org-left">&lt; (4) (3,5,6) &gt;</td>
+</tr>
+</tbody>
+</table>
+
+<ul class="org-ul">
+<li>min_support = 2<br /></li>
+<li>Some frequent sequential patterns:<br /></li>
+</ul>
+<p>
+{1,4,3,2}, {1,3,5},{4,5}<br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Yung Chin, Yen</p>
+<p class="date">Created: 2022-10-23 Sun 10:40</p>
+</div>
+</body>
+</html>
