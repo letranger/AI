@@ -1,0 +1,401 @@
+:PROPERTIES:
+:ID:       ea0b9a66-128a-453d-8c8a-5364cb6af1df
+:END:
+#+title: 當AI遇上股票
+# -*- org-export-babel-evaluate: nil -*-
+#+TAGS: AI, stock, 股票
+#+OPTIONS: toc:2 ^:nil num:5
+#+PROPERTY: header-args :eval never-export
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/muse.css" />
+#+EXCLUDE_TAGS: noexport
+
+以下範例均假設於Google Colab上執行，若於本機IDE(如PyCharm、Spyder)上執行，則部份指令執行方式要略做修正。
+
+* CNN-1: 以AI預測股價-隔日漲跌
+** 安裝相關套件
+#+begin_src shell -r -n :results output :exports both
+pip install yfinance
+#+end_src
+** 下載股價資訊
+#+begin_src python -r -n :results output :exports both
+import yfinance as yf
+
+df = yf.Ticker('2330.TW').history(period='10y')
+print(type(df))
+#+end_src
+
+*** 查看下載的資料集
+#+begin_src python -r -n :results output :exports both :session stock :async
+df
+#print(df[:5])
+#+end_src
+*** 取出需要的收盤價
+從陣列中讀出收盤價
+#+begin_src python -r -n :results output :exports both
+data = df.filter(['Close'])
+data
+#+end_src
+** 觀察原始資料/日K圖
+#+begin_src python -r -n :results output :exports both
+import matplotlib.pyplot as plt
+plt.clf()
+plt.plot(data.Close)
+plt.show()
+#+end_src
+** 將資料標準化
+#+begin_src python -r -n :results output :exports both
+from sklearn.preprocessing import MinMaxScaler
+scaler = MinMaxScaler(feature_range=(0, 1))
+sc_data = scaler.fit_transform(data.values)
+
+sc_data #變成numpy array
+#+end_src
+** 建立、分割資料
+*** 建立資料集及標籤
+#+begin_src python -r -n :results output :exports both
+import numpy as np
+
+# 以前N天的股價來預測未來股價
+previousNDays = 10
+x_data, y_data = [], []
+for i in range(len(sc_data) - previousNDays):
+  x = sc_data[i:i+previousNDays]
+  y = sc_data[i+previousNDays]
+  x_data.append(x)
+  y_data.append(y)
+#因為等一下要送進tensorflow
+x_data, y_data = np.array(x_data), np.array(y_data)
+
+print(x_data.shape)
+print(y_data.shape)
+#+end_src
+*** 分割訓練集與測試集
+#+begin_src python -r -n :results output :exports both
+ratio = 0.8
+train_size = round(len(x_data) * ratio)
+print(train_size)
+x_train, y_train = x_data[:train_size], y_data[:train_size]
+x_test, y_test = x_data[train_size:], y_data[train_size:]
+#from sklearn.model_selection import train_test_split
+#x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=0.2)
+print(x_train.shape)
+print(y_train.shape)
+print(x_test.shape)
+print(y_test.shape)
+#+end_src
+** 建立、編譯、訓練模型
+*** 建立模型
+#+begin_src python -r -n :results output :exports both
+# CNN模型
+import tensorflow as tf
+#建構CNN模型
+model = tf.keras.Sequential()
+#輸入層/卷積層
+model.add(tf.keras.layers.Conv2D(filters=512, kernel_size=1, activation='relu', input_shape=(previousNDays,1,1)))
+#攤平
+model.add(tf.keras.layers.Flatten())
+#全連接層/輸出層
+model.add(tf.keras.layers.Dense(1, activation='sigmoid'))
+#+end_src
+#+begin_src python -r -n :results output :exports both
+model.summary()
+#+end_src
+*** 編譯模型
+#+begin_src python -r -n :results output :exports both
+model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
+#+end_src
+*** 訓練模型
+#+begin_src python -r -n :results output :exports both
+model.fit(x_train, y_train,
+          validation_split=0.2,
+          batch_size=200, epochs=20)
+#+end_src
+** 性能測試
+*** loss
+#+begin_src python -r -n :results output :exports both
+score = model.evaluate(x_test, y_test)
+print('loss:', score[0])
+#+end_src
+*** predict
+#+begin_src python -r -n :results output :exports both
+predict = model.predict(x_test)
+predict = scaler.inverse_transform(predict)
+predict = np.reshape(predict, (predict.size,))
+ans = scaler.inverse_transform(y_test)
+ans = np.reshape(ans, (ans.size,))
+print(predict[:3])
+print(ans[:3])
+#+end_src
+*** plot
+#+begin_src python -r -n :results output :exports both
+plt.plot(predict)
+plt.plot(ans)
+plt.show()
+#+end_src
+** 能怎麼胡搞
+- 多讀些原始資料
+- 用更多特徵值來預測
+- 用更多/更少天數來預測
+- 變更模型架構
+- 變更訓練集:測試集比例
+- 增加epoch
+
+* CNN-2: 以AI預測股價-隔日漲跌
+** 安裝相關套件
+#+begin_src shell -r -n :results output :exports both
+pip install yfinance
+#+end_src
+** 下載股價資訊
+#+begin_src python -r -n :results output :exports both
+import yfinance as yf
+
+df = yf.Ticker('2330.TW').history(period='10y')
+print(type(df))
+#+end_src
+*** 查看下載的資料集
+#+begin_src python -r -n :results output :exports both :session stock :async
+df
+#print(df[:5])
+#+end_src
+*** 取出需要的特徵值
+此次將成交量納入考慮
+#+begin_src python -r -n :results output :exports both
+data = df.filter(['Close', 'Volume'])
+data
+#+end_src
+** 觀察原始資料/日K圖
+#+begin_src python -r -n :results output :exports both
+import matplotlib.pyplot as plt
+plt.clf()
+plt.plot(data.Close)
+plt.show()
+plt.clf()
+plt.plot(data.Volume)
+plt.show()
+#+end_src
+** 將資料標準化
+#+begin_src python -r -n :results output :exports both
+from sklearn.preprocessing import MinMaxScaler
+scalerX = MinMaxScaler(feature_range=(0, 1))
+scalerY = MinMaxScaler(feature_range=(0, 1))
+all_x = data[['Volume', 'Close']]
+all_y = data['Close']
+print(all_x.shape)
+print(all_y.shape)
+scal_all_x = scalerX.fit_transform(all_x.values)
+scal_all_y = scalerY.fit_transform(all_y.values.reshape(-1, 1))
+#+end_src
+** 建立、分割資料
+*** 建立資料集及標籤
+#+begin_src python -r -n :results output :exports both
+import numpy as np
+
+# 以前N天的股價來預測未來股價
+previousNDays = 10
+x_data, y_data = [], []
+for i in range(len(scal_all_x) - previousNDays):
+  x = scal_all_x[i:i+previousNDays]
+  y = scal_all_y[i+previousNDays]
+  x_data.append(x)
+  y_data.append(y)
+#因為等一下要送進tensorflow
+x_data, y_data = np.array(x_data), np.array(y_data)
+
+print(x_data.shape)
+print(y_data.shape)
+#+end_src
+*** 分割訓練集與測試集
+#+begin_src python -r -n :results output :exports both
+ratio = 0.8
+train_size = round(len(x_data) * ratio)
+print(train_size)
+x_train, y_train = x_data[:train_size], y_data[:train_size]
+x_test, y_test = x_data[train_size:], y_data[train_size:]
+
+print(x_train.shape)
+print(y_train.shape)
+print(x_test.shape)
+print(y_test.shape)
+#+end_src
+** 建立、編譯、訓練模型
+*** 建立模型
+#+begin_src python -r -n :results output :exports both
+# CNN模型
+import tensorflow as tf
+#建構CNN模型
+model = tf.keras.Sequential()
+#輸入層/卷積層
+model.add(tf.keras.layers.Conv2D(filters=512, kernel_size=1, activation='relu', input_shape=(previousNDays,2,1)))
+#輸入層/卷積層
+model.add(tf.keras.layers.Conv2D(filters=512, kernel_size=1, activation='relu'))
+#攤平
+model.add(tf.keras.layers.Flatten())
+#全連接層/輸出層
+model.add(tf.keras.layers.Dense(1, activation='sigmoid'))
+#+end_src
+#+begin_src python -r -n :results output :exports both
+model.summary()
+#+end_src
+*** 編譯模型
+#+begin_src python -r -n :results output :exports both
+model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
+#+end_src
+*** 訓練模型
+#+begin_src python -r -n :results output :exports both
+model.fit(x_train, y_train,
+          validation_split=0.2,
+          batch_size=200, epochs=20)
+#+end_src
+** 性能測試
+*** loss
+#+begin_src python -r -n :results output :exports both
+score = model.evaluate(x_test, y_test)
+print('loss:', score[0])
+#+end_src
+*** predict
+#+begin_src python -r -n :results output :exports both
+predict = model.predict(x_test)
+predict = scaler.inverse_transform(predict)
+predict = np.reshape(predict, (predict.size,))
+ans = scaler.inverse_transform(y_test)
+ans = np.reshape(ans, (ans.size,))
+print(predict[:3])
+print(ans[:3])
+#+end_src
+*** plot
+#+begin_src python -r -n :results output :exports both
+plt.plot(predict)
+plt.plot(ans)
+plt.show()
+#+end_src
+** 能怎麼胡搞
+- 多讀些原始資料
+- 用更多特徵值來預測
+- 用更多/更少天數來預測
+- 變更模型架構
+- 變更訓練集:測試集比例
+- 增加epoch
+
+* LSTM: 以AI預測股價-隔日漲跌
+** 安裝相關套件
+#+begin_src shell -r -n :results output :exports both
+pip install yfinance
+#+end_src
+** 下載股價資訊
+#+begin_src python -r -n :results output :exports both
+import yfinance as yf
+
+df = yf.Ticker('2330.TW').history(period='10y')
+print(type(df))
+#+end_src
+*** 查看下載的資料集
+#+begin_src python -r -n :results output :exports both :session stock :async
+df
+#print(df[:5])
+#+end_src
+*** 取出需要的特徵值
+此次將成交量納入考慮
+#+begin_src python -r -n :results output :exports both
+data = df.filter(['Close'])
+data
+#+end_src
+** 觀察原始資料/日K圖
+#+begin_src python -r -n :results output :exports both
+import matplotlib.pyplot as plt
+plt.clf()
+plt.plot(data.Close)
+plt.show()
+#+end_src
+** 將資料標準化
+#+begin_src python -r -n :results output :exports both
+from sklearn.preprocessing import MinMaxScaler
+scaler = MinMaxScaler(feature_range=(0, 1))
+sc_data = scaler.fit_transform(data.values)
+
+sc_data #變成numpy array
+#+end_src
+** 建立、分割資料
+*** 建立資料集及標籤
+#+begin_src python -r -n :results output :exports both
+import numpy as np
+
+featureDays = 10
+x_data, y_data = [], []
+for i in range(len(sc_data) - featureDays):
+  x = sc_data[i:i+featureDays]
+  y = sc_data[i+featureDays]
+  x_data.append(x)
+  y_data.append(y)
+
+x_data, y_data = np.array(x_data), np.array(y_data)
+
+print(x_data.shape)
+print(y_data.shape)
+print(len(x_data)) #全部資料筆數
+#+end_src
+*** 分割訓練集與測試集
+#+begin_src python -r -n :results output :exports both
+ratio = 0.8
+train_size = round(len(x_data) * ratio)
+print(train_size)
+x_train, y_train = x_data[:train_size], y_data[:train_size]
+x_test, y_test = x_data[train_size:], y_data[train_size:]
+
+print(x_train.shape)
+print(y_train.shape)
+print(x_test.shape)
+print(y_test.shape)
+#+end_src
+** 建立、編譯、訓練模型
+*** 建立模型
+#+begin_src python -r -n :results output :exports both
+import tensorflow as tf
+#建構LSTM模型
+model = tf.keras.Sequential()
+# LSTM層
+model.add(tf.keras.layers.LSTM(units=64, unroll = False, input_shape=(featureDays,1)))
+# Dense層
+model.add(tf.keras.layers.Dense(units=1))
+#+end_src
+#+begin_src python -r -n :results output :exports both
+model.summary()
+#+end_src
+*** 編譯模型
+#+begin_src python -r -n :results output :exports both
+model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
+#+end_src
+*** 訓練模型
+#+begin_src python -r -n :results output :exports both
+model.fit(x_train, y_train,
+          validation_split=0.2,
+          batch_size=200, epochs=20)
+#+end_src
+** 性能測試
+*** loss
+#+begin_src python -r -n :results output :exports both
+score = model.evaluate(x_test, y_test)
+print('loss:', score[0])
+#+end_src
+*** predict
+#+begin_src python -r -n :results output :exports both
+predict = model.predict(x_test)
+predict = scaler.inverse_transform(predict)
+predict = np.reshape(predict, (predict.size,))
+ans = scaler.inverse_transform(y_test)
+ans = np.reshape(ans, (ans.size,))
+print(predict[:3])
+print(ans[:3])
+#+end_src
+*** plot
+#+begin_src python -r -n :results output :exports both
+plt.plot(predict)
+plt.plot(ans)
+plt.show()
+#+end_src
+** 能怎麼胡搞
+- 多讀些原始資料
+- 用更多特徵值來預測
+- 用更多/更少天數來預測
+- 變更模型架構
+- 變更訓練集:測試集比例
+- 增加epoch

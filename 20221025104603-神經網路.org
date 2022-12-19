@@ -1073,7 +1073,7 @@ softmax 函數的另一個特色是其輸出結果仍保持與輸入訊息一致
   print(numerical_gradient(function_2, np.array([3.0, 0.0])))
 #+END_SRC
 
-上述程式碼中，函數 numerical\textunderscore{}gradient 以函數 function\textunderscore{}2 以及陣列 x 為參數（程式碼第[[(NumerGrad)]]行），針對陣列 x 的各元素計算數值微分，計算(3, 4)、(0, 2)、(3, 0)各點的梯度結果如下：
+上述程式碼中，函數 numerical_gradient 以函數 function_2 以及陣列 x 為參數（程式碼第[[(NumerGrad)]]行），針對陣列 x 的各元素計算數值微分，計算(3, 4)、(0, 2)、(3, 0)各點的梯度結果如下：
 #+RESULTS:
 : [6. 8.]
 : [0. 4.]
@@ -1142,7 +1142,7 @@ softmax 函數的另一個特色是其輸出結果仍保持與輸入訊息一致
 : 學習率設為 1e-10
 : [-2.99999994  3.99999992]
 
-上述程式中，init_x 為預設值、lr 代表 learning rate、step\textunderscore{}num 為重複次數，梯度由 numerical\textunderscore{}gradient(f,x)計算，程式執行結果為函數\(f(x_0,x_1)=x_0^2+x_1^2\)的最小值，預設值為\(x_0=-3,x_1=4\)，以梯度法求最小值，最後結果為(-6.1e-10,-8.1-10)，趨近於真實答案(0,0)，即使以其他預設值做為起點，所找到的最小值仍趨近正確答案, 而學習率太大或太小均無法得到良好的結果（學習率太大則會往大數值擴散；學習率太小則幾乎不更新就結束）。至於學習率這種依靠人工進行設定的值稱為超參數（hyperparameter），其最佳設定有賴以各種測試取得。至於梯度法的學習流程則如圖[[fig:GMP]]所示。
+上述程式中，init_x 為預設值、lr 代表 learning rate、step_num 為重複次數，梯度由 numerical_gradient(f,x)計算，程式執行結果為函數\(f(x_0,x_1)=x_0^2+x_1^2\)的最小值，預設值為\(x_0=-3,x_1=4\)，以梯度法求最小值，最後結果為(-6.1e-10,-8.1-10)，趨近於真實答案(0,0)，即使以其他預設值做為起點，所找到的最小值仍趨近正確答案, 而學習率太大或太小均無法得到良好的結果（學習率太大則會往大數值擴散；學習率太小則幾乎不更新就結束）。至於學習率這種依靠人工進行設定的值稱為超參數（hyperparameter），其最佳設定有賴以各種測試取得。至於梯度法的學習流程則如圖[[fig:GMP]]所示。
 #+BEGIN_SRC python -r -n :result output :exports file :eval no
   # cat gradient_method_save.py
   # coding: utf-8
@@ -1308,7 +1308,7 @@ W=
 : [[ 0.30439054  0.17550882 -0.47989936]
 :  [ 0.45658581  0.26326323 -0.71984904]]
 
-simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t為正確答案標籤，此處我們希望針對 loss 函數進行梯度法取得最小值，所以定義一個函數 f，代入 x 及 t 傳回損失函數，然後將函數 f 做為參數傳給 numerical\textunderscore{}gradient 進行梯度下降運算，由運算結果 dW 的陣列內容可以看出，每增加一個\(h\)，\(w_{11}\)就增加 0.45、而\(w_{23}\)則下降 0.72。由此看來，為了要減少損失函數，應該持續增加\(w_{11}\)、減少\(w{23}\)，而且，\(w{23}\)的貢獻最大。
+simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t為正確答案標籤，此處我們希望針對 loss 函數進行梯度法取得最小值，所以定義一個函數 f，代入 x 及 t 傳回損失函數，然後將函數 f 做為參數傳給 numerical_gradient 進行梯度下降運算，由運算結果 dW 的陣列內容可以看出，每增加一個\(h\)，\(w_{11}\)就增加 0.45、而\(w_{23}\)則下降 0.72。由此看來，為了要減少損失函數，應該持續增加\(w_{11}\)、減少\(w{23}\)，而且，\(w{23}\)的貢獻最大。
 
 *** 進階閱讀
 - https://www.youtube.com/watch?v=reOgXrNxwV8
@@ -1519,12 +1519,12 @@ https://www.youtube.com/channel/UCHbGAYq21PNz9REWNwe8Z-Q/videos
 | params                              | [[(TLN-params)]]  | 神經網路參數，為字典型態變數                                         |
 |                                     |               | params['W1']為第 1 層權重、params['b1']為第 1 層偏權值               |
 |-------------------------------------+---------------+----------------------------------------------------------------------|
-| grads                               | [[(TLN-grads)]]   | numerical_\textunderscore{}gradient 函數的傳回值，為字典型態變數     |
+| grads                               | [[(TLN-grads)]]   | numerical__gradient 函數的傳回值，為字典型態變數     |
 |                                     |               | grads['W1']為第 1 層權重的梯度、grads['b1''為第 1 層偏權值的梯度     |
 |-------------------------------------+---------------+----------------------------------------------------------------------|
-| input\textunderscore{}size          | [[(TLN-init)]]    | 輸入層神經元數量                                                     |
-| hidden\textunderscore{}size         |               | 隱藏層神經元數量                                                     |
-| output\textunderscore{}size         |               | 輸出層神經元數量                                                     |
+| input_size          | [[(TLN-init)]]    | 輸入層神經元數量                                                     |
+| hidden_size         |               | 隱藏層神經元數量                                                     |
+| output_size         |               | 輸出層神經元數量                                                     |
 |-------------------------------------+---------------+----------------------------------------------------------------------|
 | predict(self, x)                    | [[(TLN-pred)]]    | 傳入輸入資料(x)為參數，進行辨識預測                                  |
 |-------------------------------------+---------------+----------------------------------------------------------------------|
@@ -1532,7 +1532,7 @@ https://www.youtube.com/channel/UCHbGAYq21PNz9REWNwe8Z-Q/videos
 |-------------------------------------+---------------+----------------------------------------------------------------------|
 | accuracy(self, x, t)                | [[(TLN-accu)]]    | 計算準確度                                                           |
 |-------------------------------------+---------------+----------------------------------------------------------------------|
-| numericalk\textunderscore{}gradient | [[(TLN-numgrad)]] | 計算權重值及偏權值梯度                                               |
+| numericalk_gradient | [[(TLN-numgrad)]] | 計算權重值及偏權值梯度                                               |
 |-------------------------------------+---------------+----------------------------------------------------------------------|
 | gradient(self, x, t)                | [[(TLN-grad)]]    | 同上，速度較快                                                       |
 |-------------------------------------+---------------+----------------------------------------------------------------------|
@@ -2366,14 +2366,14 @@ label
 
 卷積層由兩個關鍵參數定義：
 
-- 由輸入採樣的區塊大小(size of the patches extracted from the input): 也就是掃描窗格的大小(windows\under{}height, window\under{}width，通常是 3*3 或 5*5)，也就是 filter 大小。
+- 由輸入採樣的區塊大小(size of the patches extracted from the input): 也就是掃描窗格的大小($windows_{height}$, $window_{width}$，通常是 3*3 或 5*5)，也就是 filter 大小。
 - 輸出特徵圖的深度(depth of the output feature map)：也就是卷積層過濾器數量，在本例中以 16 開頭，以 36 結束。Keras 的 Conv2D 層傳的參數為：
 
 #+BEGIN_SRC python
 Conv2D(output_depth, (window_height, window_width))
 #+END_SRC
 
-卷積層的主要工作就是透過在 3D 輸入特徵圖上滑動(sliding)3\times3 或 5\times5 的小窗格，在該位置上取得特徵(input_\under{}depth 最開始是有 RGB 顏色的，但接下來就變成 filter)；其次，將每個 3D 區塊轉換(即卷積運算)成 shape=(output\under{}depth,)的 1D 向量，然後將所有這些向量依照空間上的位置排列重新組裝成 shape=(height, width, output\under{}output)的 3D 輸出特徵圖。
+卷積層的主要工作就是透過在 3D 輸入特徵圖上滑動(sliding)3\times3 或 5\times5 的小窗格，在該位置上取得特徵($input_{depth}$ 最開始是有 RGB 顏色的，但接下來就變成 filter)；其次，將每個 3D 區塊轉換(即卷積運算)成 shape=($output_{depth}$,)的 1D 向量，然後將所有這些向量依照空間上的位置排列重新組裝成 shape=(height, width, output\under{}output)的 3D 輸出特徵圖。
 
 ** 以 Keras 實作 Cifar-10
 #+BEGIN_SRC python -r -n :results output :exports both :eval no

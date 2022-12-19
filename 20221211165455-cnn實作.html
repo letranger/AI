@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-12-11 Sun 21:29 -->
+<!-- 2022-12-19 Mon 21:01 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>CNN實作</title>
@@ -194,27 +194,169 @@
   .org-svg { }
 </style>
 <link rel="stylesheet" type="text/css" href="../css/muse.css" />
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
 </head>
 <body>
 <div id="content" class="content">
 <h1 class="title">CNN實作</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#orgf55f089">1. 實作1</a>
+<ul>
+<li><a href="#org77b3c38">1.1. 任務說明(資料集簡介)</a></li>
+<li><a href="#orga13dada">1.2. 下載資料集/分割資料集</a></li>
+<li><a href="#org0c2f005">1.3. 觀察資料集內容</a></li>
+<li><a href="#org9ae7dd8">1.4. 將資料標準化/歸一化</a></li>
+<li><a href="#orge8b6ef1">1.5. 建立模型</a></li>
+<li><a href="#org2c60fb3">1.6. 模型編譯</a></li>
+<li><a href="#org76b2b4a">1.7. 模型訓練</a></li>
+<li><a href="#orgeb315ba">1.8. 測試性能</a></li>
+</ul>
+</li>
+<li><a href="#orga917476">2. 實作2</a>
+<ul>
+<li><a href="#org5d67b5f">2.1. 進一步查看效能</a></li>
+<li><a href="#orgadc4f58">2.2. 轉換label資料格式</a></li>
+<li><a href="#orge46392a">2.3. 增加卷積層、池化層、Dropout層以及全連接層</a></li>
+<li><a href="#orge1b675e">2.4. 測試性能</a></li>
+<li><a href="#org19b1e38">2.5. 再查看效能</a></li>
+<li><a href="#org4b2aba1">2.6. 有沒有其他的效能提升建議</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
 <a href="https://hits.sh/letranger.github.io/working/%E7%A7%91%E6%8A%80%E5%8A%9B%E6%94%AF%E6%8C%81%E9%9B%99%E8%AA%9E%E8%B7%A8%E5%9F%9F.html/"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/working/%E7%A7%91%E6%8A%80%E5%8A%9B%E6%94%AF%E6%8C%81%E9%9B%99%E8%AA%9E%E8%B7%A8%E5%9F%9F.html.svg?style=plastic"/></a>
 
-<div id="outline-container-org629e131" class="outline-2">
-<h2 id="org629e131"><span class="section-number-2">1.</span> 實作1</h2>
+<div id="outline-container-orgf55f089" class="outline-2">
+<h2 id="orgf55f089"><span class="section-number-2">1.</span> 實作1</h2>
 <div class="outline-text-2" id="text-1">
 </div>
-<div id="outline-container-org81e612c" class="outline-3">
-<h3 id="org81e612c"><span class="section-number-3">1.1.</span> 任務說明(資料集簡介)</h3>
+<div id="outline-container-org77b3c38" class="outline-3">
+<h3 id="org77b3c38"><span class="section-number-3">1.1.</span> 任務說明(資料集簡介)</h3>
 <div class="outline-text-3" id="text-1-1">
 </div>
 <ol class="org-ol">
-<li><a id="org8938f23"></a>資料集<br />
+<li><a id="org95349bc"></a>資料集<br />
 <div class="outline-text-4" id="text-1-1-1">
 <p>
 Fashion-MNIST是一個替代MNIST手寫數字集的圖像資料集。 它是由Zalando（一家德國的時尚科技公司）旗下的研究部門提供。其涵蓋了來自10種類別的共7萬個不同商品的正面圖片。Fashion-MNIST的大小、格式和訓練集/測試集劃分與原始的MNIST完全一致。60000/10000的訓練測試資料劃分，28x28的灰度圖片。你可以直接用它來測試你的機器學習和深度學習演算法性能，且不需要改動任何的程式碼<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。<br />
 </p>
+</div>
+</li>
+<li><a id="org1a35f5c"></a>資料庫類別：<br />
+<div class="outline-text-4" id="text-1-1-2">
+<p>
+每個訓練和測試樣本都按照以下類別進行了標註：<br />
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">標註編號</th>
+<th scope="col" class="org-left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">0</td>
+<td class="org-left">T-shirt/top（T恤）</td>
+</tr>
+
+<tr>
+<td class="org-right">1</td>
+<td class="org-left">Trouser（褲子）</td>
+</tr>
+
+<tr>
+<td class="org-right">2</td>
+<td class="org-left">Pullover（套頭毛衣）</td>
+</tr>
+
+<tr>
+<td class="org-right">3</td>
+<td class="org-left">Dress（裙子）</td>
+</tr>
+
+<tr>
+<td class="org-right">4</td>
+<td class="org-left">Coat（外套）</td>
+</tr>
+
+<tr>
+<td class="org-right">5</td>
+<td class="org-left">Sandal（涼鞋）</td>
+</tr>
+
+<tr>
+<td class="org-right">6</td>
+<td class="org-left">Shirt（襯衫）</td>
+</tr>
+
+<tr>
+<td class="org-right">7</td>
+<td class="org-left">Sneaker（運動鞋）</td>
+</tr>
+
+<tr>
+<td class="org-right">8</td>
+<td class="org-left">Bag（包包）</td>
+</tr>
+
+<tr>
+<td class="org-right">9</td>
+<td class="org-left">Ankle boot（短靴）</td>
+</tr>
+</tbody>
+</table>
+<p>
+這個資料集的樣子大致如下:<br />
+</p>
+
+<div id="org4e80e86" class="figure">
+<p><img src="images/20191202101617492.png" alt="20191202101617492.png" width="500" /><br />
+</p>
+</div>
+
+<p>
+數據集一共包含60000個訓練樣本和10000個測試樣本：<br />
+</p>
+<ul class="org-ul">
+<li>訓練數據，用來訓練模型；<br /></li>
+<li>測試數據，用來衡量最優模型的性能。<br /></li>
+</ul>
+</div>
+</li>
+<li><a id="org51d9b49"></a>為什麼不用更常見的MNIST手寫數字資料集<br />
+<div class="outline-text-4" id="text-1-1-3">
 <p>
 取代MNIST資料集的原因由如下幾個：<br />
 </p>
@@ -223,74 +365,1185 @@ Fashion-MNIST是一個替代MNIST手寫數字集的圖像資料集。 它是由Z
 <li>MNIST被用爛了。 參考：&ldquo;Ian Goodfellow wants people to move away from mnist&rdquo;（翻譯：Ian Goodfellow希望人們不要再用MNIST了。）<br /></li>
 <li>MNIST數字識別的任務不代表現代機器學習。 參考：&ldquo;François Cholle: Ideas on MNIST do not transfer to real CV&rdquo; （翻譯：在MNIST上看似有效的想法沒法遷移到真正的機器視覺問題上。）<br /></li>
 </ul>
+</div>
+</li>
+<li><a id="org24037fd"></a>任務<br />
+<div class="outline-text-4" id="text-1-1-4">
+<p>
+我們的任務是利用<a href="20221023101228-深度學習.html#ID-20221023T101228.247381">深度學習</a>的方法建立一個<a href="20221023101414-卷積神經網路.html#ID-20221023T101414.457264">卷積神經網路</a>模型來識別出每張圖片屬於哪一個類別，在 <b>實作1</b> 中，我們打算建立一個最基本的CNN模型，只包含<br />
+</p>
+<ul class="org-ul">
+<li>一個卷積層<br /></li>
+<li>一個池化層<br /></li>
+<li>一個全連接層<br /></li>
+</ul>
+<p>
+就以這三個最基本的結構來測試<a href="20221023101414-卷積神經網路.html#ID-20221023T101414.457264">卷積神經網路</a>的圖形辨識能力。<br />
+</p>
+</div>
+</li>
+<li><a id="org2dceb50"></a>語言與程式庫<br />
+<div class="outline-text-4" id="text-1-1-5">
+<p>
+有很多函式庫和模組可以用來建立卷積神經網路 (CNN) 模型。一些受歡迎的選項包括 TensorFlow、Keras、PyTorch 和 scikit-learn。這些函式庫每個都有自己的優點和缺點，你選擇哪一個取決於你的特定需求和喜好。一般來說，TensorFlow 和 Keras 是初學者的好選擇，而 PyTorch 是一個更進階的選項，適合用於研發。scikit-learn 是一個機器學習函式庫，包含了許多用於訓練和評估機器學習模型（包括 CNN）的有用工具。你可以閱讀更多關於這些函式庫及其功能的信息，幫助你選擇適合你項目的選項。<br />
+</p>
 
 <p>
-這個資料集的樣子大致如下（每個類別佔三行）：<br />
+在這個例子中我們將使用Python + TensorFlow函式庫來打造模型，雖然Python是在人工智慧領域應用最廣的語言，但其實只要上述介紹的函式庫支援，使用其他語言一樣可行，例如C/C++、Java、Go、R、Ruby以及Swift等等。<br />
+</p>
+</div>
+</li>
+</ol>
+</div>
+<div id="outline-container-orga13dada" class="outline-3">
+<h3 id="orga13dada"><span class="section-number-3">1.2.</span> 下載資料集/分割資料集</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+要使用TensorFlow函式庫，TensorFlow函式庫提供了十分方便的資料集下載函式(load_data())，只需一行指令便可下載Fashion-MNIST的60000張訓練集圖片和10000張測試集圖片。<br />
 </p>
 
-<div id="org1e09181" class="figure">
-<p><img src="images/fashion-mnist-sprite.png" alt="fashion-mnist-sprite.png" width="500" /><br />
+<ul class="org-ul">
+<li>程式中的x_train便是訓練集的60000張圖片，這是numpy格式的陣列(numpy.ndarray)，從其shape屬性可以得知這些圖片均為28x28的灰階圖片(如果是彩色則會是28X28X3)<br /></li>
+<li>至於y_train則是60000張x_train的標籤(或是類別)，這是60000X1的陣列，每張照片對映到一個代表類別的數字<br /></li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-python" id="org3712909"><span class="linenr">1: </span><span style="color: #51afef;">import</span> tensorflow <span style="color: #51afef;">as</span> tf
+<span class="linenr">2: </span>
+<span class="linenr">3: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24478;&#32178;&#36335;&#19979;&#36617;&#36039;&#26009;&#38598;</span>
+<span class="linenr">4: </span>(x_train, y_train), (<span style="color: #dcaeea;">x_test</span>, <span style="color: #dcaeea;">y_test</span>) = tf.keras.datasets.fashion_mnist.load_data()
+<span class="linenr">5: </span>
+<span class="linenr">6: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#35347;&#32244;&#38598;&#22294;&#29255;&#30697;&#38499;&#24418;&#29376;(&#32173;&#24230;):"</span>, x_train.shape)
+<span class="linenr">7: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#35347;&#32244;&#38598;&#27161;&#31844;&#30697;&#38499;&#24418;&#29376;(&#32173;&#24230;):"</span>, y_train.shape)
+</pre>
+</div>
+
+<pre class="example">
+訓練集圖片矩陣形狀(維度): (60000, 28, 28)
+訓練集標籤矩陣形狀(維度): (60000,)
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org0c2f005" class="outline-3">
+<h3 id="org0c2f005"><span class="section-number-3">1.3.</span> 觀察資料集內容</h3>
+<div class="outline-text-3" id="text-1-3">
+<p>
+那麼，資料集中的圖片與標籤實際內容又是如何呢？我們可以先挑第一張來看看：<br />
 </p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#31532;&#19968;&#24373;&#22294;:"</span>, *x_train[<span style="color: #da8548; font-weight: bold;">0</span>])
+<span class="linenr">2: </span><span style="color: #51afef;">for</span> row <span style="color: #51afef;">in</span> x_train[<span style="color: #da8548; font-weight: bold;">0</span>]:
+<span class="linenr">3: </span>    <span style="color: #51afef;">for</span> item <span style="color: #51afef;">in</span> row:
+<span class="linenr">4: </span>        <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'{0:3d} '</span>.<span style="color: #c678dd;">format</span>(item), end=<span style="color: #98be65;">''</span>)
+<span class="linenr">5: </span>    <span style="color: #c678dd;">print</span>()
+</pre>
+</div>
+
+<pre class="example" id="org079f2bf">
+第一張圖: [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] [ 0  0  0  0  0  0  0  0  0  0  0  0  1  0  0 13 73  0  0  1  4  0  0  0
+  0  1  1  0] [  0   0   0   0   0   0   0   0   0   0   0   0   3   0  36 136 127  62
+  54   0   0   0   1   3   4   0   0   3] [  0   0   0   0   0   0   0   0   0   0   0   0   6   0 102 204 176 134
+ 144 123  23   0   0   0   0  12  10   0] [  0   0   0   0   0   0   0   0   0   0   0   0   0   0 155 236 207 178
+ 107 156 161 109  64  23  77 130  72  15] [  0   0   0   0   0   0   0   0   0   0   0   1   0  69 207 223 218 216
+ 216 163 127 121 122 146 141  88 172  66] [  0   0   0   0   0   0   0   0   0   1   1   1   0 200 232 232 233 229
+ 223 223 215 213 164 127 123 196 229   0] [  0   0   0   0   0   0   0   0   0   0   0   0   0 183 225 216 223 228
+ 235 227 224 222 224 221 223 245 173   0] [  0   0   0   0   0   0   0   0   0   0   0   0   0 193 228 218 213 198
+ 180 212 210 211 213 223 220 243 202   0] [  0   0   0   0   0   0   0   0   0   1   3   0  12 219 220 212 218 192
+ 169 227 208 218 224 212 226 197 209  52] [  0   0   0   0   0   0   0   0   0   0   6   0  99 244 222 220 218 203
+ 198 221 215 213 222 220 245 119 167  56] [  0   0   0   0   0   0   0   0   0   4   0   0  55 236 228 230 228 240
+ 232 213 218 223 234 217 217 209  92   0] [  0   0   1   4   6   7   2   0   0   0   0   0 237 226 217 223 222 219
+ 222 221 216 223 229 215 218 255  77   0] [  0   3   0   0   0   0   0   0   0  62 145 204 228 207 213 221 218 208
+ 211 218 224 223 219 215 224 244 159   0] [  0   0   0   0  18  44  82 107 189 228 220 222 217 226 200 205 211 230
+ 224 234 176 188 250 248 233 238 215   0] [  0  57 187 208 224 221 224 208 204 214 208 209 200 159 245 193 206 223
+ 255 255 221 234 221 211 220 232 246   0] [  3 202 228 224 221 211 211 214 205 205 205 220 240  80 150 255 229 221
+ 188 154 191 210 204 209 222 228 225   0] [ 98 233 198 210 222 229 229 234 249 220 194 215 217 241  65  73 106 117
+ 168 219 221 215 217 223 223 224 229  29] [ 75 204 212 204 193 205 211 225 216 185 197 206 198 213 240 195 227 245
+ 239 223 218 212 209 222 220 221 230  67] [ 48 203 183 194 213 197 185 190 194 192 202 214 219 221 220 236 225 216
+ 199 206 186 181 177 172 181 205 206 115] [  0 122 219 193 179 171 183 196 204 210 213 207 211 210 200 196 194 191
+ 195 191 198 192 176 156 167 177 210  92] [  0   0  74 189 212 191 175 172 175 181 185 188 189 188 193 198 204 209
+ 210 210 211 188 188 194 192 216 170   0] [  2   0   0   0  66 200 222 237 239 242 246 243 244 221 220 193 191 179
+ 182 182 181 176 166 168  99  58   0   0] [ 0  0  0  0  0  0  0 40 61 44 72 41 35  0  0  0  0  0  0  0  0  0  0  0
+  0  0  0  0] [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+  0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+  0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+  0   0   0   0   0   0   0   0   0   0   0   0   1   0   0  13  73   0   0   1   4   0   0   0   0   1   1   0
+  0   0   0   0   0   0   0   0   0   0   0   0   3   0  36 136 127  62  54   0   0   0   1   3   4   0   0   3
+  0   0   0   0   0   0   0   0   0   0   0   0   6   0 102 204 176 134 144 123  23   0   0   0   0  12  10   0
+  0   0   0   0   0   0   0   0   0   0   0   0   0   0 155 236 207 178 107 156 161 109  64  23  77 130  72  15
+  0   0   0   0   0   0   0   0   0   0   0   1   0  69 207 223 218 216 216 163 127 121 122 146 141  88 172  66
+  0   0   0   0   0   0   0   0   0   1   1   1   0 200 232 232 233 229 223 223 215 213 164 127 123 196 229   0
+  0   0   0   0   0   0   0   0   0   0   0   0   0 183 225 216 223 228 235 227 224 222 224 221 223 245 173   0
+  0   0   0   0   0   0   0   0   0   0   0   0   0 193 228 218 213 198 180 212 210 211 213 223 220 243 202   0
+  0   0   0   0   0   0   0   0   0   1   3   0  12 219 220 212 218 192 169 227 208 218 224 212 226 197 209  52
+  0   0   0   0   0   0   0   0   0   0   6   0  99 244 222 220 218 203 198 221 215 213 222 220 245 119 167  56
+  0   0   0   0   0   0   0   0   0   4   0   0  55 236 228 230 228 240 232 213 218 223 234 217 217 209  92   0
+  0   0   1   4   6   7   2   0   0   0   0   0 237 226 217 223 222 219 222 221 216 223 229 215 218 255  77   0
+  0   3   0   0   0   0   0   0   0  62 145 204 228 207 213 221 218 208 211 218 224 223 219 215 224 244 159   0
+  0   0   0   0  18  44  82 107 189 228 220 222 217 226 200 205 211 230 224 234 176 188 250 248 233 238 215   0
+  0  57 187 208 224 221 224 208 204 214 208 209 200 159 245 193 206 223 255 255 221 234 221 211 220 232 246   0
+  3 202 228 224 221 211 211 214 205 205 205 220 240  80 150 255 229 221 188 154 191 210 204 209 222 228 225   0
+ 98 233 198 210 222 229 229 234 249 220 194 215 217 241  65  73 106 117 168 219 221 215 217 223 223 224 229  29
+ 75 204 212 204 193 205 211 225 216 185 197 206 198 213 240 195 227 245 239 223 218 212 209 222 220 221 230  67
+ 48 203 183 194 213 197 185 190 194 192 202 214 219 221 220 236 225 216 199 206 186 181 177 172 181 205 206 115
+  0 122 219 193 179 171 183 196 204 210 213 207 211 210 200 196 194 191 195 191 198 192 176 156 167 177 210  92
+  0   0  74 189 212 191 175 172 175 181 185 188 189 188 193 198 204 209 210 210 211 188 188 194 192 216 170   0
+  2   0   0   0  66 200 222 237 239 242 246 243 244 221 220 193 191 179 182 182 181 176 166 168  99  58   0   0
+  0   0   0   0   0   0   0  40  61  44  72  41  35   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+  0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+  0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+</pre>
+<p>
+那麼，資料集中的圖片與標籤實際內容又是如何呢？我們可以從訓練集中先挑第一張(x_train[0])圖出來看看：<br />
+以print輸出後可以看出這是一個28X28的二維矩陣，矩陣中的每個數值都是介於0到255間的整數，分別代表了每個點的不同灰階數值，先不管數值為何，我們可以隱約看出非零數值所組成的區域似乎是鞋子的形狀<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #c678dd;">print</span>(y_train[<span style="color: #da8548; font-weight: bold;">0</span>])
+</pre>
+</div>
+
+<pre class="example">
+9
+</pre>
+
+
+<p>
+查了上面的對照表，發現分類9果然是短靴。當然，如果覺得常常要這樣對照太麻煩，也可以像底下這樣直接建一個矩陣來儲存實際分類。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #dcaeea;">fm_labels</span> = [<span style="color: #98be65;">"T-shirt/top/T&#24676;"</span>,      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">index 0</span>
+<span class="linenr"> 2: </span>             <span style="color: #98be65;">"Trouser/&#35122;&#23376;"</span>,         <span style="color: #5B6268;"># </span><span style="color: #5B6268;">index 1</span>
+<span class="linenr"> 3: </span>             <span style="color: #98be65;">"Pullover/&#22871;&#38957;&#27611;&#34915;"</span>,     <span style="color: #5B6268;"># </span><span style="color: #5B6268;">index 2</span>
+<span class="linenr"> 4: </span>             <span style="color: #98be65;">"Dress/&#35033;&#23376;"</span>,           <span style="color: #5B6268;"># </span><span style="color: #5B6268;">index 3</span>
+<span class="linenr"> 5: </span>             <span style="color: #98be65;">"Coat/&#22806;&#22871;"</span>,            <span style="color: #5B6268;"># </span><span style="color: #5B6268;">index 4</span>
+<span class="linenr"> 6: </span>             <span style="color: #98be65;">"Sandal/&#28092;&#38795;"</span>,          <span style="color: #5B6268;"># </span><span style="color: #5B6268;">index 5</span>
+<span class="linenr"> 7: </span>             <span style="color: #98be65;">"Shirt/&#35183;&#34923;"</span>,           <span style="color: #5B6268;"># </span><span style="color: #5B6268;">index 6</span>
+<span class="linenr"> 8: </span>             <span style="color: #98be65;">"Sneaker/&#36939;&#21205;&#38795;"</span>,       <span style="color: #5B6268;"># </span><span style="color: #5B6268;">index 7</span>
+<span class="linenr"> 9: </span>             <span style="color: #98be65;">"Bag/&#21253;&#21253;"</span>,             <span style="color: #5B6268;"># </span><span style="color: #5B6268;">index 8</span>
+<span class="linenr">10: </span>             <span style="color: #98be65;">"Ankle boot/&#30701;&#38772;"</span>]      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">index 9</span>
+<span class="linenr">11: </span>
+<span class="linenr">12: </span><span style="color: #c678dd;">print</span>(fm_labels[y_train[<span style="color: #da8548; font-weight: bold;">0</span>]])
+</pre>
+</div>
+
+<pre class="example">
+Ankle boot/短靴
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org9ae7dd8" class="outline-3">
+<h3 id="org9ae7dd8"><span class="section-number-3">1.4.</span> 將資料標準化/歸一化</h3>
+<div class="outline-text-3" id="text-1-4">
+<p>
+資料標準化為資料前處理(data preprocessing)的一部份，為什麼資料在送進模型之前還要再處理過呢？<br />
+</p>
+
+<p>
+機器學習的核心是由資料去找出特徵與規則，是以資料的品質、特徵的選取決定了機器學習的上限，模型(Model)只是逼近這個上限<sup><a id="fnr.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup>。然而我們所收集到的資料多是是從使用者的角度下去規劃，不一定是最適合數學模型存取的樣子<sup><a id="fnr.3" class="footref" href="#fn.3" role="doc-backlink">3</a></sup>，而為了讓模型能夠發揮最大的效能，我們要先針對資料中的遺失值、異常值做處理，同時也要對資料進行標準化，讓資料更適合數學模型中。<br />
+</p>
+
+<p>
+例如：<br />
+</p>
+<ul class="org-ul">
+<li>在學生成績的資料集中，A生英文分數較B生高5分；B生數學成績較A生高5分，若要評比兩人的整體學業能力，還是要先分析此次考試的英、數成績分佈<br /></li>
+<li>又如，在房價資料集中，特徵值包括了樓層、房屋坪數、屋齡、當地犯罪率等，這些特徵值不僅數值大小存在差異，單位也不同，要放在一個模型中一起計算，可以將所有特徵值按比例縮放成為0~1間的數值，去掉單位特性。<br /></li>
+</ul>
+<p>
+很多演算法對資料範圍非常的敏感，例如，有的分類器需要計算樣本間的距離(如KNN)，一個特徵值的範圍非常大，那麼距離計算通常就會取決於這個特徵，若情況是範圍小的特徵比較重要的話，就會與我們所要的結果是相反的<sup><a id="fnr.4" class="footref" href="#fn.4" role="doc-backlink">4</a></sup>。為了要讓模型訓練的更強大，最好是對資料特徵數值進行調節，使得資料更適合這些演算法。<br />
+</p>
+
+<p>
+資料的標準化可分為兩個類型：<br />
+</p>
+<ul class="org-ul">
+<li>Normalization (min-max normalization): 即將資料按照比例縮放,使之落入一個特定的區間(如0~1或-1~1)，例如\(x'=\frac{x-min(x)}{max(x)-min(x)}\)<br /></li>
+<li>Standardization (standard deviation normalization): 即將資料減去平均數在除以標準差，使資料的分佈成為平均數為0、標準差為1的常態分佈，例如\(z=\frac{x-\mu}{\sigma}\)，這麼做的用途是因為很多數學分析方法都有資料常態假設。<br /></li>
+</ul>
+
+<p>
+此外，在標準化之前必須要把資料先分割好，然後再分別對訓練集與測試集做標準化,不然會有資料泄漏(data leakage)的問題，如果在未分割前就把所有資料標準化，那麼這些數值就會隱含著所有資料(包含測試集)的分佈訊息，進而影響模型<sup><a id="fnr.5" class="footref" href="#fn.5" role="doc-backlink">5</a></sup>。<br />
+</p>
+
+<p>
+理論上，對資料進行標準化可以提高模型的訓練速度與預測效能，但有些時候標準化並非必要程序，也不一定能發揮其優勢，應視模型與目標決定是否進行標準化。例如<sup><a id="fnr.6" class="footref" href="#fn.6" role="doc-backlink">6</a></sup>：<br />
+</p>
+<ul class="org-ul">
+<li>機率模型不需要標準化，因為這種模型不關心變數的取值，而是關心變數的分佈和變數之間的條件機率<sup><a id="fnr.6.100" class="footref" href="#fn.6" role="doc-backlink">6</a></sup><br /></li>
+<li>神經網路需要標準化處理，一般變數的取值在-1到1之間，這樣做是為了弱化某些變數的值較大而對模型產生影響。一般神經網路中的隱藏層採用tanh啟動函數比sigmod啟動函數要好些，因為tanh雙曲正切函數的取值[-1,1]之間，均值為0。<br /></li>
+<li>在K近鄰演算法中，如果不對解釋變數進行標準化，那麼具有小數量級的解釋變數的影響就會微乎其微。<br /></li>
+</ul>
+</div>
+<ol class="org-ol">
+<li><a id="org4c92236"></a>實作<br />
+<div class="outline-text-4" id="text-1-4-1">
+<p>
+許多AI函式庫提供了方便的標準化函數，例如<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">from</span> sklearn <span style="color: #51afef;">import</span> preprocessing
+<span class="linenr">2: </span><span style="color: #dcaeea;">x_train</span> = preprocessing.scale(x)
+</pre>
 </div>
 
 <p>
-這個數據集一共包含60000個訓練樣本和10000個測試樣本：<br />
+但在此例中，圖像的數值均介於0-255，但是在神經網路中數值越大收斂越慢，且會受到極端值的影響，使訓練效果不佳，故直接除以255也可以達到標準化的目的，讓所有數值介於0-1之間。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">x_train</span> = x_train.astype(<span style="color: #98be65;">'float32'</span>) / <span style="color: #da8548; font-weight: bold;">255</span>
+<span class="linenr">2: </span><span style="color: #dcaeea;">x_test</span> = x_test.astype(<span style="color: #98be65;">'float32'</span>) / <span style="color: #da8548; font-weight: bold;">255</span>
+</pre>
+</div>
+
+<p>
+輸出標準化後的結果如下：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#27161;&#28310;&#21270;&#24460;&#30340;&#31532;&#19968;&#24373;&#22294;:"</span>)
+<span class="linenr">2: </span><span style="color: #51afef;">for</span> row <span style="color: #51afef;">in</span> x_train[<span style="color: #da8548; font-weight: bold;">0</span>]:
+<span class="linenr">3: </span>    <span style="color: #51afef;">for</span> item <span style="color: #51afef;">in</span> row:
+<span class="linenr">4: </span>        <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'{0:.2f} '</span>.<span style="color: #c678dd;">format</span>(item), end=<span style="color: #98be65;">''</span>)
+<span class="linenr">5: </span>    <span style="color: #c678dd;">print</span>()
+</pre>
+</div>
+
+<pre class="example" id="orgbcd4179">
+標準化後的第一張圖:
+0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00
+0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00
+0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00
+0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.05 0.29 0.00 0.00 0.00 0.02 0.00 0.00 0.00 0.00 0.00 0.00 0.00
+0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.01 0.00 0.14 0.53 0.50 0.24 0.21 0.00 0.00 0.00 0.00 0.01 0.02 0.00 0.00 0.01
+0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.02 0.00 0.40 0.80 0.69 0.53 0.56 0.48 0.09 0.00 0.00 0.00 0.00 0.05 0.04 0.00
+0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.61 0.93 0.81 0.70 0.42 0.61 0.63 0.43 0.25 0.09 0.30 0.51 0.28 0.06
+0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.27 0.81 0.87 0.85 0.85 0.85 0.64 0.50 0.47 0.48 0.57 0.55 0.35 0.67 0.26
+0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.78 0.91 0.91 0.91 0.90 0.87 0.87 0.84 0.84 0.64 0.50 0.48 0.77 0.90 0.00
+0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.72 0.88 0.85 0.87 0.89 0.92 0.89 0.88 0.87 0.88 0.87 0.87 0.96 0.68 0.00
+0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.76 0.89 0.85 0.84 0.78 0.71 0.83 0.82 0.83 0.84 0.87 0.86 0.95 0.79 0.00
+0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.01 0.00 0.05 0.86 0.86 0.83 0.85 0.75 0.66 0.89 0.82 0.85 0.88 0.83 0.89 0.77 0.82 0.20
+0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.02 0.00 0.39 0.96 0.87 0.86 0.85 0.80 0.78 0.87 0.84 0.84 0.87 0.86 0.96 0.47 0.65 0.22
+0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.02 0.00 0.00 0.22 0.93 0.89 0.90 0.89 0.94 0.91 0.84 0.85 0.87 0.92 0.85 0.85 0.82 0.36 0.00
+0.00 0.00 0.00 0.02 0.02 0.03 0.01 0.00 0.00 0.00 0.00 0.00 0.93 0.89 0.85 0.87 0.87 0.86 0.87 0.87 0.85 0.87 0.90 0.84 0.85 1.00 0.30 0.00
+0.00 0.01 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.24 0.57 0.80 0.89 0.81 0.84 0.87 0.85 0.82 0.83 0.85 0.88 0.87 0.86 0.84 0.88 0.96 0.62 0.00
+0.00 0.00 0.00 0.00 0.07 0.17 0.32 0.42 0.74 0.89 0.86 0.87 0.85 0.89 0.78 0.80 0.83 0.90 0.88 0.92 0.69 0.74 0.98 0.97 0.91 0.93 0.84 0.00
+0.00 0.22 0.73 0.82 0.88 0.87 0.88 0.82 0.80 0.84 0.82 0.82 0.78 0.62 0.96 0.76 0.81 0.87 1.00 1.00 0.87 0.92 0.87 0.83 0.86 0.91 0.96 0.00
+0.01 0.79 0.89 0.88 0.87 0.83 0.83 0.84 0.80 0.80 0.80 0.86 0.94 0.31 0.59 1.00 0.90 0.87 0.74 0.60 0.75 0.82 0.80 0.82 0.87 0.89 0.88 0.00
+0.38 0.91 0.78 0.82 0.87 0.90 0.90 0.92 0.98 0.86 0.76 0.84 0.85 0.95 0.25 0.29 0.42 0.46 0.66 0.86 0.87 0.84 0.85 0.87 0.87 0.88 0.90 0.11
+0.29 0.80 0.83 0.80 0.76 0.80 0.83 0.88 0.85 0.73 0.77 0.81 0.78 0.84 0.94 0.76 0.89 0.96 0.94 0.87 0.85 0.83 0.82 0.87 0.86 0.87 0.90 0.26
+0.19 0.80 0.72 0.76 0.84 0.77 0.73 0.75 0.76 0.75 0.79 0.84 0.86 0.87 0.86 0.93 0.88 0.85 0.78 0.81 0.73 0.71 0.69 0.67 0.71 0.80 0.81 0.45
+0.00 0.48 0.86 0.76 0.70 0.67 0.72 0.77 0.80 0.82 0.84 0.81 0.83 0.82 0.78 0.77 0.76 0.75 0.76 0.75 0.78 0.75 0.69 0.61 0.65 0.69 0.82 0.36
+0.00 0.00 0.29 0.74 0.83 0.75 0.69 0.67 0.69 0.71 0.73 0.74 0.74 0.74 0.76 0.78 0.80 0.82 0.82 0.82 0.83 0.74 0.74 0.76 0.75 0.85 0.67 0.00
+0.01 0.00 0.00 0.00 0.26 0.78 0.87 0.93 0.94 0.95 0.96 0.95 0.96 0.87 0.86 0.76 0.75 0.70 0.71 0.71 0.71 0.69 0.65 0.66 0.39 0.23 0.00 0.00
+0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.16 0.24 0.17 0.28 0.16 0.14 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00
+0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00
+0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00
+</pre>
+</div>
+</li>
+</ol>
+</div>
+
+<div id="outline-container-orge8b6ef1" class="outline-3">
+<h3 id="orge8b6ef1"><span class="section-number-3">1.5.</span> 建立模型</h3>
+<div class="outline-text-3" id="text-1-5">
+<p>
+做好資料預處理，接下來就能動手建立模型了，在這裡我們使用Keras這個基於TensorFlow所開發的深度學習函式庫，Keras提供了許多簡單易用的模型建構函式，十分適合快速建立模型，讓使用者不用太過關注底層細節。 底下是一個非常基本的卷積神經網路模型:<br />
+</p>
+
+<ul class="org-ul">
+<li>第一層為卷積層，有32個神經元，便用2X2的卷積核，也就是第4行中的kernel_size=2，啟動函數則是常見的relu，這層同時也負責接收資料，在這裡需將資料的形狀明確定義清楚，這裡為28,28,1，是因為這是灰階，如果是彩色圖片，則是28,28,3，代表每個點有RGB三種頻色。<br /></li>
+<li>第二層為池化層，使用2X2的池化核，也就是程式中的第6行<br /></li>
+<li>第8行的Flatten函式負責將資料送至輸出層之前先對資料進行攤平處理<br /></li>
+<li>最後一層為輸出層，也是全連接層(Dense)，這層有10個神經元，使用softmax這個激活函數來計算這張圖片可能屬於哪一個類別的機率值<br /></li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#24314;&#27083;&#27169;&#22411;</span>
+<span class="linenr"> 2: </span><span style="color: #dcaeea;">model</span> = tf.keras.Sequential()
+<span class="linenr"> 3: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#36664;&#20837;&#23652;/&#21367;&#31309;&#23652;</span>
+<span class="linenr"> 4: </span>model.add(tf.keras.layers.Conv2D(filters=<span style="color: #da8548; font-weight: bold;">32</span>, kernel_size=<span style="color: #da8548; font-weight: bold;">2</span>, activation=<span style="color: #98be65;">'relu'</span>, input_shape=(<span style="color: #da8548; font-weight: bold;">28</span>,<span style="color: #da8548; font-weight: bold;">28</span>,<span style="color: #da8548; font-weight: bold;">1</span>)))
+<span class="linenr"> 5: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#27744;&#21270;&#23652;</span>
+<span class="linenr"> 6: </span>model.add(tf.keras.layers.MaxPooling2D(pool_size=<span style="color: #da8548; font-weight: bold;">2</span>))
+<span class="linenr"> 7: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#25892;&#24179;</span>
+<span class="linenr"> 8: </span>model.add(tf.keras.layers.Flatten())
+<span class="linenr"> 9: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#20840;&#36899;&#25509;&#23652;/&#36664;&#20986;&#23652;</span>
+<span class="linenr">10: </span>model.add(tf.keras.layers.Dense(<span style="color: #da8548; font-weight: bold;">10</span>, activation=<span style="color: #98be65;">'softmax'</span>))
+</pre>
+</div>
+
+<pre class="example">
+2022-12-16 09:12:30.811271: I tensorflow/core/platform/cpu_feature_guard.cc:151] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+</pre>
+
+
+<p>
+在CoLab上執行剛才的程式碼並不會有任何輸出，我們可以藉由summary函式來查看模型的基本架構。透過summary()函式，keras會幫我們算出這個模型裡有多少需要計算的權重參數，目前有54,250個。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>model.summary()
+</pre>
+</div>
+
+<pre class="example" id="orgf88cc67">
+Model: "sequential"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #
+=================================================================
+ conv2d (Conv2D)             (None, 27, 27, 32)        160
+
+ max_pooling2d (MaxPooling2D  (None, 13, 13, 32)       0
+ )
+
+ flatten (Flatten)           (None, 5408)              0
+
+ dense (Dense)               (None, 10)                54090
+
+=================================================================
+Total params: 54,250
+Trainable params: 54,250
+Non-trainable params: 0
+_________________________________________________________________
+</pre>
+<p>
+TensorFlow另外提供了一個讓模型更佳視覺化的工具：plot_model()函式，這個函式可以將模型的結構以更具體的圖形來表達。我們不但可以從中看出模型的架構，還能看出資料在不同模型間的維度變化，例如輸入層的圖像原本為28*28，經過卷積層卷積計算後就變成27*27，再經過池化層池化後就剩13*13.<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span>tf.keras.utils.plot_model(
+<span class="linenr"> 2: </span>    model,
+<span class="linenr"> 3: </span>    to_file=<span style="color: #98be65;">'images/model-1.png'</span>,
+<span class="linenr"> 4: </span>    show_shapes=<span style="color: #a9a1e1;">True</span>,
+<span class="linenr"> 5: </span>    show_dtype=<span style="color: #a9a1e1;">None</span>,
+<span class="linenr"> 6: </span>    show_layer_names=<span style="color: #a9a1e1;">None</span>,
+<span class="linenr"> 7: </span>    rankdir=<span style="color: #98be65;">'LR'</span>,
+<span class="linenr"> 8: </span>    expand_nested=<span style="color: #a9a1e1;">True</span>,
+<span class="linenr"> 9: </span>    dpi=<span style="color: #da8548; font-weight: bold;">96</span>,
+<span class="linenr">10: </span>    layer_range=<span style="color: #a9a1e1;">None</span>,
+<span class="linenr">11: </span>    show_layer_activations=<span style="color: #a9a1e1;">True</span>
+<span class="linenr">12: </span>)
+</pre>
+</div>
+
+
+<div id="orgd232c63" class="figure">
+<p><img src="images/model-1.png" alt="model-1.png" width="500" /><br />
+</p>
+<p><span class="figure-number">Figure 1: </span>Caption</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org2c60fb3" class="outline-3">
+<h3 id="org2c60fb3"><span class="section-number-3">1.6.</span> 模型編譯</h3>
+<div class="outline-text-3" id="text-1-6">
+<p>
+在正式訓練模型之前，我們要先對模型進行編譯(compile)，這裡主要是要宣告等下要訓練模型的三個重要方法：如何找到所有參數的最佳值(optimizer)、如何評估預測結果(loss)、如何評估模型整體效能(metrics)。<br />
+Keras用compile函式來指定這三個方法：<br />
 </p>
 <ul class="org-ul">
-<li>訓練數據，用來訓練模型；<br /></li>
-<li>測試數據，用來衡量最優模型的性能。<br /></li>
+<li>loss: 即損失函數，其實就是去比較模型的預測結果與真實答案的差異，顯然這個數值越小越好。損失函數的類型很多，因為此次任務為分類預測，而且資料的標籤尚未進行one-hot-encoding轉換(留在實作2)，所以我們選擇sparse_categorical_corssentropy做為loss function。<br /></li>
+<li>optimizer: 即優化器，我們在國中應該都學過就是微積分找極值，而在深度學習中就是改良找極值的方式去做到最佳化的，我們叫這種方式為梯度下降(Gradient Descent)<sup><a id="fnr.7" class="footref" href="#fn.7" role="doc-backlink">7</a></sup>。和損失函數一樣，可用的optimizer方法也有很多，這裡我們直接選擇最常用的adam。<br /></li>
+<li>metrics: 即效能指標，這是評估模型整體效能的標準，這個數值越高，表示模型的預測效能越好。我們使用最常用的accuracy，也就是模型正確預測的機率<br /></li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>model.<span style="color: #c678dd;">compile</span>(loss=<span style="color: #98be65;">'sparse_categorical_crossentropy'</span>, optimizer=<span style="color: #98be65;">'adam'</span>, metrics=[<span style="color: #98be65;">'accuracy'</span>])
+</pre>
+</div>
+
+<p>
+Keras中可用的損失函數可以從官網<a href="https://keras.io/api/losses/">Keras API reference / Losses</a>找到、可用的優化器也可以從官網<a href="https://keras.io/api/optimizers/">Keras API reference / Optimizers</a>查到，至於可用的模型效能指標則在<a href="https://keras.io/api/metrics/">Keras API reference / Metrics</a>。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org76b2b4a" class="outline-3">
+<h3 id="org76b2b4a"><span class="section-number-3">1.7.</span> 模型訓練</h3>
+<div class="outline-text-3" id="text-1-7">
+<p>
+建立完模型架構後就可以開始訓練，所謂訓練就是將資料丟進模型中，讓模型(透過優化器)找出模型中每個參數（上面的Trainable params，共有54,250個)的最佳數值。Keras使用fit函式來進行訓練，訓練時要宣告以下兩個參數值：<br />
+</p>
+<ul class="org-ul">
+<li>epochs: 所有的資料全都被用來訓練模型一次稱為1個epoch，如果一個資料集很小（只有100張圖)，那麼把這100張圖全部丟進模型訓練就完成了一個epoch的訓練。至於這整個流程應該重複幾次則沒有一定標準，一個簡單的判斷標準是：如果損失函數已經無法隨著epoch的重複而降低，則重複再多次也是罔然。<br /></li>
+<li>batch_size: 由於訓練的資料集一般數量都極為龐大，不太可能一口氣全部丟進模型中去訓練 ，因為電腦的記憶體畢竟有限，batch_size就是用來指定每次要丟入模型中去訓練的資料數量。這個資料集共有60,000張圖，如果我們決定每次丟100張圖，則每個epoch就要分600次(60,000/100)次完成，每一次以一個batch的資料進行訓練稱為一次迭代(iteration)，模型每完成一次迭代的訓練，就會修正下一次訓練參數的方向。<br /></li>
+</ul>
+
+<p>
+Epoch、batch_size與iteration的數學關係如下：<br />
+</p>
+<p class="verse">
+iteration = (資料集大小/batch_size)*epoch<br />
+</p>
+<p>
+以剛才的例子，如果epochs=5、batch_size=100，則iteration大小為600*5=3000次。即換句話說，batch_size越大、iteration也就越小。<br />
+</p>
+
+<p>
+Batch Size的大小影響模型的最佳化程度和速度，但如何設定batch_size最好並沒有一定的標準，需考慮模型的建立目標、學習率(learning rate, 不在本單元介紹內容)、訓練集與測試集的比例與訓練時使用的設備。原則上，batch size增加雖有助於提高訓練速度，但可能會降低模型泛化(generalization)能力而導致過擬合；若batch size太小(例如batch_size=1)，則模型訓練會花費較多時間，也會導致模型難以收歛。<br />
+</p>
+
+<p>
+在這個例子中我們利用Keras的fit函數來進行模型的訓練，其中batch size設為100、epoch設為5<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>model.fit(x_train, y_train, batch_size=<span style="color: #da8548; font-weight: bold;">100</span>, epochs=<span style="color: #da8548; font-weight: bold;">5</span>)
+</pre>
+</div>
+
+<pre class="example" id="org66e6abc">
+Epoch 1/5
+600/600 [==============================] - 7s 11ms/step - loss: 0.2756 - accuracy: 0.9023
+Epoch 2/5
+600/600 [==============================] - 7s 12ms/step - loss: 0.2634 - accuracy: 0.9067
+Epoch 3/5
+600/600 [==============================] - 7s 12ms/step - loss: 0.2541 - accuracy: 0.9089
+Epoch 4/5
+600/600 [==============================] - 7s 11ms/step - loss: 0.2455 - accuracy: 0.9126
+Epoch 5/5
+600/600 [==============================] - 7s 11ms/step - loss: 0.2392 - accuracy: 0.9143
+</pre>
+
+<p>
+此處的batch size與epoch都屬於超參數，是由訓練者自行設定而非模型自己學習得來。Batch Size的選擇，會影響梯度下降的方向。<br />
+</p>
+</div>
+<ol class="org-ol">
+<li><a id="orgc680eba"></a>當batch size = data set size<sup><a id="fnr.8" class="footref" href="#fn.8" role="doc-backlink">8</a></sup><br />
+<div class="outline-text-4" id="text-1-7-1">
+<p>
+如果資料比較小，可以採取全資料集的形式，由全資料集確定的方向能夠更進一步地代表樣本整體(整體性)，進一步更準確地朝向極值(Gradient為0)的方向走；對於較大的資料極一樣採取全資料的形式訓練，缺點如下:<br />
+</p>
+<ul class="org-ul">
+<li>由於記憶體的限制，隨著資料的巨量增長，一次性載入所有的資料變得越來越不可行。<br /></li>
+<li>若以彈性反向傳播(Rprop)的方式迭代，會由於各個Batch Size之間的採樣差異性，各次梯度修正值相互抵消，無法修正。<br /></li>
 </ul>
 </div>
 </li>
-<li><a id="org1691b29"></a>任務<br /></li>
+<li><a id="org952600a"></a>當batch size = 1<sup><a id="fnr.2.100" class="footref" href="#fn.2" role="doc-backlink">2</a></sup><br />
+<div class="outline-text-4" id="text-1-7-2">
+<p>
+假如每次只訓練一個樣本，即Batch Size=1。線性神經元在均方誤差代價函數的錯誤面是一個拋物面，橫截面是橢圓。對於多層神經元, 非線性網路，在局部依然近似一個拋物面。此時，每次修正以各自樣本的梯度方向修正，橫衝直撞各自為政，難以達到收斂的效果。<br />
+</p>
+</div>
+</li>
+<li><a id="org0dbfbff"></a>Batch size的進階問題<br />
+<ol class="org-ol">
+<li><a id="orgedc9a01"></a>若batchsize太小的缺點<sup><a id="fnr.9" class="footref" href="#fn.9" role="doc-backlink">9</a></sup><br />
+<ol class="org-ol">
+<li><a id="org1ee4afa"></a>耗時長，訓練效率低。<br />
+<div class="outline-text-6" id="text-1-7-3-1-1">
+<p>
+假設batchsize=1，每次用一個數據進行訓練，如果數據總量很多時(假設有十萬條數據），就需要向模型投十萬次數據，完整訓練完一遍數據需要很長的時問，訓練效率很低；<br />
+</p>
+</div>
+</li>
+<li><a id="org4bd4441"></a>訓練數據就會非常難收斂，從而導致欠擬合。<br />
+<div class="outline-text-6" id="text-1-7-3-1-2">
+<p>
+假設batchsize=1，每次用一個數據進行訓練，則由於個體的差異性或者異常值的影響，模型的參數變化也會很大，每一層的梯度都具有很高的隨機性，而且需要耗費了大量的時間，從而導致模型非常難收斂。<br />
+</p>
+</div>
+</li>
+</ol>
+</li>
+<li><a id="orgd6ec0fc"></a>隨著batchsize逐漸增大的優缺點<sup><a id="fnr.9.100" class="footref" href="#fn.9" role="doc-backlink">9</a></sup><sup>, </sup><sup><a id="fnr.8.100" class="footref" href="#fn.8" role="doc-backlink">8</a></sup><br />
+<ol class="org-ol">
+<li><a id="orgb3db606"></a>大的batchsize減少訓練時間的同時所需內存容量增加<br />
+<div class="outline-text-6" id="text-1-7-3-2-1">
+<p>
+大的batchsize減少訓練時間這是肯定的，同樣的epoch數目，大的batchsize需要的batch數目減少了，所以處理速度變快，可以減少訓練時間；<br />
+</p>
+</div>
+</li>
+<li><a id="org70ea75a"></a>需要更多的epoch<br />
+<div class="outline-text-6" id="text-1-7-3-2-2">
+<p>
+著Batch Size不斷的增大，處理相同資料量的速度將會變快。但是達到相同精度的Epoch數量變更多。<br />
+</p>
+</div>
+</li>
+<li><a id="orgd0c0cbd"></a>大的batchsize所需內存容量增加<br />
+<div class="outline-text-6" id="text-1-7-3-2-3">
+<p>
+但是如果該值太大，假設batchsize=100000，一次將十萬條數據扔進模型，很可能會造成內存溢出，而無法正常進行訓練。<br />
+</p>
+</div>
+</li>
+<li><a id="org48ea457"></a>大的batchsize在提高穩定性的同時可能導致模型泛化能力下降<br />
+<div class="outline-text-6" id="text-1-7-3-2-4">
+<p>
+大的batch size梯度的計算更加穩定，因為模型訓練曲線會更加平滑。在微調的時候，大的batchsize可能會取得更好的結果。因為在一定範圍內，一般來說batchsize越大，其確定的下降方向越準，引起訓練震盪越小。batchsize增大到一定程度，其確定的下降方向已經基本不再變化。<br />
+</p>
+</div>
+</li>
+<li><a id="org8192811"></a>大的batchsize可能導致模型泛化能力下降<br />
+<div class="outline-text-6" id="text-1-7-3-2-5">
+<p>
+在一定範圍內，增加batchsize有助於收斂的穩定性，但是隨著batchsize的增加，模型的泛化性能會下降。若batchsize設為最大（樣本總個數），則每次更新參數都是相同的樣本，下降方向基本確定，這會導致模型的泛化性能下降。<br />
+</p>
+</div>
+</li>
+</ol>
+</li>
+<li><a id="org895bdbe"></a>如何平衡batchsize的大小<sup><a id="fnr.9.100" class="footref" href="#fn.9" role="doc-backlink">9</a></sup>？<br />
+<div class="outline-text-5" id="text-1-7-3-3">
+<p>
+batchsize太大或者太小都不好。所以 batch size 的值越大，梯度也就越穩定，而 batch size 越小，梯度具有越高的隨機性，但如果 batch size 太大，對於內存的需求就更高，同時也不利於網絡跳出局部極小點。所以，我們需要設置一個合適的batchsize值，在訓練速度和內存容量之間尋找到最佳的平衡點。<br />
+</p>
+
+<p>
+一般在Batchsize增加的同時，我們需要對所有樣本的訓練次數（也就是後面要講的epoch）增加（以增加訓練次數達到更好的效果）這同樣會導致耗時增加，因此需要尋找一個合適的batchsize值，在模型總體效率和內存容量之間做到最好的平衡。<br />
+</p>
+
+<p>
+由於上述兩種因素的矛盾，batchsize增大到某個時候，達到時間上的最優。由於最終收斂精度會陷入不同的局部極值，因此batchsize增大到某些時候，達到最終收斂精度上的最優。<br />
+</p>
+</div>
+</li>
+<li><a id="orgfe29015"></a>在合理範圍內增大Batch Size有以下好處:<br />
+<div class="outline-text-5" id="text-1-7-3-4">
+<p>
+(1) 記憶體使用率增強，大矩陣乘法的平行運算效率加強!<br />
+(2) 跑完一次Epoch所需的迭代次數減少，對於相同資料量的處理速度進一步加快。<br />
+(3)在一定範圍內，一般來說Bathc Size越大，其確定的下降方向越準確，引起的訓練震盪會越小。<br />
+</p>
+</div>
+</li>
+<li><a id="org035def8"></a>也別盲目增大Batch Size其壞處是:<br />
+<div class="outline-text-5" id="text-1-7-3-5">
+<p>
+剛剛提到，在合理的範圍內增加Batch Size有好處的，但一定不能盲目增加。原因如下:<br />
+(1) 記憶體使用率增加，但如果記憶體因此爆掉怎麼辦?<br />
+(2) 跑完一次Epoch的迭代次數減少，要想達到相同的精度，其所花費的時間的時間大幅增加了，進一步對參數的修正也就顯得更加緩慢。<br />
+(3) Batch Size增大到某種程度，其確定的下降方向基本上就不會再改變。<br />
+</p>
+</div>
+</li>
+</ol>
+</li>
 </ol>
 </div>
-<div id="outline-container-org12782b5" class="outline-3">
-<h3 id="org12782b5"><span class="section-number-3">1.2.</span> 下載資料集/分割資料集</h3>
+<div id="outline-container-orgeb315ba" class="outline-3">
+<h3 id="orgeb315ba"><span class="section-number-3">1.8.</span> 測試性能</h3>
+<div class="outline-text-3" id="text-1-8">
+<p>
+訓練完模型後，我們就可以直接拿模型來預測一下效果，並且評估模型的整體效能。<br />
+我們拿測試集資料來考核一下這個新出爐的模型，使用keras的predict()函式來進行預測的第一張。<br />
+predict()預測的對象是整個測試集的資料，取出第一張的預測結果方式如下：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25343;&#27169;&#22411;&#20358;&#38928;&#28204;&#28204;&#35430;&#38598;&#31532;0&#24373;&#30340;&#22294;&#29255;&#20006;&#23565;&#29031;&#31572;&#26696;</span>
+<span class="linenr">2: </span><span style="color: #dcaeea;">pred</span> = model.predict(x_test)[<span style="color: #da8548; font-weight: bold;">0</span>]
+<span class="linenr">3: </span><span style="color: #c678dd;">print</span>(pred)
+</pre>
 </div>
-<div id="outline-container-org3ae58f5" class="outline-3">
-<h3 id="org3ae58f5"><span class="section-number-3">1.3.</span> 觀察資料集內容</h3>
+
+<pre class="example">
+[1.0484946e-06 1.5833010e-09 9.3383994e-07 4.2176248e-07 1.5503476e-06
+ 3.2520618e-03 5.2338710e-06 4.1659037e-03 2.4713489e-04 9.9232578e-01]
+</pre>
+
+
+<p>
+可以看出這個結果是10個小數，代表模型認為這張圖為對10個分類的可能性(以科學記號表示)，這10個可能性總和為1，這便是softmax函數的輸出樣貌。看的出來最後一個類別的數值最大(0.99）。那麼，這張圖的正確類別是什麼呢？我們可以將答案y_test[0]輸出，結果發現為9，表示這次的預測是正確的。<br />
+</p>
+
+<p>
+最後，我們還能利用evaluate()函式對模型的整體效能進行評估：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">score</span> = model.evaluate(x_test, y_test)
+<span class="linenr">2: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'loss:'</span>, score[<span style="color: #da8548; font-weight: bold;">0</span>])
+<span class="linenr">3: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'accuracy:'</span>, score[<span style="color: #da8548; font-weight: bold;">1</span>])
+</pre>
 </div>
-<div id="outline-container-org0524872" class="outline-3">
-<h3 id="org0524872"><span class="section-number-3">1.4.</span> 將資料標準化</h3>
+
+<pre class="example">
+313/313 [==============================] - 1s 1ms/step - loss: 0.2894 - accuracy: 0.8950
+loss: 0.28943511843681335
+accuracy: 0.8949999809265137
+</pre>
+
+
+<p>
+evaluate()會傳回loss與accuracy兩個值<sup><a id="fnr.10" class="footref" href="#fn.10" role="doc-backlink">10</a></sup>:<br />
+</p>
+<ul class="org-ul">
+<li>loss是依我們在compile模型時設定的損失函數計算得來的損失值，loss越低，模型越好（當模型沒有過擬合時）。它不是一個百分比，而是一次epoch中訓練集樣本或驗證集樣本所有error的和。通過損失函數的計算，從而更新我們的模型參數，目標是為了減小最佳化誤差(Optimization error)，即在損失函數與最佳化演算法的共同作用下，減小模型的經驗風險。<br /></li>
+<li>accuracy則是模型在資料集上的預測精準率，目標是對模型的效果進行度量。在分類問題中，精準率的定義簡單粗暴，就是看預測的類別是否和真實的類別一致。accuracy是當模型的參數學習得到並固定後來計算得到的。通過比較真實標籤和預測標籤來確定的0-1損失。它是一個百分比值。<br /></li>
+</ul>
+
+<p>
+此次評估結果，本模型的損失值(loss)約為0.34、精準率(accuracy)約為0.90。<br />
+</p>
+
+<p>
+模型的訓練是通過減少loss為目的的，即最小化loss function，至於最小化後的模型表現如何則由accuracy來做為效能指標。如神經網路中採用反向傳播對模型參數求導。loss隱含著每一次最佳化迭代後模型表現的好壞。最佳化訓練的目標是loss值，而不是accuracy，因為loss function可以求導最佳化，而accuracy不能夠求導。<br />
+</p>
 </div>
-<div id="outline-container-org31d9e54" class="outline-3">
-<h3 id="org31d9e54"><span class="section-number-3">1.5.</span> 建立模型</h3>
+<ol class="org-ol">
+<li><a id="orgf3f9d35"></a>loss與accuracy的關係<sup><a id="fnr.11" class="footref" href="#fn.11" role="doc-backlink">11</a></sup><br />
+<div class="outline-text-4" id="text-1-8-1">
+<p>
+清楚了定義之後，仔細思考就會發現其中的問題，因為精準率是輸出最大的機率，因此0.9的機率值和0.5的機率值效果是等價的，只要保證他們是最大機率即可！請看下面的例子：<br />
+比如我們現在預測貓和狗的類別，<br />
+有一個樣本預測輸出是[0.1, 0.9], 它的交叉熵損失為loss = -1* log(0.9) = 0.046, 預測結果為：狗<br />
+另一個樣本的預測輸出是[0.4, 0.6], 它的交叉熵損失為loss = -1 * log(0.6) = 0.222, 預測結果為：狗<br />
+可以看出兩個樣本都預測的為狗，但是他們的交叉熵損失差別很大。因此我們在訓練時，可能會出現精準率和交叉熵同時上升的情況。<br />
+</p>
 </div>
-<div id="outline-container-org65ff294" class="outline-3">
-<h3 id="org65ff294"><span class="section-number-3">1.6.</span> 模型編譯</h3>
+</li>
+<li><a id="orgc4a78a6"></a>為什麼要用兩個指標<sup><a id="fnr.11.100" class="footref" href="#fn.11" role="doc-backlink">11</a></sup><br />
+<div class="outline-text-4" id="text-1-8-2">
+<p>
+既然精準率和損失都是評價模型好壞的，那麼用一個不行嗎？為什麼要用兩個並不完全等價的評價指標呢？<br />
+這是因為，在分類問題中，可能精準率更加的直觀，也更具有可解釋性，更重要，但是它不可微，無法直接用於網路訓練，因為反向傳播演算法要求損失函數是可微的。而損失函數一個很好的性質就是可微，可以求梯度，運用反向傳播更新參數。即首選損失不能直接最佳化(比如精準率)時，可以使用與真實度量類似的損失函數。 損失函數的可微性，使得可以採用多種方式進行最佳化求解，例如牛頓法、梯度下降法、極大似然估計等。另外在分類任務中，使用accuracy可以，但是在回歸任務中，accuracy便不再可用，只能使用loss。<br />
+</p>
+
+<p>
+通過模型在 dev/test 集上的 accuracy ，計算模型正確分類的樣本數與總樣本數之比以衡量模型的效果，目標是對模型的效果進行度量。<br />
+通過損失函數的計算，更新模型參數，目標是為了減小最佳化誤差(Optimization error)，即在損失函數與最佳化演算法的共同作用下，減小模型的經驗風險。<br />
+總結精準度和交叉熵會出現以下情況：<br />
+</p>
+
+<p>
+如果正確標籤的機率降低，但這個標籤依然是機率最高的，會出現損失增加單精準度不變的結果。<br />
+如果資料集的標籤很不平均，比如90%是類別A，那麼模型一味增加預測A的比例，可能會讓精準度上升，但loss可能也會以更大幅度上升（cross entropy的幅度可以很大）<br />
+如果模型非常自信，大多數正確標籤的機率都接近1，那如果出現一個錯誤，精準率可能只會降低很少，但交叉熵可能會非常高。<br />
+</p>
 </div>
-<div id="outline-container-org26a9131" class="outline-3">
-<h3 id="org26a9131"><span class="section-number-3">1.7.</span> 模型訓練</h3>
+</li>
+<li><a id="orged5cf16"></a>關於loss與accuracy的另一種比諭說法<sup><a id="fnr.12" class="footref" href="#fn.12" role="doc-backlink">12</a></sup><br />
+<div class="outline-text-4" id="text-1-8-3">
+<p>
+一個更通俗的例子是：一個數學老師，在努力提高同學們的平均分，但期末考核的指標卻是及格率（60分及格）。假如平均分是100分（也就意味著所有同學都考到了100分），那麼自然及格率是100%，這是最理想的。但現實不一定這麼美好，平均分越高，只要平均分還沒有達到100，那麼及格率卻不一定越高，比如兩個人分別考40和90，那麼平均分就是65，及格率只有50%；如果兩個人的成績都是60，平均分就是60，及格率卻有100%。這也就是說，平均分可以作為一個目標，但這個目標並不直接跟考核目標掛鉤。<br />
+</p>
+
+<p>
+那麼，為了提升最後的考核目標，這個老師應該怎麼做呢？很顯然，首先看看所有學生中，哪些同學已經及格了，及格的同學先不管他們，而針對不及格的同學進行補課加強，這樣一來，原則上來說有很多不及格的同學都能考上60分了，也有可能一些本來及格的同學考不夠60分了，但這個過程可以迭代，最終使得大家都在60分以上，當然，最終的平均分不一定很高，但沒辦法，誰叫考核目標是及格率呢？<br />
+</p>
 </div>
-<div id="outline-container-orga02fcbd" class="outline-3">
-<h3 id="orga02fcbd"><span class="section-number-3">1.8.</span> 測試性能</h3>
-</div>
-<div id="outline-container-org2aa16f0" class="outline-3">
-<h3 id="org2aa16f0"><span class="section-number-3">1.9.</span> 進一步查看效能</h3>
+</li>
+</ol>
 </div>
 </div>
-<div id="outline-container-org5032c09" class="outline-2">
-<h2 id="org5032c09"><span class="section-number-2">2.</span> 實作2</h2>
+
+<div id="outline-container-orga917476" class="outline-2">
+<h2 id="orga917476"><span class="section-number-2">2.</span> 實作2</h2>
 <div class="outline-text-2" id="text-2">
+<p>
+在實作1中我們以卷積層、池化層、激活函數與全連接層建構出最簡單的模型，同時評估了一下整體的效能。<br />
+但是，這個模型到底夠不夠好？實際上線時效能如何？這些才是我們真正關心的，這也是在實作2這個單元中我們要探究的問題。<br />
+在實作2裡，我們要再進一步詳細的評估模型的效能，接下來變更模型的架構，最後再次評估模型的成效，看看我們重新設計的架構是否有助於優化模型。<br />
+</p>
 </div>
-<div id="outline-container-org5e38db4" class="outline-3">
-<h3 id="org5e38db4"><span class="section-number-3">2.1.</span> 轉換label資料格式</h3>
+<div id="outline-container-org5d67b5f" class="outline-3">
+<h3 id="org5d67b5f"><span class="section-number-3">2.1.</span> 進一步查看效能</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+訓練模型只是整個模型建構的一部份，後續的模型調校以提高模型效能才是我們的目的。為了更清楚模型的效能，我們將epoch的次數增加到50次，以測試集這個模型在訓練過程中沒有看過的資料(x_test, y_test)來驗證一下模型效能，並將每個epoch的效能驗證結果(就是後面的validation_data)記錄下來，全部先存到history中。<br />
+</p>
+
+<p>
+這次的訓練會花掉比實作1更多時間，建議訓練前先打開colab加速器。<br />
+</p>
+
+<div id="orgfee221f" class="figure">
+<p><img src="images/2022-12-16_13-34-18.gif" alt="2022-12-16_13-34-18.gif" width="500" /><br />
+</p>
 </div>
-<div id="outline-container-orgf493f60" class="outline-3">
-<h3 id="orgf493f60"><span class="section-number-3">2.2.</span> 增加卷積層、池化層、全連接層</h3>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">history</span> = model.fit(x_train, y_train, batch_size=<span style="color: #da8548; font-weight: bold;">100</span>, epochs=<span style="color: #da8548; font-weight: bold;">60</span>,
+<span class="linenr">2: </span>                   validation_data=(x_test, y_test))
+</pre>
 </div>
-<div id="outline-container-org7b56015" class="outline-3">
-<h3 id="org7b56015"><span class="section-number-3">2.3.</span> 加入Dropout層</h3>
+
+<pre class="example" id="orgdc60247">
+Epoch 1/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.2333 - accuracy: 0.9170 - val_loss: 0.2860 - val_accuracy: 0.8968
+Epoch 2/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.2277 - accuracy: 0.9181 - val_loss: 0.2916 - val_accuracy: 0.8970
+Epoch 3/60
+600/600 [==============================] - 8s 13ms/step - loss: 0.2228 - accuracy: 0.9202 - val_loss: 0.2830 - val_accuracy: 0.8983
+Epoch 4/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.2169 - accuracy: 0.9227 - val_loss: 0.2879 - val_accuracy: 0.8956
+Epoch 5/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.2123 - accuracy: 0.9249 - val_loss: 0.2852 - val_accuracy: 0.8973
+Epoch 6/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.2094 - accuracy: 0.9254 - val_loss: 0.2859 - val_accuracy: 0.8967
+Epoch 7/60
+600/600 [==============================] - 8s 13ms/step - loss: 0.2039 - accuracy: 0.9276 - val_loss: 0.2816 - val_accuracy: 0.9003
+Epoch 8/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1994 - accuracy: 0.9294 - val_loss: 0.2854 - val_accuracy: 0.8987
+Epoch 9/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1966 - accuracy: 0.9294 - val_loss: 0.2907 - val_accuracy: 0.8957
+Epoch 10/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1930 - accuracy: 0.9315 - val_loss: 0.2781 - val_accuracy: 0.9019
+Epoch 11/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1880 - accuracy: 0.9330 - val_loss: 0.2812 - val_accuracy: 0.9015
+Epoch 12/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1867 - accuracy: 0.9327 - val_loss: 0.2865 - val_accuracy: 0.9001
+Epoch 13/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1837 - accuracy: 0.9345 - val_loss: 0.2860 - val_accuracy: 0.9003
+Epoch 14/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1791 - accuracy: 0.9364 - val_loss: 0.2860 - val_accuracy: 0.9010
+Epoch 15/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1775 - accuracy: 0.9362 - val_loss: 0.2872 - val_accuracy: 0.9021
+Epoch 16/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1739 - accuracy: 0.9379 - val_loss: 0.2926 - val_accuracy: 0.9010
+Epoch 17/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1709 - accuracy: 0.9388 - val_loss: 0.2829 - val_accuracy: 0.9020
+Epoch 18/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1708 - accuracy: 0.9388 - val_loss: 0.2940 - val_accuracy: 0.9024
+Epoch 19/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1661 - accuracy: 0.9410 - val_loss: 0.2999 - val_accuracy: 0.8975
+Epoch 20/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1645 - accuracy: 0.9411 - val_loss: 0.2993 - val_accuracy: 0.8983
+Epoch 21/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1619 - accuracy: 0.9422 - val_loss: 0.2964 - val_accuracy: 0.9023
+Epoch 22/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1590 - accuracy: 0.9434 - val_loss: 0.3018 - val_accuracy: 0.8988
+Epoch 23/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1588 - accuracy: 0.9436 - val_loss: 0.2956 - val_accuracy: 0.9009
+Epoch 24/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1561 - accuracy: 0.9440 - val_loss: 0.2987 - val_accuracy: 0.9007
+Epoch 25/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1534 - accuracy: 0.9462 - val_loss: 0.3095 - val_accuracy: 0.8983
+Epoch 26/60
+600/600 [==============================] - 8s 13ms/step - loss: 0.1520 - accuracy: 0.9462 - val_loss: 0.3010 - val_accuracy: 0.9007
+Epoch 27/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1496 - accuracy: 0.9469 - val_loss: 0.3060 - val_accuracy: 0.8987
+Epoch 28/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1488 - accuracy: 0.9464 - val_loss: 0.2994 - val_accuracy: 0.9021
+Epoch 29/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1461 - accuracy: 0.9475 - val_loss: 0.2999 - val_accuracy: 0.9019
+Epoch 30/60
+600/600 [==============================] - 8s 13ms/step - loss: 0.1450 - accuracy: 0.9486 - val_loss: 0.3104 - val_accuracy: 0.8973
+Epoch 31/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1420 - accuracy: 0.9495 - val_loss: 0.3080 - val_accuracy: 0.8994
+Epoch 32/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1415 - accuracy: 0.9495 - val_loss: 0.3019 - val_accuracy: 0.9018
+Epoch 33/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1407 - accuracy: 0.9494 - val_loss: 0.3112 - val_accuracy: 0.8990
+Epoch 34/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1390 - accuracy: 0.9502 - val_loss: 0.3077 - val_accuracy: 0.9019
+Epoch 35/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1365 - accuracy: 0.9520 - val_loss: 0.3270 - val_accuracy: 0.8943
+Epoch 36/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1364 - accuracy: 0.9511 - val_loss: 0.3193 - val_accuracy: 0.9003
+Epoch 37/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1335 - accuracy: 0.9526 - val_loss: 0.3189 - val_accuracy: 0.8983
+Epoch 38/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1324 - accuracy: 0.9536 - val_loss: 0.3153 - val_accuracy: 0.8978
+Epoch 39/60
+600/600 [==============================] - 8s 13ms/step - loss: 0.1306 - accuracy: 0.9540 - val_loss: 0.3223 - val_accuracy: 0.8969
+Epoch 40/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1303 - accuracy: 0.9541 - val_loss: 0.3379 - val_accuracy: 0.8940
+Epoch 41/60
+600/600 [==============================] - 8s 13ms/step - loss: 0.1286 - accuracy: 0.9543 - val_loss: 0.3261 - val_accuracy: 0.8985
+Epoch 42/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1271 - accuracy: 0.9546 - val_loss: 0.3238 - val_accuracy: 0.8999
+Epoch 43/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1257 - accuracy: 0.9561 - val_loss: 0.3251 - val_accuracy: 0.9006
+Epoch 44/60
+600/600 [==============================] - 8s 13ms/step - loss: 0.1255 - accuracy: 0.9555 - val_loss: 0.3380 - val_accuracy: 0.8972
+Epoch 45/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1230 - accuracy: 0.9567 - val_loss: 0.3544 - val_accuracy: 0.8933
+Epoch 46/60
+600/600 [==============================] - 8s 13ms/step - loss: 0.1225 - accuracy: 0.9564 - val_loss: 0.3391 - val_accuracy: 0.8964
+Epoch 47/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1219 - accuracy: 0.9565 - val_loss: 0.3458 - val_accuracy: 0.8951
+Epoch 48/60
+600/600 [==============================] - 8s 13ms/step - loss: 0.1209 - accuracy: 0.9577 - val_loss: 0.3343 - val_accuracy: 0.9000
+Epoch 49/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1201 - accuracy: 0.9573 - val_loss: 0.3345 - val_accuracy: 0.8989
+Epoch 50/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1183 - accuracy: 0.9582 - val_loss: 0.3534 - val_accuracy: 0.8935
+Epoch 51/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1181 - accuracy: 0.9584 - val_loss: 0.3383 - val_accuracy: 0.8998
+Epoch 52/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1156 - accuracy: 0.9589 - val_loss: 0.3476 - val_accuracy: 0.8964
+Epoch 53/60
+600/600 [==============================] - 8s 13ms/step - loss: 0.1153 - accuracy: 0.9592 - val_loss: 0.3479 - val_accuracy: 0.8957
+Epoch 54/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1139 - accuracy: 0.9600 - val_loss: 0.3610 - val_accuracy: 0.8922
+Epoch 55/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1134 - accuracy: 0.9600 - val_loss: 0.3588 - val_accuracy: 0.8961
+Epoch 56/60
+600/600 [==============================] - 8s 13ms/step - loss: 0.1125 - accuracy: 0.9599 - val_loss: 0.3633 - val_accuracy: 0.8962
+Epoch 57/60
+600/600 [==============================] - 8s 13ms/step - loss: 0.1117 - accuracy: 0.9608 - val_loss: 0.3579 - val_accuracy: 0.8976
+Epoch 58/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1109 - accuracy: 0.9604 - val_loss: 0.3729 - val_accuracy: 0.8952
+Epoch 59/60
+600/600 [==============================] - 8s 13ms/step - loss: 0.1098 - accuracy: 0.9610 - val_loss: 0.3523 - val_accuracy: 0.9003
+Epoch 60/60
+600/600 [==============================] - 7s 12ms/step - loss: 0.1103 - accuracy: 0.9608 - val_loss: 0.3637 - val_accuracy: 0.8952
+</pre>
+<p>
+由程式的輸出結果可以看出，loss與val_loss這兩個矩陣內各有50個數值<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #c678dd;">print</span>(<span style="color: #c678dd;">len</span>(history.history[<span style="color: #98be65;">'loss'</span>]))
+<span class="linenr">2: </span><span style="color: #c678dd;">print</span>(<span style="color: #c678dd;">len</span>(history.history[<span style="color: #98be65;">'val_loss'</span>]))
+</pre>
 </div>
-<div id="outline-container-orgb6f8a80" class="outline-3">
-<h3 id="orgb6f8a80"><span class="section-number-3">2.4.</span> 加入驗證集</h3>
+<p>
+以print()函式將其內容輸出，其內容就是50次epoch訓練時每一次的模型損失值<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'train loss:'</span>,history.history[<span style="color: #98be65;">'loss'</span>])
+<span class="linenr">2: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'test loss:'</span>,history.history[<span style="color: #98be65;">'val_loss'</span>])
+</pre>
 </div>
-<div id="outline-container-org2a42fcf" class="outline-3">
-<h3 id="org2a42fcf"><span class="section-number-3">2.5.</span> 測試性能</h3>
+<p>
+接下來將每次的損失值(loss)由歷史記錄中取出，畫成折線圖<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
+<span class="linenr"> 2: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#21462;&#20986;&#27599;&#27425;&#30340;&#35347;&#32244;&#36039;&#26009;&#25613;&#22833;&#20540;</span>
+<span class="linenr"> 3: </span>plt.plot(history.history[<span style="color: #98be65;">'loss'</span>])
+<span class="linenr"> 4: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#21462;&#20986;&#27599;&#27425;&#30340;&#28204;&#35430;&#36039;&#26009;&#25613;&#22833;&#20540;</span>
+<span class="linenr"> 5: </span>plt.plot(history.history[<span style="color: #98be65;">'val_loss'</span>])
+<span class="linenr"> 6: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#21152;&#19978;&#27161;&#38988;</span>
+<span class="linenr"> 7: </span>plt.title(<span style="color: #98be65;">'Model loss'</span>)
+<span class="linenr"> 8: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#21152;&#19978;y&#36600;&#27161;&#31844;</span>
+<span class="linenr"> 9: </span>plt.ylabel(<span style="color: #98be65;">'Loss'</span>)
+<span class="linenr">10: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#21152;&#19978;x&#36600;&#27161;&#31844;</span>
+<span class="linenr">11: </span>plt.xlabel(<span style="color: #98be65;">'Epoch'</span>)
+<span class="linenr">12: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#39023;&#31034;&#25240;&#32218;&#30340;&#21517;&#31281;</span>
+<span class="linenr">13: </span>plt.legend([<span style="color: #98be65;">'Train'</span>, <span style="color: #98be65;">'Test'</span>])
+<span class="linenr">14: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#39023;&#31034;&#25240;&#32218;&#22294;</span>
+<span class="linenr">15: </span>plt.savefig(<span style="color: #98be65;">'images/cnn-eva-2.png'</span>, dpi=<span style="color: #da8548; font-weight: bold;">300</span>)
+<span class="linenr">16: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">plt.show()</span>
+</pre>
 </div>
-<div id="outline-container-org4c1d87f" class="outline-3">
-<h3 id="org4c1d87f"><span class="section-number-3">2.6.</span> 再查看效能</h3>
+
+<pre class="example">
+DEPRECATION WARNING: The system version of Tk is deprecated and may be removed in a future release. Please don't rely on it. Set TK_SILENCE_DEPRECATION=1 to suppress this warning.
+</pre>
+
+
+<p>
+如圖所示，雖然模型在訓練資料集的損失值隨著訓練次數(epoch)的增加而降低，然而模型對測試資集的損失值卻不減反增，這表示這個模型對於陌生的資料效果不佳，這就是就是所謂的過擬合(overfitting)現象。<br />
+接下來我們打算進一步改善一下這個模型。<br />
+</p>
+
+<div id="orgf51cb06" class="figure">
+<p><img src="images/cnn-eva-2.png" alt="cnn-eva-2.png" width="500" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgadc4f58" class="outline-3">
+<h3 id="orgadc4f58"><span class="section-number-3">2.2.</span> 轉換label資料格式</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+首先要解決的是資料集的標籤表示法。這個模型的任務是進行分類，在資料集中以數字0~9來表示10種不同的分類，雖然從精準率看來效能還可以，但這種表示法隱含了一些問題。我們以數字來表示分類，這會讓模型誤會這些分類是連續、有序的，也就是說，第2類比第1類大，第3類到第5類的距離等於第5類到第7類的距離，這顯然是荒謬錯誤的。<br />
+解決這個問題的方式是使用one-hot encoding(獨熱編碼)，方法是使用N個位元來表示N個類別，以這個資料集為例，原本的的類別和轉換過後的分別如下:<br />
+</p>
+<ul class="org-ul">
+<li>0: 0000000001<br /></li>
+<li>1: 0000000010<br /></li>
+<li>2: 0000000100<br /></li>
+<li>3: 0000001000<br /></li>
+<li>&#x2026;<br /></li>
+<li>9: 1000000000<br /></li>
+</ul>
+<p>
+這樣轉換，除了解決原本的分類變成數值的問題，如果是對特徵值進行one-hot encoding轉換，則在一定程度上也會起到擴充特徵的作用。但是這種編碼也有其應用上的限制，例如，當類別數量很龐大時，使用one-hot encoding就會導致特徵空間變成非常大，形成一個高維的稀疏矩陣。這種情況下就要使用主成分分析(PCA, Principal Component Analysis)來對資料維度進行縮減，也就是降維。<br />
+</p>
+
+<p>
+Keras提供的to_categorical()函式可以讓我們簡單快速的對資枓集中的分類進行one-hot encoding轉換，從下例中也可以看到原始資料與轉換後資料的比對。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">from</span> tensorflow.keras.utils <span style="color: #51afef;">import</span> to_categorical
+<span class="linenr">2: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'&#31532;&#19968;&#24373;&#22294;&#30340;&#39006;&#21029;(&#36681;&#25563;&#21069;):'</span>,y_train[<span style="color: #da8548; font-weight: bold;">0</span>])
+<span class="linenr">3: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23559;label&#36914;&#34892;one-hot encoding&#36681;&#25563;</span>
+<span class="linenr">4: </span><span style="color: #dcaeea;">y_train</span> = to_categorical(y_train)
+<span class="linenr">5: </span><span style="color: #dcaeea;">y_test</span> = to_categorical(y_test)
+<span class="linenr">6: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'&#31532;&#19968;&#24373;&#22294;&#30340;&#39006;&#21029;(&#36681;&#25563;&#24460;):'</span>,y_train[<span style="color: #da8548; font-weight: bold;">0</span>])
+<span class="linenr">7: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">model.compile&#30340;loss&#25913;&#28858;'categorical_crossentropy'</span>
+</pre>
+</div>
+
+<pre class="example">
+第一張圖的類別(轉換前): 9
+第一張圖的類別(轉換後): [0. 0. 0. 0. 0. 0. 0. 0. 0. 1.]
+</pre>
+
+
+<p>
+此外，由於分類改為one-hot encoding，故後續的模型編譯所使用的loss function就可以改選categorical_crossentropy。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orge46392a" class="outline-3">
+<h3 id="orge46392a"><span class="section-number-3">2.3.</span> 增加卷積層、池化層、Dropout層以及全連接層</h3>
+<div class="outline-text-3" id="text-2-3">
+<p>
+接下來我們試著增加模型中卷積層、池化層與全連接層的層數，同時為了解決過擬合的問題，我們也在各層中加入Dropout層，其目的是隨機丟掉(重置)一些神經元的參數，Dropout()裡的數值為所要丟棄的神經元百分比。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #dcaeea;">model</span> = tf.keras.Sequential()
+<span class="linenr"> 2: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36664;&#20837;&#23652;/&#31532;1&#20491;&#21367;&#31309;&#23652;</span>
+<span class="linenr"> 3: </span>model.add(tf.keras.layers.Conv2D(filters=<span style="color: #da8548; font-weight: bold;">32</span>, kernel_size=<span style="color: #da8548; font-weight: bold;">3</span>, padding=<span style="color: #98be65;">'same'</span>, activation=<span style="color: #98be65;">'relu'</span>, input_shape=(<span style="color: #da8548; font-weight: bold;">28</span>,<span style="color: #da8548; font-weight: bold;">28</span>,<span style="color: #da8548; font-weight: bold;">1</span>)))
+<span class="linenr"> 4: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31532;1&#20491;&#27744;&#21270;&#23652;</span>
+<span class="linenr"> 5: </span>model.add(tf.keras.layers.MaxPooling2D(pool_size=<span style="color: #da8548; font-weight: bold;">2</span>))
+<span class="linenr"> 6: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31532;1&#20491;Dropout&#23652;</span>
+<span class="linenr"> 7: </span>model.add(tf.keras.layers.Dropout(<span style="color: #da8548; font-weight: bold;">0.5</span>))
+<span class="linenr"> 8: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31532;2&#20491;&#21367;&#31309;&#23652;</span>
+<span class="linenr"> 9: </span>model.add(tf.keras.layers.Conv2D(filters=<span style="color: #da8548; font-weight: bold;">64</span>, kernel_size=<span style="color: #da8548; font-weight: bold;">5</span>, padding=<span style="color: #98be65;">'same'</span>, activation=<span style="color: #98be65;">'relu'</span>))
+<span class="linenr">10: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31532;2&#20491;&#27744;&#21270;&#23652;</span>
+<span class="linenr">11: </span>model.add(tf.keras.layers.MaxPooling2D(pool_size=<span style="color: #da8548; font-weight: bold;">2</span>))
+<span class="linenr">12: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31532;2&#20491;Dropout&#23652;</span>
+<span class="linenr">13: </span>model.add(tf.keras.layers.Dropout(<span style="color: #da8548; font-weight: bold;">0.5</span>))
+<span class="linenr">14: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25892;&#24179;</span>
+<span class="linenr">15: </span>model.add(tf.keras.layers.Flatten())
+<span class="linenr">16: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31532;&#19968;&#20491;&#20840;&#36899;&#25509;&#23652;</span>
+<span class="linenr">17: </span>model.add(tf.keras.layers.Dense(<span style="color: #da8548; font-weight: bold;">128</span>, activation=<span style="color: #98be65;">'relu'</span>))
+<span class="linenr">18: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31532;3&#20491;Dropout&#23652;</span>
+<span class="linenr">19: </span>model.add(tf.keras.layers.Dropout(<span style="color: #da8548; font-weight: bold;">0.5</span>))
+<span class="linenr">20: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31532;2&#20491;&#20840;&#36899;&#25509;&#23652;/&#36664;&#20986;&#23652;</span>
+<span class="linenr">21: </span>model.add(tf.keras.layers.Dense(<span style="color: #da8548; font-weight: bold;">10</span>, activation=<span style="color: #98be65;">'softmax'</span>))
+</pre>
+</div>
+<p>
+建立完新模型，我們可以再用summary()函式查看新的模型架構，對比右邊的實作1原始模型，可以看出此新模型所需訓練的權重參數由原來的54,250個增加到454,410個<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#26597;&#30475;&#27169;&#22411;&#32080;&#33824;</span>
+<span class="linenr">2: </span>model.summary()
+</pre>
+</div>
+<pre class="example" id="org656ce98">
+Model: "sequential_1"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #
+=================================================================
+ conv2d_1 (Conv2D)           (None, 28, 28, 32)        320
+
+ max_pooling2d_1 (MaxPooling  (None, 14, 14, 32)       0
+ 2D)
+
+ dropout (Dropout)           (None, 14, 14, 32)        0
+
+ conv2d_2 (Conv2D)           (None, 14, 14, 64)        51264
+
+ max_pooling2d_2 (MaxPooling  (None, 7, 7, 64)         0
+ 2D)
+
+ dropout_1 (Dropout)         (None, 7, 7, 64)          0
+
+ flatten_1 (Flatten)         (None, 3136)              0
+
+ dense_1 (Dense)             (None, 128)               401536
+
+ dropout_2 (Dropout)         (None, 128)               0
+
+ dense_2 (Dense)             (None, 10)                1290
+
+=================================================================
+Total params: 454,410
+Trainable params: 454,410
+Non-trainable params: 0
+_________________________________________________________________
+</pre>
+<p>
+如同實作1以tf.keras.utils.plot_model()函式查看圖形化模型架構<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span>tf.keras.utils.plot_model(
+<span class="linenr"> 2: </span>    model,
+<span class="linenr"> 3: </span>    to_file=<span style="color: #98be65;">'images/model-2.png'</span>,
+<span class="linenr"> 4: </span>    show_shapes=<span style="color: #a9a1e1;">True</span>,
+<span class="linenr"> 5: </span>    show_dtype=<span style="color: #a9a1e1;">None</span>,
+<span class="linenr"> 6: </span>    show_layer_names=<span style="color: #a9a1e1;">None</span>,
+<span class="linenr"> 7: </span>    rankdir=<span style="color: #98be65;">'LR'</span>,
+<span class="linenr"> 8: </span>    expand_nested=<span style="color: #a9a1e1;">True</span>,
+<span class="linenr"> 9: </span>    dpi=<span style="color: #da8548; font-weight: bold;">96</span>,
+<span class="linenr">10: </span>    layer_range=<span style="color: #a9a1e1;">None</span>,
+<span class="linenr">11: </span>    show_layer_activations=<span style="color: #a9a1e1;">True</span>
+<span class="linenr">12: </span>)
+</pre>
+</div>
+
+<div id="org1113e23" class="figure">
+<p><img src="images/model-2.png" alt="model-2.png" width="500" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orge1b675e" class="outline-3">
+<h3 id="orge1b675e"><span class="section-number-3">2.4.</span> 測試性能</h3>
+<div class="outline-text-3" id="text-2-4">
+<p>
+接下來便是對這個修改過後的模型進行編譯及訓練<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>model.<span style="color: #c678dd;">compile</span>(loss=<span style="color: #98be65;">'categorical_crossentropy'</span>, optimizer=<span style="color: #98be65;">'adam'</span>, metrics=[<span style="color: #98be65;">'accuracy'</span>])
+<span class="linenr">2: </span><span style="color: #dcaeea;">history</span> = model.fit(x_train, y_train, batch_size=<span style="color: #da8548; font-weight: bold;">100</span>, epochs=<span style="color: #da8548; font-weight: bold;">50</span>,
+<span class="linenr">3: </span>                   validation_data=(x_test, y_test))
+</pre>
+</div>
+
+<pre class="example" id="orgb358f83">
+Epoch 1/50
+600/600 [==============================] - 46s 76ms/step - loss: 0.6692 - accuracy: 0.7549 - val_loss: 0.4094 - val_accuracy: 0.8506
+Epoch 2/50
+600/600 [==============================] - 49s 81ms/step - loss: 0.4468 - accuracy: 0.8389 - val_loss: 0.3485 - val_accuracy: 0.8720
+Epoch 3/50
+600/600 [==============================] - 44s 74ms/step - loss: 0.3956 - accuracy: 0.8575 - val_loss: 0.3261 - val_accuracy: 0.8821
+Epoch 4/50
+600/600 [==============================] - 42s 70ms/step - loss: 0.3651 - accuracy: 0.8694 - val_loss: 0.2965 - val_accuracy: 0.8919
+Epoch 5/50
+600/600 [==============================] - 42s 70ms/step - loss: 0.3458 - accuracy: 0.8750 - val_loss: 0.2825 - val_accuracy: 0.8952
+Epoch 6/50
+600/600 [==============================] - 41s 68ms/step - loss: 0.3308 - accuracy: 0.8805 - val_loss: 0.2753 - val_accuracy: 0.8979
+Epoch 7/50
+600/600 [==============================] - 39s 65ms/step - loss: 0.3177 - accuracy: 0.8846 - val_loss: 0.2646 - val_accuracy: 0.9017
+Epoch 8/50
+600/600 [==============================] - 39s 65ms/step - loss: 0.3140 - accuracy: 0.8868 - val_loss: 0.2607 - val_accuracy: 0.9037
+Epoch 9/50
+600/600 [==============================] - 39s 65ms/step - loss: 0.3061 - accuracy: 0.8892 - val_loss: 0.2527 - val_accuracy: 0.9073
+Epoch 10/50
+600/600 [==============================] - 39s 65ms/step - loss: 0.2967 - accuracy: 0.8908 - val_loss: 0.2485 - val_accuracy: 0.9062
+Epoch 11/50
+600/600 [==============================] - 45s 75ms/step - loss: 0.2916 - accuracy: 0.8934 - val_loss: 0.2487 - val_accuracy: 0.9055
+Epoch 12/50
+600/600 [==============================] - 41s 68ms/step - loss: 0.2892 - accuracy: 0.8944 - val_loss: 0.2446 - val_accuracy: 0.9098
+Epoch 13/50
+600/600 [==============================] - 43s 72ms/step - loss: 0.2861 - accuracy: 0.8946 - val_loss: 0.2369 - val_accuracy: 0.9131
+Epoch 14/50
+600/600 [==============================] - 43s 71ms/step - loss: 0.2799 - accuracy: 0.8964 - val_loss: 0.2379 - val_accuracy: 0.9117
+Epoch 15/50
+600/600 [==============================] - 44s 74ms/step - loss: 0.2776 - accuracy: 0.8976 - val_loss: 0.2338 - val_accuracy: 0.9123
+Epoch 16/50
+600/600 [==============================] - 43s 71ms/step - loss: 0.2700 - accuracy: 0.9016 - val_loss: 0.2301 - val_accuracy: 0.9145
+Epoch 17/50
+600/600 [==============================] - 44s 74ms/step - loss: 0.2716 - accuracy: 0.9014 - val_loss: 0.2371 - val_accuracy: 0.9116
+Epoch 18/50
+600/600 [==============================] - 43s 72ms/step - loss: 0.2696 - accuracy: 0.9008 - val_loss: 0.2313 - val_accuracy: 0.9134
+Epoch 19/50
+600/600 [==============================] - 42s 71ms/step - loss: 0.2665 - accuracy: 0.9018 - val_loss: 0.2277 - val_accuracy: 0.9169
+Epoch 20/50
+600/600 [==============================] - 44s 74ms/step - loss: 0.2612 - accuracy: 0.9043 - val_loss: 0.2284 - val_accuracy: 0.9173
+Epoch 21/50
+600/600 [==============================] - 44s 74ms/step - loss: 0.2577 - accuracy: 0.9057 - val_loss: 0.2238 - val_accuracy: 0.9159
+Epoch 22/50
+600/600 [==============================] - 42s 71ms/step - loss: 0.2602 - accuracy: 0.9050 - val_loss: 0.2351 - val_accuracy: 0.9131
+Epoch 23/50
+600/600 [==============================] - 44s 74ms/step - loss: 0.2548 - accuracy: 0.9054 - val_loss: 0.2362 - val_accuracy: 0.9132
+Epoch 24/50
+600/600 [==============================] - 43s 72ms/step - loss: 0.2545 - accuracy: 0.9060 - val_loss: 0.2210 - val_accuracy: 0.9190
+Epoch 25/50
+600/600 [==============================] - 43s 72ms/step - loss: 0.2519 - accuracy: 0.9078 - val_loss: 0.2177 - val_accuracy: 0.9197
+Epoch 26/50
+600/600 [==============================] - 42s 71ms/step - loss: 0.2520 - accuracy: 0.9066 - val_loss: 0.2222 - val_accuracy: 0.9182
+Epoch 27/50
+600/600 [==============================] - 42s 70ms/step - loss: 0.2472 - accuracy: 0.9074 - val_loss: 0.2151 - val_accuracy: 0.9217
+Epoch 28/50
+600/600 [==============================] - 43s 71ms/step - loss: 0.2458 - accuracy: 0.9088 - val_loss: 0.2338 - val_accuracy: 0.9147
+Epoch 29/50
+600/600 [==============================] - 41s 69ms/step - loss: 0.2452 - accuracy: 0.9090 - val_loss: 0.2144 - val_accuracy: 0.9201
+Epoch 30/50
+600/600 [==============================] - 42s 69ms/step - loss: 0.2437 - accuracy: 0.9099 - val_loss: 0.2195 - val_accuracy: 0.9166
+Epoch 31/50
+600/600 [==============================] - 42s 69ms/step - loss: 0.2402 - accuracy: 0.9112 - val_loss: 0.2201 - val_accuracy: 0.9184
+Epoch 32/50
+600/600 [==============================] - 43s 72ms/step - loss: 0.2440 - accuracy: 0.9105 - val_loss: 0.2126 - val_accuracy: 0.9207
+Epoch 33/50
+600/600 [==============================] - 43s 72ms/step - loss: 0.2390 - accuracy: 0.9106 - val_loss: 0.2121 - val_accuracy: 0.9218
+Epoch 34/50
+600/600 [==============================] - 45s 75ms/step - loss: 0.2393 - accuracy: 0.9100 - val_loss: 0.2112 - val_accuracy: 0.9219
+Epoch 35/50
+600/600 [==============================] - 44s 74ms/step - loss: 0.2398 - accuracy: 0.9102 - val_loss: 0.2192 - val_accuracy: 0.9218
+Epoch 36/50
+600/600 [==============================] - 45s 75ms/step - loss: 0.2389 - accuracy: 0.9114 - val_loss: 0.2146 - val_accuracy: 0.9223
+Epoch 37/50
+600/600 [==============================] - 46s 76ms/step - loss: 0.2380 - accuracy: 0.9118 - val_loss: 0.2126 - val_accuracy: 0.9231
+Epoch 38/50
+600/600 [==============================] - 43s 72ms/step - loss: 0.2348 - accuracy: 0.9126 - val_loss: 0.2078 - val_accuracy: 0.9231
+Epoch 39/50
+600/600 [==============================] - 46s 76ms/step - loss: 0.2343 - accuracy: 0.9123 - val_loss: 0.2216 - val_accuracy: 0.9162
+Epoch 40/50
+600/600 [==============================] - 41s 69ms/step - loss: 0.2357 - accuracy: 0.9133 - val_loss: 0.2127 - val_accuracy: 0.9201
+Epoch 41/50
+600/600 [==============================] - 42s 69ms/step - loss: 0.2353 - accuracy: 0.9121 - val_loss: 0.2345 - val_accuracy: 0.9094
+Epoch 42/50
+600/600 [==============================] - 41s 69ms/step - loss: 0.2320 - accuracy: 0.9126 - val_loss: 0.2117 - val_accuracy: 0.9230
+Epoch 43/50
+600/600 [==============================] - 41s 68ms/step - loss: 0.2288 - accuracy: 0.9136 - val_loss: 0.2138 - val_accuracy: 0.9229
+Epoch 44/50
+600/600 [==============================] - 41s 68ms/step - loss: 0.2299 - accuracy: 0.9136 - val_loss: 0.2139 - val_accuracy: 0.9221
+Epoch 45/50
+600/600 [==============================] - 43s 71ms/step - loss: 0.2293 - accuracy: 0.9150 - val_loss: 0.2098 - val_accuracy: 0.9246
+Epoch 46/50
+600/600 [==============================] - 42s 70ms/step - loss: 0.2287 - accuracy: 0.9130 - val_loss: 0.2081 - val_accuracy: 0.9246
+Epoch 47/50
+600/600 [==============================] - 41s 69ms/step - loss: 0.2242 - accuracy: 0.9151 - val_loss: 0.2087 - val_accuracy: 0.9239
+Epoch 48/50
+600/600 [==============================] - 42s 70ms/step - loss: 0.2243 - accuracy: 0.9162 - val_loss: 0.2124 - val_accuracy: 0.9244
+Epoch 49/50
+600/600 [==============================] - 41s 69ms/step - loss: 0.2254 - accuracy: 0.9151 - val_loss: 0.2122 - val_accuracy: 0.9225
+Epoch 50/50
+600/600 [==============================] - 42s 70ms/step - loss: 0.2273 - accuracy: 0.9143 - val_loss: 0.2091 - val_accuracy: 0.9236
+</pre>
+</div>
+</div>
+<div id="outline-container-org19b1e38" class="outline-3">
+<h3 id="org19b1e38"><span class="section-number-3">2.5.</span> 再查看效能</h3>
+<div class="outline-text-3" id="text-2-5">
+<p>
+完成訓練後再將各個epoch的loss變化畫成折線圖，由圖中的折線變化可以看出，不但整體loss降低，模型也沒有再出現過擬合的現象，模型對於訓練集與測試集資料的損失值都隨著訓練次數而不斷下降<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
+<span class="linenr"> 2: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">train loss</span>
+<span class="linenr"> 3: </span>plt.plot(history.history[<span style="color: #98be65;">'loss'</span>])
+<span class="linenr"> 4: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">test loss</span>
+<span class="linenr"> 5: </span>plt.plot(history.history[<span style="color: #98be65;">'val_loss'</span>])
+<span class="linenr"> 6: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#27161;&#38988;</span>
+<span class="linenr"> 7: </span>plt.title(<span style="color: #98be65;">'Model loss'</span>)
+<span class="linenr"> 8: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">y&#36600;&#27161;&#31844;</span>
+<span class="linenr"> 9: </span>plt.ylabel(<span style="color: #98be65;">'Loss'</span>)
+<span class="linenr">10: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">x&#36600;&#27161;&#31844;</span>
+<span class="linenr">11: </span>plt.xlabel(<span style="color: #98be65;">'Epoch'</span>)
+<span class="linenr">12: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#39023;&#31034;&#25240;&#32218;&#30340;&#21517;&#31281;</span>
+<span class="linenr">13: </span>plt.legend([<span style="color: #98be65;">'Train'</span>, <span style="color: #98be65;">'Test'</span>])
+<span class="linenr">14: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#39023;&#31034;&#25240;&#32218;&#22294;</span>
+<span class="linenr">15: </span>plt.savefig(<span style="color: #98be65;">'cnn-eva-3.png'</span>, dpi=<span style="color: #da8548; font-weight: bold;">300</span>)
+<span class="linenr">16: </span>plt.show()
+</pre>
+</div>
+
+<p width="500">
+<img src="images/cnn-eva-3.png" alt="cnn-eva-3.png" width="500" /><br />
+最後輸出model的整體loss與accuracy<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">score</span> = model.evaluate(x_test, y_test)
+<span class="linenr">2: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'loss:'</span>, score[<span style="color: #da8548; font-weight: bold;">0</span>])
+<span class="linenr">3: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'accuracy:'</span>, score[<span style="color: #da8548; font-weight: bold;">1</span>])
+</pre>
+</div>
+
+<pre class="example">
+313/313 [==============================] - 3s 6ms/step - loss: 0.2091 - accuracy: 0.9236
+loss: 0.2090652883052826
+accuracy: 0.9236000180244446
+</pre>
+</div>
+</div>
+<div id="outline-container-org4b2aba1" class="outline-3">
+<h3 id="org4b2aba1"><span class="section-number-3">2.6.</span> 有沒有其他的效能提升建議</h3>
+<div class="outline-text-3" id="text-2-6">
+<ul class="org-ul">
+<li>以Keras的ImageDataGenerator多產生額外的影像資料(旋轉、偏移、放大、縮小)，增加變異性<sup><a id="fnr.13" class="footref" href="#fn.13" role="doc-backlink">13</a></sup><br /></li>
+<li>加入驗證集<br /></li>
+<li>改變batch size、epoch、optimizer<br /></li>
+</ul>
+</div>
 </div>
 </div>
 <div id="footnotes">
@@ -301,12 +1554,60 @@ Fashion-MNIST是一個替代MNIST手寫數字集的圖像資料集。 它是由Z
 <a href="https://github.com/zalandoresearch/fashion-mnist/blob/master/README.zh-CN.md">zalandoresearch/fashion-mnist</a><br />
 </p></div></div>
 
+<div class="footdef"><sup><a id="fn.2" class="footnum" href="#fnr.2" role="doc-backlink">2</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://medium.com/jameslearningnote/%E8%B3%87%E6%96%99%E5%88%86%E6%9E%90-%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92-%E7%AC%AC2-4%E8%AC%9B-%E8%B3%87%E6%96%99%E5%89%8D%E8%99%95%E7%90%86-missing-data-one-hot-encoding-feature-scaling-3b70a7839b4a">[資料分析&amp;機器學習] 第2.4講：資料前處理(Missing data, One-hot encoding, Feature Scaling)</a><br />
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.3" class="footnum" href="#fnr.3" role="doc-backlink">3</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://edge.aif.tw/before-data-preprocessing/">你的資料不是資料：從資料到模型不能省略的關鍵步驟</a><br />
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.4" class="footnum" href="#fnr.4" role="doc-backlink">4</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://ithelp.ithome.com.tw/articles/10240494">[Day 5] 資料清理&amp;前處理</a><br />
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.5" class="footnum" href="#fnr.5" role="doc-backlink">5</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://ithelp.ithome.com.tw/articles/10276190"> standardize VS normalize </a><br />
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.6" class="footnum" href="#fnr.6" role="doc-backlink">6</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://blog.csdn.net/zenghaitao0128/article/details/78361038">機器學習——標準化/歸一化的目的和作用</a><br />
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.7" class="footnum" href="#fnr.7" role="doc-backlink">7</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://ithelp.ithome.com.tw/articles/10288343">day3】來辨識圖像-深度神經網路(Deep Neural Network) </a><br />
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.8" class="footnum" href="#fnr.8" role="doc-backlink">8</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://www.cupoy.com/qa/club/ai_tw/0000016D6BA22D97000000016375706F795F72656C656173654B5741535354434C5542/0000017D085DB5E3000000026375706F795F72656C656173655155455354">【QA】Batch Size 是甚麼? 會對訓練有何影響?</a><br />
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.9" class="footnum" href="#fnr.9" role="doc-backlink">9</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://blog.csdn.net/weixin_45928096/article/details/123643006">batchsize太小的缺點&amp;隨著batchsize逐漸增大的優缺點&amp;如何平衡batchsize的大小</a><br />
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.10" class="footnum" href="#fnr.10" role="doc-backlink">10</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://xujinzh.github.io/2020/03/26/ml-nn-loss-accuracy/">機器學習神經網路模型loss和accuracy的理解</a><br />
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.11" class="footnum" href="#fnr.11" role="doc-backlink">11</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://blog.csdn.net/u014421797/article/details/104689384">精準率Accuracy與損失函數Loss的關係</a><br />
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.12" class="footnum" href="#fnr.12" role="doc-backlink">12</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://posts.careerengine.us/p/5d8ae5b6c3fc0e7547c35006">深度學習中loss和accuracy的關係?</a><br />
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.13" class="footnum" href="#fnr.13" role="doc-backlink">13</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://syshen.medium.com/%E6%94%B9%E5%96%84-cnn-%E8%BE%A8%E8%AD%98%E7%8E%87-dac9fce59b63">改善 CNN 辨識率</a><br />
+</p></div></div>
+
 
 </div>
 </div></div>
 <div id="postamble" class="status">
 <p class="author">Author: Yung Chin, Yen</p>
-<p class="date">Created: 2022-12-11 Sun 21:29</p>
+<p class="date">Created: 2022-12-19 Mon 21:01</p>
 </div>
 </body>
 </html>

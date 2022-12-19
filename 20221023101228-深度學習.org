@@ -7,7 +7,7 @@
 #+TAGS: AI
 #+OPTIONS: toc:2 ^:nil num:5
 #+PROPERTY: header-args :eval never-export
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/white.css" />
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/muse.css" />
 #+EXCLUDE_TAGS: noexport
 #+latex:\newpage
 
@@ -207,7 +207,7 @@ Imputer 類別在 scikit-learn 中屬於 transformer 類別，主要的工作是
 
 *** 對應 ordinal feature
 
-自定一個 mapping dictionary，即 size\under{}mapping，然後將 classlabel 對應到 size\under{}mapping 中的鍵值(程式第[[(sizeMapping)]]行)。
+自定一個 mapping dictionary，即 size_mapping，然後將 classlabel 對應到 size_mapping 中的鍵值(程式第[[(sizeMapping)]]行)。
 
 #+BEGIN_SRC python -r -n :results output :exports both
   import pandas as pd
@@ -317,7 +317,7 @@ scikit-learn 的 LabelENcoder 類別可以用來將「類別特徵」編碼為�
 
 由輸出結果可以發現，經過類別編碼後的顏色特徵，由原本不具次序的特徵變成存在大小關係(red>green>blue)，這明顯會影響 model 運算的結果。針對此一問題，常見的解決方案是 one-hot encoding，其原理是：對特徵值中的每個值，建立一個新的「虛擬特徵」(dummy feature)。方法有二：
 - 利用 ColumnTransformer 函式庫的 ColumnTransformer 類別，將特徵值轉換 One-Hot Encoding 的對應矩陣，如程式第[[(FitTransform)]]行。
-- 利用 Pandas 套件的 get\under{}dummies 類別，一次將矩陣內指定之 column 轉換為 One-Hot encoding，如程式第[[(GetDummies)]]行。這種轉換只有字串數據會被轉換，其他內容則否。
+- 利用 Pandas 套件的 get_dummies 類別，一次將矩陣內指定之 column 轉換為 One-Hot encoding，如程式第[[(GetDummies)]]行。這種轉換只有字串數據會被轉換，其他內容則否。
 
 #+BEGIN_SRC python -r -n :results output :exports both
   import pandas as pd
@@ -619,11 +619,11 @@ overfitting 的產生原因是模型過度遷就於訓練數據，導致面對�
 #+ATTR_HTML: :width 500
 [[file:images/04_08.png]]
 
-前述實作中，k\under{}features 參數(程式第[[(kFeatures)]]行)定義了我們希望演算法「最後要保留多少特徵」，在預設情況下，以 accuracy\under{}score(程式第[[(accuracyScore)]]行)來評估模型效能。在 fit 的 while 迴圈中([[(fitWhile)]]行)，由 itertools 模組的 combinations 方法所產生的特徵子集合會被評估並降維，直到只剩下所要的特徵個數。
+前述實作中，k_features 參數(程式第[[(kFeatures)]]行)定義了我們希望演算法「最後要保留多少特徵」，在預設情況下，以 accuracy_score(程式第[[(accuracyScore)]]行)來評估模型效能。在 fit 的 while 迴圈中([[(fitWhile)]]行)，由 itertools 模組的 combinations 方法所產生的特徵子集合會被評估並降維，直到只剩下所要的特徵個數。
 
-在每次迭代中，演算法使用內部創建的測試數據集 X\under{}test(第[[(scoreXtest)]]行)來評估特徵子集合，然後留下精確度最佳的特徵子集合所得分數，加入串列 self.scores\under{}中(第[[(bestScore)]]行)，之後再以這些分數來評估結果。最後的特徵子集合「行索引」會被分派到變數 self.indices\under{}中，然後以 transform 將這些所選定的特徵轉為新的數據陣列。
+在每次迭代中，演算法使用內部創建的測試數據集 X_test(第[[(scoreXtest)]]行)來評估特徵子集合，然後留下精確度最佳的特徵子集合所得分數，加入串列 self.scores_中(第[[(bestScore)]]行)，之後再以這些分數來評估結果。最後的特徵子集合「行索引」會被分派到變數 self.indices_中，然後以 transform 將這些所選定的特徵轉為新的數據陣列。
 
-由圖[[fig:SBS-1]]可以看到，當特徵數 k={3, 7, 8, 9, 10, 11, 12}時，KNN 分類器的準確率為 100%。若進一步想確定當 k=3 時，是哪三個特徵，則可以由 sbs.subset\under{}中逐步探索出來(程式第[[(sbsSubsets)]]行)。
+由圖[[fig:SBS-1]]可以看到，當特徵數 k={3, 7, 8, 9, 10, 11, 12}時，KNN 分類器的準確率為 100%。若進一步想確定當 k=3 時，是哪三個特徵，則可以由 sbs.subset_中逐步探索出來(程式第[[(sbsSubsets)]]行)。
 
 進一步比較「全部特徵值」以及「三個特徵值」所得出的模型效能，可以看到即使只留下三個特徵值，模型的效能仍相去不遠，更重要的是，透過降低維度，可以有效的提升運算效能。
 ** 以隨機森林評估特徵的重要性
@@ -1362,7 +1362,7 @@ ResNet 是由 Microsoft 團隊開發的網路，特色是具有能加深比過�
 
 **** 準備資料
 
-由於 IMDB 匯入 train\under{}data 及 test\under{}data 均為 list 型態，要先轉換為 tensor 才能輸入至神經網路，方法有二：
+由於 IMDB 匯入 train_data 及 test_data 均為 list 型態，要先轉換為 tensor 才能輸入至神經網路，方法有二：
 
 1. 填補資料中每個子 list 內容使其具有相同長度，再轉 shapre。
 1. 對每個子 list 做 one-hot 編碼，其程式碼如下：
@@ -1475,7 +1475,7 @@ output = dot(W, input)+b
   model.add(layers.Dense(1, activation='sigmoid'))
 #+END_SRC
 
-建好 model 後，要選擇一個損失函數和一個優化器，由於要處理的是二元分類問題，所以最好用 binary\under{}crossentropy 損失函數，因為 crossentropy 主要就是用來測量機率分佈之間的距離(差異)。其實作如下：
+建好 model 後，要選擇一個損失函數和一個優化器，由於要處理的是二元分類問題，所以最好用 binary_crossentropy 損失函數，因為 crossentropy 主要就是用來測量機率分佈之間的距離(差異)。其實作如下：
 
 #+BEGIN_SRC python -r -n :results output :exports both :eval no
   model.compile(optimizer='rmsprop',
@@ -1483,7 +1483,7 @@ output = dot(W, input)+b
                 metrics=['accuracy'])
 #+END_SRC
 
-之所以能將 optimizer 和 loss function 以字串方式經由參數傳給 compoile()，這是因為 rmsprop、binary\under{}crossentropy 和 accuracy 均已事先在 Keras 套件中定義好了，若是要進一步自訂參數(如自訂學習率)，做法如下：
+之所以能將 optimizer 和 loss function 以字串方式經由參數傳給 compoile()，這是因為 rmsprop、binary_crossentropy 和 accuracy 均已事先在 Keras 套件中定義好了，若是要進一步自訂參數(如自訂學習率)，做法如下：
 
 #+BEGIN_SRC python -r -n :results output :exports both :eval no
   # 調整learning rate
@@ -1516,7 +1516,7 @@ output = dot(W, input)+b
   partial_y_train = y_train[10000:]
 #+END_SRC
 
-接下來才是使用 fit()來訓練模型，進行 20 個訓練週期(epoch，即，把 x\under{}train 和 y\under{}train 張量中的所有訓練樣本進行 20 輪的訓練)，以 512 個小樣本的小批量(batch\under{}size)進行訓練，
+接下來才是使用 fit()來訓練模型，進行 20 個訓練週期(epoch，即，把 x_train 和 y_train 張量中的所有訓練樣本進行 20 輪的訓練)，以 512 個小樣本的小批量(batch_size)進行訓練，
 
 #+BEGIN_SRC python -r -n :results output :exports both :eval no
   history = model.fit(partial_x_train,
@@ -1526,7 +1526,7 @@ output = dot(W, input)+b
                       validation_data=(x_val, y_val))
 #+END_SRC
 
-model.fit()會回傳一個 history 物件，這物件本身有一個 history 屬性，為一個包含有關訓練過程中相關數據的字典，這個字期包含有 4 個項目(val\under{}loss, val\under{}acc, loss, acc)，為訓練和驗證時監控的指標。
+model.fit()會回傳一個 history 物件，這物件本身有一個 history 屬性，為一個包含有關訓練過程中相關數據的字典，這個字期包含有 4 個項目(val_loss, val_acc, loss, acc)，為訓練和驗證時監控的指標。
 
 #+BEGIN_SRC python -r -n :results output :exports both
   # 準備資料
@@ -1855,7 +1855,7 @@ model.fit()會回傳一個 history 物件，這物件本身有一個 history 屬
 
 #+END_SRC
 
-另外，輸出層將啟動函數由 sigmoid 改為 softmax，以機率值來顯示預測的類別結果，配合這種情境，最適合的損失函數為 categorical\under{}crossentropy，它可以測量兩個機率分佈間的差距（即神經網路輸出的預測機率分佈與真實分佈間的距離），透過最小化這兩個分佈間的距離來訓練神經網路，讓結果接近答案。
+另外，輸出層將啟動函數由 sigmoid 改為 softmax，以機率值來顯示預測的類別結果，配合這種情境，最適合的損失函數為 categorical_crossentropy，它可以測量兩個機率分佈間的差距（即神經網路輸出的預測機率分佈與真實分佈間的距離），透過最小化這兩個分佈間的距離來訓練神經網路，讓結果接近答案。
 
 #+BEGIN_SRC python -r -n :results output :exports both :eval no
   model.compile(optimizer='rmsprop',
@@ -2851,7 +2851,7 @@ Non-trainable params: 0
 _________________________________________________________________
 #+end_example
 
-在編譯時，以 RMSProp 優化器，由於使用 sigmoid 單元結束神經網路，所以配合使用 binary\under{}crossentropy 二元交叉熵作為損失基準。
+在編譯時，以 RMSProp 優化器，由於使用 sigmoid 單元結束神經網路，所以配合使用 binary_crossentropy 二元交叉熵作為損失基準。
 
 #+NAME: 配置 model 以進行訓練
 #+BEGIN_SRC python -r -n :results output :exports both
@@ -2939,7 +2939,7 @@ _________________________________________________________________
 : 3
 : 4
 
-建構好 model、整理完資料，接下來就可以調整 model 來搭配產生器所產生的資料，我們可以應用 model 的 fit\under{}generator 方法，這個方法的第 1 個參數即是一個 Python 的產生器，然而由於資料是無止盡地產生，所以在宣告訓練時期之前，Keras model 需要知道從產生器抽取多少樣本，這就是 steps\under{}per\under{}epoch 參數的功能，它指定了從產生器取得的批次量，也就是說，model 在運行了 steps\under{}per\under{}epoch 次的梯度下降步驟後，訓練過程將進入下一個訓練週期(epochs)。在以下的例子中，每個批次量包含 20 個樣本，而目標樣本有 2000 個，所以就需要有 100 個批次量。
+建構好 model、整理完資料，接下來就可以調整 model 來搭配產生器所產生的資料，我們可以應用 model 的 fit_generator 方法，這個方法的第 1 個參數即是一個 Python 的產生器，然而由於資料是無止盡地產生，所以在宣告訓練時期之前，Keras model 需要知道從產生器抽取多少樣本，這就是 steps_per_epoch 參數的功能，它指定了從產生器取得的批次量，也就是說，model 在運行了 steps_per_epoch 次的梯度下降步驟後，訓練過程將進入下一個訓練週期(epochs)。在以下的例子中，每個批次量包含 20 個樣本，而目標樣本有 2000 個，所以就需要有 100 個批次量。
 
 #+NAME: 調整 model 以使用批次量產生器
 #+BEGIN_SRC python -r -n :results output :exports both
@@ -2953,7 +2953,7 @@ _________________________________________________________________
   model.save('cats_and_dogs_small_i.h5')
 #+END_SRC
 
-使用上述 fit\under{}generator 時，還可以傳遞 validation\under{}data 參數，此參數可以接收一個資料產生器，也可以接收 Numpy 陣列，如果接收的資料來自產生器，則還要指定 validation\under{}steps 參數，告訴程式要從產生器中抽取多少次批量進行評估。在完成訓練後把 model 存起來，並繪製訓練週期與驗證週期的 model 損失值與準確度。
+使用上述 fit_generator 時，還可以傳遞 validation_data 參數，此參數可以接收一個資料產生器，也可以接收 Numpy 陣列，如果接收的資料來自產生器，則還要指定 validation_steps 參數，告訴程式要從產生器中抽取多少次批量進行評估。在完成訓練後把 model 存起來，並繪製訓練週期與驗證週期的 model 損失值與準確度。
 
 *** 完整程式
 
@@ -3138,7 +3138,7 @@ Overfitting 的部份成因是由於樣本太少導致無法訓練出具備普�
       fill_mode='nearest')     #新建影像填補像素方法
 #+END_SRC
 
-上述程式之 fill_\under{}mode 共提供四種像素填補方法：
+上述程式之 fill__mode 共提供四種像素填補方法：
 - constant: 依照輸入的 cval(浮點數或整數)將影像邊界之外都以該值填補，例如 cval=k，則影像填補為 kkkkkkkk|abcd|kkkkkkkk
 - nearest: 以最接近的像素值填補，如：aaaaaaaa|abcd|dddddddd
 - reflect: 以影像重複填補(影像以一正一反方向)，如 abcddcba|abcd|dcbaabcd
@@ -3449,8 +3449,8 @@ Feature extraction 是使用 pretrained network 學習到的表示法，以這�
 
 要使用這個 pretrained model，還需要傳三個參數給 VGG16 建構式：
 - weights: 用於初始化 model 的權重檢查點
-- include\under{}top: 指在神經網路頂部有沒有包含密集連接的分類器。預設情況下，密集連接分類器對應於 ImageNet 的 1000 個類別。然而，我們實際想分類的可能沒這麼多層，所以這裡不一定要包含預設分類器。
-- input\under{}shape: qpaqamo 供給神經網路的影像張量 shape。這個參數為 optional，如果不傳，則神經網路能處理任何 shape 的輸入張量。
+- include_top: 指在神經網路頂部有沒有包含密集連接的分類器。預設情況下，密集連接分類器對應於 ImageNet 的 1000 個類別。然而，我們實際想分類的可能沒這麼多層，所以這裡不一定要包含預設分類器。
+- input_shape: qpaqamo 供給神經網路的影像張量 shape。這個參數為 optional，如果不傳，則神經網路能處理任何 shape 的輸入張量。
 
 #+NAME: VGG16 pretrained model架構細節
 #+BEGIN_SRC python -r -n :results output :exports both
@@ -3516,11 +3516,11 @@ _________________________________________________________________
 
 
 1. 在資料集上執行 convolutional base，將輸出記錄到硬碟上的 Numpy 陣列，然後再輸入到獨立的密集分類層。這種解決方案只需要為每個輪入影像執行一次 convolutional base，而 convolutional base 是處理過程中成本最高的部份，所以這種做法速度快成本低。但也因如此，這種做法不允許使用資料擴增法。
-1. 在頂部(最後端)增加 Dnese 層來擴展 model (conv\under{}base)，並從輸入資料開始，從頭到尾執行整個處理過程。這種方式允許資料擴增技術，因為每次輸入影像在執行 convolutional base 時都會在 model 處理到。但這種方式的成本較高。
+1. 在頂部(最後端)增加 Dnese 層來擴展 model (conv_base)，並從輸入資料開始，從頭到尾執行整個處理過程。這種方式允許資料擴增技術，因為每次輸入影像在執行 convolutional base 時都會在 model 處理到。但這種方式的成本較高。
 
 **** 2. 快速特徵萃取
 
-先執行 ImageDataGenerator，將影像轉換為 Numpy 陣列及其 label 向量，然後呼叫 conv\under{}base model 的 predict 方法從這些影像中萃取特徵。
+先執行 ImageDataGenerator，將影像轉換為 Numpy 陣列及其 label 向量，然後呼叫 conv_base model 的 predict 方法從這些影像中萃取特徵。
 
 
 #+BEGIN_SRC python -r -n :results output :exports both
@@ -3761,7 +3761,7 @@ Epoch 30/30
 
 **** 7. 加入資料擴增的特徵萃取
 
-將資料擴增加入特徵萃取的作法是擴展 conv\under{}base model 並從輸入資料開始，從頭到尾執行整個處理過程，這種做法的運算成本非常昂貴，只能在 GPU 上執行，在 CPU 上絕對難以處理。由於 model 的行為與 layer 類似，因此可以將 model(如 conv\uunder{}base)視為 layer，增加到 Sequential model 中，就如同增加神經網路的 layer 一樣。其作法如下：
+將資料擴增加入特徵萃取的作法是擴展 conv_base model 並從輸入資料開始，從頭到尾執行整個處理過程，這種做法的運算成本非常昂貴，只能在 GPU 上執行，在 CPU 上絕對難以處理。由於 model 的行為與 layer 類似，因此可以將 model(如 conv\uunder{}base)視為 layer，增加到 Sequential model 中，就如同增加神經網路的 layer 一樣。其作法如下：
 
 #+NAME: 在 convolutional base 卷積基底上增加密集層分類器
 #+BEGIN_SRC python -r -n :results output :exports both
@@ -3833,7 +3833,7 @@ _________________________________________________________________
 : This is the number of trainable weights before freezing the conv base: 30
 : This is the number of trainable weights after freezing the conv base: 4
 
-由於 conv\under{}base 被凍結更新權重，所以 model 只會訓練增力的兩個 Dense 層權重，每層有兩個參數要更新(主要權重矩陣和偏差向量)，所以一共剩 4 個 trainable weights，原本的 pretrained model 有 13 層 Conv2D，共 26 個 trainable weights。
+由於 conv_base 被凍結更新權重，所以 model 只會訓練增力的兩個 Dense 層權重，每層有兩個參數要更新(主要權重矩陣和偏差向量)，所以一共剩 4 個 trainable weights，原本的 pretrained model 有 13 層 Conv2D，共 26 個 trainable weights。
 
 接下來就可以使用資料擴增來訓練 model:
 
@@ -4032,7 +4032,7 @@ Non-trainable params: 0
 _________________________________________________________________
 #+end_example
 
-我們可以調整這個 convolutional base 的最頂層(block5)三層的卷積層，即 block5\under{}conv1、block5\under{}conv2、block5\under{}conv3 三層，然後凍結 block4\under{}pool 以下的所有層。之所以選擇只解凍 convolutional base 的最頂層，幾個考量原因如下：
+我們可以調整這個 convolutional base 的最頂層(block5)三層的卷積層，即 block5_conv1、block5_conv2、block5_conv3 三層，然後凍結 block4_pool 以下的所有層。之所以選擇只解凍 convolutional base 的最頂層，幾個考量原因如下：
 
  - 相對於 convolutional base 中的低層主要是對更通用、可重複使用的特徵進行編碼；更高層則是對更特定的特徵進行編碼，所以這些特徵需要重新調整才能適用於新的問題。如果是對低層進行微調，則會出現反效果。
 - 訓練的參數越多，就越可能 overfitting。convolutional base 有近 1500 萬個參數，因此在少量資料集上訓練會有風險。
@@ -4384,7 +4384,7 @@ Tensor("max_pooling2d_4/MaxPool:0", shape=(?, 7, 7, 128), dtype=float32)
 (1, 148, 148, 32)
 #+end_example
 
-由上述結果可看出 firtst\under{}layer\under{}activation 的輸出為一個 148\times148 的特徵圖，共有 32 個 channel，即原 model 中第一層的 conv2d 的輸出內容。其中第 1556 張原圖如下：
+由上述結果可看出 firtst_layer_activation 的輸出為一個 148\times148 的特徵圖，共有 32 個 channel，即原 model 中第一層的 conv2d 的輸出內容。其中第 1556 張原圖如下：
 
 #+CAPTION: Origin cat
 #+LABEL:fig:origin_cat
@@ -4703,18 +4703,18 @@ _________________________________________________________________
 
 #+RESULTS:
 
-#+CAPTION: block3\under{}conv1 層中的第 0 個 channel 的最大回應 pattern
+#+CAPTION: block3_conv1 層中的第 0 個 channel 的最大回應 pattern
 #+LABEL:fig:pattern_block3_conv1_channel_0
 #+name: fig:pattern_block3_conv1_channel_0
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 [[file:images/block3_conv1_filter_feature.png]]
 
-block3\under{}conv1 層中的過濾器 0 似乎對波爾卡圓點圖案有回應，再來就是開始對每一層中的每個 filter/channel，為簡化起見，只每每一層中的前 64 個過濾器，將結果以 8\times8 網格方式呈現。
+block3_conv1 層中的過濾器 0 似乎對波爾卡圓點圖案有回應，再來就是開始對每一層中的每個 filter/channel，為簡化起見，只每每一層中的前 64 個過濾器，將結果以 8\times8 網格方式呈現。
 
 結果和課本的圖差異很大......
 
-#+CAPTION: pattern of block1\under{}conv1
+#+CAPTION: pattern of block1_conv1
 #+LABEL:fig:block1_conv1_pattern
 #+name: fig:block1_conv1_pattern
 #+ATTR_LATEX: :width 300
@@ -4722,7 +4722,7 @@ block3\under{}conv1 層中的過濾器 0 似乎對波爾卡圓點圖案有回應
 #+ATTR_ORG: :width 300
 [[file:images/block1_conv1_pattern.png]]
 
-#+CAPTION: pattern of block\under{}conv1
+#+CAPTION: pattern of block_conv1
 #+LABEL:fig:block2_conv1_pattern
 #+name: fig:block2_conv1_pattern
 #+ATTR_LATEX: :width 300
@@ -4730,7 +4730,7 @@ block3\under{}conv1 層中的過濾器 0 似乎對波爾卡圓點圖案有回應
 #+ATTR_ORG: :width 300
 [[file:images/block1_conv2_pattern.png]]
 
-#+CAPTION: pattern of block3\under{}conv1
+#+CAPTION: pattern of block3_conv1
 #+LABEL:fig:block3_conv1_pattern
 #+name: fig:block3_conv1_pattern
 #+ATTR_LATEX: :width 300
@@ -4738,7 +4738,7 @@ block3\under{}conv1 層中的過濾器 0 似乎對波爾卡圓點圖案有回應
 #+ATTR_ORG: :width 300
 [[file:images/block3_conv1_pattern.png]]
 
-#+CAPTION: pattern of block4\under{}conv1
+#+CAPTION: pattern of block4_conv1
 #+LABEL:fig:block4_conv1_pattern
 #+name: fig:block4_conv1_pattern
 #+ATTR_LATEX: :width 300
@@ -4951,18 +4951,18 @@ Keras 的開發流程大致如下：
 如果一切順利，則接下來我們要做出三個關鍵選擇來建構第一個模型：
 
 - 選擇最後一層的啟動函數：這將為神經網路建立輸出的形式。例如，IMDB 分類最後使用 sigmoid 分成兩個值、MNIST 則以 softmax 分為 10 類。
-- 損失函數：要配合問題類型，如 IMDB 使用 binary\under{}crossentropy、迴歸則使用 mse。
+- 損失函數：要配合問題類型，如 IMDB 使用 binary_crossentropy、迴歸則使用 mse。
 - 優化器設定：大多數情況下，rmsprop 可做為預設選項搭配預設學習率
 
 下表為選擇啟動函數與損失函數的參考
 
 | 問題類型                                | 輸出層啟動函數 | 損失函數                          |
 |-----------------------------------------+----------------+-----------------------------------|
-| Binary classification                   | Sigmoid        | binary\under{}crossentropy        |
-| Multiclass, single-label classification | softmax        | categorical\under{}crossentropy   |
-| Multiclass, multi-label classification  | sigmoid        | binary\under{}crossentropy        |
+| Binary classification                   | Sigmoid        | binary_crossentropy        |
+| Multiclass, single-label classification | softmax        | categorical_crossentropy   |
+| Multiclass, multi-label classification  | sigmoid        | binary_crossentropy        |
 | Regression to arbitrary values          | None           | mse                               |
-| Regression to values between 0 and 1    | sigmoid        | mse or binary\under{}crossentropy |
+| Regression to values between 0 and 1    | sigmoid        | mse or binary_crossentropy |
 
 *** 擴大規模：開發一個過度適配的模型
 
