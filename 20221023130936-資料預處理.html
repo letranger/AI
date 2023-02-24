@@ -1,0 +1,1254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2023-02-24 Fri 12:50 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>資料預處理</title>
+<meta name="author" content="Yung Chin, Yen" />
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<link rel="stylesheet" type="text/css" href="../css/muse.css" />
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">資料預處理</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org2ea6d3d">1. 驗證集 v.s. 測試集</a></li>
+<li><a href="#org480eaa1">2. One Hot Encoding</a>
+<ul>
+<li><a href="#org2a8eeb9">2.1. pd.get_dummies</a></li>
+</ul>
+</li>
+<li><a href="#org951d2a4">3. Eronneous and Missing Data</a>
+<ul>
+<li><a href="#org45bea8d">3.1. Erroneous data</a></li>
+<li><a href="#org63601b5">3.2. Missing data</a></li>
+<li><a href="#orge3b4a36">3.3. 遺漏值的識別</a></li>
+</ul>
+</li>
+<li><a href="#org3a32289">4. 填補遺遺漏值</a></li>
+<li><a href="#org08f045a">5. 處理數據中的分類特徵編碼問題</a>
+<ul>
+<li><a href="#orga3d2c53">5.1. categorical feature</a></li>
+<li><a href="#org9d4cd65">5.2. 對應 ordinal feature</a></li>
+<li><a href="#orgc022fbd">5.3. 對應 nominal feature</a></li>
+<li><a href="#org1a10868">5.4. 對 nominal feature 執行 one-hot encoding</a></li>
+</ul>
+</li>
+<li><a href="#orga18d631">6. 訓練集與測試集的數據分割</a></li>
+<li><a href="#org1e6f6a8">7. 縮放特徵值、維持特徵值影響比例：正規化(normalization)</a>
+<ul>
+<li><a href="#orgc7215a8">7.1. Normalization</a></li>
+<li><a href="#org85c6674">7.2. Standardization</a></li>
+<li><a href="#orgac02da3">7.3. 常態化</a></li>
+<li><a href="#org472b183">7.4. 標準化</a></li>
+</ul>
+</li>
+<li><a href="#org9f8c6d5">8. 選取有意義的特徵</a>
+<ul>
+<li><a href="#org5cb2546">8.1. L1L2 regularzation</a></li>
+</ul>
+</li>
+<li><a href="#org5a9a0d4">9. 資料擴增/資料增強(Data Augmentation)</a></li>
+<li><a href="#org0760231">10. 循序特徵選擇法</a></li>
+<li><a href="#org334e875">11. 以隨機森林評估特徵的重要性</a></li>
+</ul>
+</div>
+</div>
+<a href="https://hits.sh/letranger.github.io/PythonCourse/PythonBasic.html/"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/PythonCourse/PythonBasic.html.svg?style=plastic"/></a>
+
+<p>
+進行數運模式運算之前，需要進行的數據預處理工作大致可分為以下幾點：<br />
+</p>
+<ol class="org-ol">
+<li>數據遺漏值處理<br /></li>
+<li>數據分類編碼<br /></li>
+<li>數據訓練集與測試集之分割<br /></li>
+<li>數據特徵選取<br /></li>
+</ol>
+
+<div id="outline-container-org2ea6d3d" class="outline-2">
+<h2 id="org2ea6d3d"><span class="section-number-2">1.</span> 驗證集 v.s. 測試集</h2>
+<div class="outline-text-2" id="text-1">
+<ul class="org-ul">
+<li>訓練集（training): 舉例來說就是上課學習。主要用在訓練階段，用於模型擬合，直接參與了模型參數調整的過程<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。<br /></li>
+<li>驗證集（validation）: 舉例來說就是模擬考，你會根據模擬考的成績繼續學習、或調整學習方式重新學習。在訓練過程中，用於評估模型的初步能力與超參數調整的依據。不過驗證集是非必需的，不像訓練集和測試集。如果不需要調整超參數，就可以不使用驗證集<sup><a id="fnr.1.100" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。<br /></li>
+<li>測試集（test）就像是學測，用來評估你最終的學習結果。用來評估模型最終的泛化能力。為了能評估模型真正的能力，測試集不應該為參數調整、選擇特徵等依據<sup><a id="fnr.1.100" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。<br /></li>
+</ul>
+<p>
+使用學測來比喻，是因為測試集不應該做為參數調整、選擇特徵等依據。這些選擇與調整可以想像成學習方式的調整，但學測已經考完，你不能時光倒轉回到最初調整學習方式<sup><a id="fnr.1.100" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org480eaa1" class="outline-2">
+<h2 id="org480eaa1"><span class="section-number-2">2.</span> One Hot Encoding</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+將類別 (categorical)或是文字(text)的資料轉換成數字，而讓程式能夠更好的去理解及運算。理由:<br />
+</p>
+<ol class="org-ol">
+<li>字串無法套入數學模型進行運算<br /></li>
+<li>直接換成數字會造成誤解<br /></li>
+</ol>
+</div>
+<div id="outline-container-org2a8eeb9" class="outline-3">
+<h3 id="org2a8eeb9"><span class="section-number-3">2.1.</span> pd.get_dummies</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+get_dummies 是利用pandas实现one hot encode的方式<sup><a id="fnr.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup>。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
+<span class="linenr"> 2: </span><span style="color: #dcaeea;">df</span> = pd.DataFrame([
+<span class="linenr"> 3: </span>    [<span style="color: #98be65;">'&#21488;&#20013;'</span>, <span style="color: #98be65;">'&#24800;&#25991;&#39640;&#20013;'</span>],
+<span class="linenr"> 4: </span>    [<span style="color: #98be65;">'&#21488;&#20013;'</span>, <span style="color: #98be65;">'&#20013;&#22899;&#20013;'</span>],
+<span class="linenr"> 5: </span>    [<span style="color: #98be65;">'&#21488;&#21335;'</span>, <span style="color: #98be65;">'&#22823;&#28771;&#39640;&#20013;'</span>],
+<span class="linenr"> 6: </span>    [<span style="color: #98be65;">'&#21488;&#21335;'</span>, <span style="color: #98be65;">'&#21488;&#21335;&#19968;&#20013;'</span>],
+<span class="linenr"> 7: </span>    [<span style="color: #98be65;">'&#39640;&#38596;'</span>, <span style="color: #98be65;">'&#39640;&#38596;&#22899;&#20013;'</span>]
+<span class="linenr"> 8: </span>])
+<span class="linenr"> 9: </span>df.<span style="color: #dcaeea;">columns</span> = [<span style="color: #98be65;">'city'</span>, <span style="color: #98be65;">'school'</span>]
+<span class="linenr">10: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'---&#22478;&#24066;&#21407;&#20540;---'</span>)
+<span class="linenr">11: </span><span style="color: #c678dd;">print</span>(df[<span style="color: #98be65;">'city'</span>].values)
+<span class="linenr">12: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'---one hot encoding&#36681;&#25563;---'</span>)
+<span class="linenr">13: </span><span style="color: #c678dd;">print</span>(pd.get_dummies(df[<span style="color: #98be65;">'city'</span>]))
+</pre>
+</div>
+
+<pre class="example">
+---城市原值---
+['台中' '台中' '台南' '台南' '高雄']
+---one hot encoding轉換---
+   台中  台南  高雄
+0   1     0    0
+1   1     0    0
+2   0     1    0
+3   0     1    0
+4   0     0    1
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org951d2a4" class="outline-2">
+<h2 id="org951d2a4"><span class="section-number-2">3.</span> Eronneous and Missing Data</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+現實世界中可能會因各種原因導致數據缺失或遺漏(如問卷被刻意留白)，這些部份通常會以「空白」、「NaN」或「NULL」來取代。<br />
+</p>
+</div>
+<div id="outline-container-org45bea8d" class="outline-3">
+<h3 id="org45bea8d"><span class="section-number-3">3.1.</span> Erroneous data</h3>
+<div class="outline-text-3" id="text-3-1">
+<ul class="org-ul">
+<li>何謂Erroneous data? 例Boston房價:房間坪數為負，或影像大小不一、影像色彩不一<br /></li>
+<li>如何處理錯誤資料: 刪除、變更(尺吋)<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org63601b5" class="outline-3">
+<h3 id="org63601b5"><span class="section-number-3">3.2.</span> Missing data</h3>
+<div class="outline-text-3" id="text-3-2">
+<ul class="org-ul">
+<li>為何會出現Missing data? 溫度記錄(data sensor固障)、遺忘、斷電<br /></li>
+<li>如何處理Missing data: 刪除、取代<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orge3b4a36" class="outline-3">
+<h3 id="orge3b4a36"><span class="section-number-3">3.3.</span> 遺漏值的識別</h3>
+<div class="outline-text-3" id="text-3-3">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #dcaeea;">csv_data</span> = <span style="color: #98be65;">'''A,X,B,C,D</span>
+<span class="linenr"> 2: </span><span style="color: #98be65;">  1.0,,2.0,3.0,4.0</span>
+<span class="linenr"> 3: </span><span style="color: #98be65;">  5.0,,6.0,,8.0</span>
+<span class="linenr"> 4: </span><span style="color: #98be65;">  10.0,,11.0,12.0</span>
+<span class="linenr"> 5: </span><span style="color: #98be65;">  ,,,,'''</span>
+<span class="linenr"> 6: </span>  <span style="color: #51afef;">import</span> sys
+<span class="linenr"> 7: </span>  <span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
+<span class="linenr"> 8: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">python 2.7&#38656;&#36914;&#34892;unicode&#36681;&#30908;</span>
+<span class="linenr"> 9: </span>  <span style="color: #51afef;">if</span> (sys.version_info &lt; (<span style="color: #da8548; font-weight: bold;">3</span>, <span style="color: #da8548; font-weight: bold;">0</span>)):
+<span class="linenr">10: </span>      <span style="color: #dcaeea;">csv_data</span> = <span style="color: #c678dd;">unicode</span>(csv_data)
+<span class="linenr">11: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35712;&#20837;&#31243;&#24335;&#27284;&#20013;&#30340;csv&#36039;&#26009;</span>
+<span class="linenr">12: </span>  <span style="color: #51afef;">from</span> io <span style="color: #51afef;">import</span> StringIO
+<span class="linenr">13: </span>  <span style="color: #dcaeea;">df</span> = pd.read_csv(StringIO(csv_data))
+<span class="linenr">14: </span>  <span style="color: #c678dd;">print</span>(df)
+<span class="linenr">15: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21015;&#20986;&#27599;&#34892;&#26377;&#30340;null&#20491;&#25976;</span>
+<span class="linenr">16: </span>  <span style="color: #c678dd;">print</span>(df.isnull().<span style="color: #c678dd;">sum</span>())
+<span class="linenr">17: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">access the underlying NumPy array</span>
+<span class="linenr">18: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">via the `values` attribute</span>
+<span class="linenr">19: </span>  df.values
+<span class="linenr">20: </span>
+<span class="linenr">21: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21083;&#38500;&#26377;&#36986;&#22833;&#20540;&#30340;&#36039;&#26009;&#21015;</span>
+<span class="linenr">22: </span>  <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'&#21034;&#25481;&#26377;&#36986;&#22833;&#20540;&#30340;&#21015;:df.dropna(axis=1)'</span>)
+<span class="linenr">23: </span>  <span style="color: #c678dd;">print</span>(df.dropna(axis=<span style="color: #da8548; font-weight: bold;">0</span>))
+<span class="linenr">24: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21083;&#38500;&#26377;&#36986;&#22833;&#20540;&#30340;&#36039;&#26009;&#34892;</span>
+<span class="linenr">25: </span>  <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'&#21034;&#25481;&#26377;&#36986;&#22833;&#20540;&#30340;&#34892;:df.dropna(axis=1)'</span>)
+<span class="linenr">26: </span>  <span style="color: #c678dd;">print</span>(df.dropna(axis=<span style="color: #da8548; font-weight: bold;">1</span>))
+<span class="linenr">27: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21083;&#38500;&#25972;&#21015;&#28858;NaN&#32773;</span>
+<span class="linenr">28: </span>  <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'&#21083;&#38500;&#25972;&#34892;&#28858;NaN&#32773;:df.dropna(how=\'all\')'</span>)
+<span class="linenr">29: </span>  <span style="color: #c678dd;">print</span>(df.dropna(how=<span style="color: #98be65;">'all'</span>) )
+<span class="linenr">30: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21034;&#38500;&#26377;&#20540;&#20491;&#25976;&#20302;&#26044;thresh&#30340;&#21015;</span>
+<span class="linenr">31: </span>  <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'&#21034;&#38500;&#26377;&#20540;&#20491;&#25976;&#20302;&#26044;thresh&#30340;&#21015;:df.dropna(thresh=4)'</span>)
+<span class="linenr">32: </span>  <span style="color: #c678dd;">print</span>(df.dropna(thresh=<span style="color: #da8548; font-weight: bold;">4</span>))
+<span class="linenr">33: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21034;&#38500;&#29305;&#23450;&#34892;(&#22914;&#31532;C&#34892;)&#20013;&#26377;NaN&#20043;&#21015;</span>
+<span class="linenr">34: </span>  <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'&#21034;&#38500;&#29305;&#23450;&#34892;(&#22914;&#31532;C&#34892;)&#20013;&#26377;NaN&#20043;&#21015;:df.dropna(subset=[\'C\'])'</span>)
+<span class="linenr">35: </span>  <span style="color: #c678dd;">print</span>(df.dropna(subset=[<span style="color: #98be65;">'C'</span>]))
+</pre>
+</div>
+
+<pre class="example" id="orgd848f84">
+      A   X     B     C    D
+0   1.0 NaN   2.0   3.0  4.0
+1   5.0 NaN   6.0   NaN  8.0
+2  10.0 NaN  11.0  12.0  NaN
+3   NaN NaN   NaN   NaN  NaN
+A    1
+X    4
+B    1
+C    2
+D    2
+dtype: int64
+刪掉有遺失值的列:df.dropna(axis=1)
+Empty DataFrame
+Columns: [A, X, B, C, D]
+Index: []
+刪掉有遺失值的行:df.dropna(axis=1)
+Empty DataFrame
+Columns: []
+Index: [0, 1, 2, 3]
+剛除整行為NaN者:df.dropna(how='all')
+      A   X     B     C    D
+0   1.0 NaN   2.0   3.0  4.0
+1   5.0 NaN   6.0   NaN  8.0
+2  10.0 NaN  11.0  12.0  NaN
+刪除有值個數低於thresh的列:df.dropna(thresh=4)
+     A   X    B    C    D
+0  1.0 NaN  2.0  3.0  4.0
+刪除特定行(如第C行)中有NaN之列:df.dropna(subset=['C'])
+      A   X     B     C    D
+0   1.0 NaN   2.0   3.0  4.0
+2  10.0 NaN  11.0  12.0  NaN
+</pre>
+
+<p>
+雖然刪除包含遺漏值的數據似乎是個方便的方法，但終究可能會刪除過多的樣本，導致分析的結果並不可靠；或是因為刪除了特徵的時候，卻失去了重要的資訊。<br />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org3a32289" class="outline-2">
+<h2 id="org3a32289"><span class="section-number-2">4.</span> 填補遺遺漏值</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+最常見的「插補技術」之一為「平均插補」(mean imputation)，即，以整個特徵行的平均值來代替遺漏值。<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #dcaeea;">csv_data</span> = <span style="color: #98be65;">'''A,X,B,C,D</span>
+<span class="linenr"> 2: </span><span style="color: #98be65;">  1.0,,2.0,3.0,4.0</span>
+<span class="linenr"> 3: </span><span style="color: #98be65;">  5.0,,6.0,,8.0</span>
+<span class="linenr"> 4: </span><span style="color: #98be65;">  10.0,,11.0,12.0</span>
+<span class="linenr"> 5: </span><span style="color: #98be65;">  ,,,,'''</span>
+<span class="linenr"> 6: </span>  <span style="color: #51afef;">import</span> sys
+<span class="linenr"> 7: </span>  <span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
+<span class="linenr"> 8: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">python 2.7&#38656;&#36914;&#34892;unicode&#36681;&#30908;</span>
+<span class="linenr"> 9: </span>  <span style="color: #51afef;">if</span> (sys.version_info &lt; (<span style="color: #da8548; font-weight: bold;">3</span>, <span style="color: #da8548; font-weight: bold;">0</span>)):
+<span class="linenr">10: </span>      <span style="color: #dcaeea;">csv_data</span> = <span style="color: #c678dd;">unicode</span>(csv_data)
+<span class="linenr">11: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35712;&#20837;&#31243;&#24335;&#27284;&#20013;&#30340;csv&#36039;&#26009;</span>
+<span class="linenr">12: </span>  <span style="color: #51afef;">from</span> io <span style="color: #51afef;">import</span> StringIO
+<span class="linenr">13: </span>  <span style="color: #dcaeea;">df</span> = pd.read_csv(StringIO(csv_data))
+<span class="linenr">14: </span>
+<span class="linenr">15: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">impute missing values via the column mean</span>
+<span class="linenr">16: </span>  <span style="color: #51afef;">from</span> sklearn.preprocessing <span style="color: #51afef;">import</span> Imputer
+<span class="linenr">17: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">axis=0: &#20197;&#34892;&#30340;&#24179;&#22343;&#20540;&#20358;&#35036;</span>
+<span class="linenr">18: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">axis=1: &#20197;&#21015;&#30340;&#24179;&#22343;&#20540;&#20358;&#35036;</span>
+<span class="linenr">19: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">strategy&#30340;&#36984;&#38917;&#26377;: median(&#20013;&#20301;&#25976;)&#12289;most_freqent(&#26368;&#38971;&#32321;&#20986;&#29694;&#32773;)</span>
+<span class="linenr">20: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">most_freqent&#22312;&#20570;&#28858;&#20998;&#39006;&#29305;&#24501;&#26178;&#24456;&#26377;&#29992;</span>
+<span class="linenr">21: </span>  imr = Imputer(missing_values=<span style="color: #98be65;">'NaN'</span>, strategy=<span style="color: #98be65;">'mean'</span>, axis=<span style="color: #da8548; font-weight: bold;">0</span>)
+<span class="linenr">22: </span>  <span style="color: #dcaeea;">imr</span> = imr.fit(df.values)
+<span class="linenr">23: </span>  <span style="color: #dcaeea;">imputed_data</span> = imr.transform(df.values)
+<span class="linenr">24: </span>  <span style="color: #c678dd;">print</span>(df)
+<span class="linenr">25: </span>  <span style="color: #c678dd;">print</span>(imputed_data)
+</pre>
+</div>
+
+<pre class="example">
+      A   X     B     C    D
+0   1.0 NaN   2.0   3.0  4.0
+1   5.0 NaN   6.0   NaN  8.0
+2  10.0 NaN  11.0  12.0  NaN
+3   NaN NaN   NaN   NaN  NaN
+[[ 1.          2.          3.          4.        ]
+ [ 5.          6.          7.5         8.        ]
+ [10.         11.         12.          6.        ]
+ [ 5.33333333  6.33333333  7.5         6.        ]]
+</pre>
+
+
+<p>
+Imputer 類別在 scikit-learn 中屬於 transformer 類別，主要的工作是做「數據轉換」，這些 estimator 有兩種基本方法：fit 與 transform，fit 方法是用來進行參數學習。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org08f045a" class="outline-2">
+<h2 id="org08f045a"><span class="section-number-2">5.</span> 處理數據中的分類特徵編碼問題</h2>
+<div class="outline-text-2" id="text-5">
+</div>
+<div id="outline-container-orga3d2c53" class="outline-3">
+<h3 id="orga3d2c53"><span class="section-number-3">5.1.</span> categorical feature</h3>
+<div class="outline-text-3" id="text-5-1">
+<p>
+真實世界的數據集往往包含各種「類別特徵」(categorical feature)，類別特徵可再分為<br />
+</p>
+<ul class="org-ul">
+<li>nominal feature: 名義特徵<br /></li>
+<li>ordinal feature: 次序特徵<br /></li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>  <span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
+<span class="linenr">2: </span>  <span style="color: #dcaeea;">df</span> = pd.DataFrame([[<span style="color: #98be65;">'green'</span>, <span style="color: #98be65;">'M'</span>, <span style="color: #da8548; font-weight: bold;">10.1</span>, <span style="color: #98be65;">'class2'</span>],
+<span class="linenr">3: </span>                     [<span style="color: #98be65;">'red'</span>, <span style="color: #98be65;">'L'</span>, <span style="color: #da8548; font-weight: bold;">13.5</span>, <span style="color: #98be65;">'class1'</span>],
+<span class="linenr">4: </span>                     [<span style="color: #98be65;">'blue'</span>, <span style="color: #98be65;">'XL'</span>, <span style="color: #da8548; font-weight: bold;">15.3</span>, <span style="color: #98be65;">'class2'</span>]])
+<span class="linenr">5: </span>
+<span class="linenr">6: </span>  df.<span style="color: #dcaeea;">columns</span> = [<span style="color: #98be65;">'color'</span>, <span style="color: #98be65;">'size'</span>, <span style="color: #98be65;">'price'</span>, <span style="color: #98be65;">'classlabel'</span>]
+<span class="linenr">7: </span>  <span style="color: #c678dd;">print</span>(df)
+</pre>
+</div>
+
+<pre class="example">
+   color size  price classlabel
+0  green    M   10.1     class2
+1    red    L   13.5     class1
+2   blue   XL   15.3     class2
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org9d4cd65" class="outline-3">
+<h3 id="org9d4cd65"><span class="section-number-3">5.2.</span> 對應 ordinal feature</h3>
+<div class="outline-text-3" id="text-5-2">
+<p>
+自定一個 mapping dictionary，即 size_mapping，然後將 classlabel 對應到 size_mapping 中的鍵值(程式第<a href="#coderef-sizeMapping" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-sizeMapping');" onmouseout="CodeHighlightOff(this, 'coderef-sizeMapping');">11</a>行)。<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
+<span class="linenr"> 2: </span>  <span style="color: #dcaeea;">df</span> = pd.DataFrame([[<span style="color: #98be65;">'green'</span>, <span style="color: #98be65;">'M'</span>, <span style="color: #da8548; font-weight: bold;">10.1</span>, <span style="color: #98be65;">'class2'</span>],
+<span class="linenr"> 3: </span>                     [<span style="color: #98be65;">'red'</span>, <span style="color: #98be65;">'L'</span>, <span style="color: #da8548; font-weight: bold;">13.5</span>, <span style="color: #98be65;">'class1'</span>],
+<span class="linenr"> 4: </span>                     [<span style="color: #98be65;">'blue'</span>, <span style="color: #98be65;">'XL'</span>, <span style="color: #da8548; font-weight: bold;">15.3</span>, <span style="color: #98be65;">'class2'</span>]])
+<span class="linenr"> 5: </span>
+<span class="linenr"> 6: </span>  df.<span style="color: #dcaeea;">columns</span> = [<span style="color: #98be65;">'color'</span>, <span style="color: #98be65;">'size'</span>, <span style="color: #98be65;">'price'</span>, <span style="color: #98be65;">'classlabel'</span>]
+<span class="linenr"> 7: </span>  <span style="color: #5B6268;">### </span><span style="color: #5B6268;">Mapping ordinal features</span>
+<span class="linenr"> 8: </span>  <span style="color: #dcaeea;">size_mapping</span> = {<span style="color: #98be65;">'XL'</span>: <span style="color: #da8548; font-weight: bold;">3</span>,
+<span class="linenr"> 9: </span>                  <span style="color: #98be65;">'L'</span>: <span style="color: #da8548; font-weight: bold;">2</span>,
+<span class="linenr">10: </span>                  <span style="color: #98be65;">'M'</span>: <span style="color: #da8548; font-weight: bold;">1</span>}
+<span id="coderef-sizeMapping" class="coderef-off"><span class="linenr">11: </span>  <span style="color: #dcaeea;">df</span>[<span style="color: #98be65;">'size'</span>] = df[<span style="color: #98be65;">'size'</span>].<span style="color: #c678dd;">map</span>(size_mapping)</span>
+<span class="linenr">12: </span>  <span style="color: #c678dd;">print</span>(df)
+</pre>
+</div>
+
+<pre class="example">
+   color  size  price classlabel
+0  green     1   10.1     class2
+1    red     2   13.5     class1
+2   blue     3   15.3     class2
+</pre>
+</div>
+</div>
+
+<div id="outline-container-orgc022fbd" class="outline-3">
+<h3 id="orgc022fbd"><span class="section-number-3">5.3.</span> 對應 nominal feature</h3>
+<div class="outline-text-3" id="text-5-3">
+<p>
+許多機器學習的函式庫需要將「類別標籤」編碼為整數值。方法之一是以列舉方式為這些 nominal features 自 0 開始編號，先以 enumerate 方式建立一個 mapping dictionary: class_mapping(程式第<a href="#coderef-classMapping" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-classMapping');" onmouseout="CodeHighlightOff(this, 'coderef-classMapping');">10</a>行)，然後利用這個字典將類別特徵轉換為整數值。<br />
+</p>
+
+<p>
+此外，也可以利用已產生的對應字典，藉由借調 key-value 來產生「反轉字典」(第<a href="#coderef-invClassMapping" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-invClassMapping');" onmouseout="CodeHighlightOff(this, 'coderef-invClassMapping');">18</a>行)，將對調產生的整數還原回原始類別特徵。<br />
+</p>
+
+<p>
+scikit-learn 中有一個更為方便的 LabelEncoder 類別則可以直接完成上述工作(第<a href="#coderef-labelEncoder" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-labelEncoder');" onmouseout="CodeHighlightOff(this, 'coderef-labelEncoder');">25</a>行)。<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
+<span class="linenr"> 2: </span>  <span style="color: #dcaeea;">df</span> = pd.DataFrame([[<span style="color: #98be65;">'green'</span>, <span style="color: #98be65;">'M'</span>, <span style="color: #da8548; font-weight: bold;">10.1</span>, <span style="color: #98be65;">'class2'</span>],
+<span class="linenr"> 3: </span>                     [<span style="color: #98be65;">'red'</span>, <span style="color: #98be65;">'L'</span>, <span style="color: #da8548; font-weight: bold;">13.5</span>, <span style="color: #98be65;">'class1'</span>],
+<span class="linenr"> 4: </span>                     [<span style="color: #98be65;">'blue'</span>, <span style="color: #98be65;">'XL'</span>, <span style="color: #da8548; font-weight: bold;">15.3</span>, <span style="color: #98be65;">'class2'</span>]])
+<span class="linenr"> 5: </span>
+<span class="linenr"> 6: </span>  df.<span style="color: #dcaeea;">columns</span> = [<span style="color: #98be65;">'color'</span>, <span style="color: #98be65;">'size'</span>, <span style="color: #98be65;">'price'</span>, <span style="color: #98be65;">'classlabel'</span>]
+<span class="linenr"> 7: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;&#21033;&#23565;&#25033;&#23383;&#20856;</span>
+<span class="linenr"> 8: </span>  <span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> np
+<span class="linenr"> 9: </span>  <span style="color: #dcaeea;">class_mapping</span> = {
+<span id="coderef-classMapping" class="coderef-off"><span class="linenr">10: </span>      <span style="color: #dcaeea;">label</span>: idx <span style="color: #51afef;">for</span> idx, label <span style="color: #51afef;">in</span> <span style="color: #c678dd;">enumerate</span>(np.unique(df[<span style="color: #98be65;">'classlabel'</span>]))</span>
+<span class="linenr">11: </span>  }
+<span class="linenr">12: </span>  <span style="color: #c678dd;">print</span>(class_mapping)
+<span class="linenr">13: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23559;&#39006;&#21029;&#29305;&#24501;&#36681;&#25563;&#28858;&#25972;&#25976;&#20540;</span>
+<span class="linenr">14: </span>  df[<span style="color: #98be65;">'classlabel'</span>] = df[<span style="color: #98be65;">'classlabel'</span>].<span style="color: #c678dd;">map</span>(class_mapping)
+<span class="linenr">15: </span>  <span style="color: #c678dd;">print</span>(df)
+<span class="linenr">16: </span>
+<span class="linenr">17: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#29986;&#29983;&#21453;&#36681;&#23383;&#20856;&#65292;&#23559;&#25972;&#25976;&#36996;&#21407;&#33267;&#21407;&#22987;&#30340;&#39006;&#21029;&#27161;&#31844;</span>
+<span id="coderef-invClassMapping" class="coderef-off"><span class="linenr">18: </span>  <span style="color: #dcaeea;">inv_class_mapping</span> = {<span style="color: #dcaeea;">v</span>: k <span style="color: #51afef;">for</span> k, v <span style="color: #51afef;">in</span> class_mapping.items()}</span>
+<span class="linenr">19: </span>  df[<span style="color: #98be65;">'classlabel'</span>] = df[<span style="color: #98be65;">'classlabel'</span>].<span style="color: #c678dd;">map</span>(inv_class_mapping)
+<span class="linenr">20: </span>  <span style="color: #c678dd;">print</span>(df)
+<span class="linenr">21: </span>
+<span class="linenr">22: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Label encoding with sklearn's LabelEncoder</span>
+<span class="linenr">23: </span>  <span style="color: #51afef;">from</span> sklearn.preprocessing <span style="color: #51afef;">import</span> LabelEncoder
+<span class="linenr">24: </span>  <span style="color: #dcaeea;">class_le</span> = LabelEncoder()
+<span id="coderef-labelEncoder" class="coderef-off"><span class="linenr">25: </span>  <span style="color: #dcaeea;">y</span> = class_le.fit_transform(df[<span style="color: #98be65;">'classlabel'</span>].values)</span>
+<span class="linenr">26: </span>  <span style="color: #c678dd;">print</span>(y)
+<span class="linenr">27: </span>  <span style="color: #dcaeea;">df</span>[<span style="color: #98be65;">'classlabel'</span>] = y
+<span class="linenr">28: </span>  <span style="color: #c678dd;">print</span>(df) <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39006;&#21029;&#33287;&#25976;&#23383;&#30340;&#23565;&#25033;&#19981;&#19968;&#23450;&#33287;&#33258;&#35330;&#23383;&#20856;&#19968;&#33268;</span>
+<span class="linenr">29: </span>
+</pre>
+</div>
+
+<pre class="example" id="org7383f32">
+{'class2': 0, 'class1': 1}
+   color size  price  classlabel
+0  green    M   10.1           0
+1    red    L   13.5           1
+2   blue   XL   15.3           0
+   color size  price classlabel
+0  green    M   10.1     class2
+1    red    L   13.5     class1
+2   blue   XL   15.3     class2
+[1 0 1]
+   color size  price  classlabel
+0  green    M   10.1           1
+1    red    L   13.5           0
+2   blue   XL   15.3           1
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org1a10868" class="outline-3">
+<h3 id="org1a10868"><span class="section-number-3">5.4.</span> 對 nominal feature 執行 one-hot encoding</h3>
+<div class="outline-text-3" id="text-5-4">
+<p>
+scikit-learn 的 LabelENcoder 類別可以用來將「類別特徵」編碼為整數值，但這樣會引發另一個問題，如果我們將上述資料中的 color 特徵轉換為整數值，如下：<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
+<span class="linenr"> 2: </span>  <span style="color: #dcaeea;">df</span> = pd.DataFrame([[<span style="color: #98be65;">'green'</span>, <span style="color: #98be65;">'M'</span>, <span style="color: #da8548; font-weight: bold;">10.1</span>, <span style="color: #98be65;">'class2'</span>],
+<span class="linenr"> 3: </span>                     [<span style="color: #98be65;">'red'</span>, <span style="color: #98be65;">'L'</span>, <span style="color: #da8548; font-weight: bold;">13.5</span>, <span style="color: #98be65;">'class1'</span>],
+<span class="linenr"> 4: </span>                     [<span style="color: #98be65;">'blue'</span>, <span style="color: #98be65;">'XL'</span>, <span style="color: #da8548; font-weight: bold;">15.3</span>, <span style="color: #98be65;">'class2'</span>]])
+<span class="linenr"> 5: </span>
+<span class="linenr"> 6: </span>  df.<span style="color: #dcaeea;">columns</span> = [<span style="color: #98be65;">'color'</span>, <span style="color: #98be65;">'size'</span>, <span style="color: #98be65;">'price'</span>, <span style="color: #98be65;">'classlabel'</span>]
+<span class="linenr"> 7: </span>
+<span class="linenr"> 8: </span>  <span style="color: #dcaeea;">X</span> = df[[<span style="color: #98be65;">'color'</span>, <span style="color: #98be65;">'size'</span>, <span style="color: #98be65;">'price'</span>, <span style="color: #98be65;">'classlabel'</span>]].values
+<span class="linenr"> 9: </span>
+<span class="linenr">10: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20197;LabelEncoder&#36681;&#25563;</span>
+<span class="linenr">11: </span>  <span style="color: #51afef;">from</span> sklearn.preprocessing <span style="color: #51afef;">import</span> LabelEncoder
+<span class="linenr">12: </span>  <span style="color: #dcaeea;">color_le</span> = LabelEncoder()
+<span class="linenr">13: </span>  <span style="color: #c678dd;">print</span>(X[:,<span style="color: #da8548; font-weight: bold;">0</span>])
+<span class="linenr">14: </span>  <span style="color: #dcaeea;">X</span>[:,<span style="color: #da8548; font-weight: bold;">0</span>] = color_le.fit_transform(X[:,<span style="color: #da8548; font-weight: bold;">0</span>])
+<span class="linenr">15: </span>  <span style="color: #c678dd;">print</span>(X[:,<span style="color: #da8548; font-weight: bold;">0</span>])
+<span class="linenr">16: </span>
+</pre>
+</div>
+
+<pre class="example">
+['green' 'red' 'blue']
+[1 2 0]
+</pre>
+
+
+<p>
+由輸出結果可以發現，經過類別編碼後的顏色特徵，由原本不具次序的特徵變成存在大小關係(red&gt;green&gt;blue)，這明顯會影響 model 運算的結果。針對此一問題，常見的解決方案是 one-hot encoding，其原理是：對特徵值中的每個值，建立一個新的「虛擬特徵」(dummy feature)。方法有二：<br />
+</p>
+<ul class="org-ul">
+<li>利用 ColumnTransformer 函式庫的 ColumnTransformer 類別，將特徵值轉換 One-Hot Encoding 的對應矩陣，如程式第<a href="#coderef-FitTransform" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-FitTransform');" onmouseout="CodeHighlightOff(this, 'coderef-FitTransform');">24</a>行。<br /></li>
+<li>利用 Pandas 套件的 get_dummies 類別，一次將矩陣內指定之 column 轉換為 One-Hot encoding，如程式第<a href="#coderef-GetDummies" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-GetDummies');" onmouseout="CodeHighlightOff(this, 'coderef-GetDummies');">28</a>行。這種轉換只有字串數據會被轉換，其他內容則否。<br /></li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
+<span class="linenr"> 2: </span>  <span style="color: #dcaeea;">df</span> = pd.DataFrame([[<span style="color: #98be65;">'green'</span>, <span style="color: #98be65;">'M'</span>, <span style="color: #da8548; font-weight: bold;">10.1</span>, <span style="color: #98be65;">'class2'</span>],
+<span class="linenr"> 3: </span>                     [<span style="color: #98be65;">'red'</span>, <span style="color: #98be65;">'L'</span>, <span style="color: #da8548; font-weight: bold;">13.5</span>, <span style="color: #98be65;">'class1'</span>],
+<span class="linenr"> 4: </span>                     [<span style="color: #98be65;">'blue'</span>, <span style="color: #98be65;">'XL'</span>, <span style="color: #da8548; font-weight: bold;">15.3</span>, <span style="color: #98be65;">'class2'</span>]])
+<span class="linenr"> 5: </span>
+<span class="linenr"> 6: </span>  df.<span style="color: #dcaeea;">columns</span> = [<span style="color: #98be65;">'color'</span>, <span style="color: #98be65;">'size'</span>, <span style="color: #98be65;">'price'</span>, <span style="color: #98be65;">'classlabel'</span>]
+<span class="linenr"> 7: </span>
+<span class="linenr"> 8: </span>  <span style="color: #dcaeea;">X</span> = df[[<span style="color: #98be65;">'color'</span>, <span style="color: #98be65;">'size'</span>, <span style="color: #98be65;">'price'</span>, <span style="color: #98be65;">'classlabel'</span>]].values
+<span class="linenr"> 9: </span>  <span style="color: #c678dd;">print</span>(df)
+<span class="linenr">10: </span>
+<span class="linenr">11: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">one-hot encoding: ColumnTransformer / fit_transform</span>
+<span class="linenr">12: </span>  <span style="color: #51afef;">from</span> sklearn.preprocessing <span style="color: #51afef;">import</span> LabelEncoder
+<span class="linenr">13: </span>  <span style="color: #51afef;">from</span> sklearn.preprocessing <span style="color: #51afef;">import</span> OneHotEncoder
+<span class="linenr">14: </span>  <span style="color: #51afef;">from</span> sklearn.compose <span style="color: #51afef;">import</span> ColumnTransformer
+<span class="linenr">15: </span>  <span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr">16: </span>
+<span class="linenr">17: </span>  <span style="color: #dcaeea;">X</span> = df[[<span style="color: #98be65;">'color'</span>, <span style="color: #98be65;">'size'</span>, <span style="color: #98be65;">'price'</span>]].values
+<span class="linenr">18: </span>
+<span class="linenr">19: </span>  <span style="color: #dcaeea;">ct</span> = ColumnTransformer(
+<span class="linenr">20: </span>      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">The column numbers to be transformed (here is [0] but can be [0, 1, 3])</span>
+<span class="linenr">21: </span>      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Leave the rest of the columns untouched</span>
+<span class="linenr">22: </span>      [(<span style="color: #98be65;">'OneHot'</span>, OneHotEncoder(), [<span style="color: #da8548; font-weight: bold;">0</span>])], remainder=<span style="color: #98be65;">'passthrough'</span>
+<span class="linenr">23: </span>  )
+<span id="coderef-FitTransform" class="coderef-off"><span class="linenr">24: </span>  <span style="color: #c678dd;">print</span>(ct.fit_transform(X))</span>
+<span class="linenr">25: </span>
+<span class="linenr">26: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">on-hot encoding: pandas / get_dummies</span>
+<span class="linenr">27: </span>  <span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
+<span id="coderef-GetDummies" class="coderef-off"><span class="linenr">28: </span>  <span style="color: #c678dd;">print</span>(pd.get_dummies(df[[<span style="color: #98be65;">'price'</span>, <span style="color: #98be65;">'color'</span>, <span style="color: #98be65;">'size'</span>]]))</span>
+</pre>
+</div>
+
+<pre class="example" id="org8f8f9c3">
+   color size  price classlabel
+0  green    M   10.1     class2
+1    red    L   13.5     class1
+2   blue   XL   15.3     class2
+[[0.0 1.0 0.0 'M' 10.1]
+ [0.0 0.0 1.0 'L' 13.5]
+ [1.0 0.0 0.0 'XL' 15.3]]
+   price  color_blue  color_green  color_red  size_L  size_M  size_XL
+0   10.1           0            1          0       0       1        0
+1   13.5           0            0          1       1       0        0
+2   15.3           1            0          0       0       0        1
+</pre>
+
+<p>
+應用 one-hot encoding 時，我們必須留意它所引入的「多元共線性」(multicollinearity)問題，這在某些狀況下(如要計算反矩陣)可能會產生一些問題，若特徵間有高度相關，則會難以計算反矩陣，導致數值不穩定的舘計。<br />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orga18d631" class="outline-2">
+<h2 id="orga18d631"><span class="section-number-2">6.</span> 訓練集與測試集的數據分割</h2>
+<div class="outline-text-2" id="text-6">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;"># Partitioning a dataset into a seperate training and test set</span>
+<span class="linenr"> 2: </span>  <span style="color: #dcaeea;">df_wine</span> = pd.read_csv(<span style="color: #98be65;">'https://archive.ics.uci.edu/'</span>
+<span class="linenr"> 3: </span>                        <span style="color: #98be65;">'ml/machine-learning-databases/wine/wine.data'</span>,
+<span class="linenr"> 4: </span>                        header=<span style="color: #a9a1e1;">None</span>)
+<span class="linenr"> 5: </span>
+<span class="linenr"> 6: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">if the Wine dataset is temporarily unavailable from the</span>
+<span class="linenr"> 7: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">UCI machine learning repository, un-comment the following line</span>
+<span class="linenr"> 8: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">of code to load the dataset from a local path:</span>
+<span class="linenr"> 9: </span>
+<span class="linenr">10: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">df_wine = pd.read_csv('wine.data', header=None)</span>
+<span class="linenr">11: </span>
+<span class="linenr">12: </span>
+<span class="linenr">13: </span>  df_wine.<span style="color: #dcaeea;">columns</span> = [<span style="color: #98be65;">'Class label'</span>, <span style="color: #98be65;">'Alcohol'</span>, <span style="color: #98be65;">'Malic acid'</span>, <span style="color: #98be65;">'Ash'</span>,
+<span class="linenr">14: </span>                     <span style="color: #98be65;">'Alcalinity of ash'</span>, <span style="color: #98be65;">'Magnesium'</span>, <span style="color: #98be65;">'Total phenols'</span>,
+<span class="linenr">15: </span>                     <span style="color: #98be65;">'Flavanoids'</span>, <span style="color: #98be65;">'Nonflavanoid phenols'</span>, <span style="color: #98be65;">'Proanthocyanins'</span>,
+<span class="linenr">16: </span>                     <span style="color: #98be65;">'Color intensity'</span>, <span style="color: #98be65;">'Hue'</span>, <span style="color: #98be65;">'OD280/OD315 of diluted wines'</span>,
+<span class="linenr">17: </span>                     <span style="color: #98be65;">'Proline'</span>]
+<span class="linenr">18: </span>
+<span class="linenr">19: </span>  <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'Class labels'</span>, np.unique(df_wine[<span style="color: #98be65;">'Class label'</span>]))
+<span class="linenr">20: </span>  df_wine.head()
+<span class="linenr">21: </span>
+<span class="linenr">22: </span>  <span style="color: #dcaeea;">X</span>, <span style="color: #dcaeea;">y</span> = df_wine.iloc[:, <span style="color: #da8548; font-weight: bold;">1</span>:].values, df_wine.iloc[:, <span style="color: #da8548; font-weight: bold;">0</span>].values
+<span class="linenr">23: </span>
+<span class="linenr">24: </span>  <span style="color: #dcaeea;">X_train</span>, <span style="color: #dcaeea;">X_test</span>, <span style="color: #dcaeea;">y_train</span>, <span style="color: #dcaeea;">y_test</span> =    train_test_split(X, y,
+<span class="linenr">25: </span>                       test_size=<span style="color: #da8548; font-weight: bold;">0.3</span>,
+<span class="linenr">26: </span>                       random_state=<span style="color: #da8548; font-weight: bold;">0</span>,
+<span class="linenr">27: </span>                       stratify=y)
+<span class="linenr">28: </span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org1e6f6a8" class="outline-2">
+<h2 id="org1e6f6a8"><span class="section-number-2">7.</span> 縮放特徵值、維持特徵值影響比例：正規化(normalization)</h2>
+<div class="outline-text-2" id="text-7">
+<p>
+當我們在比較分析兩組數據資料時，可能會遭遇因單位的不同(例如：身高與體重)，或數字大小的代表性不同(例如：粉專1萬人與滿足感0.8)，造成各自變化的程度不一，進而影響統計分析的結果；為解決此類的問題，我們可利用資料的正規化(Normalization<br />
+)與標準化(Standardization)，藉由將原始資料轉換成無量綱(Dimensionless)的純量後，來進行數據的比較及分析<sup><a id="fnr.3" class="footref" href="#fn.3" role="doc-backlink">3</a></sup>。<br />
+</p>
+</div>
+<div id="outline-container-orgc7215a8" class="outline-3">
+<h3 id="orgc7215a8"><span class="section-number-3">7.1.</span> Normalization</h3>
+<div class="outline-text-3" id="text-7-1">
+<p>
+資料的正規化(Normalization)是將原始資料的數據按比例縮放於 [0, 1] 區間中，且不改變其原本分佈。舉例來說，若我們現有兩組數據資料，分別表示 500 項商品的銷售量 Sample 1 及銷售額 Sample 2，如下圖所示，很明顯地，此兩組資料的單位不同，且數字上有著懸殊的差異，分別透過資料正規化後，兩組資料將同時轉換成純量縮放於 [0,1] 區間中，如下右圖所示；這樣的資料轉換，能排除資料單位的限制，提供我們一個相同的基準來進行後續比較分析。<br />
+</p>
+
+<div id="org8042d68" class="figure">
+<p><img src="images/Normalization01.png" alt="Normalization01.png" width="500" /><br />
+</p>
+<p><span class="figure-number">Figure 1: </span>Caption</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org85c6674" class="outline-3">
+<h3 id="org85c6674"><span class="section-number-3">7.2.</span> Standardization</h3>
+<div class="outline-text-3" id="text-7-2">
+<p>
+資料的標準化(Standardization)可運用在機器學習演算法中，它能帶給模型下面兩個好處：<br />
+</p>
+</div>
+<ol class="org-ol">
+<li><a id="orgd09f26f"></a>提升模型的收斂速度<br />
+<div class="outline-text-4" id="text-7-2-1">
+<p>
+在建構機器學習模型時，我們會利用梯度下降法(Gradient Descent)來計算成本函數(Cost Function)的最佳解；假設我們現有兩個特徵值 x1 in [0,1] 與 x2 in [0,10000]，則在 x1-x2 平面上成本函數的等高線會呈窄長型，導致需較多的迭代步驟，另外也可能導致無法收斂的情況發生。因此，若將資料標準化，則能減少梯度下降法的收斂時間。<br />
+</p>
+</div>
+</li>
+<li><a id="orgf06fcb8"></a>提高模型的精準度<br />
+<div class="outline-text-4" id="text-7-2-2">
+<p>
+將特徵值 x1 及 x2 餵入一些需計算樣本彼此的距離(例如:歐氏距離)分類器演算法中，則 x2 的影響很可能將遠大於 x1，若實際上 x1 的指標意義及重要性高於 x2，這將導致我們分析的結果失真。因此，資料的標準化是有必要的，可讓每個特徵值對結果做出相近程度的貢獻。<br />
+</p>
+</div>
+</li>
+<li><a id="orgb5336c1"></a>常見的標準化及正規化方法<br />
+<ul class="org-ul">
+<li><a id="org739bf4a"></a>Z分數標準化(Z-Score Standardization)<br />
+<div class="outline-text-5" id="text-org739bf4a">
+<p>
+\[ Z=\frac{X-\mu}{\delta}\sim N(0,1)\]<br />
+</p>
+</div>
+</li>
+<li><a id="org293aa37"></a>最小值最大值正規化(Min-Max Normalization)<br />
+<div class="outline-text-5" id="text-org293aa37">
+<p>
+\[ X_{nom} = \frac{X-X_{min}}{X_{max}-X_{min}} \in [0,1] \]<br />
+「特徵縮放」(Feature scaling)是資料預處理的一個關鍵，「決策樹」和「隨機森林」是極少數無需進行 feature scaling 的分類技術；對多數機器學習演算法而言，若特徵值經過適當的縮放，都能有更佳成效。<br />
+</p>
+
+<p>
+Feature scaling 的重要性可以以下例子看出，假設有兩個特徵值(a, b)，其中 a 的測量範圍為 1 到 10，b 的測量值範圍為 1 到 100000，以典型分類演算法的做法，一定是忙於最佳化特徵值 b；若以 KNN 的演算法，也會被特徵值 b 所技配。<br />
+</p>
+
+<p>
+正規化有兩種常用的方法，可以將不同規模的特徵轉化為相同的規模：常態化(normalization)和標準化(standardization)：<br />
+</p>
+</div>
+</li>
+</ul>
+</li>
+</ol>
+</div>
+<div id="outline-container-orgac02da3" class="outline-3">
+<h3 id="orgac02da3"><span class="section-number-3">7.3.</span> 常態化</h3>
+<div class="outline-text-3" id="text-7-3">
+<p>
+將特徵值縮化為 0~1 間，這是「最小最大縮放」(min-max scaling)的一個特例，某一特徵值的常態化做法如下：<br />
+\[x_{norm}^i = \frac{x^i-x_{min}}{x_{max}-x_{min}}\]<br />
+若以 scikit-learn 套件來完成實作，其程式碼如下：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>  <span style="color: #51afef;">from</span> sklearn.preprocessing <span style="color: #51afef;">import</span> MinMaxScaler
+<span class="linenr">2: </span>  <span style="color: #dcaeea;">mms</span> = MinMaxScaler()
+<span class="linenr">3: </span>  <span style="color: #dcaeea;">X_train_norm</span> = mms.fit_transform(X_train)
+<span class="linenr">4: </span>  <span style="color: #dcaeea;">X_test_norm</span> = mms.fit_transform(X_test)
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org472b183" class="outline-3">
+<h3 id="org472b183"><span class="section-number-3">7.4.</span> 標準化</h3>
+<div class="outline-text-3" id="text-7-4">
+<p>
+雖說常態化簡單實用，但對許多機器學習演算法來說(特別是梯度下降法的最佳化)，標準化則更為實際，我們可令標準化後的特徵值其平均數為 0、標準差為 1，這樣一來，特徵值會滿足常態分佈，進而使演算法對於離群值不那麼敏感。標準化的公式如下：<br />
+\[x_{std}^i = \frac{x^i-\mu_x}{\sigma_x}\]<br />
+若以 scikit-learn 套件來完成實作，其程式碼如下：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>  <span style="color: #51afef;">from</span> sklearn.preprocessing <span style="color: #51afef;">import</span> StandardScaler
+<span class="linenr">2: </span>  <span style="color: #dcaeea;">stdsc</span> = StandardScaler()
+<span class="linenr">3: </span>  <span style="color: #dcaeea;">X_train_std</span> = stdsc.fit_transform(X_train)
+<span class="linenr">4: </span>  <span style="color: #dcaeea;">X_test_std</span> = stdsc.transform(X_test)
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org9f8c6d5" class="outline-2">
+<h2 id="org9f8c6d5"><span class="section-number-2">8.</span> 選取有意義的特徵</h2>
+<div class="outline-text-2" id="text-8">
+<p>
+overfitting 的產生原因是模型過度遷就於訓練數據，導致面對新數據(測試集)時成效不彰，我們稱這種模型具有較高變異性(high variance)，一般的解決策略有：<br />
+</p>
+<ul class="org-ul">
+<li>收集更多的訓練數據集<br /></li>
+<li>經由正規化，對於過度複雜的模型引進一個「懲罰」(penalty)<br /></li>
+<li>以較少的參數做出較簡單的模型(使用更簡單的模型)<br /></li>
+<li>減少數據維度<br /></li>
+</ul>
+</div>
+
+<div id="outline-container-org5cb2546" class="outline-3">
+<h3 id="org5cb2546"><span class="section-number-3">8.1.</span> L1L2 regularzation</h3>
+<div class="outline-text-3" id="text-8-1">
+<p>
+一個典型的解釋<sup><a id="fnr.4" class="footref" href="#fn.4" role="doc-backlink">4</a></sup>如圖<a href="#org4118fa7">2</a>，&ldquo;我們知道, 過擬合就是所謂的模型對可見的數據過度自信, 非常完美的擬合上了這些數據, 如果具備過擬合的能力, 那麼這個方程就可能是一個比較複雜的非線性方程 , 正是因為這裡的 x^3 和 x^2 使得這條虛線能夠被彎來彎去, 所以整個模型就會特別努力地去學習作用在 x^3 和 x^2 上的 c, d 參數. 但是我們期望模型要學到的卻是 這條藍色的曲線. 因為它能更有效地概括數據.而且只需要一個 y=a+bx 就能表達出數據的規律. 或者是說, 藍色的線最開始時, 和紅色線同樣也有 c d 兩個參數, 可是最終學出來時, c 和 d 都學成了 0, 雖然藍色方程的誤差要比紅色大, 但是概括起數據來還是藍色好. 那我們如何保證能學出來這樣的參數呢? 這就是 l1 l2 正規化出現的原因啦.&rdquo;<br />
+</p>
+
+
+<div id="org4118fa7" class="figure">
+<p><img src="images/L1l2regularization2.png" alt="L1l2regularization2.png" /><br />
+</p>
+<p><span class="figure-number">Figure 2: </span>過擬合問題</p>
+</div>
+
+<p>
+對於上述訓練出的兩個方程式，我們可以用\((y_{\theta}(x)-y)^2\)來計算模型預測值\(y(x)\)和真實數據\(y\)的誤差，而 L1, L2 就只是在這個誤差公式後加上一些式子來修正這個公式(如圖<a href="#org7d60736">3</a>)，其目的在於讓誤差的最佳化不僅取決於訓練數據擬合的優劣，同時也取決於參數值(如 c,d)的大小；L2 正規化以參數平方來做為計算方式，L1 正規化則是計算每個參數的絕對值。<br />
+</p>
+
+<div id="org7d60736" class="figure">
+<p><img src="images/L1l2regularization3.png" alt="L1l2regularization3.png" /><br />
+</p>
+<p><span class="figure-number">Figure 3: </span>L1,L2 正規化公式</p>
+</div>
+
+<p>
+進一步以 Tensorflow Playground 的圖示來觀察 L1,L2 正規化的差異<sup><a id="fnr.5" class="footref" href="#fn.5" role="doc-backlink">5</a></sup>，如果把正規化(Regularization)設定為 L1，再執行訓練。可以看到很多權重都被設定為 0，特徵輸入與隱藏層的神經元被大大的減少，如圖<a href="#org60ab868">4</a>，整個模型的複雜度簡化很多。L1 正規化確實有助於將我們的複雜模型縮減為更小的泛化模型。添加正規化後，我們看到無用的功能全部變為零，並且連接線變得稀疏並顯示為灰色。倖存下來的唯一特徵是 x_1 平方和 x_2 平方，這是有道理的，因為這 2 個特徵加在一起就構成了一個圓的方程。<br />
+</p>
+
+
+<div id="org60ab868" class="figure">
+<p><img src="images/L1l2regularization4.png" alt="L1l2regularization4.png" /><br />
+</p>
+<p><span class="figure-number">Figure 4: </span>L1 正規化</p>
+</div>
+
+<p>
+反觀 L2 正規化，當我們訓練它時，每個權重與神經元都還是處於活動狀態，但是非常虛弱，如圖<a href="#orgb4bad9e">5</a>，L1 正規化使用其中一個特徵而將某些拋棄，而 L2 正規化將同時保留特徵並使權重值保持較小。因此，使用 L1，您可以得到一個較小的模型，但預測性可能較低。。所以：<br />
+</p>
+
+<ul class="org-ul">
+<li>L1 正規化：有可能導致零權重，因刪除更多特徵而使模型稀疏。<br /></li>
+<li>L2 正規化：會對更大的權重值造成更大的影響，將使權重值保持較小。<br /></li>
+</ul>
+
+
+<div id="orgb4bad9e" class="figure">
+<p><img src="images/L1l2regularization5.png" alt="L1l2regularization5.png" /><br />
+</p>
+<p><span class="figure-number">Figure 5: </span>L2 正規化</p>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org5a9a0d4" class="outline-2">
+<h2 id="org5a9a0d4"><span class="section-number-2">9.</span> 資料擴增/資料增強(Data Augmentation)</h2>
+<div class="outline-text-2" id="text-9">
+<p>
+參考: <a href="https://chtseng.wordpress.com/2017/11/11/data-augmentation-%E8%B3%87%E6%96%99%E5%A2%9E%E5%BC%B7/">Data Augmentation 資料增強</a><br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org0760231" class="outline-2">
+<h2 id="org0760231"><span class="section-number-2">10.</span> 循序特徵選擇法</h2>
+<div class="outline-text-2" id="text-10">
+<p>
+另一種降低模型複雜度以避免過度擬合的方式是經由「特徵選擇」(feature selection)來做「降維」(dimensionality reduction)，降維的做法有二：<br />
+</p>
+<ul class="org-ul">
+<li>特徵選擇：feature selection, 由原本的特徵中，選出一個子集合<br /></li>
+<li>特徵提取：feature extraction，由原本的特徵中，導出資訊來建構新的特徵<br /></li>
+</ul>
+
+<p>
+循序特徵選擇法(sequential feature selection)為貪婪演算法的一種，目標在移除不相關或相關較低的特徵，以提高計算效率，這對於不支援「正規化」的演算法來說是很有用的。「循序向後選擇」(Sequential Backward Selection, SBS)便是一個典型的循序特徵選擇法，其做法是逐一從特徵空間中移除特徵，直到只剩下所要的特徵個數。為了達到這個目的，我們要定義一個最小化的「準則函數」(criterion function), 這個準則可以簡化為「模型在移除某特徵前/後的效能差異。SBS 的 python 實作如下：<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">  1: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">## Sequential feature selection algorithms</span>
+<span class="linenr">  2: </span>  <span style="color: #51afef;">from</span> sklearn.base <span style="color: #51afef;">import</span> clone
+<span class="linenr">  3: </span>  <span style="color: #51afef;">from</span> sklearn.metrics <span style="color: #51afef;">import</span> accuracy_score
+<span class="linenr">  4: </span>  <span style="color: #51afef;">from</span> itertools <span style="color: #51afef;">import</span> combinations
+<span class="linenr">  5: </span>  <span style="color: #51afef;">class</span> <span style="color: #ECBE7B;">SBS</span>():
+<span class="linenr">  6: </span>      <span style="color: #51afef;">def</span> <span style="color: #c678dd;">__init__</span>(<span style="color: #51afef;">self</span>, estimator, k_features, scoring=accuracy_score,
+<span class="linenr">  7: </span>                   test_size=<span style="color: #da8548; font-weight: bold;">0.25</span>, random_state=<span style="color: #da8548; font-weight: bold;">1</span>):
+<span class="linenr">  8: </span>          <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">scoring</span> = scoring
+<span class="linenr">  9: </span>          <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">estimator</span> = clone(estimator)
+<span class="linenr"> 10: </span>          <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">k_features</span> = k_features
+<span class="linenr"> 11: </span>          <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">test_size</span> = test_size
+<span class="linenr"> 12: </span>          <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">random_state</span> = random_state
+<span class="linenr"> 13: </span>
+<span class="linenr"> 14: </span>      <span style="color: #51afef;">def</span> <span style="color: #c678dd;">fit</span>(<span style="color: #51afef;">self</span>, X, y):
+<span class="linenr"> 15: </span>
+<span class="linenr"> 16: </span>          <span style="color: #dcaeea;">X_train</span>, <span style="color: #dcaeea;">X_test</span>, <span style="color: #dcaeea;">y_train</span>, <span style="color: #dcaeea;">y_test</span> =             train_test_split(X, y, test_size=<span style="color: #51afef;">self</span>.test_size,
+<span class="linenr"> 17: </span>                               random_state=<span style="color: #51afef;">self</span>.random_state)
+<span class="linenr"> 18: </span>
+<span class="linenr"> 19: </span>          <span style="color: #dcaeea;">dim</span> = X_train.shape[<span style="color: #da8548; font-weight: bold;">1</span>]
+<span class="linenr"> 20: </span>          <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">indices_</span> = <span style="color: #c678dd;">tuple</span>(<span style="color: #c678dd;">range</span>(dim))
+<span class="linenr"> 21: </span>          <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">subsets_</span> = [<span style="color: #51afef;">self</span>.indices_]
+<span class="linenr"> 22: </span>          <span style="color: #dcaeea;">score</span> = <span style="color: #51afef;">self</span>._calc_score(X_train, y_train,
+<span class="linenr"> 23: </span>                                   X_test, y_test, <span style="color: #51afef;">self</span>.indices_)
+<span class="linenr"> 24: </span>          <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">scores_</span> = [score]
+<span class="linenr"> 25: </span>
+<span id="coderef-fitWhile" class="coderef-off"><span class="linenr"> 26: </span>          <span style="color: #51afef;">while</span> dim &gt; <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">k_features</span>:</span>
+<span class="linenr"> 27: </span>              scores = []
+<span class="linenr"> 28: </span>              <span style="color: #dcaeea;">subsets</span> = []
+<span class="linenr"> 29: </span>
+<span class="linenr"> 30: </span>              <span style="color: #51afef;">for</span> p <span style="color: #51afef;">in</span> combinations(<span style="color: #51afef;">self</span>.indices_, r=dim - <span style="color: #da8548; font-weight: bold;">1</span>):
+<span class="linenr"> 31: </span>                  <span style="color: #dcaeea;">score</span> = <span style="color: #51afef;">self</span>._calc_score(X_train, y_train,
+<span id="coderef-scoreXtest" class="coderef-off"><span class="linenr"> 32: </span>                                           X_test, y_test, p)</span>
+<span class="linenr"> 33: </span>                  scores.append(score)
+<span class="linenr"> 34: </span>                  subsets.append(p)
+<span class="linenr"> 35: </span>
+<span class="linenr"> 36: </span>              <span style="color: #dcaeea;">best</span> = np.argmax(scores)
+<span class="linenr"> 37: </span>              <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">indices_</span> = subsets[best]
+<span class="linenr"> 38: </span>              <span style="color: #51afef;">self</span>.subsets_.append(<span style="color: #51afef;">self</span>.indices_)
+<span class="linenr"> 39: </span>              <span style="color: #dcaeea;">dim</span> -= <span style="color: #da8548; font-weight: bold;">1</span>
+<span class="linenr"> 40: </span>
+<span id="coderef-bestScore" class="coderef-off"><span class="linenr"> 41: </span>              <span style="color: #51afef;">self</span>.scores_.append(scores[best])</span>
+<span class="linenr"> 42: </span>          <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">k_score_</span> = <span style="color: #51afef;">self</span>.scores_[-<span style="color: #da8548; font-weight: bold;">1</span>]
+<span class="linenr"> 43: </span>
+<span class="linenr"> 44: </span>          <span style="color: #51afef;">return</span> <span style="color: #51afef;">self</span>
+<span class="linenr"> 45: </span>
+<span class="linenr"> 46: </span>      <span style="color: #51afef;">def</span> <span style="color: #c678dd;">transform</span>(<span style="color: #51afef;">self</span>, X):
+<span class="linenr"> 47: </span>          <span style="color: #51afef;">return</span> X[:, <span style="color: #51afef;">self</span>.indices_]
+<span class="linenr"> 48: </span>
+<span class="linenr"> 49: </span>      <span style="color: #51afef;">def</span> <span style="color: #c678dd;">_calc_score</span>(<span style="color: #51afef;">self</span>, X_train, y_train, X_test, y_test, indices):
+<span class="linenr"> 50: </span>          <span style="color: #51afef;">self</span>.estimator.fit(X_train[:, indices], y_train)
+<span class="linenr"> 51: </span>          <span style="color: #dcaeea;">y_pred</span> = <span style="color: #51afef;">self</span>.estimator.predict(X_test[:, indices])
+<span class="linenr"> 52: </span>          <span style="color: #dcaeea;">score</span> = <span style="color: #51afef;">self</span>.scoring(y_test, y_pred)
+<span class="linenr"> 53: </span>          <span style="color: #51afef;">return</span> score
+<span class="linenr"> 54: </span>
+<span class="linenr"> 55: </span>  <span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
+<span class="linenr"> 56: </span>  <span style="color: #51afef;">from</span> sklearn.neighbors <span style="color: #51afef;">import</span> KNeighborsClassifier
+<span class="linenr"> 57: </span>
+<span class="linenr"> 58: </span>  <span style="color: #dcaeea;">knn</span> = KNeighborsClassifier(n_neighbors=<span style="color: #da8548; font-weight: bold;">5</span>)
+<span class="linenr"> 59: </span>
+<span class="linenr"> 60: </span>  <span style="color: #5B6268;">##</span><span style="color: #5B6268;">========</span>
+<span class="linenr"> 61: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35712;&#20837;&#36039;&#26009;</span>
+<span class="linenr"> 62: </span>  <span style="color: #51afef;">from</span> sklearn <span style="color: #51afef;">import</span> datasets
+<span class="linenr"> 63: </span>  <span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 64: </span>  <span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
+<span class="linenr"> 65: </span>  <span style="color: #dcaeea;">df_wine</span> = pd.read_csv(<span style="color: #98be65;">'https://archive.ics.uci.edu/'</span>
+<span class="linenr"> 66: </span>                      <span style="color: #98be65;">'ml/machine-learning-databases/wine/wine.data'</span>,
+<span class="linenr"> 67: </span>                      header=<span style="color: #a9a1e1;">None</span>)
+<span class="linenr"> 68: </span>  df_wine.<span style="color: #dcaeea;">columns</span> = [<span style="color: #98be65;">'Class label'</span>, <span style="color: #98be65;">'Alcohol'</span>, <span style="color: #98be65;">'Malic acid'</span>, <span style="color: #98be65;">'Ash'</span>,
+<span class="linenr"> 69: </span>                     <span style="color: #98be65;">'Alcalinity of ash'</span>, <span style="color: #98be65;">'Magnesium'</span>, <span style="color: #98be65;">'Total phenols'</span>,
+<span class="linenr"> 70: </span>                     <span style="color: #98be65;">'Flavanoids'</span>, <span style="color: #98be65;">'Nonflavanoid phenols'</span>, <span style="color: #98be65;">'Proanthocyanins'</span>,
+<span class="linenr"> 71: </span>                     <span style="color: #98be65;">'Color intensity'</span>, <span style="color: #98be65;">'Hue'</span>, <span style="color: #98be65;">'OD280/OD315 of diluted wines'</span>,
+<span class="linenr"> 72: </span>                     <span style="color: #98be65;">'Proline'</span>]
+<span class="linenr"> 73: </span>  <span style="color: #dcaeea;">X</span>, <span style="color: #dcaeea;">y</span> = df_wine.iloc[:, <span style="color: #da8548; font-weight: bold;">1</span>:].values, df_wine.iloc[:, <span style="color: #da8548; font-weight: bold;">0</span>].values
+<span class="linenr"> 74: </span>  <span style="color: #51afef;">from</span> sklearn.model_selection <span style="color: #51afef;">import</span> train_test_split
+<span class="linenr"> 75: </span>  <span style="color: #dcaeea;">X_train</span>, <span style="color: #dcaeea;">X_test</span>, <span style="color: #dcaeea;">y_train</span>, <span style="color: #dcaeea;">y_test</span> =    train_test_split(X, y,
+<span class="linenr"> 76: </span>                       test_size=<span style="color: #da8548; font-weight: bold;">0.3</span>,
+<span class="linenr"> 77: </span>                       random_state=<span style="color: #da8548; font-weight: bold;">0</span>,
+<span class="linenr"> 78: </span>                       stratify=y)
+<span class="linenr"> 79: </span>
+<span class="linenr"> 80: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23559;&#36039;&#26009;&#27161;&#28310;&#21270;: &#21033;&#29992;preprocessing&#27169;&#32068;&#35041;&#30340;StandardScaler&#39006;&#21029;</span>
+<span class="linenr"> 81: </span>  <span style="color: #51afef;">from</span> sklearn.preprocessing <span style="color: #51afef;">import</span> StandardScaler
+<span class="linenr"> 82: </span>  sc = StandardScaler() <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23526;&#20363;&#21270;&#19968;&#20491;StandardScaler&#29289;&#20214;</span>
+<span class="linenr"> 83: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21033;&#29992;fit&#26041;&#27861;&#65292;&#23565;X_train&#20013;&#27599;&#20491;&#29305;&#24501;&#20540;&#20272;&#24179;&#22343;&#25976;&#21644;&#27161;&#28310;&#24046;</span>
+<span class="linenr"> 84: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#28982;&#24460;&#23565;&#27599;&#20491;&#29305;&#24501;&#20540;&#36914;&#34892;&#27161;&#28310;&#21270;(train&#21644;test&#37117;&#35201;&#20570;)</span>
+<span class="linenr"> 85: </span>  sc.fit(X_train)
+<span class="linenr"> 86: </span>  <span style="color: #dcaeea;">X_train_std</span> = sc.transform(X_train)
+<span class="linenr"> 87: </span>  <span style="color: #dcaeea;">X_test_std</span> = sc.transform(X_test)
+<span class="linenr"> 88: </span>
+<span class="linenr"> 89: </span>  <span style="color: #5B6268;">##</span><span style="color: #5B6268;">===</span>
+<span class="linenr"> 90: </span>
+<span class="linenr"> 91: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">selecting features</span>
+<span id="coderef-kFeatures" class="coderef-off"><span class="linenr"> 92: </span>  <span style="color: #dcaeea;">sbs</span> = SBS(knn, k_features=<span style="color: #da8548; font-weight: bold;">1</span>)</span>
+<span class="linenr"> 93: </span>  sbs.fit(X_train_std, y_train)
+<span class="linenr"> 94: </span>
+<span class="linenr"> 95: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">plotting performance of feature subsets</span>
+<span class="linenr"> 96: </span>  <span style="color: #dcaeea;">k_feat</span> = [<span style="color: #c678dd;">len</span>(k) <span style="color: #51afef;">for</span> k <span style="color: #51afef;">in</span> sbs.subsets_]
+<span class="linenr"> 97: </span>
+<span id="coderef-accuracyScore" class="coderef-off"><span class="linenr"> 98: </span>  plt.plot(k_feat, sbs.scores_, marker=<span style="color: #98be65;">'o'</span>)</span>
+<span class="linenr"> 99: </span>  plt.ylim([<span style="color: #da8548; font-weight: bold;">0.7</span>, <span style="color: #da8548; font-weight: bold;">1.02</span>])
+<span class="linenr">100: </span>  plt.ylabel(<span style="color: #98be65;">'Accuracy'</span>)
+<span class="linenr">101: </span>  plt.xlabel(<span style="color: #98be65;">'Number of features'</span>)
+<span class="linenr">102: </span>  plt.grid()
+<span class="linenr">103: </span>  plt.tight_layout()
+<span class="linenr">104: </span>  plt.savefig(<span style="color: #98be65;">'04_08.png'</span>, dpi=<span style="color: #da8548; font-weight: bold;">300</span>)
+<span class="linenr">105: </span>  <span style="color: #5B6268;">#</span><span style="color: #5B6268;">plt.show()</span>
+<span id="coderef-sbsSubsets" class="coderef-off"><span class="linenr">106: </span>  <span style="color: #c678dd;">print</span>(sbs.subsets_) <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20840;&#37096;&#21015;&#20986;&#65292;&#25214;&#21040;3&#20491;&#29305;&#24501;&#20540;&#26159;&#22312;&#31532;&#24190;&#20491;&#20301;&#32622;</span></span>
+<span class="linenr">107: </span>  <span style="color: #c678dd;">print</span>(<span style="color: #c678dd;">list</span>(sbs.subsets_[<span style="color: #da8548; font-weight: bold;">10</span>]))
+<span class="linenr">108: </span>  <span style="color: #dcaeea;">k3</span> = <span style="color: #c678dd;">list</span>(sbs.subsets_[<span style="color: #da8548; font-weight: bold;">10</span>])
+<span class="linenr">109: </span>  <span style="color: #c678dd;">print</span>(df_wine.columns[<span style="color: #da8548; font-weight: bold;">1</span>:][k3])
+<span class="linenr">110: </span>  <span style="color: #5B6268;">## </span><span style="color: #5B6268;">&#27604;&#36611;&#20840;&#37096;&#29305;&#24501;&#20540;&#33287;&#19977;&#20491;&#29305;&#24501;&#20540;&#30340;&#25928;&#33021;</span>
+<span class="linenr">111: </span>  knn.fit(X_train_std, y_train)
+<span class="linenr">112: </span>  <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'Training accuracy (FULL):'</span>, knn.score(X_train_std, y_train))
+<span class="linenr">113: </span>  <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'Test accuracy (FULL):'</span>, knn.score(X_test_std, y_test))
+<span class="linenr">114: </span>  knn.fit(X_train_std[:, k3], y_train)
+<span class="linenr">115: </span>  <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'Training accuracy (K3):'</span>, knn.score(X_train_std[:,k3], y_train))
+<span class="linenr">116: </span>  <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'Test accuracy (K3):'</span>, knn.score(X_test_std[:,k3], y_test))
+<span class="linenr">117: </span>
+</pre>
+</div>
+
+<pre class="example">
+[(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12), (0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12), (0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11), (0, 1, 2, 3, 4, 5, 6, 7, 9, 11), (0, 1, 2, 3, 4, 5, 7, 9, 11), (0, 1, 2, 3, 5, 7, 9, 11), (0, 1, 2, 3, 5, 7, 11), (0, 1, 2, 3, 5, 11), (0, 1, 2, 3, 11), (0, 1, 2, 11), (0, 1, 11), (0, 11), (0,)]
+[0, 1, 11]
+Index(['Alcohol', 'Malic acid', 'OD280/OD315 of diluted wines'], dtype='object')
+Training accuracy (FULL): 0.967741935483871
+Test accuracy (FULL): 0.9629629629629629
+Training accuracy (K3): 0.9516129032258065
+Test accuracy (K3): 0.9259259259259259
+</pre>
+
+
+
+<div id="org84bb8c1" class="figure">
+<p><img src="images/04_08.png" alt="04_08.png" width="500" /><br />
+</p>
+<p><span class="figure-number">Figure 6: </span>SBS</p>
+</div>
+
+<p>
+前述實作中，k_features 參數(程式第<a href="#coderef-kFeatures" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-kFeatures');" onmouseout="CodeHighlightOff(this, 'coderef-kFeatures');">92</a>行)定義了我們希望演算法「最後要保留多少特徵」，在預設情況下，以 accuracy_score(程式第<a href="#coderef-accuracyScore" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-accuracyScore');" onmouseout="CodeHighlightOff(this, 'coderef-accuracyScore');">98</a>行)來評估模型效能。在 fit 的 while 迴圈中(<a href="#coderef-fitWhile" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-fitWhile');" onmouseout="CodeHighlightOff(this, 'coderef-fitWhile');">26</a>行)，由 itertools 模組的 combinations 方法所產生的特徵子集合會被評估並降維，直到只剩下所要的特徵個數。<br />
+</p>
+
+<p>
+在每次迭代中，演算法使用內部創建的測試數據集 X_test(第<a href="#coderef-scoreXtest" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-scoreXtest');" onmouseout="CodeHighlightOff(this, 'coderef-scoreXtest');">32</a>行)來評估特徵子集合，然後留下精確度最佳的特徵子集合所得分數，加入串列 self.scores_中(第<a href="#coderef-bestScore" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-bestScore');" onmouseout="CodeHighlightOff(this, 'coderef-bestScore');">41</a>行)，之後再以這些分數來評估結果。最後的特徵子集合「行索引」會被分派到變數 self.indices_中，然後以 transform 將這些所選定的特徵轉為新的數據陣列。<br />
+</p>
+
+<p>
+由圖<a href="#org84bb8c1">6</a>可以看到，當特徵數 k={3, 7, 8, 9, 10, 11, 12}時，KNN 分類器的準確率為 100%。若進一步想確定當 k=3 時，是哪三個特徵，則可以由 sbs.subset_中逐步探索出來(程式第<a href="#coderef-sbsSubsets" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-sbsSubsets');" onmouseout="CodeHighlightOff(this, 'coderef-sbsSubsets');">106</a>行)。<br />
+</p>
+
+<p>
+進一步比較「全部特徵值」以及「三個特徵值」所得出的模型效能，可以看到即使只留下三個特徵值，模型的效能仍相去不遠，更重要的是，透過降低維度，可以有效的提升運算效能。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org334e875" class="outline-2">
+<h2 id="org334e875"><span class="section-number-2">11.</span> 以隨機森林評估特徵的重要性</h2>
+<div class="outline-text-2" id="text-11">
+<p>
+隨機森林顧名思義，是用隨機的方式建立一個森林，森林裡面有很多的決策樹組成，隨機森林的每一棵決策樹之間是沒有關聯的。在得到森林之後，當有一個新的輸入樣本進入的時候，就讓森林中的每一棵決策樹分別進行一下判斷，看看這個樣本應該屬於哪一類（對於分類演算法），然後看看哪一類被選擇最多，就預測這個樣本為那一類<sup><a id="fnr.6" class="footref" href="#fn.6" role="doc-backlink">6</a></sup>。上述 SBS 演算法係將低相關的特徵刪除、留下重要的特徵；而隨機森林則是利用許多決策樹來票選最後的決定。<br />
+</p>
+
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #51afef;">from</span> sklearn <span style="color: #51afef;">import</span> datasets
+<span class="linenr"> 2: </span>  <span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
+<span class="linenr"> 3: </span>  <span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 4: </span>  <span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
+<span class="linenr"> 5: </span>
+<span class="linenr"> 6: </span>  <span style="color: #dcaeea;">df_wine</span> = pd.read_csv(<span style="color: #98be65;">'https://archive.ics.uci.edu/'</span>
+<span class="linenr"> 7: </span>                      <span style="color: #98be65;">'ml/machine-learning-databases/wine/wine.data'</span>,
+<span class="linenr"> 8: </span>                      header=<span style="color: #a9a1e1;">None</span>)
+<span class="linenr"> 9: </span>  df_wine.<span style="color: #dcaeea;">columns</span> = [<span style="color: #98be65;">'Class label'</span>, <span style="color: #98be65;">'Alcohol'</span>, <span style="color: #98be65;">'Malic acid'</span>, <span style="color: #98be65;">'Ash'</span>,
+<span class="linenr">10: </span>                     <span style="color: #98be65;">'Alcalinity of ash'</span>, <span style="color: #98be65;">'Magnesium'</span>, <span style="color: #98be65;">'Total phenols'</span>,
+<span class="linenr">11: </span>                     <span style="color: #98be65;">'Flavanoids'</span>, <span style="color: #98be65;">'Nonflavanoid phenols'</span>, <span style="color: #98be65;">'Proanthocyanins'</span>,
+<span class="linenr">12: </span>                     <span style="color: #98be65;">'Color intensity'</span>, <span style="color: #98be65;">'Hue'</span>, <span style="color: #98be65;">'OD280/OD315 of diluted wines'</span>,
+<span class="linenr">13: </span>                     <span style="color: #98be65;">'Proline'</span>]
+<span class="linenr">14: </span>  <span style="color: #dcaeea;">X</span>, <span style="color: #dcaeea;">y</span> = df_wine.iloc[:, <span style="color: #da8548; font-weight: bold;">1</span>:].values, df_wine.iloc[:, <span style="color: #da8548; font-weight: bold;">0</span>].values
+<span class="linenr">15: </span>  <span style="color: #51afef;">from</span> sklearn.model_selection <span style="color: #51afef;">import</span> train_test_split
+<span class="linenr">16: </span>  <span style="color: #dcaeea;">X_train</span>, <span style="color: #dcaeea;">X_test</span>, <span style="color: #dcaeea;">y_train</span>, <span style="color: #dcaeea;">y_test</span> = train_test_split(X, y, test_size=<span style="color: #da8548; font-weight: bold;">0.3</span>,
+<span class="linenr">17: </span>                                                      random_state=<span style="color: #da8548; font-weight: bold;">0</span>,
+<span class="linenr">18: </span>                                                      stratify=y)
+<span class="linenr">19: </span>
+<span class="linenr">20: </span>
+<span class="linenr">21: </span>  <span style="color: #51afef;">from</span> sklearn.ensemble <span style="color: #51afef;">import</span> RandomForestClassifier
+<span class="linenr">22: </span>  <span style="color: #dcaeea;">feat_labels</span> = df_wine.columns[<span style="color: #da8548; font-weight: bold;">1</span>:]
+<span class="linenr">23: </span>  <span style="color: #dcaeea;">forest</span> = RandomForestClassifier(n_estimators=<span style="color: #da8548; font-weight: bold;">500</span>,
+<span class="linenr">24: </span>                                  random_state=<span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr">25: </span>
+<span class="linenr">26: </span>  forest.fit(X_train, y_train)
+<span class="linenr">27: </span>  <span style="color: #dcaeea;">importances</span> = forest.feature_importances_
+<span class="linenr">28: </span>
+<span class="linenr">29: </span>  <span style="color: #dcaeea;">indices</span> = np.argsort(importances)[::-<span style="color: #da8548; font-weight: bold;">1</span>]
+<span class="linenr">30: </span>
+<span class="linenr">31: </span>  <span style="color: #51afef;">for</span> f <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(X_train.shape[<span style="color: #da8548; font-weight: bold;">1</span>]):
+<span class="linenr">32: </span>      <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"%2d) %-*s %f"</span> % (f + <span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">30</span>,
+<span class="linenr">33: </span>                              feat_labels[indices[f]],
+<span class="linenr">34: </span>                              importances[indices[f]]))
+<span class="linenr">35: </span>
+<span class="linenr">36: </span>  plt.title(<span style="color: #98be65;">'Feature Importance'</span>)
+<span class="linenr">37: </span>  plt.bar(<span style="color: #c678dd;">range</span>(X_train.shape[<span style="color: #da8548; font-weight: bold;">1</span>]),
+<span class="linenr">38: </span>          importances[indices],
+<span class="linenr">39: </span>          align=<span style="color: #98be65;">'center'</span>)
+<span class="linenr">40: </span><span style="color: #da8548; font-weight: bold;">1</span>
+<span class="linenr">41: </span>  plt.xticks(<span style="color: #c678dd;">range</span>(X_train.shape[<span style="color: #da8548; font-weight: bold;">1</span>]),
+<span class="linenr">42: </span>             feat_labels[indices], rotation=<span style="color: #da8548; font-weight: bold;">90</span>)
+<span class="linenr">43: </span>  plt.xlim([-<span style="color: #da8548; font-weight: bold;">1</span>, X_train.shape[<span style="color: #da8548; font-weight: bold;">1</span>]])
+<span class="linenr">44: </span>  plt.tight_layout()
+<span class="linenr">45: </span>  plt.savefig(<span style="color: #98be65;">'04_09.png'</span>, dpi=<span style="color: #da8548; font-weight: bold;">300</span>)
+<span class="linenr">46: </span>  <span style="color: #5B6268;">#</span><span style="color: #5B6268;">plt.show()</span>
+<span class="linenr">47: </span>
+</pre>
+</div>
+
+<pre class="example" id="orgab02379">
+ 1) Proline                        0.185453
+ 2) Flavanoids                     0.174751
+ 3) Color intensity                0.143920
+ 4) OD280/OD315 of diluted wines   0.136162
+ 5) Alcohol                        0.118529
+ 6) Hue                            0.058739
+ 7) Total phenols                  0.050872
+ 8) Magnesium                      0.031357
+ 9) Malic acid                     0.025648
+10) Proanthocyanins                0.025570
+11) Alcalinity of ash              0.022366
+12) Nonflavanoid phenols           0.013354
+13) Ash                            0.013279
+</pre>
+
+
+<div id="org12e6327" class="figure">
+<p><img src="images/04_09.png" alt="04_09.png" width="500" /><br />
+</p>
+<p><span class="figure-number">Figure 7: </span>FandomForest</p>
+</div>
+
+
+<p>
+由圖<a href="#org12e6327">7</a>的特徵排序為從 500 棵「決策樹」的「不純度」中最具「判別性」的特徵排列順序，<br />
+</p>
+</div>
+</div>
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://cynthiachuang.github.io/What-is-the-Difference-between-Training-Validation-and-Test-Dataset/">訓練集、驗證集、測試集的定義與劃分</a><br />
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.2" class="footnum" href="#fnr.2" role="doc-backlink">2</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://blog.csdn.net/maymay_/article/details/80198468">pandas.get_dummies 的用法</a><br />
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.3" class="footnum" href="#fnr.3" role="doc-backlink">3</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://aifreeblog.herokuapp.com/posts/54/data_science_203/">資料的正規化(Normalization)及標準化(Standardization)</a><br />
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.4" class="footnum" href="#fnr.4" role="doc-backlink">4</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://morvanzhou.github.io/tutorials/machine-learning/ML-intro/3-09-l1l2regularization/">L1 / L2 正規化</a><br />
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.5" class="footnum" href="#fnr.5" role="doc-backlink">5</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://ithelp.ithome.com.tw/articles/10219648?sc=rss.iron">Google ML課程筆記 - Overfitting 與 L1 /L2 Regularization </a><br />
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.6" class="footnum" href="#fnr.6" role="doc-backlink">6</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://www.itread01.com/content/1549579879.html">機器學習十大演算法&#x2014;8. 隨機森林演算法</a><br />
+</p></div></div>
+
+
+</div>
+</div></div>
+<div id="postamble" class="status">
+<p class="author">Author: Yung Chin, Yen</p>
+<p class="date">Created: 2023-02-24 Fri 12:50</p>
+</div>
+</body>
+</html>
