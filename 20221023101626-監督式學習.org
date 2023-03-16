@@ -16,6 +16,10 @@
 
 * 簡介
 監督式學習獲得的結果可以是數值、也可以是類別，以結果分類，我們可以將監督式學分大致分為兩類：迴歸(結果為數值)與為分類(結果為類別)。
+** 範例
+*** 信用卡詐欺
+以信用卡公司來說，信用卡詐欺可以透過各種資料對照評分，預測出該事件的分數。例如地點：一個平時生活在台灣的用戶忽然在日本刷卡、或一個平時都是白天刷卡消費的用戶忽然在凌晨三點刷卡，這些事件都可以當成評分指標(特徵)，提供模型做為預測是否為信用卡詐欺的預測依據。
+*** 影像辨識
 ** 監督式學習的主要類型
 *** 分類(Cliasification)
 分類問題也稱為離散(discrete)預測問題，因為每個分類都是一個離散群組。In supervised learning, the training set you feed to the algorithm includes the desired solutions, called labels[fn:1].
@@ -33,9 +37,8 @@
 - Multiclass classification
 
 典型的分類案例: MNIST, IRIS
-
 *** 迴歸(Regression)
-另一種監督式學習為回歸（regression），即，根據一組預測特徵（predictor，如里程數、車齡、品牌）來預測目標數值（如二手車車價）[fn:1]，這個目標數值也是label。
+另一種監督式學習為[[id:6ae7fb7a-0b38-4448-b19f-073d262513f2][迴歸]]（regression），即，根據一組預測特徵（predictor，如里程數、車齡、品牌）來預測目標數值（如二手車車價）[fn:1]，這個目標數值也是label。
 
 有些迴歸演算法也可以用來分類，例如Logistic，它可以輸出一個數值，以這個數值來表示對應到特定類別的機率，例如，某封email為垃圾郵件的機率為20%、某張圖片為狗的機率為70%。
 
@@ -86,7 +89,7 @@ KNN藉由找出與新資料點最相近的 /k/ 個已具有label的資料點，�
 ** Methods based on tree(Decision tree and Random Forest)
 *** Single decision tree: 遍歷所有訓練資枓來建立規則，但容易過度擬合
 *** Bagging: 將上述tree加入bootstrap aggregation(如bagging)，即，使用多次隨機實例採樣(multiple random samples of instances)，並為每次採樣建立一棵decision tree，並對每個資料實例進行預測，預測方式為透過平均每棵樹的預測結果，藉由這種方式可以解決decision tree容易過度擬合的問題。
-*** Random forest: 除了將資料實例進行採樣，也對每棵decision tree的分支條件中 *待預測label* 進䈩隨機採樣，而非使用所有的待預測label。透過這種方式，random forest可以建立出彼此相關性更低的decision，進而改善過度擬合與泛化誤差。
+*** Random forest: 除了將資料實例進行採樣，也對每棵decision tree的分支條件中 *待預測label* 進行隨機採樣，而非使用所有的待預測label。透過這種方式，random forest可以建立出彼此相關性更低的decision，進而改善過度擬合與泛化誤差。
 ** Boosting
 同樣是建立許多樹，但是它 *依多建立每棵decision tree* , 利用前一棵decision所習得的資訊來改善下一棵decision tree的預測結果。是所有tree-based solution中表現最好的方式，也是許多machine learning比賽的常勝軍。
 - 優點：performance佳，能處理資料缺失與特徵分類問題
@@ -95,18 +98,8 @@ KNN藉由找出與新資料點最相近的 /k/ 個已具有label的資料點，�
 使用演算法和已知的label在空間中建構超平面來分類資料
 ** 神經網路
 
-* 迴歸原理
-** Step 1
-1. Model: $y = w*x+b$
-2. Data: 找一堆現成的資料
-** Step 2: Goodness of Function
-1. Training Data
-2. Loss function L: 越小越好
-   input: a function / output: how bad it is
-3. Pick the "Best: Function
-   $f* = arg min L(f)$
-   上述可以微分來求最佳解，即求 function L 的最小值
-4. 數值最佳解: Gradient Descent(找拋物面最低點)
+
+* 分類
 ** 最短距離分類器
 #+begin_src python -r :results output :exports both
 import math
@@ -175,9 +168,6 @@ print(ed(groupB, tarx, tary))
 ** 如何預防 overfitting: collect more data
 
 * 分類實作: IRIS(KNN、DecisionTree)
-:PROPERTIES:
-:CUSTOM_ID: IRIS-KNN
-:END:
 :PROPERTIES:
 :CUSTOM_ID: IRIS-KNN
 :END:

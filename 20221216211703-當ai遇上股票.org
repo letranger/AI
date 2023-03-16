@@ -67,7 +67,7 @@ for i in range(len(sc_data) - previousNDays):
   y = sc_data[i+previousNDays]
   x_data.append(x)
   y_data.append(y)
-#因為等一下要送進tensorflow
+#因為等一下要送進tensorflow，所以先轉成numpy的陣列格式
 x_data, y_data = np.array(x_data), np.array(y_data)
 
 print(x_data.shape)
@@ -78,7 +78,9 @@ print(y_data.shape)
 ratio = 0.8
 train_size = round(len(x_data) * ratio)
 print(train_size)
+# 第0筆到第train_size-1筆的資料分割為訓練集
 x_train, y_train = x_data[:train_size], y_data[:train_size]
+# 第train_size筆到最後一筆的資料分割為測試集
 x_test, y_test = x_data[train_size:], y_data[train_size:]
 #from sklearn.model_selection import train_test_split
 #x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=0.2)

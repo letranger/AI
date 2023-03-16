@@ -8,17 +8,192 @@
 #+TAGS: AI
 #+OPTIONS: toc:2 ^:nil num:5
 #+PROPERTY: header-args :eval never-export
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/white.css" />
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/muse.css" />
 #+EXCLUDE_TAGS: noexport
 #+latex:\newpage
 
-* BOOK
-- Title: Mastering Machine Learning with scikit-learn
-- Author: Gavin Hackeling
 
-* 簡單線性回歸
+即，根據一組預測特徵（predictor，如里程數、車齡、品牌）來預測目標數值（如二手車車價）[fn:1]，這個目標數值也是label。
+
+有些迴歸演算法也可以用來分類，例如Logistic，它可以輸出一個數值，以這個數值來表示對應到特定類別的機率，例如，某封email為垃圾郵件的機率為20%、某張圖片為狗的機率為70%。
+
+迴歸問題可再細分為兩類：
+- Linear regression:
+  * 假設輸入變量(x)與單一輸出變量(y)間存在線性關係，並以此建立模型。
+  * 優點: 簡單、容易解釋
+  * 缺點: 輸入與輸出變量關係為線性時會導致低度擬合
+  * 例: 身高與體重間的關係
+- Logistic regression
+  * 也是線性方法，但使用logist function轉換輸出的預測結果，其輸出結果為類別機率(class probabilities)
+  * 優點: 簡單、容易解釋
+  * 缺點: 輸入與輸出變量關係為線性時無法處理分類問題
+
+典型迴歸案例: Boston Housing Data
+
+* 迴歸原理
+** Step 1
+1. Model: $y = w*x+b$
+2. Data: 找一堆現成的資料
+** Step 2: Goodness of Function
+1. Training Data
+2. Loss function L: 越小越好
+   input: a function / output: how bad it is
+3. Pick the "Best: Function
+   $f* = arg min L(f)$
+   上述可以微分來求最佳解，即求 function L 的最小值
+4. 數值最佳解: Gradient Descent(找拋物面最低點)
+** 迴歸實作
+[[https://tree.rocks/deep-learning-from-scratch-by-linear-regression-e42f5dcdb024][手刻 Deep Learning — 第零章 — 線性回歸]]
+原始資料:
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/Xyh-1.png]]
+
+#+begin_src python -r -n :results output :exports both
+import numpy as np
+import matplotlib.pyplot as plt
+
+def gen_data(X, a, b):
+    return X * a + b
+
+
+## 重新產生X, y，較合理，而非已存在一條線
+X = np.array(range(1, 10))
+y = np.array([27, 35, 40, 50, 66, 60, 76, 88, 90])
+#y = gen_data(X, a=8, b=20)
+
+plt.scatter(X, y, color='black')
+plt.plot(X, 1 * X + 1)
+plt.plot(X, 4 * X + 10)
+plt.plot(X, 4 * X + 10)
+plt.plot(X, 8 * X + 30)
+plt.ylim(0, 121)
+plt.legend(['Raw Data', 'Line 1', 'Line 2', 'Line 3'])
+plt.savefig("images/Xyh-1.png", dpi=300)
+
+a = 1
+b = 1
+yh = a * X + b #y hat
+
+
+plt.plot(X, yh)
+#plt.savefig("images/Xyh.png", dpi=300)
+
+def loss_func(y_true, y_predict):
+    return y_true - y_predict
+
+def optimizer(d, loss):
+    return np.mean(d * loss * 0.01)
+
+N = 1000
+for i in range(N):
+    p_y = a * X + b
+    loss = loss_func(y, p_y)
+    a -= optimizer(-2 * X, loss)
+    b -= optimizer(-2, loss)
+    if i % int(N/10) == 0:
+        print('誤差: {:.2f}'.format(np.mean(loss)), '目前 a: {:.2f}, b: {:.2f}'.format(a, b))
+
+yh = a * X + b #y hat
+#plt.plot(X, yh)
+#plt.legend(['Target', 'Initialization', 'Optimization'])
+#plt.savefig("images/Xyh.png", dpi=300)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+[[1]
+ [2]
+ [3]
+ [4]
+ [5]
+ [6]
+ [7]
+ [8]
+ [9]]
+誤差: 53.11 目前 a: 7.27, b: 2.06
+誤差: 2.11 目前 a: 9.84, b: 7.81
+誤差: 1.40 目前 a: 9.29, b: 11.26
+誤差: 0.93 目前 a: 8.93, b: 13.54
+誤差: 0.61 目前 a: 8.69, b: 15.05
+誤差: 0.41 目前 a: 8.53, b: 16.06
+誤差: 0.27 目前 a: 8.42, b: 16.72
+誤差: 0.18 目前 a: 8.35, b: 17.16
+誤差: 0.12 目前 a: 8.31, b: 17.45
+誤差: 0.08 目前 a: 8.28, b: 17.65
+#+end_example
+
+
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/Xyh.png]]
+
+開始 Linear Regression (線性回歸)
+
+練習投藍的時後，我們需要知道籃筐位置，誤差多少，做出丟球的修正；做 Machine Learning 也是一樣道理，我們需要 :
+1. 找出誤差
+2. 做出修正
+
+所以我們這邊帶入兩個觀念:
+1. loss function (誤差計算，找出誤差)
+2. optimizer (最佳化方法，做出修正)
+
+我們用程式碼來看
+loss function: 其中 loss_func 的 y_true 表示商店的真實價格，y_predict 是我們預測的價格，我們這邊採用 真實價格 減去 預測價格，就是預測的誤差
+#+begin_src python -r -n :results output :exports both
+def loss_func(y_true, y_predict):
+    return y_true - y_predict
+#+end_src
+optimizer: 這邊有個參數叫做 d ，其實他是 partial derivative ，這是微積分的概念。optimizer的修正並非最佳，可以自行修正找出最佳參數
+#+begin_src python -r -n :results output :exports both
+def optimizer(d, loss):
+    return np.mean(d * loss * 0.01)
+#+end_src
+
+上面就是我們的訓練用程式碼，跑 1000 次訓練，每 100 次 ( N/10 ) 我們印出一次誤差讓我們看看過程
+其中：
+a -= optimizer(-2 * X, loss)
+b -= optimizer(-2, loss)
+這邊就是每次的訓練我們都在調整 a 與 b，就像是我們投籃丟歪球了，每次練習都在調整力道
+
+各位可以試看看將 a 與 b 改成任意數值 ( 不要太過極端以免 overflow )，在這個訓練過程中，不管 a, b 初始是多少，都會逐漸往我們正確答案靠近，為什麼會這樣呢？
+
+    這就是微積分的力量
+
+大多的 Machine Learning 也是類似這種方法，不停的 Training ( 訓練 ) 找到答案，微積分這部分日後有空再來解說 XD
+
+微分: https://tree.rocks/deep-learning-from-scratch-introduce-differential-91f5b4400d1a
+
+** sklear版solution
+#+begin_src python -r -n :results output :exports both
+import numpy as np
+X = np.arange(1, 10).reshape(-1, 1) #轉換矩陣形狀以符合sklearn要求
+y = [27, 35, 40, 50, 66, 60, 76, 88, 90]
+
+from sklearn.linear_model import LinearRegression
+model = LinearRegression()
+model.fit(X, y)
+
+print('Slope:', model.coef_)
+print('Intercept:', model.intercept_)
+#+end_src
+
+#+RESULTS:
+: Slope: [8.21666667]
+: Intercept: 18.02777777777777
+
+* 簡單線性迴歸
 ** Pizza
 Let's assume that you have recorded the diameters and prices of pizzas that you have previously eaten in your pizza journal. These observations comprise our training data:
+|--------------------+------------------|
 | Diameter in inches | Price in dollars |
 |--------------------+------------------|
 |                  6 |                7 |
@@ -26,6 +201,7 @@ Let's assume that you have recorded the diameters and prices of pizzas that you 
 |                 10 |               13 |
 |                 14 |             17.5 |
 |                 18 |               18 |
+|--------------------+------------------|
 *** 觀察數據
 We can visualize our training data by plotting it on a graph using matplotlib:
 #+begin_src python -r -n :results output :exports both
@@ -37,6 +213,7 @@ import matplotlib.pyplot as plt
 # A scikit–learn convention is to name the matrix of feature vectors X.
 # Uppercase letters indicate matrices, and lowercase letters indicate vectors.
 X = np.array([[6], [8], [10], [14], [18]]).reshape(-1, 1)
+
 y = [7, 9, 13, 17.5 , 18]
 # y is a vector representing the prices of the pizzas.
 
@@ -66,6 +243,8 @@ import numpy as np
 X = np.array([[6], [8], [10], [14], [18]]).reshape(-1, 1)
 y = [7, 9, 13, 17.5 , 18]
 
+print(X.shape)
+
 from sklearn.linear_model import LinearRegression
 model = LinearRegression()
 # Create an instance of the estimator
@@ -79,6 +258,7 @@ print('A 12" pizza should cost: $%.2f' % predicted_price)
 #+end_src
 
 #+RESULTS:
+: (5, 1)
 : A 12" pizza should cost: $13.68
 
 - The LinearRegression class is an *estimator*. Estimators predict a value based on observed data.
@@ -90,7 +270,7 @@ print('A 12" pizza should cost: $%.2f' % predicted_price)
 - The hyperplane plotted in the following figure models the relationship between the size of a pizza and its price.
 - Using training data to learn the values of the parameters for simple linear regression that produce the best fitting model is called ordinary least squares (OLS) or linear least squares.
 
-  #+begin_src python -r -n :results output :exports both
+#+begin_src python -r -n :results output :exports both
 import numpy as np
 X = np.array([[6], [8], [10], [14], [18]]).reshape(-1, 1)
 y = [7, 9, 13, 17.5 , 18]
@@ -108,7 +288,7 @@ plt.title('Pizza price plotted against diameter')
 plt.xlabel('Diameter in inches')
 plt.ylabel('Price in dollars')
 plt.savefig('images/pizza-2.png', dpi=300)
-  #+end_src
+#+end_src
 
   #+RESULTS:
 
@@ -226,10 +406,12 @@ pd.DataFrame(data, columns=["Foo", "Bar"])
 
 #+RESULTS:
 :results:
-: 3
-:    Foo  Bar
-: 0    1    2
-: 1    3    4
+# Out[5]:
+#+BEGIN_EXAMPLE
+  Foo  Bar
+  0    1    2
+  1    3    4
+#+END_EXAMPLE
 :end:
 
 #+begin_src jupyter-python :session py :async yes :kernel python3 :results scalar both raw drawer :exports both
@@ -248,9 +430,10 @@ f(10)
 
 #+RESULTS:
 :results:
-: [[1, 2], [3, 4]]
-[[file:./.ob-jupyter/5a9358c30d926f4f28e351e7a6d85bdf3e460639.png]]
+# Out[6]:
+[[file:.ob-ipython-resrcnqInND.png]]
 :end:
+
 :end:
 :end:
 :end:
@@ -261,3 +444,11 @@ f(10)
 
 #+RESULTS:
 : jupyter
+
+* BOOK
+- Title: Mastering Machine Learning with scikit-learn
+- Author: Gavin Hackeling
+
+* Footnotes
+
+[fn:1] Hands-On Machine Learning with Scikit-Learn: Aurelien Geron

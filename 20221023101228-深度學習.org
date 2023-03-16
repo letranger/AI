@@ -1253,24 +1253,7 @@ LDA 與 PCA 都是常用的降維方法，二者的區別在於[fn:7]：
 #+ATTR_ORG: :width 260
 [[file:images/filter-scanner.png]]
 ** 語言模型
-*** 遞迴類神經網路(Recurrent Neural Networks, RNNs)
-
-RNN 能夠處理「任意個數的輸入序列」，所以十分適合用在「語言塑模」或「語音辨識」。理論上，RNN 可以用來處理任何問題，因戈大火弓它已被證明具有「圖靈完備性」(Turing-Complete)。以遞迴關係的函數表示 RNN 可將其視為 \(S_t=f(S_{t-1},X_t)\)，這裡的\(S_t\)表示第\(t\)步的狀態，它是由函數\(f\)對上一步(\(t-1\))的狀態(即\(S_{t-1}\))與這一步的輸入\(X_t\)所計算出來的結果，這裡的函數\(f\)可以是任何可微分的函數，如\(S_t=tang(S_{t-1}*W+X_t*U)\)。
-正因為每個狀態都會與之前所有的計算有關，其所代表的重要含義為：隨著時間的推移，RNNs 可以說是有記憶力的，因為狀態 S 包含了之前所有步驟的資訊。
-
-語言塑模的目標是計算「字的序列」的機率，這在「語音辨識」、OCR、「機器翻譯」、「拼字校正」上都非常重要。以「字」為基準的「語言模型」是由「字的序列」來定義機率分佈，給定一個長度為\(m\)的字序列，它會為整個字序列給定一個機率\(P(w_1,...,w_m)\)，其「聯合機率」(joint probability)可以由公式[[eqn:JointProbability]]中的連鎖規則(chain rule)計算出來：
-#+NAME: eqn:JointProbability
-\begin{equation}
-P(w_1,...,w_m)=P(w_1)P(w_2|w_1)P(w3|w_2,w_1)...P(w_m|w_1,...,w_{m-1})
-\end{equation}
-
-這個聯合機率一般是基於一個「獨立性假設」(independence assumption)，即，第 i 個字只會相依於它之前的 n-1 個字，如果我們的模型是連續 n 個字的聯合機率，就稱為「n元」(n-gram)。例：
-- 1-gram / unigram: "The", "quick", "brown" and "fox"
-- 2-grams / bigram: "The quick", "quick brown" and "brown fox"
-- 3-grams / trigram: "The quick brown" and "quick brown fox"
-- 4-grams: "The quick brown fox"
-
-現在，如果我們有一個巨大的語料庫(corpus of text)，我們就可以用一個特定的 n(通常為 2-4)搜尋所有「n元」在「語料庫」中出現的次數，進而在「給定前 n-1 個字的前提下」，估計出每個 n 元中最後一個字出現的機率。
+[[id:263cb433-d0eb-4400-a373-35175c000c01][循環神經網路]]
 ** 棋盤遊戲
 
 大約在 50 年代，研究人員開始建立具有 AI 的遊戲，這些遊戲以「西洋跳棋」(checkers)和「西洋棋」(chess)為主，這兩種遊戲有一些共同之處：
@@ -1284,7 +1267,7 @@ P(w_1,...,w_m)=P(w_1)P(w_2|w_1)P(w3|w_2,w_1)...P(w_m|w_1,...,w_{m-1})
 ** 影像分割
 指針對影像以像素標籤進行類別分類，利用神經網路進行影像分割，最簡單的方法就是以全部的像素為對象，再依照各個像素進行推論處理。典型做法為 FCN(Fully Convolutional Network)，相對於一般 CNN 含有全連接層的情況，FCN 把全連接層更換成「執行相同動作的卷積層」，在物體辨識的網路全連接層中，中間資料的空間大小當作排列成 1 行節點來處理。
 ** 產生圖說
-針對影像自動產生說明該影像的內容，代表性方法為 NIC (Neural Image Caption)模型，NIC 是由處理多層 CNN 與自然語言的 RNN(Recurrent Neural Network)所構成，RNN 指擁有遞迴功能的網路，常用在自然語言、時間序列資料等有連續性的資料上。
+針對影像自動產生說明該影像的內容，代表性方法為 NIC (Neural Image Caption)模型，NIC 是由處理多層 CNN 與自然語言的 RNN(Recurrent Neural Network, [[id:263cb433-d0eb-4400-a373-35175c000c01][循環神經網路]])所構成，RNN 指擁有遞迴功能的網路，常用在自然語言、時間序列資料等有連續性的資料上。
 ** 影像風格轉換
 代表論文為 A Neural Algorithm of Artistic Style。
 ** 產生影像
