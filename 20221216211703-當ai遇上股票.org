@@ -291,12 +291,13 @@ plt.show()
 import matplotlib.pyplot as plt
 import numpy as np
 x = ['5/22', '5/23', '5/24','5/25','5/26']
-targ = [30, 29.9, 29.95, 29.4, 29.30]
+targ = [30, 29.9, 29.95, 29.4, 29.35]
 gr1 = [29.502, 29.504, 29.398, 29.475, 29.495]
 gr3 = [30.014, 30.093, 30.154, 30.206, 30.254]
 gr4 = [29.271, 28.210, 29.159, 29.112, 29.072]
 gr5 = [29.466, 29.364, 29.200, 29.001, 28.785]
 gr8 = [28.651, 28.706, 28.879, 28.867, 28.915]
+gr9 = [29.369, 29.200, 29.027, 28.899, 28.800]
 #plt.cla()
 plt.rcParams['font.sans-serif'] = ['Arial Unicode MS'] # 步驟一（替換系統中的字型，這裡用的是Mac OSX系統）
 plt.rcParams['axes.unicode_minus'] = False  # 步驟二（解決座標軸負數的負號顯示問題）
@@ -308,11 +309,12 @@ plt.plot(x, gr3, linestyle='--', linewidth=2)
 plt.plot(x, gr4, linestyle='--', linewidth=2)
 plt.plot(x, gr5, linestyle='--', linewidth=2)
 plt.plot(x, gr8, linestyle='--', linewidth=2)
+plt.plot(x, gr9, linestyle='--', linewidth=2)
 #plt.plot(x, targ, color='r', linestyle='--', linewidth=3)
 
 plt.xlabel('日期', fontsize=16)
 plt.ylabel('股價', fontsize=16)
-plt.legend(['實際股價','第1組','第3組','第4組','第5組','第8組'])
+plt.legend(['實際股價','第1組','第3組','第4組','第5組','第8組','第9組'])
 #plt.xlim(0,21)
 plt.ylim(27,32)
 ax.set_xticks(x)
@@ -322,9 +324,10 @@ diffs = [sum([(x - y)**2 for x, y in zip(targ, gr1)]),
          sum([(x - y)**2 for x, y in zip(targ, gr3)]),
          sum([(x - y)**2 for x, y in zip(targ, gr4)]),
          sum([(x - y)**2 for x, y in zip(targ, gr5)]),
-         sum([(x - y)**2 for x, y in zip(targ, gr8)])]
-colors = ['b', 'g', 'r', 'c', 'm']
-grps = ('第1組','第3組','第4組','第5組','第8組')
+         sum([(x - y)**2 for x, y in zip(targ, gr8)]),
+         sum([(x - y)**2 for x, y in zip(targ, gr9)])]
+colors = ['b', 'g', 'r', 'c', 'm','y']
+grps = ('第1組','第3組','第4組','第5組','第8組','第9組')
 plt.figure()
 plt.barh(grps, diffs, align='center', color=colors, alpha=0.5)
 plt.xlabel('5日預測差異平方差累計')
