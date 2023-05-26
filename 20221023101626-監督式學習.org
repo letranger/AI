@@ -15,7 +15,7 @@
 - [[http://debussy.im.nuu.edu.tw/sjchen/MachineLearning/final/CLS_DT.pdf][決策樹學習： 聯合大學資管系]]
 
 * 簡介
-監督式學習獲得的結果可以是數值、也可以是類別，以結果分類，我們可以將監督式學分大致分為兩類：迴歸(結果為數值)與為分類(結果為類別)。
+監督式學習獲得的結果可以是數值、也可以是類別，以結果分類，我們可以將監督式學分大致分為兩類：[[id:6ae7fb7a-0b38-4448-b19f-073d262513f2][迴歸]](結果為數值)與為分類(結果為類別)。
 ** 範例
 *** 信用卡詐欺
 以信用卡公司來說，信用卡詐欺可以透過各種資料對照評分，預測出該事件的分數。例如地點：一個平時生活在台灣的用戶忽然在日本刷卡、或一個平時都是白天刷卡消費的用戶忽然在凌晨三點刷卡，這些事件都可以當成評分指標(特徵)，提供模型做為預測是否為信用卡詐欺的預測依據。
@@ -54,9 +54,8 @@
   * 缺點: 輸入與輸出變量關係為線性時無法處理分類問題
 
 典型迴歸案例: Boston Housing Data
-
 ** 特例
-監督式學習主要包括分類和回歸，但也包括以下奇特的例子：
+[[id:20221023T101626.420918][監督式學習]]主要包括分類和[[id:6ae7fb7a-0b38-4448-b19f-073d262513f2][迴歸]]，但也包括以下奇特的例子：
 - 序列生成(sequence generation)：給定一張圖，產生一個標題來描述該圖片，有時也可以使用一部份連續的資料進行預測。
 - 語法樹預測(syntax tree prediction)：給定一個句子，以語意的結構為節點，預測並分解成語法樹。
 - 物體偵測(object detection)：給定一張圖片，繪製邊界框來標示圖片內不同的物體。這也可以視為分類問題（給定許多候選邊界框，對每個邊界框的內容進行分類）或并用分類和迴歸技巧，透過向量迴歸預測邊界框。
@@ -72,7 +71,7 @@
   7) Ensembles of Decision Trees
   8) Linear Models: Logistic regression
 
-* 監督式學習基本步驟
+* [[id:20221023T101626.420918][監督式學習]]基本步驟
 1. 準備學習對象的資料
 2. 將資料分為輸入資料（特徵）與輸出資料（標籤、即該組特徵的答案）
 3. 將特徵輸入類神經網路
@@ -80,7 +79,7 @@
 5. 將4.的差異回饋給模型、依此更新模型中的參數
 6. 回到3.
 
-* 監督式學習演算法
+* [[id:20221023T101626.420918][監督式學習]]演算法
 ** K-nearest neighbors (KNN)
 KNN藉由找出與新資料點最相近的 /k/ 個已具有label的資料點，讓這些資料點投票決定新資料點的label。
 - 優點: 能處理更複雜的非線性關係，但仍可被解釋
@@ -98,15 +97,11 @@ KNN藉由找出與新資料點最相近的 /k/ 個已具有label的資料點，�
 使用演算法和已知的label在空間中建構超平面來分類資料
 ** 神經網路
 
-
 * 分類
 ** 最短距離分類器
 #+begin_src python -r :results output :exports both
 import math
 #from statistics import mean
-
-
-
 # importing reduce()
 from functools import reduce
 
@@ -150,7 +145,8 @@ print(ed(groupB, tarx, tary))
 : B
 : 7.851114570556208
 : 6.708203932499369
-** 迴歸預測流程(以波士頓房價預測為例)
+
+* 迴歸預測流程(以波士頓房價預測為例)
 1. Import the required module
 1. Load and configure the Boston housing data set
 1. Chekc the relation between the variable, using pairplot and correlation graph
@@ -447,16 +443,43 @@ graph.render('images/DecisionTree')
 #+ATTR_ORG: :width 500
 #+ATTR_HTML: :width 800
 [[file:images/DecisionTree.png]]
-** bank-loan[fn:2]
+** 課堂作業
+1. 以Pandas模組讀取線上csv[https://letranger.github.io/AI/madfhantr.csv]
+2. 移除有缺失值的記錄
+3. 將YES/NO、Male/Femal等分類值改為0/1值
+3. 依Gender,Married,Dependents,Education,Self_Employed這五個特徵值來決定是否核淮貸款申請
+4. 分別以Gini index, Entropy兩種策略來進行分類，比較效能
+5. 觀察其他特徵值，你有其他的想法可以提高效能嗎？
+
+*** solution :noexport:
 1. Load the data and finish the cleaning process
 
-   #+begin_src python -r :results output :exports both
+#+begin_src python -r :results output :exports both
+import pandas as pd
 #the dataset is available on kaggle too
-train = pd.read_csv('/kaggle/input/bank-loan2/madfhantr.csv')
+train = pd.read_csv('./madfhantr.csv')
 
 #check for missing values
-train.isnull().sum()
-   #+end_src
+print(train.isnull().sum())
+#+end_src
+
+   #+RESULTS:
+   #+begin_example
+   Loan_ID               0
+   Gender               13
+   Married               3
+   Dependents           15
+   Education             0
+   Self_Employed        32
+   ApplicantIncome       0
+   CoapplicantIncome     0
+   LoanAmount           22
+   Loan_Amount_Term     14
+   Credit_History       50
+   Property_Area         0
+   Loan_Status           0
+   dtype: int64
+   #+end_example
 
    There are two possible ways to either fill the null values with some value or drop all the missing values(I dropped all the missing values).
 
