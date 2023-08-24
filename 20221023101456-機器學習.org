@@ -35,6 +35,154 @@
 [[file:images/DifferentLearningTypes.png]]
 ** 何謂機器學習[李宏毅]
 機器學習就是從一組function中找出一個最合適的function的過程。
+* 機器是如何學習的
+** 傳統程式設計
+假設有一個用來描述直線的函數: $x=Wx+B$，直線上的每個點都可以用 $x$ 值乘以$W$(權重值)再加上$B$(偏差值)，得到相應的 $y$ 值。
+現在假設直線上有兩個點，分別是 $x=w, y=3$ 和 $x=3, y=5$，要如何計算出連接這兩個點的直線所相應的 $W$ 值與 $B$ 值呢？
+#+begin_src python -r -n :results output :exports both
+def get_slope(p1, p2):
+    W = (p2.y - p1.y) / (p2.x - p1.x)
+    return W
+
+def get_bias(p1, W):
+    B = p1.y - (W*p1.x)
+    return B
+
+def get_y(x, W, B):
+    y = W*x + B
+
+from dataclasses import dataclass
+@dataclass
+class Point:
+    x: float
+    y: float
+
+p1 = Point(2, 3)
+p2 = Point(3, 5)
+
+W = get_slope(p1, p2)
+B = get_bias(p1, W)
+
+print("Slope:", W)
+print("Bias:", B)
+#+end_src
+
+#+RESULTS:
+: Slope: 2.0
+: Bias: -1.0
+以上是傳統的程式設計模式
+#+begin_src python -r -n :results output :exports both
+import matplotlib.pyplot as plt
+import numpy as np
+
+x = [2, 3]
+y = [3, 5]
+plt.plot(x, y, '-*')
+plt.xlim(0, 5)
+plt.ylim(0, 7)
+plt.text(2.1, 3-0.1, '(2, 3)')
+plt.text(3.1, 5-0.1, '(3, 5)')
+plt.savefig('images/TrandPlot.png', dpi=300)
+
+#+end_src
+
+#+RESULTS:
+
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/TrandPlot.png]]
+
+#+BEGIN_SRC ditaa :file images/TradProg.png  :cmdline -r -s 0.9
+              +-----------------+
+     Rules    |                 |
+   ---------->|   Traditional   |   Answers
+     Data     |   Programming   +------------>
+   ---------->|      cBLK       |
+              +-----------------+
+#+END_SRC
+#+RESULTS:
+[[file:images/TradProg.png]]
+** 機器學習的策略
+如果要以機器學習的方式來找出前例中的 $W$ 和$B$ 值，其策略大致如下：
+1. 第一步：猜答案
+   一開始我們並不知道正確答案是什麼，所以用猜的：以隨機亂數來做為 $W$ 和$B$ 值，例如：$y=10x+5$。
+2. 第二步：評估猜測答案的品質
+   上個步驟中所猜的 $W$ 和$B$ 值夠不夠準確呢？我們可以用$y=10x+5$ 這個函數來計算出每個 $x$ 值相對應的 $y$ 值，再和 *正確* 的 $y$ 值比較，看看還差多少。這個比較的方式稱為「損失」(loss)或「誤差」(error)。
+3. 第三步：對所猜測的策略進行最佳化調整
+   依據上一步驟猜測結果的品質(loss或error)做出更好的猜測，這個步驟稱為「最佳化」(optimization)。微積分可以用「梯度遞減」(gradient descent)的方式來進行。
+
+整個流程大致如下：
+#+BEGIN_SRC ditaa :file images/MLProg.png  :cmdline -r -s 0.9
+   +-----------------+    +-----------------------------+    +-----------------+
+   |                 |    |                             |    |                 |
+   | 1. Guess Answer |--->| 2. Evaluate precision(loss) |--->| 3. Optimization |
+   |                 |    |                             |    |                 |
+   +-----------------+    +-----------------------------+    +-----------------+
+            ^                                                          |
+            |                                                          |
+            +----------------------------------------------------------+
+#+END_SRC
+#+RESULTS:
+[[file:images/MLProg.png]]
+** 實作1
+如果多加入一個線上的點(4, 7)，以三點當成標準答案來進行預測，其實作的程式碼為：
+#+begin_src python -r -n :results output :exports both
+import tensorflow as tf
+import numpy as np
+from tensorflow.keras import Sequential
+from tensorflow.keras.layers import Dense
+
+l0 = Dense(units=1, input_shape=[1])
+model = Sequential([l0])
+model.compile(optimizer='sgd', loss='mean_squared_error')
+
+xs = np.array([2.0, 3.0, 4.0], dtype=float)
+ys = np.array([3.0, 5.0, 7.0], dtype=float)
+
+model.fit(xs, ys, epochs=500, verbose=0)
+
+print(model.predict([10.0]))
+print("Here is what I learned: {}".format(l0.get_weights()))
+#+end_src
+
+#+RESULTS:
+: [[17.07221]]
+: Here is what I learned: [array([[1.7164488]], dtype=float32), array([-0.09227743], dtype=float32)]
+
+預測結果為(1.7164488, -0.9227743)，與正確答案(2, -1)相近。
+
+** 實作2
+如果再多加入兩個線上的點(4, 7)，以三點當成標準答案來進行預測，其實作的程式碼為：
+#+begin_src python -r -n :results output :exports both
+import tensorflow as tf
+import numpy as np
+from tensorflow.keras import Sequential
+from tensorflow.keras.layers import Dense
+
+l0 = Dense(units=1, input_shape=[1])
+model = Sequential([l0])
+model.compile(optimizer='sgd', loss='mean_squared_error')
+
+xs = np.array([-1.0, 0.0, 1.0, 2.0, 3.0, 4.0], dtype=float)
+ys = np.array([-3.0, -1.0, 1.0, 3.0, 5.0, 7.0], dtype=float)
+
+model.fit(xs, ys, epochs=500, verbose=0)
+
+print(model.predict([10.0]))
+print("Here is what I learned: {}".format(l0.get_weights()))
+#+end_src
+
+#+RESULTS:
+: [[18.979391]]
+: Here is what I learned: [array([[1.9970131]], dtype=float32), array([-0.99074], dtype=float32)]
+
+預測結果為(1.9970131, -0.99074)，與正確答案(2, -1)已經十分相近。
+
+** 實作2程式解說
 
 * 機器學習概念釐清
 ** Machine Learning v.s. Statistics
