@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-05-25 Thu 18:59 -->
+<!-- 2023-10-31 Tue 12:51 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>循環神經網路</title>
@@ -223,25 +223,25 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgd93d094">1. 遞迴類神經網路(Recurrent Neural Networks, RNNs)</a></li>
-<li><a href="#org1648a02">2. RNN: Recurrent Neural Network，Recursive neural networks。</a>
+<li><a href="#org15fc55f">1. 遞迴類神經網路(Recurrent Neural Networks, RNNs)</a></li>
+<li><a href="#orgd518892">2. RNN: Recurrent Neural Network，Recursive neural networks。</a>
 <ul>
-<li><a href="#org6bdb443">2.1. LSTM:</a></li>
-<li><a href="#org7867e49">2.2. Bi-directional RNN:</a></li>
+<li><a href="#org05ae4c0">2.1. LSTM:</a></li>
+<li><a href="#org188866a">2.2. Bi-directional RNN:</a></li>
 </ul>
 </li>
-<li><a href="#orge4e92fc">3. RNN</a>
+<li><a href="#orge657be4">3. RNN</a>
 <ul>
-<li><a href="#orgb795444">3.1. RNN實作</a></li>
-<li><a href="#orgebe9e99">3.2. LSTM</a></li>
+<li><a href="#org27f83fb">3.1. RNN實作</a></li>
+<li><a href="#org2ff784a">3.2. LSTM</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orgd93d094" class="outline-2">
-<h2 id="orgd93d094"><span class="section-number-2">1.</span> 遞迴類神經網路(Recurrent Neural Networks, RNNs)</h2>
+<div id="outline-container-org15fc55f" class="outline-2">
+<h2 id="org15fc55f"><span class="section-number-2">1.</span> 遞迴類神經網路(Recurrent Neural Networks, RNNs)</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 RNN 能夠處理「任意個數的輸入序列」，所以十分適合用在「語言塑模」或「語音辨識」。理論上，RNN 可以用來處理任何問題，因為它已被證明具有「圖靈完備性」(Turing-Complete)。以遞迴關係的函數表示 RNN 可將其視為 \(S_t=f(S_{t-1},X_t)\)，這裡的\(S_t\)表示第\(t\)步的狀態，它是由函數\(f\)對上一步(\(t-1\))的狀態(即\(S_{t-1}\))與這一步的輸入\(X_t\)所計算出來的結果，這裡的函數\(f\)可以是任何可微分的函數，如\(S_t=tang(S_{t-1}*W+X_t*U)\)。<br />
@@ -249,10 +249,10 @@ RNN 能夠處理「任意個數的輸入序列」，所以十分適合用在「�
 </p>
 
 <p>
-語言塑模的目標是計算「字的序列」的機率，這在「語音辨識」、OCR、「機器翻譯」、「拼字校正」上都非常重要。以「字」為基準的「語言模型」是由「字的序列」來定義機率分佈，給定一個長度為\(m\)的字序列，它會為整個字序列給定一個機率\(P(w_1,...,w_m)\)，其「聯合機率」(joint probability)可以由公式\eqref{org5476c79}中的連鎖規則(chain rule)計算出來：<br />
+語言塑模的目標是計算「字的序列」的機率，這在「語音辨識」、OCR、「機器翻譯」、「拼字校正」上都非常重要。以「字」為基準的「語言模型」是由「字的序列」來定義機率分佈，給定一個長度為\(m\)的字序列，它會為整個字序列給定一個機率\(P(w_1,...,w_m)\)，其「聯合機率」(joint probability)可以由公式\eqref{orgfee7d93}中的連鎖規則(chain rule)計算出來：<br />
 </p>
 \begin{equation}
-\label{org5476c79}
+\label{orgfee7d93}
 P(w_1,...,w_m)=P(w_1)P(w_2|w_1)P(w3|w_2,w_1)...P(w_m|w_1,...,w_{m-1})
 \end{equation}
 
@@ -272,8 +272,8 @@ P(w_1,...,w_m)=P(w_1)P(w_2|w_1)P(w3|w_2,w_1)...P(w_m|w_1,...,w_{m-1})
 </div>
 </div>
 
-<div id="outline-container-org1648a02" class="outline-2">
-<h2 id="org1648a02"><span class="section-number-2">2.</span> RNN: Recurrent Neural Network，Recursive neural networks。</h2>
+<div id="outline-container-orgd518892" class="outline-2">
+<h2 id="orgd518892"><span class="section-number-2">2.</span> RNN: Recurrent Neural Network，Recursive neural networks。</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 雖然很多時候我們把這兩種網絡都叫做RNN，但事實上這兩種網路的結構事實上是不同的。而我們常常把兩個網絡放在一起的原因是：它們都可以處理有序列的問題，比如時間序列等。<br />
@@ -281,22 +281,22 @@ P(w_1,...,w_m)=P(w_1)P(w_2|w_1)P(w3|w_2,w_1)...P(w_m|w_1,...,w_{m-1})
 </p>
 </div>
 
-<div id="outline-container-org6bdb443" class="outline-3">
-<h3 id="org6bdb443"><span class="section-number-3">2.1.</span> LSTM:</h3>
+<div id="outline-container-org05ae4c0" class="outline-3">
+<h3 id="org05ae4c0"><span class="section-number-3">2.1.</span> LSTM:</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
 為了加強這種RNN的「記憶能力」，人們開發各種各樣的變形體，如非常著名的Long Short-term Memory(LSTM)，用於解決「長期及遠距離的依賴關係」。如下圖所示，左邊的小圖是最簡單版本的循環網絡，而右邊是人們為了增強記憶能力而開發的LSTM。<br />
 </p>
 
-<div id="org6ddd83d" class="figure">
+<div id="org0e52e79" class="figure">
 <p><img src="images/3r5o0000r126proo7o8q.jpg" alt="3r5o0000r126proo7o8q.jpg" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 1: </span>LSTM</p>
 </div>
 </div>
 </div>
-<div id="outline-container-org7867e49" class="outline-3">
-<h3 id="org7867e49"><span class="section-number-3">2.2.</span> Bi-directional RNN:</h3>
+<div id="outline-container-org188866a" class="outline-3">
+<h3 id="org188866a"><span class="section-number-3">2.2.</span> Bi-directional RNN:</h3>
 <div class="outline-text-3" id="text-2-2">
 <p>
 另一個循環網絡的變種 - 雙向循環網絡(Bi-directional RNN)也是現階段自然語言處理和語音分析中的重要模型。開發雙向循環網絡的原因是語言/語音的構成取決於上下文，即「現在」依託於「過去」和「未來」。單向的循環網絡僅著重於從「過去」推出「現在」，而無法對「未來」的依賴性有效的建模。<br />
@@ -305,8 +305,8 @@ P(w_1,...,w_m)=P(w_1)P(w_2|w_1)P(w3|w_2,w_1)...P(w_m|w_1,...,w_{m-1})
 </div>
 </div>
 
-<div id="outline-container-orge4e92fc" class="outline-2">
-<h2 id="orge4e92fc"><span class="section-number-2">3.</span> RNN</h2>
+<div id="outline-container-orge657be4" class="outline-2">
+<h2 id="orge657be4"><span class="section-number-2">3.</span> RNN</h2>
 <div class="outline-text-2" id="text-3">
 <p>
 RNN 是一種有「記憶力」的神經網路，其最為人所知的形式如下：<br />
@@ -359,8 +359,8 @@ RNN 是一種有「記憶力」的神經網路，其最為人所知的形式如�
 </p>
 </div>
 
-<div id="outline-container-orgb795444" class="outline-3">
-<h3 id="orgb795444"><span class="section-number-3">3.1.</span> RNN實作</h3>
+<div id="outline-container-org27f83fb" class="outline-3">
+<h3 id="org27f83fb"><span class="section-number-3">3.1.</span> RNN實作</h3>
 <div class="outline-text-3" id="text-3-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">state_t</span> = <span style="color: #da8548; font-weight: bold;">0</span>
@@ -392,15 +392,15 @@ RNN 是一種有「記憶力」的神經網路，其最為人所知的形式如�
 </pre>
 </div>
 
-<div id="org25227a6" class="figure">
+<div id="orge820808" class="figure">
 <p><img src="images/nn-layers.jpg" alt="nn-layers.jpg" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 2: </span>RNN示例</p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgebe9e99" class="outline-3">
-<h3 id="orgebe9e99"><span class="section-number-3">3.2.</span> LSTM</h3>
+<div id="outline-container-org2ff784a" class="outline-3">
+<h3 id="org2ff784a"><span class="section-number-3">3.2.</span> LSTM</h3>
 <div class="outline-text-3" id="text-3-2">
 <p>
 如下的簡易RNN<br />
@@ -441,7 +441,7 @@ RNN 是一種有「記憶力」的神經網路，其最為人所知的形式如�
 </p>
 
 
-<div id="org24dfdba" class="figure">
+<div id="orge690e50" class="figure">
 <p><img src="images/lstm-cell-detailed.png" alt="lstm-cell-detailed.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 3: </span>LSTM 細胞頂端那條 cell state 正代表著細胞記憶的轉換過程</p>
@@ -455,7 +455,7 @@ RNN 是一種有「記憶力」的神經網路，其最為人所知的形式如�
 LSTM 可以把任意時間點的記憶狀態（包裹）放上該輸送帶，然後在未來的某個時間點將其原封不動地取下來使用。<br />
 </p>
 
-<div id="orgfcd024b" class="figure">
+<div id="org70c066f" class="figure">
 <p><img src="images/accumulation-conveyor-101.jpg" alt="accumulation-conveyor-101.jpg" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 4: </span>Caption</p>
@@ -474,7 +474,7 @@ LSTM 可以把任意時間點的記憶狀態（包裹）放上該輸送帶，然
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2023-05-25 Thu 18:59</p>
+<p class="date">Created: 2023-10-31 Tue 12:51</p>
 </div>
 </body>
 </html>
