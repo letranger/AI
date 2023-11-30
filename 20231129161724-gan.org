@@ -1,0 +1,80 @@
+:PROPERTIES:
+:ID:       47974f82-aec3-45ba-8222-303751f2f103
+:END:
+#+title: 生成對抗網路
+
+#+begin_export html
+<a href="https://hits.sh/letranger.github.io/AI-course/GPU.html/"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI-course/GPU.html.svg"/></a>
+#+end_export
+
+* 生成模型
+- 生成模型是以 *機率模型* 的方式來描述資料集的 *產生方式* 。對這個模型抽樣就可以生成新的資料。
+- 例如：建置一個包含了許多馬匹的影像資料庫，我們想建一個能生成 *未出現過的、逼真的馬* 的模型。
+- 首先需要一個有許多馬的資料集，裡面有許多實例(instance)，每個資枓點為一個觀察值(obwervation)
+- 每個觀察值都包含了許多特徵（對於圖片來說就是像素值），生成模型的目標就是建置個能生成多組新特徵的模型，讓這個新特徵看起來和原始資料很類似。
+- 生成模型必須是機率型(probabilistic)而非決定型(deterministic)，如果模型是將所有圖片的像素值取平均，則每次產生的結果就都會想同，這就不是生成，模型要包含一個隨機元素來影響其所生成的個別樣本。
+- 可以想像有一個未知的機率分配來決定為什麼有些影像比較容易在訓練集資料中找到，有些則否。我們的目標是建置一個模型去盡可能模仿這樣的機率分配，並從中抽樣來生成全新且具鑑別度的觀察值。
+- 很難當比賽題目，因為做出來的都是假的，不易評分
+
+** 生成模型與鑑別模型
+生成模型的訓練資料中有許多馬的照片，透過觀察所有照片的特徵值（像素），我們生成一個能描述這些特徵值的機率分配，並用這個機率分配來生成一張全新的圖片。生成模型通常是搭配無標籤資料集學會一個 *可將輸入映射到特定輸出的映射函數* 。
+
+#+CAPTION: 生成模型處理流程
+#+LABEL:fig:GAN-flow-1
+#+name: fig:GAN-flow-1
+#+ATTR_LATEX: :width 500
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/GAN-flow-1.jpg]]
+對鑑別模型來說，訓練資料中的每個觀察值（instance）都有對應的label（如，這張是否為梵谷的畫），如此這個模型就能學習如何鑑別這兩個群組，因此，我們可以將之視為監督式學習。
+#+CAPTION: 鑑別模型處理流程
+#+LABEL:fig:GAN-flow-2
+#+name: fig:GAN-flow-2
+#+ATTR_LATEX: :width 500
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/GAN-flow-1.jpg]]
+
+鑑別模型的估計值為 $p(y|x)$，即，觀察到 $x$ 時其標籤為 $y$ 的機率，鑑別模型會試著去估計出某個觀測值 $x$ 屬於類別 $y$ 的機率。
+*** 生成模型的應用
+- NVIDIA的StyleGAN: 可以產生超逼真的人臉影像
+- OpenAI的GPT-2語言模型: 指定一小段前言，完成一整段文字。
+*** 生成學習與強化學習
+強化學習可以訓練一台機器在某個地形上行走，一般的作法是建立許多地形的電腦模擬環境，再訓練代理人(agent)去嚐試各種策略。如果能透過生成模型來模擬生成環境將會更有效率。
+** 生成模型的框架: 兩維度的生成模型遊戲
+
+* Keras GAN
+
+https://github.com/eriklindernoren/Keras-GAN
+
+* 應用領域
+- PairedCycleGAN
+- TwinGAN
+- Paired
+- GigGANs
+- Image-to-Text
+- Text-to-Image
+- 繪圖
+- 書寫
+- 作曲
+- 遊戲
+
+* DCGANs
+1. 使用 strided convolutions 取代 pooling layers
+2. 移除全連接層 fully
+
+* DeepLearning 的 convolution 動畫
+- [[https://github.com/vdumoulin/conv_arithmetic][A technical report on convolution arithmetic in the context of deep learning]]
+
+* 比賽只有 CNN v.s. RNN
+
+* ideas
+- 文字 -> POP
+- 有一種應用是將照片中的衣服移除，那，如何判別是真的沒穿衣服還是被 GAN 產生的
+- ZARA：把衣服套在人身上
+- 如何 judge 一張圖是生成的還是真實的
+- Pix2pix: 黑白照片轉彩色、畫輸廓轉照片(圖片)(Paired)、給照片轉 3D
+- 把同一張照片轉成各種畫家的畫風
+- Explaining and Harnessing Adverssaral Examples: Goodfellow
+  把一張圖片特意加上噪點，結果使的 AI 的判斷確認為其他圖
+  後果：可能影響自駕車的安全.....

@@ -1,0 +1,197 @@
+:PROPERTIES:
+:ID:       67d42bc7-eade-407d-b8c7-a197caa94a68
+:END:
+#+title: 邊緣運算
+
+* OpenVINO
+OpenVINO 在電腦上安裝路徑會有兩種，其中使用者目錄每台電腦可能不同，請自行留意：
+1. intel openvino程式安裝路徑，以下簡稱<INSTALL_DIR>：
+   C:\Program Files (x86)\Intel\openvino_2022.1.0.643
+2. 在使用者目錄下的自訂資料夾路徑<SOURCE_DIR>：
+   C:\Users\User\openvino
+** 軟體安裝與環境建置
+*** Install Anaconda
+在prompt視窗依序輸入下列指令，建立名為ov_2022_1的虛擬環境：
+#+begin_src shell -r -n :results output :exports both
+conda create -n ov_2022_1 python=3.8
+conda activate ov_2022_1
+conda install notebook
+#+end_src
+*** Install Git
+A collection of ready-to-run Jupyter notebooks for learning and experimenting with the OpenVINO™ Toolkit
+在prompt視窗輸入下列指令：
+#+begin_src shell -r -n :results output :exports both
+conda install -c anaconda git
+#+end_src
+*** 下載安裝OpenVINO Runtime軟體
+到Intel Distribution of OpenVINO™ Toolkit 官網，下載OpenVINO Runtime軟體，並完成安裝。有關Windows 10的環境設定 及OpenVINO Runtime 原理介紹：Performing inference with OpenVINO Runtime
+*** Install OpenVINO Development Tools
+Intel Distribution of OpenVINO™ Toolkit 官網
+Set Up and Update PIP to the Highest Version¶
+在prompt視窗輸入下列指令：
+#+begin_src shell -r -n :results output :exports both
+conda upgrade pip
+conda update -n base -c defaults conda
+pip install openvino-dev[tensorflow2,onnx,pytorch]==2022.1
+#+end_src
+*** 安裝OpenCV
+在<INSTALL_DIR>\extras\scripts\目錄下，找到download_opencv.ps1
+right-click the script and select Run with PowerShell
+** Git clone Open Model Zoo
+*** 下載Open Model Zoo
+1. 先在使用者目錄下新增openvino資料夾
+2. 在prompt視窗切換目錄到openvino資料夾，輸入下列指令：
+   cd C:\Users\User\openvino
+   法一：【Git clone】
+   在prompt視窗切換目錄到openvino資料夾，確認路徑在openvino資料夾，再輸入下列指令：
+   #+begin_src shell -r -n :results output :exports both
+   git clone https://github.com/openvinotoolkit/open_model_zoo.git
+   #+end_src
+   法二：【單獨下載】
+   https://github.com/openvinotoolkit/open_model_zoo/archive/refs/heads/releases/2022/1.zip
+   把下載的open_model_zoo-releases-2022-1解壓縮到<SOURCE_DIR>，再更改檔名為open_model_zoo
+** Open Model Zoo packages requirements
+*** Install the Packages
+1. 在prompt視窗切換目錄到openvino資料夾，輸入下列指令：
+   cd open_model_zoo\demos
+2. 在prompt視窗安裝open_model_zoo底下各個專案有關相依套件，輸入下列指令：
+   pip install --upgrade pip==22.1.2
+   pip install -r requirements.txt
+** 範例1：object_detection專案
+以下使用2種不同方式，演示object_detection專案
+*** 使用本機端open_model_zoo資料夾內的object_detection_demo.py範例進行物件辨識
+**** 瀏覽操作須知
+README.md How it works, Required model, Command line options
+每個專案可能用到不同的套件、指令參數也可能有差異
+**** 切換目錄
+在prompt視窗切換目錄到open_model_zoo資料夾，輸入下列指令：
+cd object_detection_demo\python
+**** 使用外部媒體(Optional)
+1. Download a Video or Still Photo as Media
+2. 將下載的資料移到與python同一路徑底下
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/openvino-1.png]]
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/openvino-2.png]]
+**** 設定Openvino環境變數
+輸入指令：
+"c:\Program Files (x86)\Intel\openvino_2022.1.0.643\setupvars.bat"
+**** 設定環境變數
+記得修改使用者路徑名稱
+set PYTHONPATH=%PYTHONPATH%;C:\Users\User\openvino\open_model_zoo\demos\common\python
+**** 更新wrapt套件
+在prompt視窗輸入以下指令
+pip uninstall wrapt
+pip install wrapt
+**** 測試程式
+python object_detection_demo.py
+**** 下載預訓練模型
+omz_downloader --name ssd_mobilenet_v1_coco
+**** 轉換預訓練模型
+omz_converter --name ssd_mobilenet_v1_coco
+**** 執行object_detection_demo的python程式
+使用筆電內建鏡頭作為資料輸入來源
+python object_detection_demo.py –m public\ssd_mobilenet_v1_coco\FP16\ssd_mobilenet_v1_coco.xml –at ssd –i 0
+**** 預覽效果
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/openvino-3.png]]
+*** 使用本機端openvino_notebooks資料夾內的401-object-detection.ipynb範例，在Jupyter Lab中進行物件辨識
+**** 下載OpenVINO tutorials Github repo
+觀看OpenVINO notebooks with Anaconda Installation Guide
+在prompt視窗切換目錄到openvino資料夾，輸入下列指令：
+git clone --depth=1 https://github.com/openvinotoolkit/openvino_notebooks.git
+在prompt視窗輸入下列指令：
+cd openvino_notebooks
+**** Launch the Notebooks
+在prompt視窗確認目錄是openvino_notebooks資料夾，輸入下列指令：
+conda install -c conda-forge jupyterlab
+jupyter lab notebooks
+**** 瀏覽操作須知
+Live Object Detection with OpenVINO
+**** 預覽效果
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/openvino-4.png]]
+
+** 範例2：Human Pose Estimation專案
+*** 瀏覽操作須知
+Human Pose Estimation Python* Demo
+*** 切換目錄
+cd <SOURCE_DIR>\open_model_zoo\demos\human_pose_estimation_demo\python
+*** 設定Openvino環境變數
+輸入指令：
+"c:\Program Files (x86)\Intel\openvino_2022.1.0.643\setupvars.bat"
+*** 設定環境變數
+set PYTHONPATH=%PYTHONPATH%;C:\Users\User\openvino\open_model_zoo\demos\common\python
+*** 下載模型
+下載 Intel human-pose-estimation-0005預訓練模型
+omz_downloader --name human-pose-estimation-0005
+*** 執行human_pose_estimation_demo的python程式
+python human_pose_estimation_demo.py –m intel\human-pose-estimation-0005\FP16\human-pose-estimation-0005.xml –at ae –i 0
+** 範例3：classification專案
+*** 瀏覽操作須知
+Classification Python* Demo
+*** 切換目錄
+cd <SOURCE_DIR>\open_model_zoo\demos\classification_demo\python
+*** 設定Openvino環境變數
+輸入指令：
+"c:\Program Files (x86)\Intel\openvino_2022.1.0.643\setupvars.bat"
+*** 設定環境變數
+set PYTHONPATH=%PYTHONPATH%;C:\Users\User\openvino\open_model_zoo\demos\common\python
+*** 下載預訓練模型
+omz_downloader --name mobilenet-v2-pytorch
+*** 轉換預訓練模型
+omz_converter --name mobilenet-v2-pytorch
+*** 找label檔
+在電腦中找到模型分類列表檔：imagenet_2012.txt
+路徑 C:\Users\User\openvino\open_model_zoo\data\dataset_classes
+*** 執行classification_demo的python程式
+python classification_demo.py -m C:\Users\User\openvino\open_model_zoo\demos\classification_demo\python\public\mobilenet-v2-pytorch\FP16\mobilenet-v2-pytorch.xml -i 0 --labels C:\Users\User\openvino\open_model_zoo\data\dataset_classes\imagenet_2012.txt
+*** 預覽效果
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/openvino-5.png]]
+
+** 如何開始進行我的AI專題?
+*** 使用Intel®類神經電腦棒2
+若需要用 Intel®類神經電腦棒2 (NCS2)建立 Intel®深度學習部署工具套件範例與示範應用程式, 在電腦執行OpenVINO Development Tools 必須有 Visual Studio c + + Microsoft Visual Studio，請見官網安裝說明
+*** 在邊緣裝置執行推論
+使用 Intel DevCloud，將AI推論應用程式放到實體邊緣裝置進行運算
+參考資料1：[[https://makerpro.cc/2021/07/intel-devcloud-let-you-try-artificial-intelligence-before-buying-it/][【先試再上】Intel DevCloud助你雲端驗證AI佈署，免費！]]
+參考資料2：[[https://notebooks.githubusercontent.com/view/ipynb?browser=chrome&color_mode=auto&commit=1cb5ba35b9ecb45a8777e9d06c4b51dada99b0cf&device=unknown&enc_url=68747470733a2f2f7261772e67697468756275736572636f6e74656e742e636f6d2f46656c69784c696e53592f446576436c6f75645f48616e64735f4f6e2f316362356261333562396563623435613837373765396430366334623531646164613939623063662f446576436c6f75645f48616e64734f6e2e6970796e62&logged_in=false&nwo=FelixLinSY%2FDevCloud_Hands_On&path=DevCloud_HandsOn.ipynb&platform=android&repository_id=400180804&repository_type=Repository&version=99][在DevCloud將AI推論應用程式放到實體邊緣裝置進行運算]]
+參考資料3：[[https://github.com/OmniXRI/Colab_DevCloud_OpenVINO_Samples?fbclid=IwAR2x4vpTSUI4v5cyIrAhPENEn6E1fW2xWmdpZuoJSbLzngZ9lCQnGkviIAQ][Colab_DevCloud_OpenVINO_Samples]]
+*** Teachable Machine與OpenVINO
+將資料收集等複雜事情簡單化，短時間內即可完成應用雛形
+課堂指定作業：
+使用Teachable Machine與OpenVINO(2021版本限定)，製作五個手勢分類的AI視覺辨識專題
+參閱文章 OpenVINO結合Teachable Machine蹦出新滋味
+
+【參考資料】
+1. [[https://drive.google.com/file/d/1T-qylci776q8jVvMZRFUnY8DfiqZqKnJ/view?usp=sharing][M10_OpenVINO 快速上手 人工智慧教育高中生營隊 (暑假)(2022 新版)]]
+2. [[phttps://makerpro.cc/2022/06/learn-edge-ai-with-openvino-notebooks/][邊緣AI的最佳學習路徑 – OpenVINO Notebooks]]
+3. [[https://www.youtube.com/watch?v=dS93WOrwuQw&ab_channel=%E5%8F%8B%E5%B0%9A%E5%8F%8B%E5%B0%9A][Intel OpenVINO toolkit 好在哪裡？企業主管現身說法]]
+4. [[https://www.youtube.com/watch?v=ccXl9KY005M&ab_channel=QNAPSystems%2CInc.][使用 Intel® OpenVINO™ 工具包｜ OpenVINO™ 工作流整合工具解析]]
+5. [[https://docs.openvino.ai/latest/openvino_docs_MO_DG_Deep_Learning_Model_Optimizer_DevGuide.html#when_to_reverse_input_channels][Convert model with Model Optimizer]]

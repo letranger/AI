@@ -1,0 +1,85 @@
+:PROPERTIES:
+:ID:       0a62c9d1-593a-466a-9999-15af36fff987
+:END:
+#+title: GPU
+
+* Tensorflow use GPU
+
+#+begin_src python -r -n :results output :exports both
+import tensorflow as tf
+import time
+def time_matmul(x):
+    start = time.time()
+    for loop in range(10):
+        tf.matmul(x, x)
+        result = time.time()-start
+        print("10 loops: {:0.2f}ms".format(1000*result))
+
+# Force execution on CPU print("On CPU:")
+with tf.device("CPU:0"):
+    print("On CPU:")
+    x = tf.random.uniform([1000, 1000])
+    assert x.device.endswith("CPU:0")
+    time_matmul(x)
+
+# Force execution on GPU #0 if available
+if tf.test.is_gpu_available():
+    print("On GPU:")
+    with tf.device("GPU:0"): # Or GPU:1 for the 2nd GPU, GPU:2 for the 3rd etc.
+        x = tf.random.uniform([1000, 1000])
+        assert x.device.endswith("GPU:0")
+        time_matmul(x)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+On CPU:
+10 loops: 2.84ms
+10 loops: 5.41ms
+10 loops: 7.89ms
+10 loops: 10.24ms
+10 loops: 12.60ms
+10 loops: 15.13ms
+10 loops: 17.50ms
+10 loops: 19.84ms
+10 loops: 22.37ms
+10 loops: 24.70ms
+On GPU:
+10 loops: 0.12ms
+10 loops: 0.25ms
+10 loops: 0.35ms
+10 loops: 0.46ms
+10 loops: 0.56ms
+10 loops: 0.66ms
+10 loops: 0.76ms
+10 loops: 0.86ms
+10 loops: 0.96ms
+10 loops: 1.06ms
+#+end_example
+#+BEGIN_EXAMPLE
+  *-display
+       description: VGA compatible controller
+       product: TU104GL [Quadro RTX 5000]
+       vendor: NVIDIA Corporation
+       physical id: 0
+       bus info: pci@0000:37:00.0
+       version: a1
+       width: 64 bits
+       clock: 33MHz
+       capabilities: pm msi pciexpress vga_controller bus_master cap_list rom
+       configuration: driver=nvidia latency=0
+       resources: iomemory:cbf0-cbef iomemory:cbf0-cbef irq:137 memory:e3000000-e3ffffff memory:cbfe0000000-cbfefffffff memory:cbff0000000-cbff1ffffff ioport:6000(size=128) memory:e4080000-e40fffff
+  *-display
+       description: VGA compatible controller
+       product: TU104GL [Quadro RTX 5000]
+       vendor: NVIDIA Corporation
+       physical id: 0
+       bus info: pci@0000:86:00.0
+       version: a1
+       width: 64 bits
+       clock: 33MHz
+       capabilities: pm msi pciexpress vga_controller bus_master cap_list rom
+       configuration: driver=nvidia latency=0
+       resources: iomemory:d7f0-d7ef iomemory:d7f0-d7ef irq:138 memory:f0000000-f0ffffff memory:d7fe0000000-d7fefffffff memory:d7ff0000000-d7ff1ffffff ioport:a000(size=128) memory:f1080000-f10fffff
+
+#+END_EXAMPLE
