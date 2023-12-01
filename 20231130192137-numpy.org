@@ -30,7 +30,7 @@ find -E data -type f -iregex ".*($(cat file-1.org | grep -i ':id:' | perl -pe 's
 - Numpy主要用於資料處理上。Numpy 底層以 C 和 Fortran 語言實作，所以能快速操作多重維度的陣列。[fn:1]
 - 當 Python 處理龐大資料時，其原生 list 效能表現並不理想（但可以動態存異質資料），而 Numpy 具備平行處理的能力，可以將操作動作一次套用在大型陣列上。
 - Python 多數重量級的資料科學相關套件（例如：Pandas、SciPy、Scikit-learn 等）都幾乎是奠基在 Numpy 的基礎上。因此學會 Numpy 對於往後學習其他資料科學相關套件打好堅實的基礎。
-- NumPy 的前身 Numeric 最早是由 Jim Hugunin 與其它協作者共同開發，2005 年，Travis Oliphant 在 Numeric 中結合了另一個同性質的程式庫 Numarray 的特色，並加入了其它擴充功能而開發了 NumPy。NumPy 為開放原始碼並且由許多協作者共同維護開發。[fn:3]
+- NumPy 的前身 Numeric 最早是由 Jim Hugunin 與其它協作者共同開發，2005 年，Travis Oliphant 在 Numeric 中結合了另一個同性質的程式庫 Numarray 的特色，並加入了其它擴充功能而開發了 NumPy。NumPy 為開放原始碼並且由許多協作者共同維護開發。[fn:2]
 - 延伸閱讀: [[https://hsinchengchao.medium.com/%E7%82%BA%E4%BB%80%E9%BA%BC%E8%A6%81%E7%94%A8-numpy-c829e0049977][為什麼要用 Numpy？]]
 
 * 安裝模組
@@ -64,7 +64,7 @@ import numpy as np
 ** NDArray
 - Numpy 中的多維資料型別稱為 ndarray
 - Numpy 的重點在於陣列的操作，其所有功能特色都建築在同質且多重維度的 ndarray（N-dimensional array）上。
-- ndarray 的關鍵屬性是維度（ndim）、形狀（shape）和數值類型（dtype）。 一般我們稱一維陣列為 vector 而二維陣列為 matrix[fn:4]。
+- ndarray 的關鍵屬性是維度（ndim）、形狀（shape）和數值類型（dtype）。 一般我們稱一維陣列為 vector 而二維陣列為 matrix[fn:3]。
 
 ** 建立ndarray
 一開始我們會引入 numpy 模組，透過傳入 list 到 numpy.array() 創建陣列。
@@ -73,7 +73,7 @@ import numpy as np
   二維時 axis 0為y軸
 - [[https://numpy.org/doc/stable/reference/routines.array-creation.html#][NumPy官網]]
 - Numpy 的重點在於陣列的操作，其所有功能特色都建築在同質且多重維度的 ndarray（N-dimensional array）上。
-- ndarray 的關鍵屬性是維度（ndim）、形狀（shape）和數值類型（dtype）。 一般我們稱一維陣列為 vector 而二維陣列為 matrix[fn:4]。
+- ndarray 的關鍵屬性是維度（ndim）、形狀（shape）和數值類型（dtype）。 一般我們稱一維陣列為 vector 而二維陣列為 matrix[fn:3]。
 - axis 0, axis 1, axis 2:
   一維時 axis 0為x軸
   二維時 axis 0為y軸
@@ -425,7 +425,7 @@ print(ac.T)
 :  [15]
 :  [16]]
 *** 索引(Indexing)、切片(Slicing)
-索引(Indexing)的用途不外乎就是為了要從陣列和矩陣中取值，但除此之外有很多種功能！可以取出連續區間，還可以間隔取值！[fn:5]
+索引(Indexing)的用途不外乎就是為了要從陣列和矩陣中取值，但除此之外有很多種功能！可以取出連續區間，還可以間隔取值！[fn:4]
 **** 選取連續區間 [a:b]
 #+begin_src python -r -n :results output :exports both
 import numpy as np
@@ -1524,7 +1524,7 @@ print(myAry)
 np.savetxt('drive/MyDrive/newScores.csv', myAry)
 #+end_src
 ** 不同格式
-NumPy提供了多種存取陣列內容的檔案操作函式。儲存陣列資料的檔案可以是二進位制格式或者文字格式。二進位制格式的檔案又分為NumPy專用的格式化二進位制型別和無格式型別。[fn:6][fn:7]
+NumPy提供了多種存取陣列內容的檔案操作函式。儲存陣列資料的檔案可以是二進位制格式或者文字格式。二進位制格式的檔案又分為NumPy專用的格式化二進位制型別和無格式型別。[fn:5][fn:6]
 ** Bineary Format
 *** save(), load()
 #+begin_src python :results output :exports both
@@ -1562,7 +1562,7 @@ print(myZip['b'])
 : [1 2 3 4 5 6]
 : [ 7  8  9 10 11 12]
 ** 讀取混合格式的文字資料
-如果資料中某些欄位的資料格式是字串 (string)，處理起來相當麻煩，改用 numpy.genfromtxt 會比較簡單。[fn:8]
+如果資料中某些欄位的資料格式是字串 (string)，處理起來相當麻煩，改用 numpy.genfromtxt 會比較簡單。[fn:7]
 [[https://numpy.org/doc/stable/user/basics.io.genfromtxt.html][Importing data with genfromtxt]]
 目標文字檔(csv)如下：
 #+begin_src shell -r -n :results output :exports both
@@ -1584,7 +1584,7 @@ cat cs-scores2.csv
 201811110,80.00,75,100.00,32.80,50.00
 201811111,85.00,96,89.48,83.70,30.00
 #+end_example
-Pyton 3在讀取文字時，dtype應設為U(Unicode)，否則會在讀到的字首多出b[fn:9]
+Pyton 3在讀取文字時，dtype應設為U(Unicode)，否則會在讀到的字首多出b[fn:8]
 #+begin_src python :results output :exports both
 import numpy as np
 # Python3 is working with Unicode.
@@ -1624,7 +1624,7 @@ print(classScore)
 #+RESULTS:
 : [87. 66. 51. 81. 45. 36. 51. 72. 63. 75. 96.]
 *
-** Binary Format  [fn:10]
+** Binary Format  [fn:9]
 - save() / load()
 #+BEGIN_SRC python -r -n :results output :exports both
 import numpy as np
@@ -1817,7 +1817,7 @@ print("最接近%d的值在Array[%d][%d]: %d" %(n, x, y, value))
 : 最接近50的值在Array[1][1]: 48
 
 * 資料的正規化(Normalization)及標準化(Standardization) :noexport:
-當我們在比較分析兩組數據資料時，可能會遭遇因單位的不同(例如：身高與體重)，或數字大小的代表性不同(例如：粉專1萬人與滿足感0.8)，造成各自變化的程度不一，進而影響統計分析的結果；為解決此類的問題，我們可利用資料的正規化(Normalization)與標準化(Standardization)，藉由將原始資料轉換成無量綱(Dimensionless)的純量後，來進行數據的比較及分析。[fn:11]
+當我們在比較分析兩組數據資料時，可能會遭遇因單位的不同(例如：身高與體重)，或數字大小的代表性不同(例如：粉專1萬人與滿足感0.8)，造成各自變化的程度不一，進而影響統計分析的結果；為解決此類的問題，我們可利用資料的正規化(Normalization)與標準化(Standardization)，藉由將原始資料轉換成無量綱(Dimensionless)的純量後，來進行數據的比較及分析。[fn:10]
 ** Normalization
 原始資料的數據按比例縮放於 [0, 1] 區間中，且不改變其原本分佈。舉例來說，若我們現有兩組數據資料，分別表示 500 項商品的銷售量 Sample 1 及銷售額 Sample 2，如下圖所示，很明顯地，此兩組資料的單位不同，且數字上有著懸殊的差異，分別透過資料正規化後，兩組資料將同時轉換成純量縮放於 [0,1] 區間中，如下右圖所示；這樣的資料轉換，能排除資料單位的限制，提供我們一個相同的基準來進行後續比較分析。
 #+CAPTION: Normalization
@@ -2335,24 +2335,22 @@ print (Z[np.argpartition(-Z,n)[:n]])
 
 * Footnotes
 
-[fn:1] [[https://blog.techbridge.cc/2017/07/28/data-science-101-numpy-tutorial/][從零開始學資料科學：Numpy 基礎入門]][fn:2]
+[fn:1] [[https://blog.techbridge.cc/2017/07/28/data-science-101-numpy-tutorial/][從零開始學資料科學：Numpy 基礎入門]]
 
-[fn:2]
+[fn:2] [[https://zh.wikipedia.org/wiki/NumPy][NumPy]]
 
-[fn:3][[https://zh.wikipedia.org/wiki/NumPy][NumPy]]
+[fn:3] [[https://blog.techbridge.cc/2017/07/28/data-science-101-numpy-tutorial/][從零開始學資料科學：Numpy 基礎入門]]
 
-[fn:4] [[https://blog.techbridge.cc/2017/07/28/data-science-101-numpy-tutorial/][從零開始學資料科學：Numpy 基礎入門]]
+[fn:4] [[https://www.brilliantcode.net/1093/numpy-1-14-tutorial-04-indexing-slicing-iterating-from-function/][NumPy 1.14 教學:索引(Indexing)、切片(Slicing)、迭代(Iterating)、From Function]]
 
-[fn:5] [[https://www.brilliantcode.net/1093/numpy-1-14-tutorial-04-indexing-slicing-iterating-from-function/][NumPy 1.14 教學:索引(Indexing)、切片(Slicing)、迭代(Iterating)、From Function]]
+[fn:5] [[https://ithelp.ithome.com.tw/articles/10196167][[Day18]Numpy檔案輸入與輸出！ ]]
 
-[fn:6] [[https://ithelp.ithome.com.tw/articles/10196167][[Day18]Numpy檔案輸入與輸出！ ]]
+[fn:6] [[https://codertw.com/%E7%A8%8B%E5%BC%8F%E8%AA%9E%E8%A8%80/570647/][NumPy 檔案存取 tofile，fromfile， load，save]]
 
-[fn:7] [[https://codertw.com/%E7%A8%8B%E5%BC%8F%E8%AA%9E%E8%A8%80/570647/][NumPy 檔案存取 tofile，fromfile， load，save]]
+[fn:7] [[https://hackmd.io/@yizhewang/HJjG8ha5r][使用 numpy.genfromtxt 讀取混合格式的資料]]
 
-[fn:8] [[https://hackmd.io/@yizhewang/HJjG8ha5r][使用 numpy.genfromtxt 讀取混合格式的資料]]
+[fn:8] [[https://stackoverflow.com/questions/33655641/b-character-added-when-using-numpy-loadtxt]['b' character added when using numpy loadtxt]]
 
-[fn:9] [[https://stackoverflow.com/questions/33655641/b-character-added-when-using-numpy-loadtxt]['b' character added when using numpy loadtxt]]
+[fn:9] [[https://ithelp.ithome.com.tw/articles/10196167][Day18-Numpy檔案輸入與輸出!]]
 
-[fn:10][[https://ithelp.ithome.com.tw/articles/10196167][Day18-Numpy檔案輸入與輸出!]]
-
-[fn:11] [[https://aifreeblog.herokuapp.com/posts/54/data_science_203/][資料的正規化與標準化]]
+[fn:10] [[https://aifreeblog.herokuapp.com/posts/54/data_science_203/][資料的正規化與標準化]]
