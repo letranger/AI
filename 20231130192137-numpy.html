@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-12-01 Fri 09:02 -->
+<!-- 2023-12-01 Fri 20:41 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Numpy</title>
@@ -194,27 +194,38 @@
   .org-svg { }
 </style>
 <link rel="stylesheet" type="text/css" href="../css/muse.css" />
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        displayAlign: "center",
-        displayIndent: "0em",
-
-        "HTML-CSS": { scale: 100,
-                        linebreaks: { automatic: "false" },
-                        webFont: "TeX"
-                       },
-        SVG: {scale: 100,
-              linebreaks: { automatic: "false" },
-              font: "TeX"},
-        NativeMML: {scale: 100},
-        TeX: { equationNumbers: {autoNumber: "AMS"},
-               MultLineWidth: "85%",
-               TagSide: "right",
-               TagIndent: ".8em"
-             }
-});
+<script>
+  window.MathJax = {
+    tex: {
+      ams: {
+        multlineWidth: '85%'
+      },
+      tags: 'ams',
+      tagSide: 'right',
+      tagIndent: '.8em'
+    },
+    chtml: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    svg: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    output: {
+      font: 'mathjax-modern',
+      displayOverflow: 'overflow'
+    }
+  };
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+
+<script
+  id="MathJax-script"
+  async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
 </head>
 <body>
 <div id="content" class="content">
@@ -223,59 +234,62 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org46c3fee">1. 簡介</a></li>
-<li><a href="#org2b98d2e">2. 安裝模組</a></li>
-<li><a href="#org3346e3f">3. 匯入模組</a></li>
-<li><a href="#org923ed3a">4. NumPy 陣列</a>
+<li><a href="#org59c9dd5">1. 簡介</a></li>
+<li><a href="#orgd723341">2. 模組使用</a>
 <ul>
-<li><a href="#orgeaf7a51">4.1. NDArray</a></li>
-<li><a href="#org4d5af99">4.2. 建立ndarray</a></li>
+<li><a href="#org74d4499">2.1. 安裝</a></li>
+<li><a href="#org24be558">2.2. 匯入</a></li>
 </ul>
 </li>
-<li><a href="#org17b45f7">5. 矩陣運算</a>
+<li><a href="#orgb68bdd0">3. NumPy 陣列</a>
 <ul>
-<li><a href="#org93b1785">5.1. Numpy計算時間比較</a></li>
-<li><a href="#org3b65d1b">5.2. [課堂練習]</a></li>
-<li><a href="#org6088135">5.3. 矩陣運算</a></li>
-<li><a href="#orgc76877b">5.4. 矩陣函數</a></li>
-<li><a href="#orgaa8729c">5.5. [作業1]</a></li>
-<li><a href="#org343151b">5.6. [作業2]</a></li>
-<li><a href="#org6cfad56">5.7. 解聯立方程式</a></li>
-<li><a href="#org8d18976">5.8. numpy 矩陣間的運算</a></li>
-<li><a href="#orgfeeb12a">5.9. 矩陣間的 convolute 運算</a></li>
+<li><a href="#orgd2fd167">3.1. NDArray</a></li>
+<li><a href="#org6a63087">3.2. 建立 ndarray</a></li>
 </ul>
 </li>
-<li><a href="#orgce4a1ad">6. Numpy 檔案輸出輸入</a>
+<li><a href="#org5dba25f">4. 矩陣運算</a>
 <ul>
-<li><a href="#orga367000">6.1. Google Colab</a></li>
-<li><a href="#org55ebabe">6.2. 用NumPy來讀資料檔</a></li>
-<li><a href="#orgf19e3d6">6.3. 不同格式</a></li>
-<li><a href="#orgd77b919">6.4. Bineary Format</a></li>
-<li><a href="#org0fe722d">6.5. 讀取混合格式的文字資料</a></li>
-<li><a href="#orgeac3986">6.6. 讀取一個欄位資料</a></li>
-<li><a href="#org3cb21d2">6.7. Binary Format  </a></li>
-<li><a href="#org38b5bf6">6.8. Text Files</a></li>
+<li><a href="#orgf3dcdd4">4.1. Numpy 計算時間比較</a></li>
+<li><a href="#orga5e3694">4.2. [課堂練習]</a></li>
+<li><a href="#org0881514">4.3. 矩陣運算</a></li>
+<li><a href="#orgec862aa">4.4. 矩陣函數</a></li>
+<li><a href="#org45aaa6e">4.5. [作業 1]</a></li>
+<li><a href="#org47aff6e">4.6. [作業 2]</a></li>
+<li><a href="#orga7521fd">4.7. 解聯立方程式</a></li>
+<li><a href="#org42bb750">4.8. numpy 矩陣間的運算</a></li>
+<li><a href="#org840c100">4.9. 矩陣間的 convolute 運算</a></li>
 </ul>
 </li>
-<li><a href="#org68668ab">7. Data Visualization</a>
+<li><a href="#org71c772b">5. Numpy 檔案輸出輸入</a>
 <ul>
-<li><a href="#org2c7fc8d">7.1. pylab</a></li>
-<li><a href="#orgad811da">7.2. Bokeh</a></li>
-<li><a href="#org8ec29cb">7.3. seaborn</a></li>
-<li><a href="#org00f5eb7">7.4. Altair</a></li>
+<li><a href="#orge2d8b6e">5.1. Google Colab</a></li>
+<li><a href="#orgd3423a5">5.2. 用 NumPy 來讀資料檔</a></li>
+<li><a href="#orga95dc1f">5.3. 不同格式</a></li>
+<li><a href="#orged55af1">5.4. Bineary Format</a></li>
+<li><a href="#org79cf035">5.5. 讀取混合格式的文字資料</a></li>
+<li><a href="#org06dd62e">5.6. 讀取一個欄位資料</a></li>
+<li><a href="#org9e2adba">5.7. Binary Format  </a></li>
+<li><a href="#org3ddb1e3">5.8. Text Files</a></li>
+</ul>
+</li>
+<li><a href="#orge401c4b">6. Data Visualization</a>
+<ul>
+<li><a href="#org20c9633">6.1. pylab</a></li>
+<li><a href="#org1f89f8c">6.2. Bokeh</a></li>
+<li><a href="#org6b269b4">6.3. seaborn</a></li>
+<li><a href="#orgdc13597">6.4. Altair</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 <a href="https://letranger.github.io/AI/20231130192137-numpy.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20231130192137-numpy.html.svg?style=plastic"/></a>
-
-<div id="outline-container-org46c3fee" class="outline-2">
-<h2 id="org46c3fee"><span class="section-number-2">1.</span> 簡介</h2>
+<div id="outline-container-org59c9dd5" class="outline-2">
+<h2 id="org59c9dd5"><span class="section-number-2">1.</span> 簡介</h2>
 <div class="outline-text-2" id="text-1">
 <ul class="org-ul">
 <li>NumPy 是 Python 語言的一個擴充程式庫。支援高階大量的維度陣列與矩陣運算，此外也針對陣列運算提供大量的數學函式函式庫。<br /></li>
-<li>Numpy主要用於資料處理上。Numpy 底層以 C 和 Fortran 語言實作，所以能快速操作多重維度的陣列。<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup><br /></li>
+<li>Numpy 主要用於資料處理上。Numpy 底層以 C 和 Fortran 語言實作，所以能快速操作多重維度的陣列。<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup><br /></li>
 <li>當 Python 處理龐大資料時，其原生 list 效能表現並不理想（但可以動態存異質資料），而 Numpy 具備平行處理的能力，可以將操作動作一次套用在大型陣列上。<br /></li>
 <li>Python 多數重量級的資料科學相關套件（例如：Pandas、SciPy、Scikit-learn 等）都幾乎是奠基在 Numpy 的基礎上。因此學會 Numpy 對於往後學習其他資料科學相關套件打好堅實的基礎。<br /></li>
 <li>NumPy 的前身 Numeric 最早是由 Jim Hugunin 與其它協作者共同開發，2005 年，Travis Oliphant 在 Numeric 中結合了另一個同性質的程式庫 Numarray 的特色，並加入了其它擴充功能而開發了 NumPy。NumPy 為開放原始碼並且由許多協作者共同維護開發。<sup><a id="fnr.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup><br /></li>
@@ -283,28 +297,31 @@
 </ul>
 </div>
 </div>
-
-<div id="outline-container-org2b98d2e" class="outline-2">
-<h2 id="org2b98d2e"><span class="section-number-2">2.</span> 安裝模組</h2>
+<div id="outline-container-orgd723341" class="outline-2">
+<h2 id="orgd723341"><span class="section-number-2">2.</span> 模組使用</h2>
 <div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-org74d4499" class="outline-3">
+<h3 id="org74d4499"><span class="section-number-3">2.1.</span> 安裝</h3>
+<div class="outline-text-3" id="text-2-1">
 <div class="org-src-container">
 <pre class="src src-shell"><span class="linenr">1: </span>pip install numpy
 </pre>
 </div>
 </div>
 <ol class="org-ol">
-<li><a id="org07bbaa5"></a>PyCharm<br />
-<div class="outline-text-4" id="text-2-0-1">
+<li><a id="orga04f870"></a>PyCharm<br />
+<div class="outline-text-4" id="text-2-1-1">
 
-<div id="org5c4b0cd" class="figure">
+<div id="org8ea7882" class="figure">
 <p><img src="images/Numpy/2023-02-13_10-26-12_2023-02-13_10-24-46.png" alt="2023-02-13_10-26-12_2023-02-13_10-24-46.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 1: </span>標題</p>
 </div>
 </div>
 </li>
-<li><a id="org77618fb"></a>Colab<br />
-<div class="outline-text-4" id="text-2-0-2">
+<li><a id="orgcbf6e01"></a>Colab<br />
+<div class="outline-text-4" id="text-2-1-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span>!pip install numpy
 </pre>
@@ -313,10 +330,9 @@
 </li>
 </ol>
 </div>
-
-<div id="outline-container-org3346e3f" class="outline-2">
-<h2 id="org3346e3f"><span class="section-number-2">3.</span> 匯入模組</h2>
-<div class="outline-text-2" id="text-3">
+<div id="outline-container-org24be558" class="outline-3">
+<h3 id="org24be558"><span class="section-number-3">2.2.</span> 匯入</h3>
+<div class="outline-text-3" id="text-2-2">
 <ul class="org-ul">
 <li>使用模組裡的函式要加模組名稱<br /></li>
 </ul>
@@ -333,14 +349,14 @@
 </div>
 </div>
 </div>
-
-<div id="outline-container-org923ed3a" class="outline-2">
-<h2 id="org923ed3a"><span class="section-number-2">4.</span> NumPy 陣列</h2>
-<div class="outline-text-2" id="text-4">
 </div>
-<div id="outline-container-orgeaf7a51" class="outline-3">
-<h3 id="orgeaf7a51"><span class="section-number-3">4.1.</span> NDArray</h3>
-<div class="outline-text-3" id="text-4-1">
+<div id="outline-container-orgb68bdd0" class="outline-2">
+<h2 id="orgb68bdd0"><span class="section-number-2">3.</span> NumPy 陣列</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-orgd2fd167" class="outline-3">
+<h3 id="orgd2fd167"><span class="section-number-3">3.1.</span> NDArray</h3>
+<div class="outline-text-3" id="text-3-1">
 <ul class="org-ul">
 <li>Numpy 中的多維資料型別稱為 ndarray<br /></li>
 <li>Numpy 的重點在於陣列的操作，其所有功能特色都建築在同質且多重維度的 ndarray（N-dimensional array）上。<br /></li>
@@ -348,30 +364,29 @@
 </ul>
 </div>
 </div>
-
-<div id="outline-container-org4d5af99" class="outline-3">
-<h3 id="org4d5af99"><span class="section-number-3">4.2.</span> 建立ndarray</h3>
-<div class="outline-text-3" id="text-4-2">
+<div id="outline-container-org6a63087" class="outline-3">
+<h3 id="org6a63087"><span class="section-number-3">3.2.</span> 建立 ndarray</h3>
+<div class="outline-text-3" id="text-3-2">
 <p>
 一開始我們會引入 numpy 模組，透過傳入 list 到 numpy.array() 創建陣列。<br />
 </p>
 <ul class="org-ul">
 <li>axis 0, axis 1, axis 2:<br />
-一維時 axis 0為x軸<br />
-二維時 axis 0為y軸<br /></li>
+一維時 axis 0 為 x 軸<br />
+二維時 axis 0 為 y 軸<br /></li>
 <li><a href="https://numpy.org/doc/stable/reference/routines.array-creation.html#">NumPy官網</a><br /></li>
 <li>Numpy 的重點在於陣列的操作，其所有功能特色都建築在同質且多重維度的 ndarray（N-dimensional array）上。<br /></li>
 <li>ndarray 的關鍵屬性是維度（ndim）、形狀（shape）和數值類型（dtype）。 一般我們稱一維陣列為 vector 而二維陣列為 matrix<sup><a id="fnr.3.100" class="footref" href="#fn.3" role="doc-backlink">3</a></sup>。<br /></li>
 <li>axis 0, axis 1, axis 2:<br />
-一維時 axis 0為x軸<br />
-二維時 axis 0為y軸<br /></li>
+一維時 axis 0 為 x 軸<br />
+二維時 axis 0 為 y 軸<br /></li>
 </ul>
 </div>
 <ol class="org-ol">
-<li><a id="org4a36f37"></a>一維陣列<br />
+<li><a id="orgddd337a"></a>一維陣列<br />
 <ul class="org-ul">
-<li><a id="org2e5cd6f"></a>可以將python的list 或 tuple 轉成NumPy Array<br />
-<div class="outline-text-5" id="text-org2e5cd6f">
+<li><a id="org13a9c01"></a>可以將 python 的 list 或 tuple 轉成 NumPy Array<br />
+<div class="outline-text-5" id="text-org13a9c01">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 <span style="color: #dcaeea;">np1</span> = np.array( [<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">3</span>, <span style="color: #da8548; font-weight: bold;">4</span>] )
@@ -384,8 +399,8 @@
 </pre>
 </div>
 </li>
-<li><a id="org9f19697"></a>使用 np.arange( ) 方法<br />
-<div class="outline-text-5" id="text-org9f19697">
+<li><a id="org2cb4b6a"></a>使用 np.arange( ) 方法<br />
+<div class="outline-text-5" id="text-org2cb4b6a">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 
@@ -406,8 +421,8 @@
 </pre>
 </div>
 </li>
-<li><a id="org778d21d"></a>np.arange() v.s. range()<br />
-<div class="outline-text-5" id="text-org778d21d">
+<li><a id="org560f149"></a>np.arange() v.s. range()<br />
+<div class="outline-text-5" id="text-org560f149">
 <p>
 差異：<br />
 </p>
@@ -418,8 +433,8 @@
 </ul>
 </div>
 </li>
-<li><a id="orga410412"></a>簡單的矩陣運算<br />
-<div class="outline-text-5" id="text-orga410412">
+<li><a id="org00f4274"></a>簡單的矩陣運算<br />
+<div class="outline-text-5" id="text-org00f4274">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 <span class="linenr">2: </span><span style="color: #dcaeea;">np1</span> = np.array([<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">3</span>])
@@ -439,9 +454,8 @@
 </li>
 </ul>
 </li>
-
-<li><a id="org294d3e3"></a>二維陣列<br />
-<div class="outline-text-4" id="text-4-2-2">
+<li><a id="org145a99a"></a>二維陣列<br />
+<div class="outline-text-4" id="text-3-2-2">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 
@@ -458,7 +472,7 @@
 </pre>
 </div>
 
-<pre class="example" id="org746b70d">
+<pre class="example" id="org34b66e0">
   shape: (2, 3)
   np4:
    [[1 2 4]
@@ -474,8 +488,8 @@
 </pre>
 </div>
 </li>
-<li><a id="org0f6ba76"></a>多維陣列<br />
-<div class="outline-text-4" id="text-4-2-3">
+<li><a id="orge616dda"></a>多維陣列<br />
+<div class="outline-text-4" id="text-3-2-3">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 
@@ -487,7 +501,7 @@
 </pre>
 </div>
 
-<pre class="example" id="orgffb81b5">
+<pre class="example" id="org9a3e435">
   np7:
    [[[ 0  1  2  3]
     [ 4  5  6  7]
@@ -507,10 +521,10 @@
 </pre>
 </div>
 </li>
-<li><a id="org28dc041"></a>隨機矩陣<br />
+<li><a id="orgd4476eb"></a>隨機矩陣<br />
 <ul class="org-ul">
-<li><a id="org52d7637"></a>numpy.random.randint()<br />
-<div class="outline-text-5" id="text-org52d7637">
+<li><a id="org2b223fa"></a>numpy.random.randint()<br />
+<div class="outline-text-5" id="text-org2b223fa">
 <p>
 語法：numpy.random.randint(low, high=None, size=None, dtype=&rsquo;l&rsquo;)<br />
 </p>
@@ -532,7 +546,7 @@
 </pre>
 </div>
 
-<pre class="example" id="org393d915">
+<pre class="example" id="org3cdd27f">
 [5 0 3 3 7 9]
 [[3 5 2 4]
  [7 6 8 8]
@@ -554,8 +568,8 @@
 </pre>
 </div>
 </li>
-<li><a id="orgd8566d9"></a>numpy.random.rand()<br />
-<div class="outline-text-5" id="text-orgd8566d9">
+<li><a id="org9d52e80"></a>numpy.random.rand()<br />
+<div class="outline-text-5" id="text-org9d52e80">
 <p>
 根據給定維度生成(0,1)間的資料，包含 0，不包含 1<br />
 </p>
@@ -574,8 +588,8 @@
 </pre>
 </div>
 </li>
-<li><a id="org6681be8"></a>範例<br />
-<div class="outline-text-5" id="text-org6681be8">
+<li><a id="org5e8f183"></a>範例<br />
+<div class="outline-text-5" id="text-org5e8f183">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 
@@ -602,8 +616,8 @@ np9:
 </li>
 </ul>
 </li>
-<li><a id="org059048d"></a>0/1 矩陣<br />
-<div class="outline-text-4" id="text-4-2-5">
+<li><a id="org5769116"></a>0/1 矩陣<br />
+<div class="outline-text-4" id="text-3-2-5">
 <ul class="org-ul">
 <li>np.zeros: np.zeros( (陣列各維度大小用逗號區分) )：建立全為 0 的陣列，可以小括號定義陣列的各個維度的大小<br /></li>
 </ul>
@@ -643,22 +657,22 @@ oness=&gt;
 </pre>
 </div>
 </li>
-<li><a id="orgc46ee2f"></a><span class="todo TODO">TODO</span> 型態轉換<br />
-<div class="outline-text-4" id="text-4-2-6">
+<li><a id="orgc4e182b"></a><span class="todo TODO">TODO</span> 型態轉換<br />
+<div class="outline-text-4" id="text-3-2-6">
 <p>
 astype<br />
 </p>
 </div>
 </li>
-<li><a id="orgfacab08"></a><span class="todo TODO">TODO</span> 補入教材<br />
-<div class="outline-text-4" id="text-4-2-7">
+<li><a id="org1ffd49e"></a><span class="todo TODO">TODO</span> 補入教材<br />
+<div class="outline-text-4" id="text-3-2-7">
 <p>
 <a href="https://github.com/letranger/AI4H2022/blob/main/week1_%E8%B3%87%E6%96%99%E7%A7%91%E5%AD%B81/1_1_numpy.md">numpy 學習主題</a><br />
 </p>
 </div>
 </li>
-<li><a id="org04e0cfd"></a>tmp<br />
-<div class="outline-text-4" id="text-4-2-8">
+<li><a id="orgbea3bb7"></a>tmp<br />
+<div class="outline-text-4" id="text-3-2-8">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24341;&#20837; numpy &#27169;&#32068;</span>
 <span class="linenr"> 2: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
@@ -681,7 +695,7 @@ astype<br />
 </pre>
 </div>
 
-<pre class="example" id="orgb2904ff">
+<pre class="example" id="orgd606d54">
 [[1. 0. 0.]
  [0. 1. 0.]
  [0. 0. 1.]]
@@ -707,21 +721,29 @@ astype<br />
 </ol>
 </div>
 </div>
-
-<div id="outline-container-org17b45f7" class="outline-2">
-<h2 id="org17b45f7"><span class="section-number-2">5.</span> 矩陣運算</h2>
-<div class="outline-text-2" id="text-5">
+<div id="outline-container-org5dba25f" class="outline-2">
+<h2 id="org5dba25f"><span class="section-number-2">4.</span> 矩陣運算</h2>
+<div class="outline-text-2" id="text-4">
 </div>
-<div id="outline-container-org93b1785" class="outline-3">
-<h3 id="org93b1785"><span class="section-number-3">5.1.</span> Numpy計算時間比較</h3>
-<div class="outline-text-3" id="text-5-1">
-<div class="org-src-container">
-<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">org-babel-python-command</span> <span style="color: #98be65;">"ipython --no-banner --classic --no-confirm-exit"</span><span style="color: #51afef;">)</span>
-</pre>
-</div>
+<div id="outline-container-orgf3dcdd4" class="outline-3">
+<h3 id="orgf3dcdd4"><span class="section-number-3">4.1.</span> Numpy 計算時間比較</h3>
+<div class="outline-text-3" id="text-4-1">
 <p>
 自行比較以下兩個版本的執行時間<br />
 </p>
+</div>
+<ol class="org-ol">
+<li><a id="org44fd675"></a>PyCharm<br />
+<div class="outline-text-4" id="text-4-1-1">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #c678dd;">print</span>(timeit.timeit(stmt=<span style="color: #98be65;">'import numpy as np;x = np.arange(100);x**3'</span>))
+<span class="linenr">2: </span><span style="color: #c678dd;">print</span>(timeit.timeit(stmt=<span style="color: #98be65;">'for i in range(100): a=i**3'</span>))
+</pre>
+</div>
+</div>
+</li>
+<li><a id="orgfaf60c0"></a>Colab<br />
+<div class="outline-text-4" id="text-4-1-2">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #dcaeea;">ar</span> = np.arange(<span style="color: #da8548; font-weight: bold;">1000</span>)
 %timeit ar**<span style="color: #da8548; font-weight: bold;">3</span>
@@ -739,13 +761,15 @@ astype<br />
 </pre>
 </div>
 </div>
+</li>
+</ol>
 </div>
-<div id="outline-container-org3b65d1b" class="outline-3">
-<h3 id="org3b65d1b"><span class="section-number-3">5.2.</span> [課堂練習]</h3>
-<div class="outline-text-3" id="text-5-2">
+<div id="outline-container-orga5e3694" class="outline-3">
+<h3 id="orga5e3694"><span class="section-number-3">4.2.</span> [課堂練習]</h3>
+<div class="outline-text-3" id="text-4-2">
 <ul class="org-ul">
 <li><p>
-模擬一個37人/7科的全班月考成績(隨機生成)<br />
+模擬一個 37 人/7 科的全班月考成績(隨機生成)<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #da8548; font-weight: bold;">1</span> : <span style="color: #da8548; font-weight: bold;">33</span>  <span style="color: #da8548; font-weight: bold;">66</span>  <span style="color: #da8548; font-weight: bold;">29</span>
@@ -761,21 +785,21 @@ astype<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-org6088135" class="outline-3">
-<h3 id="org6088135"><span class="section-number-3">5.3.</span> 矩陣運算</h3>
-<div class="outline-text-3" id="text-5-3">
+<div id="outline-container-org0881514" class="outline-3">
+<h3 id="org0881514"><span class="section-number-3">4.3.</span> 矩陣運算</h3>
+<div class="outline-text-3" id="text-4-3">
 </div>
 <ol class="org-ol">
-<li><a id="orgf826a28"></a>矩陣變形:reshape()<br />
-<div class="outline-text-4" id="text-5-3-1">
+<li><a id="org9e12d0c"></a>矩陣變形:reshape()<br />
+<div class="outline-text-4" id="text-4-3-1">
 <ol class="org-ol">
 <li>reshape()<br /></li>
 <li>transpose()<br /></li>
 </ol>
 </div>
 <ul class="org-ul">
-<li><a id="orgafeb1a1"></a>reshape<br />
-<div class="outline-text-5" id="text-orgafeb1a1">
+<li><a id="orgcf0e767"></a>reshape<br />
+<div class="outline-text-5" id="text-orgcf0e767">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 <span class="linenr">2: </span><span style="color: #dcaeea;">x</span> = np.arange(<span style="color: #da8548; font-weight: bold;">2</span>,<span style="color: #da8548; font-weight: bold;">10</span>)
@@ -789,8 +813,8 @@ astype<br />
 </pre>
 </div>
 </li>
-<li><a id="org6b0754a"></a>Flattening and Transpose<br />
-<div class="outline-text-5" id="text-org6b0754a">
+<li><a id="orgb9fe095"></a>Flattening and Transpose<br />
+<div class="outline-text-5" id="text-orgb9fe095">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 <span class="linenr">2: </span><span style="color: #dcaeea;">ac</span> = np.array([np.arange(<span style="color: #da8548; font-weight: bold;">1</span>,<span style="color: #da8548; font-weight: bold;">6</span>),np.arange(<span style="color: #da8548; font-weight: bold;">10</span>,<span style="color: #da8548; font-weight: bold;">15</span>)])
@@ -812,8 +836,8 @@ astype<br />
 </pre>
 </div>
 </li>
-<li><a id="orge105509"></a>Add a dimension<br />
-<div class="outline-text-5" id="text-orge105509">
+<li><a id="orgf4756c1"></a>Add a dimension<br />
+<div class="outline-text-5" id="text-orgf4756c1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span>  <span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 <span class="linenr">2: </span>  <span style="color: #dcaeea;">ar</span> = np.array([<span style="color: #da8548; font-weight: bold;">14</span>,<span style="color: #da8548; font-weight: bold;">15</span>,<span style="color: #da8548; font-weight: bold;">16</span>])
@@ -838,15 +862,15 @@ astype<br />
 </li>
 </ul>
 </li>
-<li><a id="orga4c8102"></a>索引(Indexing)、切片(Slicing)<br />
-<div class="outline-text-4" id="text-5-3-2">
+<li><a id="orgd788178"></a>索引(Indexing)、切片(Slicing)<br />
+<div class="outline-text-4" id="text-4-3-2">
 <p>
 索引(Indexing)的用途不外乎就是為了要從陣列和矩陣中取值，但除此之外有很多種功能！可以取出連續區間，還可以間隔取值！<sup><a id="fnr.4" class="footref" href="#fn.4" role="doc-backlink">4</a></sup><br />
 </p>
 </div>
 <ul class="org-ul">
-<li><a id="orgf57b47d"></a>選取連續區間 [a:b]<br />
-<div class="outline-text-5" id="text-orgf57b47d">
+<li><a id="org2257a3c"></a>選取連續區間 [a:b]<br />
+<div class="outline-text-5" id="text-org2257a3c">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 <span class="linenr">2: </span><span style="color: #dcaeea;">a</span> = np.arange(<span style="color: #da8548; font-weight: bold;">10</span>) ** <span style="color: #da8548; font-weight: bold;">2</span>
@@ -861,15 +885,15 @@ a[2:5]=&gt; [ 4  9 16]
 </pre>
 </div>
 </li>
-<li><a id="orga071346"></a>間隔選取[::c]<br />
-<div class="outline-text-5" id="text-orga071346">
+<li><a id="org86067e9"></a>間隔選取[::c]<br />
+<div class="outline-text-5" id="text-org86067e9">
 <p>
-以1維陣列來說明x[a:b:c]<br />
+以 1 維陣列來說明 x[a:b:c]<br />
 </p>
 <ul class="org-ul">
 <li>a：選取資料的起始索引<br /></li>
 <li>b：選取資料的結束索引+1<br /></li>
-<li>c：選取資料間隔，以索引值可以被此值整除的元素，不指定表示1<br /></li>
+<li>c：選取資料間隔，以索引值可以被此值整除的元素，不指定表示 1<br /></li>
 </ul>
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
@@ -888,12 +912,12 @@ a==&gt; [  0   1 999   9  16 999  36  49 999  81]
 </li>
 </ul>
 </li>
-<li><a id="org9763691"></a>取出特定行列、特定範圍<br />
-<div class="outline-text-4" id="text-5-3-3">
+<li><a id="org1f85f38"></a>取出特定行列、特定範圍<br />
+<div class="outline-text-4" id="text-4-3-3">
 <ul class="org-ul">
-<li>取出第x列: Ary[x]<br /></li>
-<li>取出第x行: Ary[:,x]<br /></li>
-<li>取出第x_{1}~x_{2}列、第y_{1}~y_{2}行的範圍: Ary[x_{1}:x_{2} + 1, y_{1}:y_{2} + 1]<br /></li>
+<li>取出第 x 列: Ary[x]<br /></li>
+<li>取出第 x 行: Ary[:,x]<br /></li>
+<li>取出第 x_{1}~x_{2}列、第 y_{1}~y_{2}行的範圍: Ary[x_{1}:x_{2} + 1, y_{1}:y_{2} + 1]<br /></li>
 </ul>
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
@@ -916,10 +940,10 @@ a==&gt; [  0   1 999   9  16 999  36  49 999  81]
 </pre>
 </div>
 </li>
-<li><a id="org6ad33c5"></a>刪除行/列<br />
-<div class="outline-text-4" id="text-5-3-4">
+<li><a id="orgae73950"></a>刪除行/列<br />
+<div class="outline-text-4" id="text-4-3-4">
 <p>
-np.delete(temp,0,axis=1)#temp為操作物件，0表示要刪除的物件索引，axis表示行還是列，axis=0表示刪除行，axis=1表示刪除列。<br />
+np.delete(temp,0,axis=1)#temp 為操作物件，0表示要刪除的物件索引，axis 表示行還是列，axis=0 表示刪除行，axis=1 表示刪除列。<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
@@ -937,7 +961,7 @@ np.delete(temp,0,axis=1)#temp為操作物件，0表示要刪除的物件索引�
 </pre>
 </div>
 
-<pre class="example" id="orgb6c0a1e">
+<pre class="example" id="orgd2e2559">
 [[ 0  1  2  3]
  [ 4  5  6  7]
  [ 8  9 10 11]]
@@ -955,15 +979,15 @@ np.delete(temp,0,axis=1)#temp為操作物件，0表示要刪除的物件索引�
 </pre>
 </div>
 </li>
-<li><a id="orgb35017e"></a>迭代(輸出)<br />
-<div class="outline-text-4" id="text-5-3-5">
+<li><a id="org36ca576"></a>迭代(輸出)<br />
+<div class="outline-text-4" id="text-4-3-5">
 <p>
 如果是要對整個矩陣的值做運算，無需使用迴圈<br />
 </p>
 </div>
 <ul class="org-ul">
-<li><a id="org01ccbb4"></a>一維陣列<br />
-<div class="outline-text-5" id="text-org01ccbb4">
+<li><a id="org6607d5a"></a>一維陣列<br />
+<div class="outline-text-5" id="text-org6607d5a">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 <span class="linenr">2: </span><span style="color: #dcaeea;">a</span> = np.arange(<span style="color: #da8548; font-weight: bold;">4</span>) ** <span style="color: #da8548; font-weight: bold;">2</span>
@@ -982,8 +1006,8 @@ a**(1/2)=&gt; 1
 </pre>
 </div>
 </li>
-<li><a id="org89c9ec1"></a>多維陣列: 多維陣列在for loop中取值時，會以第一維度為優先！<br />
-<div class="outline-text-5" id="text-org89c9ec1">
+<li><a id="orgf9d5789"></a>多維陣列: 多維陣列在 for loop 中取值時，會以第一維度為優先！<br />
+<div class="outline-text-5" id="text-orgf9d5789">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 <span class="linenr">2: </span><span style="color: #dcaeea;">a</span> = np.arange(<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">41</span>).reshape(<span style="color: #da8548; font-weight: bold;">5</span>, <span style="color: #da8548; font-weight: bold;">8</span>)
@@ -1006,10 +1030,10 @@ a**(1/2)=&gt; 1
 </li>
 </ul>
 </li>
-<li><a id="org591da42"></a>基礎運算<br />
+<li><a id="org11db0da"></a>基礎運算<br />
 <ul class="org-ul">
-<li><a id="orgc7edbfe"></a>維度相同的矩陣相加、減<br />
-<div class="outline-text-5" id="text-orgc7edbfe">
+<li><a id="orgab4659b"></a>維度相同的矩陣相加、減<br />
+<div class="outline-text-5" id="text-orgab4659b">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 <span style="color: #dcaeea;">a</span> = np.array( [<span style="color: #da8548; font-weight: bold;">6</span>, <span style="color: #da8548; font-weight: bold;">7</span>, <span style="color: #da8548; font-weight: bold;">8</span>, <span style="color: #da8548; font-weight: bold;">9</span>] )
@@ -1027,8 +1051,8 @@ c=&gt;[6 6 6 6]
 </pre>
 </div>
 </li>
-<li><a id="orge2aa193"></a>矩陣與常數運算<br />
-<div class="outline-text-5" id="text-orge2aa193">
+<li><a id="org5288e8d"></a>矩陣與常數運算<br />
+<div class="outline-text-5" id="text-org5288e8d">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 <span style="color: #51afef;">import</span> math
@@ -1054,8 +1078,8 @@ c=&gt;[[2601 5476 9604 1369]
 </li>
 </ul>
 </li>
-<li><a id="org5b9040b"></a>矩陣轉置<br />
-<div class="outline-text-4" id="text-5-3-7">
+<li><a id="orgc8e0b26"></a>矩陣轉置<br />
+<div class="outline-text-4" id="text-4-3-7">
 <p>
 \[a=\begin{bmatrix}1&0\\2&3\end{bmatrix}, a^T=\begin{bmatrix}1&2\\0&3\end{bmatrix}\]<br />
 </p>
@@ -1078,10 +1102,10 @@ c=&gt;[[2601 5476 9604 1369]
 </pre>
 </div>
 </li>
-<li><a id="org0b8e2d0"></a>矩陣相乘<br />
+<li><a id="org3a51f25"></a>矩陣相乘<br />
 <ul class="org-ul">
-<li><a id="org6d3d60c"></a>矩陣乘法<br />
-<div class="outline-text-5" id="text-org6d3d60c">
+<li><a id="org6a2e2d5"></a>矩陣乘法<br />
+<div class="outline-text-5" id="text-org6a2e2d5">
 <p>
 \[a=\begin{bmatrix}a_{11}&a_{12}\\a_{21}&a_{22}\end{bmatrix}, b=\begin{bmatrix}b_{11}&b_{12}&b_{13}\\b_{21}&b_{22}&b_{23}\end{bmatrix}\]<br />
 \[a \cdot b=\begin{bmatrix}a_{11}*b_{11}+a_{12}*b_{21}&a_{11}*b_{12}+a_{12}*b_{22}&a_{11}*b_{13}+a_{12}*b_{23}\\a_{21}*b_{11}+a_{22}*b_{21}&a_{21}*b_{12}+a_{22}*b_{22}&a_{21}*b_{13}+a_{22}*b_{23}\end{bmatrix}\]<br />
@@ -1100,8 +1124,8 @@ c=&gt;[[2601 5476 9604 1369]
 </pre>
 </div>
 </li>
-<li><a id="org0ca5fbc"></a>相對位置乘法<br />
-<div class="outline-text-5" id="text-org0ca5fbc">
+<li><a id="org595852e"></a>相對位置乘法<br />
+<div class="outline-text-5" id="text-org595852e">
 <p>
 \[a=\begin{bmatrix}a_{11}&a_{12}\\a_{21}&a_{22}\end{bmatrix}, b=\begin{bmatrix}b_{11}&b_{12}\\b_{21}&b_{22}\end{bmatrix}\]<br />
 \[a \cdot b=\begin{bmatrix}a_{11}*b_{11}&a_{12}*b_{12}\\a_{21}*b_{21}&a_{22}*b_{22}\end{bmatrix}\]<br />
@@ -1130,10 +1154,10 @@ A*B:
 </pre>
 </div>
 </li>
-<li><a id="orgac74b98"></a>取代矩陣中元素<br />
-<div class="outline-text-5" id="text-orgac74b98">
+<li><a id="org0f4fdbc"></a>取代矩陣中元素<br />
+<div class="outline-text-5" id="text-org0f4fdbc">
 <p>
-這裡也可以看出NumPy對於選取矩陣中元素的極好彈性，可直接以條件來當成選取方式<br />
+這裡也可以看出 NumPy 對於選取矩陣中元素的極好彈性，可直接以條件來當成選取方式<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
@@ -1153,18 +1177,18 @@ A*B:
 </pre>
 </div>
 </li>
-<li><a id="org006cce3"></a>[課堂練習]<br />
-<div class="outline-text-5" id="text-org006cce3">
+<li><a id="orge417be6"></a>[課堂練習]<br />
+<div class="outline-text-5" id="text-orge417be6">
 <ul class="org-ul">
-<li>模擬一個37人/7科的全班月考成績(隨機生成, 0~100)<br /></li>
-<li>將所有 55&lt;=分數&lt;60 的成績均改為60<br /></li>
+<li>模擬一個 37 人/7 科的全班月考成績(隨機生成, 0~100)<br /></li>
+<li>將所有 55&lt;=分數&lt;60 的成績均改為 60<br /></li>
 </ul>
 </div>
 </li>
 </ul>
 </li>
-<li><a id="org66aca02"></a>矩陣間元素相乘<br />
-<div class="outline-text-4" id="text-5-3-9">
+<li><a id="orgfc9e3e0"></a>矩陣間元素相乘<br />
+<div class="outline-text-4" id="text-4-3-9">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 <span class="linenr"> 2: </span><span style="color: #dcaeea;">ar</span> = np.arange(<span style="color: #da8548; font-weight: bold;">1</span>,<span style="color: #da8548; font-weight: bold;">5</span>)
@@ -1191,9 +1215,8 @@ A*B:
 </pre>
 </div>
 </li>
-
-<li><a id="orgbd9c8ca"></a>反矩陣<br />
-<div class="outline-text-4" id="text-5-3-10">
+<li><a id="orgde45f8f"></a>反矩陣<br />
+<div class="outline-text-4" id="text-4-3-10">
 <p>
 AB=BA=I, 其中 I 為單位矩陣<br />
 </p>
@@ -1221,10 +1244,10 @@ A dot B:
 </pre>
 </div>
 </li>
-<li><a id="org4661d5f"></a>合併矩陣<br />
+<li><a id="org87c7606"></a>合併矩陣<br />
 <ul class="org-ul">
-<li><a id="org94955d3"></a>vstack<br />
-<div class="outline-text-5" id="text-org94955d3">
+<li><a id="org1e4885a"></a>vstack<br />
+<div class="outline-text-5" id="text-org1e4885a">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 <span style="color: #dcaeea;">a</span> = np.ones((<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">2</span>))
@@ -1246,8 +1269,8 @@ A dot B:
 </pre>
 </div>
 </li>
-<li><a id="org3f8fb68"></a>hstack<br />
-<div class="outline-text-5" id="text-org3f8fb68">
+<li><a id="orge978653"></a>hstack<br />
+<div class="outline-text-5" id="text-orge978653">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 <span style="color: #dcaeea;">a</span> = np.ones((<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">2</span>))
@@ -1274,16 +1297,16 @@ A dot B:
 </li>
 </ol>
 </div>
-<div id="outline-container-orgc76877b" class="outline-3">
-<h3 id="orgc76877b"><span class="section-number-3">5.4.</span> 矩陣函數</h3>
-<div class="outline-text-3" id="text-5-4">
+<div id="outline-container-orgec862aa" class="outline-3">
+<h3 id="orgec862aa"><span class="section-number-3">4.4.</span> 矩陣函數</h3>
+<div class="outline-text-3" id="text-4-4">
 </div>
 <ol class="org-ol">
-<li><a id="orgaaead62"></a><a href="https://numpy.org/doc/stable/reference/generated/numpy.sum.html">官網</a><br /></li>
-<li><a id="org4e60895"></a>numpy.sum()<br />
+<li><a id="orgd12861e"></a><a href="https://numpy.org/doc/stable/reference/generated/numpy.sum.html">官網</a><br /></li>
+<li><a id="orgeb5aec4"></a>numpy.sum()<br />
 <ul class="org-ul">
-<li><a id="orgd901700"></a>語法<br />
-<div class="outline-text-5" id="text-orgd901700">
+<li><a id="org5ec98b4"></a>語法<br />
+<div class="outline-text-5" id="text-org5ec98b4">
 <div class="org-src-container">
 <pre class="src src-python">numpy.<span style="color: #c678dd;">sum</span>(a, axis=<span style="color: #a9a1e1;">None</span>, dtype=<span style="color: #a9a1e1;">None</span>, out=<span style="color: #a9a1e1;">None</span>, keepdims=&lt;no value&gt;, initial=&lt;no value&gt;, where=&lt;no value&gt;)
 </pre>
@@ -1293,8 +1316,8 @@ A dot B:
 </p>
 </div>
 </li>
-<li><a id="org842b7db"></a>範例<br />
-<div class="outline-text-5" id="text-org842b7db">
+<li><a id="orgef8ca81"></a>範例<br />
+<div class="outline-text-5" id="text-orgef8ca81">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 
@@ -1313,7 +1336,7 @@ A dot B:
 </pre>
 </div>
 
-<pre class="example" id="org1a52f14">
+<pre class="example" id="orgef04342">
 =====Array=====
 [[0 2 4]
  [1 3 5]]
@@ -1330,8 +1353,8 @@ A dot B:
 </li>
 </ul>
 </li>
-<li><a id="org4a22c91"></a>其他常用函數<br />
-<div class="outline-text-4" id="text-5-4-3">
+<li><a id="org399932d"></a>其他常用函數<br />
+<div class="outline-text-4" id="text-4-4-3">
 <ul class="org-ul">
 <li>min()<br /></li>
 <li>max()<br /></li>
@@ -1358,7 +1381,7 @@ A dot B:
 </pre>
 </div>
 
-<pre class="example" id="orga472562">
+<pre class="example" id="org4e473af">
 np
  [[0 0]
  [0 3]
@@ -1372,20 +1395,20 @@ mean: 1.0
 </pre>
 </div>
 </li>
-<li><a id="orgafda66f"></a>sum() v.s. np.sum()<br />
-<div class="outline-text-4" id="text-5-4-4">
+<li><a id="orgde70e9a"></a>sum() v.s. np.sum()<br />
+<div class="outline-text-4" id="text-4-4-4">
 
-<div id="orgb8a6e91" class="figure">
-<p><img src="images/2sum.png" alt="2sum.png" width="400" /><br />
+<div id="org89107c8" class="figure">
+<p><img src="images/Numpy/2sum.png" alt="2sum.png" width="400" /><br />
 </p>
 <p><span class="figure-number">Figure 2: </span>sum() v.s. np.sum()</p>
 </div>
 </div>
 </li>
-<li><a id="orgd805ecc"></a>numpy.max()<br />
+<li><a id="orgcea7e22"></a>numpy.max()<br />
 <ul class="org-ul">
-<li><a id="org1fb76ef"></a>語法<br />
-<div class="outline-text-5" id="text-org1fb76ef">
+<li><a id="org1bb6152"></a>語法<br />
+<div class="outline-text-5" id="text-org1bb6152">
 <div class="org-src-container">
 <pre class="src src-python">numpy.<span style="color: #c678dd;">max</span>(a, axis=<span style="color: #a9a1e1;">None</span>, out=<span style="color: #a9a1e1;">None</span>, keepdims=<span style="color: #a9a1e1;">False</span>)
 </pre>
@@ -1397,8 +1420,8 @@ mean: 1.0
 </ul>
 </div>
 </li>
-<li><a id="org7bbce4e"></a>範例<br />
-<div class="outline-text-5" id="text-org7bbce4e">
+<li><a id="org4d58612"></a>範例<br />
+<div class="outline-text-5" id="text-org4d58612">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 
@@ -1429,10 +1452,10 @@ mean: 1.0
 </li>
 </ul>
 </li>
-<li><a id="orgce0c511"></a>numpy.maxium()<br />
+<li><a id="org008b65a"></a>numpy.maxium()<br />
 <ul class="org-ul">
-<li><a id="orgec9c87b"></a>語法<br />
-<div class="outline-text-5" id="text-orgec9c87b">
+<li><a id="org5d7b3a6"></a>語法<br />
+<div class="outline-text-5" id="text-org5d7b3a6">
 <div class="org-src-container">
 <pre class="src src-python">numpy.maximum&#65306;(X, Y, out=<span style="color: #a9a1e1;">None</span>)
 </pre>
@@ -1443,8 +1466,8 @@ mean: 1.0
 </ul>
 </div>
 </li>
-<li><a id="org7089fdc"></a>範例<br />
-<div class="outline-text-5" id="text-org7089fdc">
+<li><a id="orgb5777c1"></a>範例<br />
+<div class="outline-text-5" id="text-orgb5777c1">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 <span style="color: #dcaeea;">npA1</span> = np.array([[<span style="color: #da8548; font-weight: bold;">9</span>,-<span style="color: #da8548; font-weight: bold;">9</span>,<span style="color: #da8548; font-weight: bold;">8</span>],[<span style="color: #da8548; font-weight: bold;">4</span>,<span style="color: #da8548; font-weight: bold;">7</span>,<span style="color: #da8548; font-weight: bold;">5</span>]])
@@ -1473,10 +1496,10 @@ mean: 1.0
 </li>
 </ul>
 </li>
-<li><a id="org86f15bf"></a>numpy.argmax()<br />
+<li><a id="orga00172f"></a>numpy.argmax()<br />
 <ul class="org-ul">
-<li><a id="org2084974"></a>語法<br />
-<div class="outline-text-5" id="text-org2084974">
+<li><a id="org8ce6aeb"></a>語法<br />
+<div class="outline-text-5" id="text-org8ce6aeb">
 <div class="org-src-container">
 <pre class="src src-python">numpy.argmax(a, axis=<span style="color: #a9a1e1;">None</span>, out=<span style="color: #a9a1e1;">None</span>)[source]&#182;
 </pre>
@@ -1488,10 +1511,10 @@ mean: 1.0
 </ul>
 </div>
 </li>
-<li><a id="orgf1a7a2f"></a>範例<br />
+<li><a id="orgde5a6ca"></a>範例<br />
 <ul class="org-ul">
-<li><a id="org8d1f5a5"></a>一維陣列<br />
-<div class="outline-text-6" id="text-org8d1f5a5">
+<li><a id="org4e8f5d4"></a>一維陣列<br />
+<div class="outline-text-6" id="text-org4e8f5d4">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 
@@ -1521,9 +1544,8 @@ The largest value in the array:
 </pre>
 </div>
 </li>
-
-<li><a id="orga512039"></a>二維陣列<br />
-<div class="outline-text-6" id="text-orga512039">
+<li><a id="orgfe0efb1"></a>二維陣列<br />
+<div class="outline-text-6" id="text-orgfe0efb1">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 
@@ -1546,7 +1568,7 @@ The largest value in the array:
 </pre>
 </div>
 
-<pre class="example" id="org4199857">
+<pre class="example" id="orge2b9fb3">
 Array:
 [[ 2  1  6]
  [ 7 14  5]]
@@ -1561,8 +1583,8 @@ Index with the largest value:
 4
 </pre>
 
-<div id="org731c1bc" class="figure">
-<p><img src="images/argSeq.jpg" alt="argSeq.jpg" width="200" /><br />
+<div id="org72cc8ab" class="figure">
+<p><img src="images/Numpy/argSeq.jpg" alt="argSeq.jpg" width="200" /><br />
 </p>
 <p><span class="figure-number">Figure 3: </span>Sequence of Arg in array</p>
 </div>
@@ -1572,18 +1594,18 @@ Index with the largest value:
 </li>
 </ul>
 </li>
-<li><a id="orgd073499"></a>about axis<br />
-<div class="outline-text-4" id="text-5-4-8">
+<li><a id="orgf987e92"></a>about axis<br />
+<div class="outline-text-4" id="text-4-4-8">
 
-<div id="org8c1546d" class="figure">
-<p><img src="images/aryaxis.jpg" alt="aryaxis.jpg" width="400" /><br />
+<div id="orge750035" class="figure">
+<p><img src="images/Numpy/aryaxis.jpg" alt="aryaxis.jpg" width="400" /><br />
 </p>
 <p><span class="figure-number">Figure 4: </span>Axis in ndarray</p>
 </div>
 </div>
 </li>
-<li><a id="org638ffa6"></a>tile()<br />
-<div class="outline-text-4" id="text-5-4-9">
+<li><a id="orgaf6b288"></a>tile()<br />
+<div class="outline-text-4" id="text-4-4-9">
 <p>
 numpy.tile()是個什麼函數呢，說白了，就是把數組沿各個方向複製<br />
 </p>
@@ -1600,10 +1622,10 @@ numpy.tile()是個什麼函數呢，說白了，就是把數組沿各個方向�
 </div>
 
 <pre class="example">
-=====一維tile=====
+=====一維 tile=====
 [[1 2 1 2]
  [3 4 3 4]]
-=====二維tile=====
+=====二維 tile=====
 [[1 2 1 2 1 2]
  [3 4 3 4 3 4]
  [1 2 1 2 1 2]
@@ -1611,8 +1633,8 @@ numpy.tile()是個什麼函數呢，說白了，就是把數組沿各個方向�
 </pre>
 </div>
 </li>
-<li><a id="org5c2c1e8"></a>numpy.allclose<br />
-<div class="outline-text-4" id="text-5-4-10">
+<li><a id="org4c3cdde"></a>numpy.allclose<br />
+<div class="outline-text-4" id="text-4-4-10">
 <ul class="org-ul">
 <li>Returns True if two arrays are element-wise equal within a tolerance.<br /></li>
 <li>The tolerance values are positive, typically very small numbers. The relative difference (rtol * abs(b)) and the absolute difference atol are added together to compare against the absolute difference between a and b.<br /></li>
@@ -1620,16 +1642,16 @@ numpy.tile()是個什麼函數呢，說白了，就是把數組沿各個方向�
 </ul>
 </div>
 <ul class="org-ul">
-<li><a id="org329a2f7"></a>語法<br />
-<div class="outline-text-5" id="text-org329a2f7">
+<li><a id="org11024ff"></a>語法<br />
+<div class="outline-text-5" id="text-org11024ff">
 <div class="org-src-container">
 <pre class="src src-python">numpy.allclose(a, b, rtol=1e-<span style="color: #da8548; font-weight: bold;">05</span>, atol=1e-<span style="color: #da8548; font-weight: bold;">08</span>, equal_nan=<span style="color: #a9a1e1;">False</span>)
 </pre>
 </div>
 </div>
 </li>
-<li><a id="org6088429"></a>Parameters<br />
-<div class="outline-text-5" id="text-org6088429">
+<li><a id="org7f9a5cd"></a>Parameters<br />
+<div class="outline-text-5" id="text-org7f9a5cd">
 <ul class="org-ul">
 <li>a, b: array_like. Input arrays to compare.<br /></li>
 <li>rtol: float. The relative tolerance parameter (see Notes).<br /></li>
@@ -1638,15 +1660,15 @@ numpy.tile()是個什麼函數呢，說白了，就是把數組沿各個方向�
 </ul>
 </div>
 </li>
-<li><a id="orgda61648"></a>Returns<br />
-<div class="outline-text-5" id="text-orgda61648">
+<li><a id="org9d86302"></a>Returns<br />
+<div class="outline-text-5" id="text-org9d86302">
 <ul class="org-ul">
 <li>allclose: bool. Returns True if the two arrays are equal within the given tolerance; False otherwise.<br /></li>
 </ul>
 </div>
 </li>
-<li><a id="orgc9f534a"></a>See also:<br />
-<div class="outline-text-5" id="text-orgc9f534a">
+<li><a id="org7b511eb"></a>See also:<br />
+<div class="outline-text-5" id="text-org7b511eb">
 <ul class="org-ul">
 <li><a href="https://numpy.org/doc/stable/reference/generated/numpy.isclose.html#numpy.isclose">isclose</a><br /></li>
 <li><a href="https://numpy.org/doc/stable/reference/generated/numpy.all.html#numpy.all">all</a><br /></li>
@@ -1655,8 +1677,8 @@ numpy.tile()是個什麼函數呢，說白了，就是把數組沿各個方向�
 </ul>
 </div>
 </li>
-<li><a id="org307b7e5"></a>DEMO<br />
-<div class="outline-text-5" id="text-org307b7e5">
+<li><a id="orgd1f1711"></a>DEMO<br />
+<div class="outline-text-5" id="text-orgd1f1711">
 <p>
 參考: <a href="https://www.itdaan.com/tw/cc576c8f8162ab7ee9e3d6afdbf454fc">測試兩個numpy數組(接近)是否相等，包括形狀</a><br />
 </p>
@@ -1699,7 +1721,7 @@ numpy.tile()是個什麼函數呢，說白了，就是把數組沿各個方向�
 </pre>
 </div>
 
-<pre class="example" id="orge9a268a">
+<pre class="example" id="org3d20070">
 3.141592653589793
 True
 True
@@ -1721,22 +1743,22 @@ False
 </li>
 </ol>
 </div>
-<div id="outline-container-orgaa8729c" class="outline-3">
-<h3 id="orgaa8729c"><span class="section-number-3">5.5.</span> [作業1]</h3>
-<div class="outline-text-3" id="text-5-5">
+<div id="outline-container-org45aaa6e" class="outline-3">
+<h3 id="org45aaa6e"><span class="section-number-3">4.5.</span> [作業 1]</h3>
+<div class="outline-text-3" id="text-4-5">
 <ol class="org-ol">
 <li>隨機產生一組 30*5 個 0~100 的陣列，模擬成一個班級的某次考試成績(30 人*5 科)。<br /></li>
 <li>輸出此次 5 科考科的全班總分、平均、最高分、最低分、標準差。<br /></li>
 <li>將全班分數以「開根號乘以 10」的方式進行調整。<br /></li>
-<li>如果調整完分數還是不及格，把分數改為39分。<br /></li>
+<li>如果調整完分數還是不及格，把分數改為 39 分。<br /></li>
 <li>輸出不及格人數。<br /></li>
-<li>輸出全班分數(至小數點第二位,關於小數點的控制請自行Google關鍵字&ldquo;numpy.set_printoptions&rdquo;)。<br /></li>
+<li>輸出全班分數(至小數點第二位,關於小數點的控制請自行 Google 關鍵字&ldquo;numpy.set_printoptions&rdquo;)。<br /></li>
 </ol>
 </div>
 <ul class="org-ul">
-<li><a id="orgaba8d73"></a>結果範例<br />
-<div class="outline-text-5" id="text-orgaba8d73">
-<pre class="example" id="org1249586">
+<li><a id="org249b8a5"></a>結果範例<br />
+<div class="outline-text-5" id="text-org249b8a5">
+<pre class="example" id="org0e3eb2c">
 各科總分: [1341 1522 1548 1411 1627]
 各科平均: [44.7  50.73 51.6  47.03 54.23]
 各科最高分: [94 95 94 98 96]
@@ -1781,20 +1803,20 @@ False
 </li>
 </ul>
 </div>
-<div id="outline-container-org343151b" class="outline-3">
-<h3 id="org343151b"><span class="section-number-3">5.6.</span> [作業2]</h3>
-<div class="outline-text-3" id="text-5-6">
+<div id="outline-container-org47aff6e" class="outline-3">
+<h3 id="org47aff6e"><span class="section-number-3">4.6.</span> [作業 2]</h3>
+<div class="outline-text-3" id="text-4-6">
 <ul class="org-ul">
-<li>模擬一個37人/7科的全班月考成績(隨機生成)<br /></li>
+<li>模擬一個 37 人/7 科的全班月考成績(隨機生成)<br /></li>
 <li>將所有原始分數轉換為<a href="https://zh.wikipedia.org/zh-tw/%E6%A8%99%E6%BA%96%E5%88%86%E6%95%B8">Z分數</a><br /></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org6cfad56" class="outline-3">
-<h3 id="org6cfad56"><span class="section-number-3">5.7.</span> 解聯立方程式</h3>
-<div class="outline-text-3" id="text-5-7">
+<div id="outline-container-orga7521fd" class="outline-3">
+<h3 id="orga7521fd"><span class="section-number-3">4.7.</span> 解聯立方程式</h3>
+<div class="outline-text-3" id="text-4-7">
 <p>
-Numpy的linalg function可以用來解線性方程組，若目標方程式為\[Ax=b\]，其中\[x\]為所求之解，求解語法為：<br />
+Numpy 的 linalg function 可以用來解線性方程組，若目標方程式為\[Ax=b\]，其中\[x\]為所求之解，求解語法為：<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-swift"><span class="linenr">1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
@@ -1803,8 +1825,8 @@ Numpy的linalg function可以用來解線性方程組，若目標方程式為\[A
 </div>
 </div>
 <ol class="org-ol">
-<li><a id="orgac07fa7"></a>範例1<br />
-<div class="outline-text-4" id="text-5-7-1">
+<li><a id="org45aa3dd"></a>範例 1<br />
+<div class="outline-text-4" id="text-4-7-1">
 <p>
 以如下方程式為例<br />
 \[\begin{cases}2x+y=5\\x+y=3\end{cases}\]<br />
@@ -1813,8 +1835,8 @@ Numpy的linalg function可以用來解線性方程組，若目標方程式為\[A
 </p>
 </div>
 <ul class="org-ul">
-<li><a id="org4b43778"></a>solution<br />
-<div class="outline-text-5" id="text-org4b43778">
+<li><a id="org04211af"></a>solution<br />
+<div class="outline-text-5" id="text-org04211af">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 <span style="color: #dcaeea;">A</span> = np.array([[<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">1</span>],
@@ -1836,8 +1858,8 @@ True
 </li>
 </ul>
 </li>
-<li><a id="orgdcee096"></a>範例2<br />
-<div class="outline-text-4" id="text-5-7-2">
+<li><a id="orgecc581d"></a>範例 2<br />
+<div class="outline-text-4" id="text-4-7-2">
 <p>
 求解下列方程式<br />
 \[\begin{cases}3x_0+2x_1+x_2=11\\2x_0+3x_1+x_2=13\\x_0+x_1+4x_2=12 \end{cases}\], 以\[Ax=b\]表示，則<br />
@@ -1845,8 +1867,8 @@ True
 </p>
 </div>
 <ul class="org-ul">
-<li><a id="org85fb2ad"></a>solution<br />
-<div class="outline-text-5" id="text-org85fb2ad">
+<li><a id="org45b7719"></a>solution<br />
+<div class="outline-text-5" id="text-org45b7719">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 <span style="color: #dcaeea;">A</span> = np.array([[<span style="color: #da8548; font-weight: bold;">3</span>, <span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">1</span>],
@@ -1871,11 +1893,9 @@ True
 </li>
 </ol>
 </div>
-
-
-<div id="outline-container-org8d18976" class="outline-3">
-<h3 id="org8d18976"><span class="section-number-3">5.8.</span> numpy 矩陣間的運算</h3>
-<div class="outline-text-3" id="text-5-8">
+<div id="outline-container-org42bb750" class="outline-3">
+<h3 id="org42bb750"><span class="section-number-3">4.8.</span> numpy 矩陣間的運算</h3>
+<div class="outline-text-3" id="text-4-8">
 <ul class="org-ul">
 <li>element-wise<br /></li>
 </ul>
@@ -1892,7 +1912,7 @@ True
 </pre>
 </div>
 
-<pre class="example" id="orgc1ed67c">
+<pre class="example" id="org0305f94">
 [[1 2 3]
  [4 5 6]
  [2 3 4]]
@@ -1975,7 +1995,7 @@ True
 </pre>
 </div>
 
-<pre class="example" id="orgbcb52dc">
+<pre class="example" id="orga08cbe8">
 origin:
  [[ 3  2  5]
  [10 -1  9]
@@ -2006,10 +2026,9 @@ axis=1:
 </pre>
 </div>
 </div>
-
-<div id="outline-container-orgfeeb12a" class="outline-3">
-<h3 id="orgfeeb12a"><span class="section-number-3">5.9.</span> 矩陣間的 convolute 運算</h3>
-<div class="outline-text-3" id="text-5-9">
+<div id="outline-container-org840c100" class="outline-3">
+<h3 id="org840c100"><span class="section-number-3">4.9.</span> 矩陣間的 convolute 運算</h3>
+<div class="outline-text-3" id="text-4-9">
 <ul class="org-ul">
 <li>numpy.convolve(a, v, mode=&rsquo;full&rsquo;)，這是 numpy 函數中的卷積函數庫<br /></li>
 </ul>
@@ -2108,34 +2127,34 @@ valid: [2.8]
 <li>求出 a*b[0]，平移至位置 0，如圖[[fig:convolve-1]<br /></li>
 </ol>
 
-<div id="orgea42c3c" class="figure">
+<div id="org175064e" class="figure">
 <p><img src="images/anb0.png" alt="anb0.png" /><br />
 </p>
 <p><span class="figure-number">Figure 5: </span>convolve 的計算過程-1</p>
 </div>
 <ol class="org-ol">
-<li>求出 a*b[1]，平移至位置 1，如圖<a href="#org36e74ed">6</a><br /></li>
+<li>求出 a*b[1]，平移至位置 1，如圖<a href="#org9f5721d">6</a><br /></li>
 </ol>
 
-<div id="org36e74ed" class="figure">
+<div id="org9f5721d" class="figure">
 <p><img src="images/anb1.png" alt="anb1.png" /><br />
 </p>
 <p><span class="figure-number">Figure 6: </span>convolve 的計算過程-2</p>
 </div>
 <ol class="org-ol">
-<li>求出 a*b[2]，平移至位置 2，如圖<a href="#org09ef984">7</a><br /></li>
+<li>求出 a*b[2]，平移至位置 2，如圖<a href="#org9faeac7">7</a><br /></li>
 </ol>
 
-<div id="org09ef984" class="figure">
+<div id="org9faeac7" class="figure">
 <p><img src="images/anb2.png" alt="anb2.png" /><br />
 </p>
 <p><span class="figure-number">Figure 7: </span>convolve 的計算過程-1</p>
 </div>
 <ol class="org-ol">
-<li>將圖<a href="#orgea42c3c">5</a>，圖<a href="#org36e74ed">6</a>，圖<a href="#org09ef984">7</a>疊加起來<br /></li>
+<li>將圖<a href="#org175064e">5</a>，圖<a href="#org9f5721d">6</a>，圖<a href="#org9faeac7">7</a>疊加起來<br /></li>
 </ol>
 
-<div id="orgb2bca58" class="figure">
+<div id="org14b7522" class="figure">
 <p><img src="images/abStack.png" alt="abStack.png" /><br />
 </p>
 <p><span class="figure-number">Figure 8: </span>convolve 的計算過程-1</p>
@@ -2143,27 +2162,26 @@ valid: [2.8]
 </div>
 </div>
 </div>
-
-<div id="outline-container-orgce4a1ad" class="outline-2">
-<h2 id="orgce4a1ad"><span class="section-number-2">6.</span> Numpy 檔案輸出輸入</h2>
-<div class="outline-text-2" id="text-6">
+<div id="outline-container-org71c772b" class="outline-2">
+<h2 id="org71c772b"><span class="section-number-2">5.</span> Numpy 檔案輸出輸入</h2>
+<div class="outline-text-2" id="text-5">
 </div>
-<div id="outline-container-orga367000" class="outline-3">
-<h3 id="orga367000"><span class="section-number-3">6.1.</span> Google Colab</h3>
-<div class="outline-text-3" id="text-6-1">
+<div id="outline-container-orge2d8b6e" class="outline-3">
+<h3 id="orge2d8b6e"><span class="section-number-3">5.1.</span> Google Colab</h3>
+<div class="outline-text-3" id="text-5-1">
 </div>
 <ol class="org-ol">
-<li><a id="org8f1144f"></a>先將資料檔儲存到Google Drive中<br />
-<div class="outline-text-4" id="text-6-1-1">
+<li><a id="org0716970"></a>先將資料檔儲存到 Google Drive 中<br />
+<div class="outline-text-4" id="text-5-1-1">
 <p>
-將要讀取的資料檔(txt, csv)上傳到Google雲端硬碟<br />
+將要讀取的資料檔(txt, csv)上傳到 Google 雲端硬碟<br />
 </p>
 </div>
 </li>
-<li><a id="org2a02ed2"></a>要求授權<br />
-<div class="outline-text-4" id="text-6-1-2">
+<li><a id="org3d1badb"></a>要求授權<br />
+<div class="outline-text-4" id="text-5-1-2">
 <p>
-在Colab新增一個cell，執行下列程式<br />
+在 Colab 新增一個 cell，執行下列程式<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #51afef;">from</span> google.colab <span style="color: #51afef;">import</span> drive
@@ -2175,8 +2193,8 @@ drive.mount(<span style="color: #98be65;">'/content/drive'</span>)
 </p>
 </div>
 </li>
-<li><a id="org61872c3"></a>測試<br />
-<div class="outline-text-4" id="text-6-1-3">
+<li><a id="org7f72946"></a>測試<br />
+<div class="outline-text-4" id="text-5-1-3">
 <ol class="org-ol">
 <li>要求授權<br /></li>
 <li>先<a href="images/scores.csv">點這裡下載範例資料</a><br /></li>
@@ -2191,21 +2209,21 @@ drive.mount(<span style="color: #98be65;">'/content/drive'</span>)
 </div></li>
 </ol>
 <p>
-如果能看到資料的內容，就表示成功了，接下來就能用NumPy來讀取、分析這個資料檔<br />
+如果能看到資料的內容，就表示成功了，接下來就能用 NumPy 來讀取、分析這個資料檔<br />
 </p>
 </div>
 </li>
 </ol>
 </div>
-<div id="outline-container-org55ebabe" class="outline-3">
-<h3 id="org55ebabe"><span class="section-number-3">6.2.</span> 用NumPy來讀資料檔</h3>
-<div class="outline-text-3" id="text-6-2">
+<div id="outline-container-orgd3423a5" class="outline-3">
+<h3 id="orgd3423a5"><span class="section-number-3">5.2.</span> 用 NumPy 來讀資料檔</h3>
+<div class="outline-text-3" id="text-5-2">
 </div>
 <ol class="org-ol">
-<li><a id="org3569f28"></a>load<br />
-<div class="outline-text-4" id="text-6-2-1">
+<li><a id="orga14759b"></a>load<br />
+<div class="outline-text-4" id="text-5-2-1">
 <p>
-在Numpy內會使用.loadtxt或特定的np.genfromtxt來讀取文字檔<br />
+在 Numpy 內會使用.loadtxt 或特定的 np.genfromtxt 來讀取文字檔<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
@@ -2214,7 +2232,7 @@ drive.mount(<span style="color: #98be65;">'/content/drive'</span>)
 </pre>
 </div>
 
-<pre class="example" id="org834ba80">
+<pre class="example" id="org13026ab">
 [[109.    87.   100.    86.    50.  ]
  [ 86.    66.    68.97  33.2   55.  ]
  [ 82.    51.    72.87  57.    70.  ]
@@ -2229,10 +2247,10 @@ drive.mount(<span style="color: #98be65;">'/content/drive'</span>)
 </pre>
 </div>
 </li>
-<li><a id="org7ac8d14"></a>save<br />
-<div class="outline-text-4" id="text-6-2-2">
+<li><a id="orgf1d5728"></a>save<br />
+<div class="outline-text-4" id="text-5-2-2">
 <p>
-將處理完的陣列回存成csv檔：<br />
+將處理完的陣列回存成 csv 檔：<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
@@ -2245,21 +2263,21 @@ np.savetxt(<span style="color: #98be65;">'drive/MyDrive/newScores.csv'</span>, m
 </li>
 </ol>
 </div>
-<div id="outline-container-orgf19e3d6" class="outline-3">
-<h3 id="orgf19e3d6"><span class="section-number-3">6.3.</span> 不同格式</h3>
-<div class="outline-text-3" id="text-6-3">
+<div id="outline-container-orga95dc1f" class="outline-3">
+<h3 id="orga95dc1f"><span class="section-number-3">5.3.</span> 不同格式</h3>
+<div class="outline-text-3" id="text-5-3">
 <p>
-NumPy提供了多種存取陣列內容的檔案操作函式。儲存陣列資料的檔案可以是二進位制格式或者文字格式。二進位制格式的檔案又分為NumPy專用的格式化二進位制型別和無格式型別。<sup><a id="fnr.5" class="footref" href="#fn.5" role="doc-backlink">5</a></sup><sup>, </sup><sup><a id="fnr.6" class="footref" href="#fn.6" role="doc-backlink">6</a></sup><br />
+NumPy 提供了多種存取陣列內容的檔案操作函式。儲存陣列資料的檔案可以是二進位制格式或者文字格式。二進位制格式的檔案又分為 NumPy 專用的格式化二進位制型別和無格式型別。<sup><a id="fnr.5" class="footref" href="#fn.5" role="doc-backlink">5</a></sup><sup>, </sup><sup><a id="fnr.6" class="footref" href="#fn.6" role="doc-backlink">6</a></sup><br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgd77b919" class="outline-3">
-<h3 id="orgd77b919"><span class="section-number-3">6.4.</span> Bineary Format</h3>
-<div class="outline-text-3" id="text-6-4">
+<div id="outline-container-orged55af1" class="outline-3">
+<h3 id="orged55af1"><span class="section-number-3">5.4.</span> Bineary Format</h3>
+<div class="outline-text-3" id="text-5-4">
 </div>
 <ol class="org-ol">
-<li><a id="org74dfa9e"></a>save(), load()<br />
-<div class="outline-text-4" id="text-6-4-1">
+<li><a id="org17e45b8"></a>save(), load()<br />
+<div class="outline-text-4" id="text-5-4-1">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 <span style="color: #dcaeea;">a</span> = np.arange(<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">12</span>).reshape(<span style="color: #da8548; font-weight: bold;">3</span>,<span style="color: #da8548; font-weight: bold;">4</span>)
@@ -2281,10 +2299,10 @@ np.save(<span style="color: #98be65;">'a'</span>, a)
 </pre>
 </div>
 </li>
-<li><a id="org6fbcb84"></a>savez()<br />
-<div class="outline-text-4" id="text-6-4-2">
+<li><a id="org5447426"></a>savez()<br />
+<div class="outline-text-4" id="text-5-4-2">
 <p>
-我們可以儲存多個陣列在一個zip的檔案中，使用np.savez就可以了！<br />
+我們可以儲存多個陣列在一個 zip 的檔案中，使用 np.savez 就可以了！<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
@@ -2307,9 +2325,9 @@ np.savez(<span style="color: #98be65;">'ab.npz'</span>, a = aAry, b = bAry)
 </li>
 </ol>
 </div>
-<div id="outline-container-org0fe722d" class="outline-3">
-<h3 id="org0fe722d"><span class="section-number-3">6.5.</span> 讀取混合格式的文字資料</h3>
-<div class="outline-text-3" id="text-6-5">
+<div id="outline-container-org79cf035" class="outline-3">
+<h3 id="org79cf035"><span class="section-number-3">5.5.</span> 讀取混合格式的文字資料</h3>
+<div class="outline-text-3" id="text-5-5">
 <p>
 如果資料中某些欄位的資料格式是字串 (string)，處理起來相當麻煩，改用 numpy.genfromtxt 會比較簡單。<sup><a id="fnr.7" class="footref" href="#fn.7" role="doc-backlink">7</a></sup><br />
 <a href="https://numpy.org/doc/stable/user/basics.io.genfromtxt.html">Importing data with genfromtxt</a><br />
@@ -2320,7 +2338,7 @@ np.savez(<span style="color: #98be65;">'ab.npz'</span>, a = aAry, b = bAry)
 </pre>
 </div>
 
-<pre class="example" id="org37a33d8">
+<pre class="example" id="org3d22d6f">
 學號,平時成績,打字成績,作業成績,期中考,期末考
 201811101,109.00,87,100.00,86.00,50.00
 201811102,86.00,66,68.97,33.20,55.00
@@ -2335,7 +2353,7 @@ np.savez(<span style="color: #98be65;">'ab.npz'</span>, a = aAry, b = bAry)
 201811111,85.00,96,89.48,83.70,30.00
 </pre>
 <p>
-Pyton 3在讀取文字時，dtype應設為U(Unicode)，否則會在讀到的字首多出b<sup><a id="fnr.8" class="footref" href="#fn.8" role="doc-backlink">8</a></sup><br />
+Pyton 3 在讀取文字時，dtype 應設為 U(Unicode)，否則會在讀到的字首多出 b<sup><a id="fnr.8" class="footref" href="#fn.8" role="doc-backlink">8</a></sup><br />
 </p>
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
@@ -2350,7 +2368,7 @@ Pyton 3在讀取文字時，dtype應設為U(Unicode)，否則會在讀到的字�
 </pre>
 </div>
 
-<pre class="example" id="orgeec4852">
+<pre class="example" id="org232f00d">
 [('201811101', 109., 87., 100.  ,  86. ,  50.)
  ('201811102',  86., 66.,  68.97,  33.2,  55.)
  ('201811103',  82., 51.,  72.87,  57. ,  70.)
@@ -2365,9 +2383,9 @@ Pyton 3在讀取文字時，dtype應設為U(Unicode)，否則會在讀到的字�
 </pre>
 </div>
 </div>
-<div id="outline-container-orgeac3986" class="outline-3">
-<h3 id="orgeac3986"><span class="section-number-3">6.6.</span> 讀取一個欄位資料</h3>
-<div class="outline-text-3" id="text-6-6">
+<div id="outline-container-org06dd62e" class="outline-3">
+<h3 id="org06dd62e"><span class="section-number-3">5.6.</span> 讀取一個欄位資料</h3>
+<div class="outline-text-3" id="text-5-6">
 <p>
 在 numpy.genfromtxt() 中, 使用 usecols 參數指定取出的欄位編號, 即可取出特定欄位<br />
 </p>
@@ -2389,9 +2407,9 @@ Pyton 3在讀取文字時，dtype應設為U(Unicode)，否則會在讀到的字�
 </p>
 </div>
 </div>
-<div id="outline-container-org3cb21d2" class="outline-3">
-<h3 id="org3cb21d2"><span class="section-number-3">6.7.</span> Binary Format  <sup><a id="fnr.9" class="footref" href="#fn.9" role="doc-backlink">9</a></sup></h3>
-<div class="outline-text-3" id="text-6-7">
+<div id="outline-container-org9e2adba" class="outline-3">
+<h3 id="org9e2adba"><span class="section-number-3">5.7.</span> Binary Format  <sup><a id="fnr.9" class="footref" href="#fn.9" role="doc-backlink">9</a></sup></h3>
+<div class="outline-text-3" id="text-5-7">
 <ul class="org-ul">
 <li>save() / load()<br /></li>
 </ul>
@@ -2431,9 +2449,9 @@ Pyton 3在讀取文字時，dtype應設為U(Unicode)，否則會在讀到的字�
 </pre>
 </div>
 </div>
-<div id="outline-container-org38b5bf6" class="outline-3">
-<h3 id="org38b5bf6"><span class="section-number-3">6.8.</span> Text Files</h3>
-<div class="outline-text-3" id="text-6-8">
+<div id="outline-container-org3ddb1e3" class="outline-3">
+<h3 id="org3ddb1e3"><span class="section-number-3">5.8.</span> Text Files</h3>
+<div class="outline-text-3" id="text-5-8">
 <ul class="org-ul">
 <li>savetxt<br /></li>
 </ul>
@@ -2473,14 +2491,13 @@ Pyton 3在讀取文字時，dtype應設為U(Unicode)，否則會在讀到的字�
 </div>
 </div>
 </div>
-
-<div id="outline-container-org68668ab" class="outline-2">
-<h2 id="org68668ab"><span class="section-number-2">7.</span> Data Visualization</h2>
-<div class="outline-text-2" id="text-7">
+<div id="outline-container-orge401c4b" class="outline-2">
+<h2 id="orge401c4b"><span class="section-number-2">6.</span> Data Visualization</h2>
+<div class="outline-text-2" id="text-6">
 </div>
-<div id="outline-container-org2c7fc8d" class="outline-3">
-<h3 id="org2c7fc8d"><span class="section-number-3">7.1.</span> pylab</h3>
-<div class="outline-text-3" id="text-7-1">
+<div id="outline-container-org20c9633" class="outline-3">
+<h3 id="org20c9633"><span class="section-number-3">6.1.</span> pylab</h3>
+<div class="outline-text-3" id="text-6-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 <span class="linenr"> 2: </span>  <span style="color: #51afef;">import</span> pylab <span style="color: #51afef;">as</span> pl
@@ -2504,16 +2521,16 @@ y: [0.         0.00999983 0.01999867 0.0299955  0.03998933]
 </pre>
 
 
-<div id="org9cc538d" class="figure">
+<div id="org4750062" class="figure">
 <p><img src="images/sinPlot.png" alt="sinPlot.png" /><br />
 </p>
 <p><span class="figure-number">Figure 9: </span>sinPlot</p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgad811da" class="outline-3">
-<h3 id="orgad811da"><span class="section-number-3">7.2.</span> Bokeh</h3>
-<div class="outline-text-3" id="text-7-2">
+<div id="outline-container-org1f89f8c" class="outline-3">
+<h3 id="org1f89f8c"><span class="section-number-3">6.2.</span> Bokeh</h3>
+<div class="outline-text-3" id="text-6-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 <span class="linenr"> 2: </span>  <span style="color: #51afef;">from</span> bokeh.plotting <span style="color: #51afef;">import</span> figure, show
@@ -2540,9 +2557,9 @@ y: [0.         0.00999983 0.01999867 0.0299955  0.03998933]
 </p>
 </div>
 </div>
-<div id="outline-container-org8ec29cb" class="outline-3">
-<h3 id="org8ec29cb"><span class="section-number-3">7.3.</span> seaborn</h3>
-<div class="outline-text-3" id="text-7-3">
+<div id="outline-container-org6b269b4" class="outline-3">
+<h3 id="org6b269b4"><span class="section-number-3">6.3.</span> seaborn</h3>
+<div class="outline-text-3" id="text-6-3">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #51afef;">import</span> seaborn <span style="color: #51afef;">as</span> sns
 <span class="linenr"> 2: </span>  sns.<span style="color: #c678dd;">set</span>(style=<span style="color: #98be65;">"ticks"</span>)
@@ -2560,16 +2577,16 @@ y: [0.         0.00999983 0.01999867 0.0299955  0.03998933]
 </div>
 
 
-<div id="org4e728f2" class="figure">
+<div id="orgd0126e0" class="figure">
 <p><img src="images/seabornPlot.png" alt="seabornPlot.png" /><br />
 </p>
 <p><span class="figure-number">Figure 10: </span>seabornPlot</p>
 </div>
 </div>
 </div>
-<div id="outline-container-org00f5eb7" class="outline-3">
-<h3 id="org00f5eb7"><span class="section-number-3">7.4.</span> Altair</h3>
-<div class="outline-text-3" id="text-7-4">
+<div id="outline-container-orgdc13597" class="outline-3">
+<h3 id="orgdc13597"><span class="section-number-3">6.4.</span> Altair</h3>
+<div class="outline-text-3" id="text-6-4">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #51afef;">import</span> altair <span style="color: #51afef;">as</span> alt
 <span class="linenr"> 2: </span>  <span style="color: #51afef;">from</span> vega_datasets <span style="color: #51afef;">import</span> data
@@ -2586,7 +2603,7 @@ y: [0.         0.00999983 0.01999867 0.0299955  0.03998933]
 </div>
 
 
-<div id="orgc9b40c6" class="figure">
+<div id="org197a355" class="figure">
 <p><img src="images/altairPlot.png" alt="altairPlot.png" /><br />
 </p>
 <p><span class="figure-number">Figure 11: </span>altairPlot</p>
@@ -2639,7 +2656,7 @@ y: [0.         0.00999983 0.01999867 0.0299955  0.03998933]
 </div></div>
 <div id="postamble" class="status">
 <p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2023-12-01 Fri 09:02</p>
+<p class="date">Created: 2023-12-01 Fri 20:41</p>
 </div>
 </body>
 </html>
