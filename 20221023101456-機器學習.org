@@ -17,6 +17,7 @@
 ** 機器學習簡介影片
 [[https://www.youtube.com/watch?v=OXNC_sefxi4][机器学习简介（机器学习从零到一第一集)]]
 [[https://www.youtube.com/watch?v=ifj5bAzrzMw][机器学习中的基本计算机视觉概念（机器学习从零到一第二集）]]
+
 ** 簡介
 - 機器學習是[[id:20221023T101138.945879][人工智慧]]的一個分支，在[[id:20221023T101138.945879][人工智慧]]的研究歷史有著一條從以「推理」為重點，到以「知識」為重點，再到以 「學習」為重點的自然、清晰的脈絡。
 - 機器學習是實現[[file:AI-Introduction.org][人工智慧]]的一個途徑，即以機器學習為手段解決[[file:AI-Introduction.org][人工智慧]]中的問題。
@@ -57,9 +58,8 @@
 #+ATTR_HTML: :width 700
 #+RESULTS:
 [[file:images/MLTypes.png]]
-
-** 何謂機器學習
 - 機器學習就是從一組function中找出一個最合適的function的過程[李宏毅]。
+#+latex:\newpage
 
 * 機器是如何學習的
 ** 傳統程式設計
@@ -195,6 +195,7 @@ print(f'當x=10時，y={W}*10+{B}={W*10+B}')
 #+END_SRC
 #+RESULTS:
 [[file:images/MLProg.png]]
+
 ** 實作1
 #+begin_src shell -r :results output :exports both
 pip3 install tensorflow
@@ -224,6 +225,7 @@ print("模型的兩個參數W,B: {}".format(l0.get_weights()))
 : 模型的兩個參數W,B: [array([[1.4212971]], dtype=float32), array([0.49687672], dtype=float32)]
 
 但是正確答案為19，預測的結果好像不太準....QQ
+
 ** 實作2
 如果我們向上帝偷偷多要一個模型的參照點(4, 7)，以三點當成標準答案來進行預測，結果會不會好一點呢?
 #+begin_src python -r  :results output :exports both
@@ -285,6 +287,7 @@ print("模型的兩個參數W,B: {}".format(l0.get_weights())) (ref:modelWeights
 3. 編譯好模型，我們就拿手僅有的5組資料來訓練模型，訓練500回(第[[(modelFit)]]行)
 4. 訓練好的模型就能拿來預測了，我們拿 $x=10$ 當成預測資料，要求模型給出預測的結果 $y$ (第[[(modelPredict)]]行)
 5. 偷偷看一下這個模型給出答案的關鍵、也就是模型的兩個參數(Weight)(第[[(modelWeights)]]行)
+#+latex:\newpage
 
 * 機器學習概念釐清
 ** Machine Learning v.s. Statistics
@@ -347,129 +350,7 @@ Inference Phase
 #+ATTR_ORG: :width 300
 #+RESULTS:
 [[file:images/TPIP.png]]
-
-* 典型的機器學習MODEL Training
-以"rock, paper, and scissors"辨識為例[fn:2]:
-1. 將三種圖案的image讀入model中
-2. 於model中建立神經元(可視為function)，學習不同image的特徵
-3. 根據上述神經元讀取的特徵值(features)，配合該image之答案(label)，進行學習
-#+begin_src python -r -n :results output :exports both
-model = tf.keras.models.Sequence([
-    tf.keras.layers.Flatten(input_shape=(150, 150, 3)),
-    tf.keras.layers.Dense(512, activation='relu),
-    tf.keras.layers.Dense(3, activatio='softmax')
-])
-
-model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
-
-model.fit(...., epochs=100)
-#+end_src
-** Process of learning
-可先將512個神經元視為512個function，每個function裡有許多變數，這些變數的初始值為random assign，接下來每個function陸續讀取image的所有feature(即圖的每個pixel，這裡可以將之視為傳入該function的parameters)，然後根據function中的變數值，開始學習要如何調整function裡的變數值才能輸出這個image的正確答案(label)，每個神經元同時進行學習與變數值調校。
-*** function 示意圖
-#+BEGIN_SRC ditaa :file images/function-dg.png  :cmdline -r
-Neuron
--=------------
-                   +------------------------+
-     parameter 1   |                        |
-   --------------->|       variable 1       |
-     parameter 2   |       variable 2       |
-   --------------->|          ...           |  Results
-          ...      |          ...           +----------->
-   --------------->|          ...           |
-     parameter n   |       variable n       |
-   --------------->|                        |
-                   +------------------------+
-#+END_SRC
-#+CAPTION: Function
-#+name: fig: Function
-#+ATTR_HTML: :width 500
-#+ATTR_LATEX: :width 500
-#+ATTR_ORG: :width 500
-#+RESULTS:
-[[file:images/function-dg.png]]
-
-在訓練的過程中，我們根據每個function所輸入的參數(parameters)，調整function裡的變數值(這些最初是random得來的)，希望能得到與該輸入值(所有的parameters)所相對應的答案。
-
-在傳統的程式設計觀點，輸入function的數值為參數；但在神經網路的觀點，輸入值為features，function稱為neuron，neuron裡的變數稱為parameters，所有neuron裡的parameter均為神經網路訓練過程中要調整的對象。
-#+BEGIN_SRC ditaa :file images/neuron-dg.png
-Neuron
--=------------
-                   +------------------------+
-       feature 1   |                        |
-   --------------->|      parameter 1       |
-       feature 2   |      parameter 2       |
-   --------------->|          ...           |  Results
-          ...      |          ...           +----------->
-   --------------->|          ...           |
-       feature n   |      parameter n       |
-   --------------->|                        |
-                   +------------------------+
-#+END_SRC
-#+CAPTION: Neuron
-#+name: fig: Neuron
-#+ATTR_HTML: :width 500
-#+ATTR_LATEX: :width 500
-#+ATTR_ORG: :width 500
-#+RESULTS:
-[[file:images/neuron-dg.png]]
-** Example of training
-- 輸入image為rock
-  #+CAPTION: Stone
-  #+LABEL:fig:Stone
-  #+name: fig:Stone
-  #+ATTR_LATEX: :width 600
-  #+ATTR_ORG: :width 600
-  #+ATTR_HTML: :width 500
-  [[file:images/stone.jpg]]
-- 輸入image為paper
-  #+CAPTION: Paper
-  #+LABEL:fig:Paper
-  #+name: fig:Paper
-  #+ATTR_LATEX: :width 600
-  #+ATTR_ORG: :width 600
-  #+ATTR_HTML: :width 500
-  [[file:images/paper.jpg]]
-
-接下來，
-** Model v.s. Layer: Training step by step
-- Input layer
-  此的輸入為image，對model來說，其feature為150*150*3
-  #+CAPTION: input_shape
-  #+LABEL:fig:input_shape
-  #+name: fig:input_shape
-  #+ATTR_LATEX: :width 600
-  #+ATTR_ORG: :width 600
-  #+ATTR_HTML: :width 500
-  [[file:images/input_shape.jpg]]
-- Hidden layer
-  中間層(hidden layer)有512個神經元，可視為512個function
-  #+CAPTION: hidden_layer
-  #+LABEL:fig:hidden_layer
-  #+name: fig:hidden_layer
-  #+ATTR_LATEX: :width 600
-  #+ATTR_ORG: :width 600
-  #+ATTR_HTML: :width 500
-  [[file:images/hidden_layer.jpg]]
-- Output layer
-  輸出層(output layer)則輸出三種可能的答案
-  #+CAPTION: output_layer
-  #+LABEL:fig:output_layer
-  #+name: fig:output_layer
-  #+ATTR_LATEX: :width 600
-  #+ATTR_ORG: :width 600
-  #+ATTR_HTML: :width 500
-  [[file:images/output_layer.jpg]]
-** compile v.s. fit
-- compile: Compile與傳統程式設計概念不同，此處旨在訂定兩個model training中最重要的關鍵: loss function與optimizer。剛才提及每個function(或neuron)都對於產生答案(label)做出了貢獻，然而這個答案到底好或不好，必須要有一個評估機制，loss function的目的就在評估每一次所有neuron所產生的答案是否足夠好(以此例來看至少正確率必須高過1/3)，然後把評估結果丟給optimizer，由它來決定下一次猜測時neuron裡的parameters要如何調整。
-- fit: 如此重複不斷的進行"輸入feature->猜測答案->評估答案->修正parameter->輸入features->猜測答案->評估答案->修正parameter...."，希望最終能找到各neuron中最佳的parameters值，每一次的訓練稱為一次epoch。這就是fit在做的事，也是實際訓練的動作，訓練所需時間視輸入值、model複雜程度與硬體效能而定，也許僅需數分鐘，也許要耗時數週。
-#+CAPTION: compile-phase
-#+LABEL:fig:compile-phase
-#+name: fig:compile-phase
-#+ATTR_LATEX: :width 600
-#+ATTR_ORG: :width 600
-#+ATTR_HTML: :width 500
-[[file:images/compile_phase.jpg]]
+#+latex:\newpage
 
 * 機器學習如何解決問題
 ** 使用機器學習處理問題的幾個步驟：
@@ -652,106 +533,14 @@ Neuron
 #+RESULTS:
 [[file:images/ReinforceLearningGame.jpg]]
 
-** Batch and Online Learning[fn:5]
-*** Batch learning: In /batch learning/, the system is incapable of learning incrementally; it must be trained using all the available data.
+** 依據AI模型是否能由即時資料流進行增量學習來區分: Offline (Batch)) and Online Learning[fn:5]
+*** Offline (Batch) learning: In /batch learning/, the system is incapable of learning incrementally; it must be trained using all the available data.
 *** Online learning:
 - In /online learning/, you train the system incrementally by feeding it data instances sequentially, either individually or in small groups called /mini-batches/.
 - Online learning is great for systems that receive data as a continuous flow (e.g., stock prices) and need to adapt to change rapidly or autonomously.
 - Online learning algorithms can also be used to train systems on huge datasets that cannot fit in one machine's main memory (this is called /out-of-core/ learning).
 
-** Instance-Based Versus model-Based Learning[fn:5]
-*** Instance-based learning: the system learns the examples by heart, then generalizes to new cases by using a similarity measure to compare them the the learned examples.
-- 以垃圾郵件偵測為例，早期做法是由使用者將特定寄件人設定為垃圾來源，之後將同一寄件者寄出之郵件全標為垃圾；
-- 而 AI 的做法則是可以找出與現有被標為垃圾郵件十分「相似」的郵件，也將之標為垃圾郵件。
-- 重點在於相似性的計算
-*** Model-based learning: Another way to generalize from a set of examples is to build a model of these examples and then use that model to make /predictions/.
-- 例，以 linear model 來預測人圴生產總值與該國人民滿意度的關係：
-  1. model selection: decide to select what kind of model: $$lifeSatisfaction = \theta_0 + \theta_1 \times GDP $$
-  2. define parameter value: how do you know which vsalues ($$\theta_0, \theta_1$$) will make your model perform best?
-  3. evaluate model performance: you can either define a utility function (or /fitness function/) that measures how /good/ your model is, or you can define a /cost function/ that measures how /bad/ it is.
-#+CAPTION: The linear model that fits the training data best
-#+name: fig:GDP
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 600
-#+RESULTS:
-[[file:images/GDP.jpg]]
-- CODE
-#+begin_src python -r -n :results output :exports both
-# Download the data
-import urllib.request
-import os
-datapath = os.path.join("datasets", "lifesat", "")
-
-def prepare_country_stats(oecd_bli, gdp_per_capita):
-    oecd_bli = oecd_bli[oecd_bli["INEQUALITY"]=="TOT"]
-    oecd_bli = oecd_bli.pivot(index="Country", columns="Indicator", values="Value")
-    gdp_per_capita.rename(columns={"2015": "GDP per capita"}, inplace=True)
-    gdp_per_capita.set_index("Country", inplace=True)
-    full_country_stats = pd.merge(left=oecd_bli, right=gdp_per_capita,
-                                  left_index=True, right_index=True)
-    full_country_stats.sort_values(by="GDP per capita", inplace=True)
-    remove_indices = [0, 1, 6, 8, 33, 34, 35]
-    keep_indices = list(set(range(36)) - set(remove_indices))
-    return full_country_stats[["GDP per capita", 'Life satisfaction']].iloc[keep_indices]
-
-DOWNLOAD_ROOT = "https://raw.githubusercontent.com/ageron/handson-ml2/master/"
-os.makedirs(datapath, exist_ok=True)
-for filename in ("oecd_bli_2015.csv", "gdp_per_capita.csv"):
-    print("Downloading", filename)
-    url = DOWNLOAD_ROOT + "datasets/lifesat/" + filename
-    urllib.request.urlretrieve(url, datapath + filename)
-
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-import sklearn.linear_model
-
-# Load the data
-oecd_bli = pd.read_csv("./datasets/lifesat/oecd_bli_2015.csv", thousands=',')
-gdp_per_capita = pd.read_csv("./datasets/lifesat/gdp_per_capita.csv",thousands=',',delimiter='\t', encoding='latin1', na_values="n/a")
-
-
-# Prepare the data
-country_stats = prepare_country_stats(oecd_bli, gdp_per_capita)
-X = np.c_[country_stats["GDP per capita"]]
-y = np.c_[country_stats["Life satisfaction"]]
-
-# Visualize the data
-plt.clf()
-
-country_stats.plot(kind='scatter', x="GDP per capita", y='Life satisfaction')
-import matplotlib as mpl
-mpl.rc('axes', labelsize=14)
-mpl.rc('xtick', labelsize=12)
-mpl.rc('ytick', labelsize=12)
-plt.plot()
-
-plt.savefig("images/GDP.png")
-# Select a linear model
-model = sklearn.linear_model.LinearRegression()
-
-# Train the model
-model.fit(X, y)
-
-# Make a prediction for Cyprus
-X_new = [[22587]]  # Cyprus's GDP per capita
-print(model.predict(X_new)) # outputs [[ 5.96242338]]
-
-#+end_src
-
-#+RESULTS:
-: Downloading oecd_bli_2015.csv
-: Downloading gdp_per_capita.csv
-: [[5.96242338]]
-#+CAPTION: The linear model that fits the training data best
-#+name: fig:GDP1
-#+ATTR_LATEX: :width 600
-#+ATTR_ORG: :width 600
-#+ATTR_HTML: :width 600
-[[file:images/GDP.png]]
-
-* Data Representations
+* AI模型中的資料呈現方式
 How can we represent data (images, text, user preferences, etc.) in a way that computers can understand? -> Organize information into a vector[fn:2].
 - A vector is a 1-dimensional array of numbers. It has both a magnitude(length) and a direction.
 - A feature vector is a vector whose entries represent the "features" of some object.
@@ -839,20 +628,128 @@ Obviously, if your training data is full of errors, outliers, and noise (e.g., d
 ** Underfitting the training data
 Underfitting occurs when your model is too simple to learn the underlying structure of the data.
 
-* Machine Learning 的基本類型
+* 典型的機器學習MODEL Training[實作]
+以"rock, paper, and scissors"辨識為例[fn:2]:
+1. 將三種圖案的image讀入model中
+2. 於model中建立神經元(可視為function)，學習不同image的特徵
+3. 根據上述神經元讀取的特徵值(features)，配合該image之答案(label)，進行學習
+#+begin_src python -r -n :results output :exports both
+model = tf.keras.models.Sequence([
+    tf.keras.layers.Flatten(input_shape=(150, 150, 3)),
+    tf.keras.layers.Dense(512, activation='relu),
+    tf.keras.layers.Dense(3, activatio='softmax')
+])
 
-* Classfication
-兩步驟
-** Model construction: describing a set of predetermined classes
-- Each tuple/sample is assumed to belong to a predefined class, as determined by the class label attribute
-- The set of tuples used for model construction is training set
-- The model is represented as classfication urles, decision trees, or mathematical formulae.
-** Model usage: for classifying future or unknown objects
-- Estimate accuracy of the model
-  + The Known label of test sample is compared with the classified result from the model
-  + Accuracy rate is the percentage of test set samples that are conrrectly classified by the model
-  + Test set is independent of training set (otherwise overfitting)
-- If the test set is used to select models, it is called validation (set) set.
+model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
+
+model.fit(...., epochs=100)
+#+end_src
+** Process of learning
+可先將512個神經元視為512個function，每個function裡有許多變數，這些變數的初始值為random assign，接下來每個function陸續讀取image的所有feature(即圖的每個pixel，這裡可以將之視為傳入該function的parameters)，然後根據function中的變數值，開始學習要如何調整function裡的變數值才能輸出這個image的正確答案(label)，每個神經元同時進行學習與變數值調校。
+*** function 示意圖
+#+BEGIN_SRC ditaa :file images/function-dg.png  :cmdline -r
+Neuron
+-=------------
+                   +------------------------+
+     parameter 1   |                        |
+   --------------->|       variable 1       |
+     parameter 2   |       variable 2       |
+   --------------->|          ...           |  Results
+          ...      |          ...           +----------->
+   --------------->|          ...           |
+     parameter n   |       variable n       |
+   --------------->|                        |
+                   +------------------------+
+#+END_SRC
+#+CAPTION: Function
+#+name: fig: Function
+#+ATTR_HTML: :width 500
+#+ATTR_LATEX: :width 500
+#+ATTR_ORG: :width 500
+#+RESULTS:
+[[file:images/function-dg.png]]
+
+在訓練的過程中，我們根據每個function所輸入的參數(parameters)，調整function裡的變數值(這些最初是random得來的)，希望能得到與該輸入值(所有的parameters)所相對應的答案。
+
+在傳統的程式設計觀點，輸入function的數值為參數；但在神經網路的觀點，輸入值為features，function稱為neuron，neuron裡的變數稱為parameters，所有neuron裡的parameter均為神經網路訓練過程中要調整的對象。
+#+BEGIN_SRC ditaa :file images/neuron-dg.png
+Neuron
+-=------------
+                   +------------------------+
+       feature 1   |                        |
+   --------------->|      parameter 1       |
+       feature 2   |      parameter 2       |
+   --------------->|          ...           |  Results
+          ...      |          ...           +----------->
+   --------------->|          ...           |
+       feature n   |      parameter n       |
+   --------------->|                        |
+                   +------------------------+
+#+END_SRC
+#+CAPTION: Neuron
+#+name: fig: Neuron
+#+ATTR_HTML: :width 500
+#+ATTR_LATEX: :width 500
+#+ATTR_ORG: :width 500
+#+RESULTS:
+[[file:images/neuron-dg.png]]
+** Example of training
+- 輸入image為rock
+  #+CAPTION: Stone
+  #+LABEL:fig:Stone
+  #+name: fig:Stone
+  #+ATTR_LATEX: :width 600
+  #+ATTR_ORG: :width 600
+  #+ATTR_HTML: :width 500
+  [[file:images/stone.jpg]]
+- 輸入image為paper
+  #+CAPTION: Paper
+  #+LABEL:fig:Paper
+  #+name: fig:Paper
+  #+ATTR_LATEX: :width 600
+  #+ATTR_ORG: :width 600
+  #+ATTR_HTML: :width 500
+  [[file:images/paper.jpg]]
+
+接下來，
+** Model v.s. Layer: Training step by step
+- Input layer
+  此的輸入為image，對model來說，其feature為150*150*3
+  #+CAPTION: input_shape
+  #+LABEL:fig:input_shape
+  #+name: fig:input_shape
+  #+ATTR_LATEX: :width 600
+  #+ATTR_ORG: :width 600
+  #+ATTR_HTML: :width 500
+  [[file:images/input_shape.jpg]]
+- Hidden layer
+  中間層(hidden layer)有512個神經元，可視為512個function
+  #+CAPTION: hidden_layer
+  #+LABEL:fig:hidden_layer
+  #+name: fig:hidden_layer
+  #+ATTR_LATEX: :width 600
+  #+ATTR_ORG: :width 600
+  #+ATTR_HTML: :width 500
+  [[file:images/hidden_layer.jpg]]
+- Output layer
+  輸出層(output layer)則輸出三種可能的答案
+  #+CAPTION: output_layer
+  #+LABEL:fig:output_layer
+  #+name: fig:output_layer
+  #+ATTR_LATEX: :width 600
+  #+ATTR_ORG: :width 600
+  #+ATTR_HTML: :width 500
+  [[file:images/output_layer.jpg]]
+** compile v.s. fit
+- compile: Compile與傳統程式設計概念不同，此處旨在訂定兩個model training中最重要的關鍵: loss function與optimizer。剛才提及每個function(或neuron)都對於產生答案(label)做出了貢獻，然而這個答案到底好或不好，必須要有一個評估機制，loss function的目的就在評估每一次所有neuron所產生的答案是否足夠好(以此例來看至少正確率必須高過1/3)，然後把評估結果丟給optimizer，由它來決定下一次猜測時neuron裡的parameters要如何調整。
+- fit: 如此重複不斷的進行"輸入feature->猜測答案->評估答案->修正parameter->輸入features->猜測答案->評估答案->修正parameter...."，希望最終能找到各neuron中最佳的parameters值，每一次的訓練稱為一次epoch。這就是fit在做的事，也是實際訓練的動作，訓練所需時間視輸入值、model複雜程度與硬體效能而定，也許僅需數分鐘，也許要耗時數週。
+#+CAPTION: compile-phase
+#+LABEL:fig:compile-phase
+#+name: fig:compile-phase
+#+ATTR_LATEX: :width 600
+#+ATTR_ORG: :width 600
+#+ATTR_HTML: :width 500
+[[file:images/compile_phase.jpg]]
 
 * 學習資源
 ** Machine Learning [台大李宏毅]
@@ -947,8 +844,6 @@ Underfitting occurs when your model is too simple to learn the underlying struct
 - [[https://towardsdatascience.com/visualizing-intermediate-activation-in-convolutional-neural-networks-with-keras-260b36d60d0][Visualizing intermediate activation in Convolutional Neural Networks with Keras]]: 查看 training 中 image 的成像
 
 * Footnotes
-
-
 [fn:1] [[https://github.com/rasbt/python-machine-learning-book-2nd-edition][python-machine-learning-book-2nd-edition]]
 
 [fn:2] [[https://youtu.be/LlKAna21fLE][A friendly introduction to linear algebra for ML (ML Tech Talks)]]
