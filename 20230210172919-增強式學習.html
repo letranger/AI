@@ -1,0 +1,993 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2023-12-03 Sun 19:25 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>增強式學習</title>
+<meta name="author" content="Yung-Chin Yen" />
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<link rel="stylesheet" type="text/css" href="../css/muse.css" />
+<script>
+  window.MathJax = {
+    tex: {
+      ams: {
+        multlineWidth: '85%'
+      },
+      tags: 'ams',
+      tagSide: 'right',
+      tagIndent: '.8em'
+    },
+    chtml: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    svg: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    output: {
+      font: 'mathjax-modern',
+      displayOverflow: 'overflow'
+    }
+  };
+</script>
+
+<script
+  id="MathJax-script"
+  async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">增強式學習</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#AI-RL">1. 增強式學習</a>
+<ul>
+<li><a href="#org7ab735f">1.1. 與監督式學習的比較</a></li>
+<li><a href="#orgaa07088">1.2. 與深度學習的比較</a></li>
+<li><a href="#orga232909">1.3. 實例</a></li>
+</ul>
+</li>
+<li><a href="#org30f365c">2. Open AI Gym</a>
+<ul>
+<li><a href="#org30ebd52">2.1. module</a></li>
+</ul>
+</li>
+<li><a href="#orgdd5f6b4">3. CartPole</a>
+<ul>
+<li><a href="#org845c462">3.1. 執行測試與環境變數</a></li>
+<li><a href="#org67206cd">3.2. 重要環境變數</a></li>
+<li><a href="#org8b860db">3.3. 分組作業:</a></li>
+</ul>
+</li>
+<li><a href="#orgc909398">4. 直覺反應的CartPole</a>
+<ul>
+<li><a href="#org8cda84f">4.1. 分組作業</a></li>
+</ul>
+</li>
+<li><a href="#org50b22c3">5. Hill Climbing Strategy </a>
+<ul>
+<li><a href="#org62d4d2f">5.1. Source code</a></li>
+</ul>
+</li>
+<li><a href="#org8bd7b3b">6. Q-Learnin g</a>
+<ul>
+<li><a href="#orgccb1594">6.1. Algorithms</a></li>
+<li><a href="#org622dd80">6.2. Q-Table</a></li>
+</ul>
+</li>
+<li><a href="#org7b78366">7. 增強式學習有多強</a></li>
+</ul>
+</div>
+</div>
+<a href="https://hits.sh/letranger.github.io/AI/20230210172919-增強式學習.html/"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20230210172919-增強式學習.html.svg"/></a>
+<div id="outline-container-AI-RL" class="outline-2">
+<h2 id="AI-RL"><span class="section-number-2">1.</span> 增強式學習</h2>
+<div class="outline-text-2" id="text-AI-RL">
+<ul class="org-ul">
+<li>強化學習的目標在於開發一個系統（或代理人，agent）,他會藉由與環境的互動來改進自身的效能。由於當前的環境狀態資訊通常就包含了所謂「奬勵信號」(reward signal)，強化學習的目的就是找到一個最好的 Policy(策略)，可以讓 reward 最多。所以也可以把「強化學習」視為與「監督式學習」相關聯的領域，然而在強化學習中，環境回饋不能視為真實正的事實（或是說，正確的標籤），只能將之視為：測量函數對特定行動所觀測到並回報的一個度量值。如圖<a href="#orgc91ebc2">1</a>，Agent<br /></li>
+<li>最常見的應用是教機器如何「玩遊戲」，在這種情境下，我們不會對某個動作貼標籤說它是「好」或「壞」，而是根據遊戲的結果（輸或是贏）或是遊戲中的信號（得分或失分）來做為回饋。<br /></li>
+</ul>
+
+
+<div id="orgc91ebc2" class="figure">
+<p><img src="images/ReinforcementLearning.png" alt="ReinforcementLearning.png" width="600" /><br />
+</p>
+<p><span class="figure-number">Figure 1: </span>強化學習流程圖</p>
+</div>
+<ul class="org-ul">
+<li>機器為了達成目標，隨著環境的變動，而逐步調整其行為，並評估每一個行動之後所到 的回饋是正向的或負向的，即，在 try-and-error 的過程中一步步從失敗中找出成功的路徑。<br /></li>
+<li>強化學習的效果之所以優於監督式學習，主要原因是：監督式學習是人示範給電腦看，電腦照著做，但如果人做的不夠好，電腦再厲害也無法超越(例如，醫師給的 X 光片在判讀上本身就出現誤解 )；而強化學習則是在做中學，進一步脫離人的指導(或人類的經驗限制)，自行發展出更好的規則。<br /></li>
+<li>強化學習其實就是訓練一個 AI 可以通過每一次的錯誤來學習，就跟我們小時候學騎腳踏車一樣，一開始學的時候會一直跌倒，然後經過幾次的失敗後，我們就可以上手也不會跌倒了<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。強化學習在過去曾被長期忽視，但在 Google DeepMind 成功將其應用來玩 Atari 遊戲後，就開始受到許多關注。<br /></li>
+<li>較常用於以下領域：電腦遊戲、下棋、自駕車、機器人。<br /></li>
+</ul>
+</div>
+<div id="outline-container-org7ab735f" class="outline-3">
+<h3 id="org7ab735f"><span class="section-number-3">1.1.</span> 與<a href="20221023101626-監督式學習.html#ID-20221023T101626.420918">監督式學習</a>的比較</h3>
+<div class="outline-text-3" id="text-1-1">
+<ul class="org-ul">
+<li>監督式學習會有一個 tutor 或判斷依據，以圍棋來說是有一個棋譜<br /></li>
+<li>增強式學習沒有依據，完全從行為的經驗去自行判斷，以 alpha-go 為例，是以兩台 alpha-go 多次互相對奕來訓練，用這種方式的好處是可以生成大量資料<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgaa07088" class="outline-3">
+<h3 id="orgaa07088"><span class="section-number-3">1.2.</span> 與<a href="20221023101228-深度學習.html#ID-20221023T101228.247381">深度學習</a>的比較</h3>
+<div class="outline-text-3" id="text-1-2">
+</div>
+<ol class="org-ol">
+<li><a id="orga24f40e"></a>深度學習<br />
+<div class="outline-text-4" id="text-1-2-1">
+<p>
+Deep Learning,是一種機器學習的技術，由於深度學習在現代機器學習中的比重和價值非常巨大，因此常常將深度學習單獨拿出來說。最初的深度學習網絡是利用神經網絡來解決特徵層分佈的一種學習過程。通常我們瞭解的 DNN（深度神經網絡），CNN（<a href="20221023101414-卷積神經網路.html#ID-20221023T101414.457264">卷積神經網路</a>），RNN（<a href="20230108135329-循環神經網路.html#ID-263cb433-d0eb-4400-a373-35175c000c01">循環神經網路</a>），LSTM（長短期記憶網絡）都是隸屬於深度學習的範疇。也是現代機器學習最常用的一些手段。通過這些手段，深度學習在視覺識別，語音識別，<a href="20221023101534-自然語言處理.html#ID-20221023T101534.642520">自然語言處理</a>（NLP）等領域取得了使用傳統機器學習算法所無法取得的成就。<br />
+</p>
+</div>
+</li>
+<li><a id="org8b878ef"></a>強化學習(Reinforcement Learning)<br />
+<div class="outline-text-4" id="text-1-2-2">
+<p>
+又稱再勵學習或者評價學習。也是機器學習的技術之一。所謂強化學習就是智能系統從環境到行為映射的學習，以使獎勵信號（強化信號）函數值最大，由於外部給出的信息很少，強化學習系統必須依靠自身的經歷進行自我學習。通過這種學習獲取知識，改進行動方案以適應環境。強化學習最關鍵的三個因素是狀態，行為和環境獎勵。關於強化學習和深度學習的實例，最典型的莫過於谷歌的 AlphaGo 和 AlphaZero 兩位了，前者通過深度學習中的深度卷積神經網絡，在訓練了大約三千萬組人類的下棋數據，無數度電的情況下才搞出來的模型，而後者使用強化學習的方式，通過自己和自己下棋的方式搞出來的模型。而最終的實驗結果也很讓人震撼。AlphaGo 干敗了人類圍棋頂尖高手,而 AlphaZero 干敗了 AlphaGo<sup><a id="fnr.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup>.<br />
+</p>
+</div>
+</li>
+</ol>
+</div>
+<div id="outline-container-orga232909" class="outline-3">
+<h3 id="orga232909"><span class="section-number-3">1.3.</span> 實例</h3>
+<div class="outline-text-3" id="text-1-3">
+<ul class="org-ul">
+<li><a href="https://www.youtube.com/watch?v=AJ1TR28KNqY">“影分身之术”！训练50亿次的AI能有多智能</a><br /></li>
+<li><a href="https://www.youtube.com/watch?v=Z6fjTZAtziQ">讓人工智慧玩捉迷藏，最後居然發展出連人類都想不到的策略!? | 一探啾竟 第80集 | 啾啾鞋</a><br /></li>
+</ul>
+
+<p>
+使用代理人(agent)來對環境進行觀察、選擇與執行行動，藉由因行動獲取來自環境的回應（可能是rewards或penalties，奬勵或懲罰），然後自行學習最佳策略（policy），最後隨著時間取得最多的奬勵<sup><a id="fnr.1.100" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。<br />
+</p>
+
+<p>
+典型的增強式學習是用來訓練機器人走路，DeepMind的AlphaGo也是應用增強式學習打敗柯潔（與柯潔比賽時AlphaGo關閉了學習機制，只應用之前已學習過的policy）。<br />
+</p>
+
+<p>
+對RL稍有了解的同學都知道，Exploration是一件很重要同時也很困難的事情。與其他機器學習範式相比，RL通常只知道某個動作的能得多少分，卻不知道該動作是不是最好的——這就是基於evaluate的強化學習與基於instruct的監督學習的根本區別。<br />
+</p>
+
+<p>
+正因如此，RL的本質決定了它極其需要Exploration，我們需要通過不斷地探索來發現更好的決策，或者至少證明當前的決策是最好的——所以Exploration-Exploitation成為了強化學習領域諸個Tradeoff中最出名的一個<sup><a id="fnr.3" class="footref" href="#fn.3" role="doc-backlink">3</a></sup>。<br />
+</p>
+
+<p>
+最簡單的exploration方法就是epsilon-greedy，即設置一個探索率epsilon來平衡兩者的關係——在大部分時間裡採用現階段最優策略，在少部分時間裡實現探索。Epsilon-greedy很簡單，它根本不會考慮更加有針對性的探索機制，它僅僅是在純貪心的基礎上加入了一定機率的uniform噪聲——所以epsilon-greedy又被稱為Naive Exploration<sup><a id="fnr.3.100" class="footref" href="#fn.3" role="doc-backlink">3</a></sup>。<br />
+</p>
+
+
+<div id="orgd2e4cb9" class="figure">
+<p><img src="images/2022-04-30_10-09-00.jpg" alt="2022-04-30_10-09-00.jpg" width="400" /><br />
+</p>
+<p><span class="figure-number">Figure 2: </span>Caption</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org30f365c" class="outline-2">
+<h2 id="org30f365c"><span class="section-number-2">2.</span> Open AI Gym</h2>
+<div class="outline-text-2" id="text-2">
+<ul class="org-ul">
+<li><a href="http://ukko.life.nctu.edu.tw/~u0517047/present.html">OpenAI gym 介紹</a><br /></li>
+</ul>
+<p>
+OpenAI Gym 是一個提供許多測試環境的工具，讓大家有一個共同的環境可以測試自己的 RL 演算法，而不用花時間去搭建自己的測試環境。<br />
+</p>
+</div>
+<div id="outline-container-org30ebd52" class="outline-3">
+<h3 id="org30ebd52"><span class="section-number-3">2.1.</span> module</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+於本機執行至少會用到以下兩個python module，若要在遠端主機或colab上執行則要再做其他額外設定。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">pip install --user gym
+pip install --user <span style="color: #dcaeea;">pyglet</span>==1.5.11 <span style="color: #51afef;">(</span>&#25110;&#26159;1.5.14<span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgdd5f6b4" class="outline-2">
+<h2 id="orgdd5f6b4"><span class="section-number-2">3.</span> CartPole</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+Gym上有許多可用工具，CartPole是其中較為簡單常見的一種，CartPole是一個桿子連在一個小車上，小車可以無摩擦的左右運動，桿子（倒立擺）一開始是豎直線向上的。小車通過左右運動使得桿子不倒。<br />
+</p>
+
+<div id="orgfbee7cb" class="figure">
+<p><img src="images/cartpole-sys.jpg" alt="cartpole-sys.jpg" width="400" /><br />
+</p>
+<p><span class="figure-number">Figure 3: </span>Cart-pole system</p>
+</div>
+</div>
+<div id="outline-container-org845c462" class="outline-3">
+<h3 id="org845c462"><span class="section-number-3">3.1.</span> 執行測試與環境變數</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+以下是一段最基本的測試程式<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #51afef;">import</span> gym
+<span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;&#31435;&#22519;&#34892;&#29872;&#22659;</span>
+<span style="color: #dcaeea;">env</span> = gym.make(<span style="color: #98be65;">'CartPole-v0'</span>)
+<span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23559;&#22519;&#34892;&#29872;&#22659;&#21021;&#22987;&#21270;</span>
+env.reset()
+<span style="color: #51afef;">for</span> _ <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #da8548; font-weight: bold;">100</span>):
+    env.render()
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38568;&#27231;&#31848;action_space&#20013;&#25361;&#36984;&#19979;&#19968;&#21205;&#20316;(action)&#19999;&#20837;step&#22519;&#34892;</span>
+    env.step(env.action_space.sample())
+env.close()
+</pre>
+</div>
+<p>
+如下圖所示，增強式學習的核心就是: Agent採取Action，採取行動後，環境可能會被改變，而環境會給Agent一個Reward，讓Agent知道這Action好不好。其中：<br />
+action有0或1兩種可能值，代表將將車子向左或向右控制。<br />
+</p>
+<p width="300">
+<img src="images/cartpole-cycle.jpg" alt="cartpole-cycle.jpg" width="300" /><br />
+就Cartpole來說，action丟入環境執行後，可以得到幾個相關的環境資訊(由step function傳回)，這些變數可由以下方式取得<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #51afef;">import</span> gym
+<span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;&#31435;&#22519;&#34892;&#29872;&#22659;</span>
+<span style="color: #dcaeea;">env</span> = gym.make(<span style="color: #98be65;">'CartPole-v0'</span>)
+<span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23559;&#22519;&#34892;&#29872;&#22659;&#28165;&#31354;&#28858;&#38928;&#35373;&#20540;(&#24478;&#26032;&#38283;&#22987;)</span>
+env.reset()
+<span style="color: #dcaeea;">rewards</span> = <span style="color: #da8548; font-weight: bold;">0</span>
+<span style="color: #51afef;">for</span> _ <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #da8548; font-weight: bold;">100</span>):
+    env.render()
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20173;&#28982;&#38568;&#27231;&#29986;&#29983; action</span>
+    <span style="color: #dcaeea;">action</span> = env.action_space.sample()
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">actionh&#21435;&#20837;&#29872;&#22659;&#22519;&#34892;&#65292;&#20659;&#22238;&#29872;&#22659;&#36039;&#35338;</span>
+    <span style="color: #dcaeea;">observation</span>, <span style="color: #dcaeea;">reward</span>, <span style="color: #dcaeea;">done</span>, <span style="color: #dcaeea;">info</span> = env.step(action)
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36664;&#20986;&#20358;&#26597;&#30475;&#19968;&#19979;</span>
+    <span style="color: #dcaeea;">rewards</span> += reward
+    <span style="color: #c678dd;">print</span>(observation)
+    <span style="color: #51afef;">if</span> done: <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#22238;&#21512;&#32080;&#26463;&#65292;&#21487;&#33021;&#26609;&#23376;&#22826;&#20670;&#26012;&#25110;&#36554;&#23376;&#36305;&#36960;</span>
+        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#33509;&#36948;&#21040;&#32080;&#26463;&#26781;&#20214;&#65292;&#23601;&#38626;&#38283;for loop</span>
+        <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"Rewards: "</span>, rewards)
+        <span style="color: #51afef;">break</span>
+env.close()
+</pre>
+</div>
+
+<pre class="example" id="org0526979">
+[-0.00943879  0.18031594 -0.0417659  -0.35468228]
+[-0.00583247  0.37600609 -0.04885955 -0.66023713]
+[ 0.00168765  0.57177271 -0.06206429 -0.96789561]
+[ 0.01312311  0.76767064 -0.0814222  -1.27941193]
+[ 0.02847652  0.57367526 -0.10701044 -1.01329459]
+[ 0.03995002  0.38013086 -0.12727633 -0.75603972]
+[ 0.04755264  0.18697153 -0.14239713 -0.50596262]
+[ 0.05129207  0.38378269 -0.15251638 -0.83991479]
+[ 0.05896772  0.58062118 -0.16931468 -1.17641133]
+[ 0.07058015  0.77748867 -0.1928429  -1.51703092]
+[ 0.08612992  0.58515093 -0.22318352 -1.29021731]
+Rewards:  11.0
+</pre>
+<p>
+如執行結果所示，雖然我們在程式中指定跑100次動作，但是更可能的是因為隨機動作而提前結束，而每一次的執行都會帶來不同的環境變數內容。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org67206cd" class="outline-3">
+<h3 id="org67206cd"><span class="section-number-3">3.2.</span> 重要環境變數</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+在 Gym 的仿真環境中，有運動空間 action_space 和觀測空間observation_space 兩個指標，程序中被定義爲 Space類型，用於描述有效的運動和觀測的格式和範圍。我們可以利用以下程式碼大致觀察一下這兩個Space:<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #51afef;">import</span> gym
+<span style="color: #dcaeea;">env</span> = gym.make(<span style="color: #98be65;">'CartPole-v0'</span>)
+<span style="color: #c678dd;">print</span>(env.action_space)
+<span style="color: #c678dd;">print</span>(env.observation_space)
+</pre>
+</div>
+
+<pre class="example">
+Discrete(2)
+Box(-3.4028234663852886e+38, 3.4028234663852886e+38, (4,), float32)
+</pre>
+
+<p>
+由結果可以看出:<br />
+</p>
+<ul class="org-ul">
+<li>action_space 是一個離散Discrete類型，從discrete.py源碼可知，範圍是一個{0,1,…,n-1} 長度爲 n 的非負整數集合，在CartPole-v0例子中，動作空間表示爲{0,1}。<br /></li>
+<li>observation_space 是一個Box類型，從box.py源碼可知，表示一個 n 維的盒子，所以在上一節打印出來的observation是一個長度爲 4 的數組。數組中的每個元素都具有上下界。<br /></li>
+</ul>
+</div>
+<ol class="org-ol">
+<li><a id="org1584b1f"></a>Observation:<br />
+<div class="outline-text-4" id="text-3-2-1">
+<p>
+Type: Box(4)<sup><a id="fnr.4" class="footref" href="#fn.4" role="doc-backlink">4</a></sup><br />
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Num</th>
+<th scope="col" class="org-left">Observation</th>
+<th scope="col" class="org-right">Min</th>
+<th scope="col" class="org-right">Max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">0</td>
+<td class="org-left">Cart Position</td>
+<td class="org-right">-4.8</td>
+<td class="org-right">4.8</td>
+</tr>
+
+<tr>
+<td class="org-right">1</td>
+<td class="org-left">Cart Velocity</td>
+<td class="org-right">-Inf</td>
+<td class="org-right">Inf</td>
+</tr>
+
+<tr>
+<td class="org-right">2</td>
+<td class="org-left">Pole Angle</td>
+<td class="org-right">-0.418 rad (-24 deg)</td>
+<td class="org-right">0.418 rad (24 deg)</td>
+</tr>
+
+<tr>
+<td class="org-right">3</td>
+<td class="org-left">Pole Angular Velocity</td>
+<td class="org-right">-Inf</td>
+<td class="org-right">Inf</td>
+</tr>
+</tbody>
+</table>
+</div>
+</li>
+<li><a id="org199b1a5"></a>Actions: 動作空間是離散空間<br />
+<div class="outline-text-4" id="text-3-2-2">
+<p>
+Type: Discrete(2)<br />
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Num</th>
+<th scope="col" class="org-left">Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">0</td>
+<td class="org-left">Push cart to the left</td>
+</tr>
+
+<tr>
+<td class="org-right">1</td>
+<td class="org-left">Push cart to the right</td>
+</tr>
+</tbody>
+</table>
+<p>
+註：施加的力大小是固定的，但減小或增大的速度不是固定的，它取決於當時桿子與豎直方向的角度。角度不同，產生的速度和位移也不同。<br />
+</p>
+</div>
+</li>
+<li><a id="orge42b38c"></a>Reward<br />
+<div class="outline-text-4" id="text-3-2-3">
+<p>
+Reward is 1 for every step taken, including the termination step. The threshold is 475 for v1.<br />
+每一步都給出1的獎勵，包括終止狀態。<br />
+</p>
+</div>
+</li>
+<li><a id="org537efba"></a>初始狀態:<br />
+<div class="outline-text-4" id="text-3-2-4">
+<p>
+初始狀態所有觀測值都從[-0.05, 0.05]中隨機取值。<br />
+</p>
+</div>
+</li>
+<li><a id="org484d2eb"></a>達到下列條件之一即結束一回合(片段):<br />
+<div class="outline-text-4" id="text-3-2-5">
+<ol class="org-ol">
+<li>桿子與豎直方向角度超過12度<br /></li>
+<li>小車位置距離中心超過2.4（小車中心超出畫面）<br /></li>
+<li>片段長度超過200連續100次<br /></li>
+<li>嘗試的平均獎勵大於等於195。<br /></li>
+</ol>
+</div>
+</li>
+</ol>
+</div>
+<div id="outline-container-org8b860db" class="outline-3">
+<h3 id="org8b860db"><span class="section-number-3">3.3.</span> 分組作業:</h3>
+<div class="outline-text-3" id="text-3-3">
+<p>
+上述程式只執行了一回合的模擬，請你修改上述程式，進行200回合的模擬，記錄每回合隨機運作的reward結果，並將結果畫成折線圖，x軸為回合數；y軸為每回合的reward，<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc909398" class="outline-2">
+<h2 id="orgc909398"><span class="section-number-2">4.</span> 直覺反應的CartPole</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+前節程式以隨機方式來左右擺動車子，這很顯然不符合真實情境，再笨的人也會隨杆子的擺動來控制車子，例如：當杆子快往左傾，就把車子往左移，以下就是這種實作的程式碼：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #51afef;">import</span> gym
+
+<span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;&#31435;&#29872;&#22659;, &#23450;&#32681;&#35347;&#32244;&#30340;&#36938;&#25138;</span>
+<span style="color: #dcaeea;">env</span> = gym.make(<span style="color: #98be65;">'CartPole-v0'</span>)
+
+<span style="color: #dcaeea;">observation</span> = env.reset() <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25226;&#26609;&#23376;&#25850;&#22909;</span>
+<span style="color: #dcaeea;">rewards</span> = <span style="color: #da8548; font-weight: bold;">0</span>
+<span style="color: #51afef;">for</span> t <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #da8548; font-weight: bold;">200</span>):
+    <span style="color: #5B6268;">#</span><span style="color: #5B6268;">env.render()</span>
+    <span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#21462;&#24471;&#30446;&#21069;&#29376;&#24907;</span>
+    <span style="color: #dcaeea;">pos</span>, <span style="color: #dcaeea;">v</span>, <span style="color: #dcaeea;">ang</span>, <span style="color: #dcaeea;">rot</span> = observation
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36914;&#34892;&#33258;&#24049;&#35373;&#35336;&#30340;Action</span>
+    <span style="color: #51afef;">if</span> ang &lt; <span style="color: #da8548; font-weight: bold;">0</span>:
+        <span style="color: #dcaeea;">action</span> = <span style="color: #da8548; font-weight: bold;">0</span> <span style="color: #5B6268;">##</span><span style="color: #5B6268;">&#36554;&#24448;&#24038;&#31227;</span>
+    <span style="color: #51afef;">else</span>:
+        <span style="color: #dcaeea;">action</span> = <span style="color: #da8548; font-weight: bold;">1</span> <span style="color: #5B6268;">## </span><span style="color: #5B6268;">&#36554;&#24448;&#21491;&#31227;</span>
+        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#22312;&#29872;&#22659;&#20013;&#20570;&#20986; action</span>
+    <span style="color: #dcaeea;">observation</span>, <span style="color: #dcaeea;">reward</span>, <span style="color: #dcaeea;">done</span>, <span style="color: #dcaeea;">info</span> = env.step(action)
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#32047;&#21152; reward</span>
+    <span style="color: #dcaeea;">rewards</span> += reward
+    <span style="color: #51afef;">if</span> done: <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#22238;&#21512;&#32080;&#26463;&#65292;&#21487;&#33021;&#26609;&#23376;&#22826;&#20670;&#26012;&#25110;&#36554;&#23376;&#36305;&#36960;</span>
+        <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'Rewards: '</span>, rewards)
+        <span style="color: #51afef;">break</span>
+
+env.close()
+</pre>
+</div>
+<p>
+因為沒有在學習，趨勢肯定是平的。不過平均每回合的總 reward 明顯比隨機來得好，大概能撐兩倍時間。<br />
+</p>
+
+<pre class="example">
+Rewards:  51.0
+</pre>
+</div>
+<div id="outline-container-org8cda84f" class="outline-3">
+<h3 id="org8cda84f"><span class="section-number-3">4.1.</span> 分組作業</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+上述程式只是簡單的依杆子角度來移動車子，你能否再想出更好的策略(即可以在結束前得到更多reward，最多到200)?請觀察observation的內容，傾全組之力想出最佳策略並實作出來，進行200次模擬，畫出模擬的rewards折線統計圖。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org50b22c3" class="outline-2">
+<h2 id="org50b22c3"><span class="section-number-2">5.</span> Hill Climbing Strategy <sup><a id="fnr.5" class="footref" href="#fn.5" role="doc-backlink">5</a></sup></h2>
+<div class="outline-text-2" id="text-5">
+<p>
+爲了能夠有效控制倒立擺首先應建立一個控制模型。明顯的，這個控制模型的輸入應該是當前倒立擺的狀態（observation）而輸出爲對當前狀態做出的決策動作（action）。從前面的知識我們瞭解到決定倒立擺狀態的observation是一個四維向量，包含小車位置（\(x\)）、杆子夾角（\(\theta\)）、小車速度（\(\dot{x}\)）及角變化率（\(\dot{\theta}\)），如果對這個向量求它的加權和，那麼就可以根據加權和值的符號來決定採取的動作（action），用sigmoid函數將這個問題轉化爲二分類問題，從而可以建立一個簡單的控制模型。其模型如下圖所示：<br />
+</p>
+<p width="500">
+<img src="images/hillclimbing.png" alt="hillclimbing.png" width="500" /><br />
+上圖的實際功能與神經網絡有幾分相似，但比神經網絡要簡單得多。通過加入四個權值，我們可以通過改變權重值來改變決策（policy），即有加權和\[H_{sum} = w_1x+w_2\theta + w_3\dot{x} + w_4\dot\theta + b\]，若\(H_{sum}\)的符號爲正判定輸出爲1，否則爲0。<br />
+</p>
+
+<p>
+爬山算法的基本思路是每次迭代時給當前取得的最優權重加上一組隨機值，如果加上這組值使得有效控制倒立擺的持續時間變長了那麼就更新它爲最優權重，如果沒有得到改善就保持原來的值不變，直到迭代結束。在迭代過程中，模型的參數不斷得到優化，最終得到一組最優的權值作爲控制模型的解。<br />
+</p>
+</div>
+<div id="outline-container-org62d4d2f" class="outline-3">
+<h3 id="org62d4d2f"><span class="section-number-3">5.1.</span> Source code</h3>
+<div class="outline-text-3" id="text-5-1">
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span style="color: #51afef;">import</span> gym
+
+<span style="color: #51afef;">def</span> <span style="color: #c678dd;">get_sum_reward_by_weights</span>(env, weights):
+    <span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#28204;&#35430;&#19981;&#21516;&#27402;&#37325;&#30340;model&#25152;&#24471;&#21040;&#30340;&#22892;&#21237;</span>
+    <span style="color: #dcaeea;">observation</span> = env.reset() <span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#37325;&#32622;&#29376;&#24907;</span>
+    <span style="color: #dcaeea;">rewards</span> = <span style="color: #da8548; font-weight: bold;">0</span>
+    <span style="color: #51afef;">for</span> t <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #da8548; font-weight: bold;">1000</span>):
+        env.render()
+        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20381;&#30446;&#21069;&#27402;&#20540;&#37341;&#23565;&#30070;&#21069;&#29376;&#24907;&#20358;&#36984;action</span>
+        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21407;&#20358;&#30340;&#20570;&#27861;&#28858;: action = env.action_space.sample()</span>
+        <span style="color: #dcaeea;">action</span> = <span style="color: #da8548; font-weight: bold;">1</span> <span style="color: #51afef;">if</span> np.dot(weights[:<span style="color: #da8548; font-weight: bold;">4</span>], observation) + weights[<span style="color: #da8548; font-weight: bold;">4</span>] &gt;= <span style="color: #da8548; font-weight: bold;">0</span> <span style="color: #51afef;">else</span> <span style="color: #da8548; font-weight: bold;">0</span>
+        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#22519;&#34892;action, &#21462;&#24471;&#19979;&#19968;&#27493;&#29376;&#24907;</span>
+        <span style="color: #dcaeea;">observation</span>, <span style="color: #dcaeea;">reward</span>, <span style="color: #dcaeea;">done</span>, <span style="color: #dcaeea;">info</span> = env.step(action)
+        <span style="color: #dcaeea;">rewards</span> += reward
+        <span style="color: #51afef;">if</span> done:
+            <span style="color: #c678dd;">print</span>(t)
+            <span style="color: #51afef;">break</span>
+    <span style="color: #51afef;">return</span> rewards
+
+
+
+<span style="color: #51afef;">def</span> <span style="color: #c678dd;">get_best_result</span>():
+    np.random.seed(<span style="color: #da8548; font-weight: bold;">10</span>)
+    <span style="color: #dcaeea;">best_reward</span> = <span style="color: #da8548; font-weight: bold;">0</span> <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21021;&#22987;&#26368;&#20339;&#22892;&#21237;</span>
+    <span style="color: #dcaeea;">best_weights</span> = np.random.rand(<span style="color: #da8548; font-weight: bold;">5</span>) <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21021;&#22987;&#27402;&#20540;&#28858;&#38568;&#27231;&#20540;</span>
+
+    <span style="color: #51afef;">for</span> <span style="color: #c678dd;">iter</span> <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #da8548; font-weight: bold;">1000</span>): <span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#36845;&#20195;100&#27425;</span>
+        <span style="color: #dcaeea;">cur_weights</span> = <span style="color: #a9a1e1;">None</span>
+        <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"iteration:"</span>,<span style="color: #c678dd;">iter</span>)
+        <span style="color: #dcaeea;">cur_weights</span> = best_weights + np.random.normal(<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">5</span>) <span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#22312;&#30070;&#21069;&#26368;&#20339;&#27402;&#20540;&#21152;&#20837;&#38568;&#27231;&#20540;</span>
+        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">cur_weights = np.random.rand(5) #&#38568;&#27231;&#29468;&#28204;</span>
+        <span style="color: #dcaeea;">cur_sum_reward</span> = get_sum_reward_by_weights(env, cur_weights)
+        reward_rec.append(cur_sum_reward) <span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#35352;&#37636;&#29992;</span>
+        <span style="color: #51afef;">if</span> cur_sum_reward &gt; best_reward:
+            <span style="color: #dcaeea;">best_reward</span> = cur_sum_reward
+            <span style="color: #dcaeea;">best_weights</span> = cur_weights
+        <span style="color: #51afef;">if</span> best_reward &gt;= <span style="color: #da8548; font-weight: bold;">200</span>:
+            <span style="color: #c678dd;">print</span>(<span style="color: #c678dd;">iter</span>,<span style="color: #98be65;">":"</span>,best_reward)
+            <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"best_weight"</span>,best_weights)
+            <span style="color: #51afef;">break</span>;
+
+<span style="color: #dcaeea;">env</span> = gym.make(<span style="color: #98be65;">"CartPole-v0"</span>)
+<span style="color: #dcaeea;">reward_rec</span> = []
+
+<span style="color: #c678dd;">print</span>(get_best_result())
+<span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36664;&#20986;&#32113;&#35336;</span>
+<span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
+plt.clf()
+<span style="color: #dcaeea;">x</span> = <span style="color: #c678dd;">range</span>(<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #c678dd;">len</span>(reward_rec)+<span style="color: #da8548; font-weight: bold;">1</span>)
+plt.plot(x, reward_rec)
+env.close()
+
+</pre>
+</div>
+<p>
+爬山算法本質是一種局部擇優的方法，效率高但因爲不是全局搜索，所以結果可能不是最優。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org8bd7b3b" class="outline-2">
+<h2 id="org8bd7b3b"><span class="section-number-2">6.</span> Q-Learnin g</h2>
+<div class="outline-text-2" id="text-6">
+<p>
+QLearning是強化學習算法中value-based的算法，Q即為Q（s,a）就是在某一時刻的 s 狀態下(s∈S)，採取 動作a (a∈A)動作能夠獲得收益的期望，環境會根據agent的動作反饋相應的回報reward r，所以算法的主要思想就是將State與Action構建成一張Q-table來存儲Q值，然後根據Q值來選取能夠獲得最大的收益的動作<sup><a id="fnr.6" class="footref" href="#fn.6" role="doc-backlink">6</a></sup>。<br />
+</p>
+
+<p>
+一個 Q-learning 非常簡單的實現法複是用一個 model 來 approximate Q-value function，並藉由下面的 update rule 來訓練這個 model：<br />
+\[Q(S_t, a_t) = Q(s_t, a_t) + \alpha(R_{t+1} + \gamma\max_aQ(s_{s_t+1},a)-Q(s_t,a_t))\]<br />
+Q-table 是用 lookup table 來 approximate Q-value function，並用 Q-learning 訓練的一個方法。這個 lookup table 會將每個 state-action pair (s, a) 對應到 approximation Q(s, a)，一開始 table 裡的 Q-value 隨機設置，並在訓練過程中更新這些 Q-value。所以我們其實沒有在訓練一個 model 更新參數讓預測數值更接近 Q-value，而是直接用一個 table 記錄這些值並更新。<br />
+</p>
+
+<p>
+另外我們的 state 是連續值，這樣會有無限多個可能的 state-action pair，因此我們要 discretize 這些值才能建立一個 lookup table。<br />
+</p>
+
+<p>
+例如實作中我們把 state 的 4 個 feature (position, velocity, angle, rotation rate) 分別 discretize 成 (1, 1, 6, 3) 個 bucket，6 個 bucket 就代表 angle 的範圍 [-0.5, 0.5] 被切成 6 個區間，區間中的值都對應到相同的 discrete value。<br />
+</p>
+</div>
+<div id="outline-container-orgccb1594" class="outline-3">
+<h3 id="orgccb1594"><span class="section-number-3">6.1.</span> Algorithms</h3>
+<div class="outline-text-3" id="text-6-1">
+<p width="500">
+<img src="images/q-learning.png" alt="q-learning.png" width="500" /><br />
+在更新 Q table 時，計算 reward 不只包含採取 action \(a\)獲得的 reward \(r\)r，還包含 \(\gamma max_{a^{'}}Q(s^{'},q^{'})\)。這個概念是，agent 不僅僅看當下採取的行動帶來的好處，他也會估計到達下一個 state \(s^{'}\) 後，最多可以有多少好處（因為在\(s^{'}\)也可以採取各種 action）。<br />
+換句話說，這個 agent 不是一個目光如豆的 agent，他會考慮未來。因為加上了\(\gamma max_{a^{'}}Q(s^{'},q^{'})\)(當然\(\gamma\)不能是 0)，讓我們的 agent 從 會立刻吃掉棉花糖的小朋友，進化成可以晚一點再吃多一點棉花糖的小朋友，是不是很有趣呢！<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org622dd80" class="outline-3">
+<h3 id="org622dd80"><span class="section-number-3">6.2.</span> Q-Table</h3>
+<div class="outline-text-3" id="text-6-2">
+<p>
+一個 Q-learning 非常簡單的實現法。複習一下我們在前篇提到 Q-learning，是用一個 model 來 approximate Q-value function，並藉由下面的 update rule 來訓練這個 model：<br />
+\[ Q(s_t,a_t) = Q(s_t,a_t) + \alpha(R_{t+1}) + \gamma \max_{a} Q(s_{t+1}, - Q(s_t,a_t)) \]<br />
+Q-table 是用 lookup table 來 approximate Q-value function，並用 Q-learning 訓練的一個方法。這個 lookup table 會將每個 state-action pair (s, a) 對應到 approximation Q(s, a)，一開始 table 裡的 Q-value 隨機設置，並在訓練過程中更新這些 Q-value。所以我們其實沒有在訓練一個 model 更新參數讓預測數值更接近 Q-value，而是直接用一個 table 記錄這些值並更新。<br />
+</p>
+
+<p>
+另外我們的 state 是連續值，這樣會有無限多個可能的 state-action pair，因此我們要 discretize 這些值才能建立一個 lookup table。<br />
+</p>
+
+<p>
+例如實作中我們把 state 的 4 個 feature (position, velocity, angle, rotation rate) 分別 discretize 成 (1, 1, 6, 3) 個 bucket，6 個 bucket 就代表 angle 的範圍 [-0.5, 0.5] 被切成 6 個區間，區間中的值都對應到相同的 discrete value。<br />
+</p>
+
+<ol class="org-ol">
+<li><p>
+整個 discretization 大概是這樣：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #5B6268;"># </span><span style="color: #5B6268;">state bucket &#35373;&#23450;</span>
+<span style="color: #dcaeea;">n_buckets</span> = (<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">6</span>, <span style="color: #da8548; font-weight: bold;">3</span>)
+
+<span style="color: #5B6268;"># </span><span style="color: #5B6268;">action &#24050;&#32147;&#26159; discrete value</span>
+<span style="color: #dcaeea;">n_actions</span> = env.action_space.n
+
+<span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;&#31435; Q-table</span>
+<span style="color: #dcaeea;">q_table</span> = np.zeros(n_buckets + (n_actions,))
+
+<span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35373;&#23450;&#22909;&#27599;&#20491; state feature &#30340;&#19978;&#19979;&#30028;</span>
+<span style="color: #dcaeea;">state_bounds</span> = <span style="color: #c678dd;">list</span>(<span style="color: #c678dd;">zip</span>(env.observation_space.low, env.observation_space.high))
+<span style="color: #dcaeea;">state_bounds</span>[<span style="color: #da8548; font-weight: bold;">1</span>] = [-<span style="color: #da8548; font-weight: bold;">0.5</span>, <span style="color: #da8548; font-weight: bold;">0.5</span>]
+<span style="color: #dcaeea;">state_bounds</span>[<span style="color: #da8548; font-weight: bold;">3</span>] = [-math.radians(<span style="color: #da8548; font-weight: bold;">50</span>), math.radians(<span style="color: #da8548; font-weight: bold;">50</span>)]
+
+<span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23559; env &#32102;&#30340; state &#36681;&#25563;&#25104; discretized state</span>
+<span style="color: #51afef;">def</span> <span style="color: #c678dd;">get_state</span>(observation, n_buckets, state_bounds):
+    <span style="color: #dcaeea;">state</span> = [<span style="color: #da8548; font-weight: bold;">0</span>] * <span style="color: #c678dd;">len</span>(observation)
+    <span style="color: #51afef;">for</span> i, s <span style="color: #51afef;">in</span> <span style="color: #c678dd;">enumerate</span>(observation):
+        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27599;&#20491; feature &#19978;&#30028;&#12289;&#19979;&#30028;</span>
+        <span style="color: #dcaeea;">l</span>, <span style="color: #dcaeea;">u</span> = state_bounds[i][<span style="color: #da8548; font-weight: bold;">0</span>], state_bounds[i][<span style="color: #da8548; font-weight: bold;">1</span>]
+        <span style="color: #51afef;">if</span> s &lt;= l: <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20302;&#26044;&#19979;&#30028;&#23660;&#26044;&#31532; 1 &#20491; bucket</span>
+            <span style="color: #dcaeea;">state</span>[i] = <span style="color: #da8548; font-weight: bold;">0</span>
+        <span style="color: #51afef;">elif</span> s &gt;= u: <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39640;&#26044;&#19979;&#30028;&#23660;&#26044;&#26368;&#24460;&#19968;&#20491; bucket</span>
+            <span style="color: #dcaeea;">state</span>[i] = n_buckets[i] - <span style="color: #da8548; font-weight: bold;">1</span>
+        <span style="color: #51afef;">else</span>: <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20854;&#20182;&#30475;&#20320;&#22312;&#21738;&#20491;&#21312;&#38291;&#65292;&#27770;&#23450;&#20320;&#22312;&#21738;&#20491; bucket</span>
+            <span style="color: #dcaeea;">state</span>[i] = <span style="color: #c678dd;">int</span>(((s - l) / (u - l)) * n_buckets[i])
+    <span style="color: #51afef;">return</span> <span style="color: #c678dd;">tuple</span>(state)
+</pre>
+</div></li>
+</ol>
+<p>
+state_bounds初始內容為<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python">[(-<span style="color: #da8548; font-weight: bold;">4.8</span>, <span style="color: #da8548; font-weight: bold;">4.8</span>),
+ [-<span style="color: #da8548; font-weight: bold;">0.5</span>, <span style="color: #da8548; font-weight: bold;">0.5</span>],
+ (-<span style="color: #da8548; font-weight: bold;">0.41887903</span>, <span style="color: #da8548; font-weight: bold;">0.41887903</span>),
+ [-<span style="color: #da8548; font-weight: bold;">0.8726646259971648</span>, <span style="color: #da8548; font-weight: bold;">0.8726646259971648</span>]]
+</pre>
+</div>
+<p>
+q_table為(1, 1, 6, 3, 2)的ndarray，初始內容為<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python">
+
+array([[[[[<span style="color: #da8548; font-weight: bold;">0</span>., <span style="color: #da8548; font-weight: bold;">0</span>.],
+          [<span style="color: #da8548; font-weight: bold;">0</span>., <span style="color: #da8548; font-weight: bold;">0</span>.],
+          [<span style="color: #da8548; font-weight: bold;">0</span>., <span style="color: #da8548; font-weight: bold;">0</span>.]],
+
+         [[<span style="color: #da8548; font-weight: bold;">0</span>., <span style="color: #da8548; font-weight: bold;">0</span>.],
+          [<span style="color: #da8548; font-weight: bold;">0</span>., <span style="color: #da8548; font-weight: bold;">0</span>.],
+          [<span style="color: #da8548; font-weight: bold;">0</span>., <span style="color: #da8548; font-weight: bold;">0</span>.]],
+
+         [[<span style="color: #da8548; font-weight: bold;">0</span>., <span style="color: #da8548; font-weight: bold;">0</span>.],
+          [<span style="color: #da8548; font-weight: bold;">0</span>., <span style="color: #da8548; font-weight: bold;">0</span>.],
+          [<span style="color: #da8548; font-weight: bold;">0</span>., <span style="color: #da8548; font-weight: bold;">0</span>.]],
+
+         [[<span style="color: #da8548; font-weight: bold;">0</span>., <span style="color: #da8548; font-weight: bold;">0</span>.],
+          [<span style="color: #da8548; font-weight: bold;">0</span>., <span style="color: #da8548; font-weight: bold;">0</span>.],
+          [<span style="color: #da8548; font-weight: bold;">0</span>., <span style="color: #da8548; font-weight: bold;">0</span>.]],
+
+         [[<span style="color: #da8548; font-weight: bold;">0</span>., <span style="color: #da8548; font-weight: bold;">0</span>.],
+          [<span style="color: #da8548; font-weight: bold;">0</span>., <span style="color: #da8548; font-weight: bold;">0</span>.],
+          [<span style="color: #da8548; font-weight: bold;">0</span>., <span style="color: #da8548; font-weight: bold;">0</span>.]],
+
+         [[<span style="color: #da8548; font-weight: bold;">0</span>., <span style="color: #da8548; font-weight: bold;">0</span>.],
+          [<span style="color: #da8548; font-weight: bold;">0</span>., <span style="color: #da8548; font-weight: bold;">0</span>.],
+          [<span style="color: #da8548; font-weight: bold;">0</span>., <span style="color: #da8548; font-weight: bold;">0</span>.]]]]])
+</pre>
+</div>
+<ol class="org-ol">
+<li><p>
+再來是\(\epsilon-greedy\)的使用，選擇 action 時，有\(\epsilon\)的機率隨機選擇以增加 exploration，其他時間照著現有 policy 選擇：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #51afef;">def</span> <span style="color: #c678dd;">choose_action</span>(state, q_table, action_space, epsilon):
+    <span style="color: #51afef;">if</span> np.random.random_sample() &lt; epsilon: <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38568;&#27231;</span>
+        <span style="color: #51afef;">return</span> action_space.sample()
+    <span style="color: #51afef;">else</span>: <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#26681;&#25818; Q-table &#36984;&#25799;&#26368;&#22823; Q-value &#30340; action</span>
+        <span style="color: #51afef;">return</span> np.argmax(q_table[state])
+</pre>
+</div></li>
+<li><p>
+最後就是做出 action 收集到 observation 和 reward 後，就可以 update Q-table：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31639;&#20986;&#19979;&#20491; state</span>
+<span style="color: #dcaeea;">next_state</span> = get_state(observation, n_buckets, state_bounds)
+
+<span style="color: #5B6268;"># </span><span style="color: #5B6268;">Q-learning</span>
+<span style="color: #dcaeea;">q_next_max</span> = np.amax(q_table[next_state])
+<span style="color: #dcaeea;">q_table</span>[state + (action,)] += lr * (reward + gamma * q_next_max - q_table[state + (action,)])
+
+<span style="color: #5B6268;"># </span><span style="color: #5B6268;">Transition &#21040;&#19979;&#20491; state</span>
+<span style="color: #dcaeea;">state</span> = next_state
+</pre>
+</div></li>
+<li><p>
+剩下就跟前面的框架差不多了。實作中，還另外加了一些方法讓訓練成果更好，例如因為訓練後期有比較好的 policy，讓 <a href="https://chart.googleapis.com/chart?cht=tx&amp;chl=%5Cepsilon">https://chart.googleapis.com/chart?cht=tx&amp;chl=%5Cepsilon</a> 隨著訓練降低以減少 exploration，以及讓 learning rate 降低使訓練能收斂。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #dcaeea;">get_epsilon</span> = <span style="color: #51afef;">lambda</span> i: <span style="color: #c678dd;">max</span>(<span style="color: #da8548; font-weight: bold;">0.01</span>, <span style="color: #c678dd;">min</span>(<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">1.0</span> - math.log10((i+<span style="color: #da8548; font-weight: bold;">1</span>)/<span style="color: #da8548; font-weight: bold;">25</span>)))
+<span style="color: #dcaeea;">get_lr</span> = <span style="color: #51afef;">lambda</span> i: <span style="color: #c678dd;">max</span>(<span style="color: #da8548; font-weight: bold;">0.01</span>, <span style="color: #c678dd;">min</span>(<span style="color: #da8548; font-weight: bold;">0.5</span>, <span style="color: #da8548; font-weight: bold;">1.0</span> - math.log10((i+<span style="color: #da8548; font-weight: bold;">1</span>)/<span style="color: #da8548; font-weight: bold;">25</span>)))
+
+<span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27599;&#22238;&#21512;&#26356;&#26032; epsilon &#21644; lr</span>
+<span style="color: #dcaeea;">epsilon</span> = get_epsilon(i_episode)
+<span style="color: #dcaeea;">lr</span> = get_lr(i_episode)
+</pre>
+</div></li>
+<li><p>
+成果<br />
+</p></li>
+</ol>
+
+<div id="org2ac7865" class="figure">
+<p><img src="images/q-learning-result.png" alt="q-learning-result.png" width="500" /><br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org7b78366" class="outline-2">
+<h2 id="org7b78366"><span class="section-number-2">7.</span> 增強式學習有多強<sup><a id="fnr.7" class="footref" href="#fn.7" role="doc-backlink">7</a></sup></h2>
+<div class="outline-text-2" id="text-7">
+<p>
+我們可以使用強化學習來訓練圍棋機器人，知名的Alpha Go 就是基於強化學習來打敗人類的!<br />
+又或者學習如何玩超級馬力歐，透過一次又一次的死亡，Agent會慢慢地學習什麼時間點該跳躍閃避怪物，或者殺掉怪物。<br />
+</p>
+
+<p>
+那麼強化學習無敵了嗎?當然不是的，強化學習需要大量的訓練，如果要在電玩遊戲中贏過人類，需要的禎數可能要很高，且例如射擊遊戲需要超高的反應速度，目前的強化學習可能還無法應付。<br />
+又或者自動駕駛，假設車子已經能完美的沿著路線前進了，且能應對紅綠燈等狀況，但如果因為某些原因，影像辨識誤把紅燈當成了綠燈，這樣可能會導致嚴重的事故。<br />
+</p>
+
+<p>
+強化學習是很有趣的，但可能不是這麼萬用，但在一些領域中，可以達到超過人類水準的表現!<br />
+</p>
+</div>
+</div>
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+Hands-On Machine Learning with Scikit-Learn: Aurelien Geron<br />
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.2" class="footnum" href="#fnr.2" role="doc-backlink">2</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://kknews.cc/tech/xln95b8.html#google_vignette">機器學習、深度學習與強化學習區別</a><br />
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.3" class="footnum" href="#fnr.3" role="doc-backlink">3</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://kknews.cc/zh-tw/news/34mob53.html">強化學習Exploration漫遊</a><br />
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.4" class="footnum" href="#fnr.4" role="doc-backlink">4</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://github.com/openai/gym/blob/master/gym/envs/classic_control/cartpole.py">GitHub: openai/gym </a><br />
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.5" class="footnum" href="#fnr.5" role="doc-backlink">5</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://blog.csdn.net/qq_32892383/article/details/89576003">OpenAI Gym 經典控制環境介紹——CartPole（倒立擺）</a><br />
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.6" class="footnum" href="#fnr.6" role="doc-backlink">6</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://blog.csdn.net/qq_30615903/article/details/80739243">【強化學習】Q-Learning算法詳解</a><br />
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.7" class="footnum" href="#fnr.7" role="doc-backlink">7</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://ithelp.ithome.com.tw/articles/10234272">Day 6 強化學習就是一直學習? </a><br />
+</p></div></div>
+
+
+</div>
+</div></div>
+<div id="postamble" class="status">
+<p class="author">Author: Yung-Chin Yen</p>
+<p class="date">Created: 2023-12-03 Sun 19:25</p>
+</div>
+</body>
+</html>

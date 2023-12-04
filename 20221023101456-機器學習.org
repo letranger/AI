@@ -8,6 +8,10 @@
 #+OPTIONS: toc:2 ^:nil num:5
 #+PROPERTY: header-args :eval never-export
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/muse.css" />
+#+EXCLUDE_TAGS: noexport
+#+begin_export html
+<a href="https://letranger.github.io/AI/20221023101456-機器學習.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20221023101456-機器學習.html.svg"/></a>
+#+end_export
 
 * 機器學習
 ** 機器學習簡介影片
@@ -24,22 +28,68 @@
 - 機器學習是用資料或以往的經驗，以此最佳化電 腦程式的效能標準。
 
 ** 何謂機器學習
-機器學習的定義之一：一個可以與其環境做互動的系統。具有感知器(sensor)，可以讓機器了解它們所處的環境，以及它們也具有相關的工具可以讓機器做出回應[fn:1]。
-機器學習可以大致分為三類：監督式學習、非監督式學習、強化學習，如圖[[fig:DifferentLearningTypes]][fn:1]。
+- 機器學習的定義之一：一個可以與其環境做互動的系統。具有[[id:20221023T103538.640537][感知器]](sensor)，可以讓機器了解它們所處的環境，以及它們也具有相關的工具可以讓機器做出回應[fn:1]。
+- 機器學習可以大致分為三類：[[id:20221023T101626.420918][監督式學習]]、[[id:20221023T101716.467694][非監督式學習]]、[[id:0a5c37c0-741a-4a1a-bec7-f98074830132][增強式學習]]，如圖[[fig:DifferentLearningTypes]][fn:1]。
+
+#+BEGIN_SRC ditaa :file images/MLTypes.png  :cmdline -r -s 1
+                               +-------------------------------+
+   +---------------------------+ Labeled Data                  |
+   | 1. Supervised Learning    | Direct feedback               |
+   +---------------------------+ Predict outcome / future      |
+                               +-------------------------------+
+
+                               +-------------------------------+
+   +---------------------------+ No labels / targets           |
+   | 2. Unsupervised Learning  | No feedback                   |
+   +---------------------------+ Find hidden structure in data |
+                               +-------------------------------+
+
+                               +-------------------------------+
+   +---------------------------+ Decision process              |
+   | 3. Reinforcement Learning | Reward system                 |
+   +---------------------------+ Learn series of actions       |
+                               +-------------------------------+
+#+END_SRC
 #+CAPTION: 三種不同的機器學習
 #+name: fig:DifferentLearningTypes
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 600
+#+ATTR_LATEX: :width 500
+#+ATTR_ORG: :width 500
+#+ATTR_HTML: :width 700
 #+RESULTS:
-[[file:images/DifferentLearningTypes.png]]
-** 何謂機器學習[李宏毅]
-機器學習就是從一組function中找出一個最合適的function的過程。
+[[file:images/MLTypes.png]]
+
+** 何謂機器學習
+- 機器學習就是從一組function中找出一個最合適的function的過程[李宏毅]。
+
 * 機器是如何學習的
 ** 傳統程式設計
-假設有一個用來描述直線的函數: $x=Wx+B$，直線上的每個點都可以用 $x$ 值乘以$W$(權重值)再加上$B$(偏差值)，得到相應的 $y$ 值。
-現在假設直線上有兩個點，分別是 $x=w, y=3$ 和 $x=3, y=5$，要如何計算出連接這兩個點的直線所相應的 $W$ 值與 $B$ 值呢？
+假設有一個用來描述直線的函數(模型): $y=Wx+B$，直線上的每個點都可以用 $x$ 值乘以$W$(權重值)再加上$B$(偏差值)，得到相應的 $y$ 值。
+現在假設直線上有兩個點，分別是 $x=2, y=3$ 和 $x=3, y=5$ (如圖[[fig:LinearQuestion]])，那麼，請問當 $x=10$ 時，$y$ 的值是多少呢？
 #+begin_src python -r -n :results output :exports both
+import matplotlib.pyplot as plt
+import numpy as np
+
+x = [2, 3]
+y = [3, 5]
+plt.plot(x, y, '-*')
+plt.xlim(0, 5)
+plt.ylim(0, 7)
+plt.text(2.1, 3-0.1, '(2, 3)')
+plt.text(3.1, 5-0.1, '(3, 5)')
+plt.savefig('images/TrandPlot.png', dpi=300)
+#+end_src
+#+CAPTION: 一個直線函數問題
+#+LABEL: fig:Labl
+#+name: fig:LinearQuestion
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/TrandPlot.png]]
+
+以下是傳統的程式設計模式，受了十數年高深數學教育的你，第一反應大概是會想先求出連接這兩個點的直線所相應的 $W$ 值與 $B$ 值(也就是模型中的兩個參數)。
+*** 解法1: class版
+看不懂的可以看底下的tuple版
+#+begin_src python -r:results output :exports both
 def get_slope(p1, p2):
     W = (p2.y - p1.y) / (p2.x - p1.x)
     return W
@@ -65,36 +115,52 @@ B = get_bias(p1, W)
 
 print("Slope:", W)
 print("Bias:", B)
+print(f'當x=10時，y={W}*10+{B}={W*10+B}')
 #+end_src
 
 #+RESULTS:
 : Slope: 2.0
 : Bias: -1.0
-以上是傳統的程式設計模式
-#+begin_src python -r -n :results output :exports both
-import matplotlib.pyplot as plt
-import numpy as np
+: 當x=10時，y=2.0*10+-1.0=19.0
 
-x = [2, 3]
-y = [3, 5]
-plt.plot(x, y, '-*')
-plt.xlim(0, 5)
-plt.ylim(0, 7)
-plt.text(2.1, 3-0.1, '(2, 3)')
-plt.text(3.1, 5-0.1, '(3, 5)')
-plt.savefig('images/TrandPlot.png', dpi=300)
+*** 解法2: tuple版
+#+begin_src python -r :results output :exports both
+def get_slope(p1, p2):
+    p1x, p1y = p1 #取出tuple中的(x, y)
+    p2x, p2y = p2 #取出tuple中的(x, y)
+    W = (p2y - p1y) / (p2x - p1x)
+    return W
 
+def get_bias(p1, W):
+    p1x, p1y = p1 #取出tuple中的(x, y)
+    B = p1y - (W*p1x)
+    return B
+
+def get_y(x, W, B):
+    y = W*x + B
+
+# 以tuple來描述(x, y)
+p1 = (2, 3)
+p2 = (3, 5)
+
+W = get_slope(p1, p2)
+B = get_bias(p1, W)
+
+print("Slope:", W)
+print("Bias:", B)
+print(f'當x=10時，y={W}*10+{B}={W*10+B}')
 #+end_src
 
 #+RESULTS:
+: Slope: 2.0
+: Bias: -1.0
+: 當x=10時，y=2.0*10+-1.0=19.0
 
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
-[[file:images/TrandPlot.png]]
+*** 傳統的程式設計模式
+由以上的程式碼可以看出傳統的解題模式為：
+1. 給資料(兩個點)
+2. 給規則(公式)
+接下來就以程式來解出答案，那麼，面臨一樣的問題，機器學習的解題策略又是如何呢？
 
 #+BEGIN_SRC ditaa :file images/TradProg.png  :cmdline -r -s 0.9
               +-----------------+
@@ -106,8 +172,9 @@ plt.savefig('images/TrandPlot.png', dpi=300)
 #+END_SRC
 #+RESULTS:
 [[file:images/TradProg.png]]
+
 ** 機器學習的策略
-如果要以機器學習的方式來找出前例中的 $W$ 和$B$ 值，其策略大致如下：
+機器學習把這個線性函數當成一個模型，而我們想求的 $W$ 和 $B$ 則為模型的兩個參數，如果要以機器學習的方式來解題，其策略大致如下：
 1. 第一步：猜答案
    一開始我們並不知道正確答案是什麼，所以用猜的：以隨機亂數來做為 $W$ 和$B$ 值，例如：$y=10x+5$。
 2. 第二步：評估猜測答案的品質
@@ -129,8 +196,37 @@ plt.savefig('images/TrandPlot.png', dpi=300)
 #+RESULTS:
 [[file:images/MLProg.png]]
 ** 實作1
-如果多加入一個線上的點(4, 7)，以三點當成標準答案來進行預測，其實作的程式碼為：
-#+begin_src python -r -n :results output :exports both
+#+begin_src shell -r :results output :exports both
+pip3 install tensorflow
+#+end_src
+#+begin_src python -r :results output :exports both
+import tensorflow as tf
+import numpy as np
+from tensorflow.keras import Sequential
+from tensorflow.keras.layers import Dense
+
+l0 = Dense(units=1, input_shape=[1])
+model = Sequential([l0])
+model.compile(optimizer='sgd', loss='mean_squared_error')
+
+xs = np.array([2.0, 3.0], dtype=float)
+ys = np.array([3.0, 5.0], dtype=float)
+
+model.fit(xs, ys, epochs=500, verbose=0)
+
+print(f'y的預測結果為: {model.predict([10.0])}')
+print("模型的兩個參數W,B: {}".format(l0.get_weights()))
+#+end_src
+
+#+RESULTS:
+: 1/1 [==============================] - 0s 172ms/step
+: y的預測結果為: 14.709847
+: 模型的兩個參數W,B: [array([[1.4212971]], dtype=float32), array([0.49687672], dtype=float32)]
+
+但是正確答案為19，預測的結果好像不太準....QQ
+** 實作2
+如果我們向上帝偷偷多要一個模型的參照點(4, 7)，以三點當成標準答案來進行預測，結果會不會好一點呢?
+#+begin_src python -r  :results output :exports both
 import tensorflow as tf
 import numpy as np
 from tensorflow.keras import Sequential
@@ -145,44 +241,50 @@ ys = np.array([3.0, 5.0, 7.0], dtype=float)
 
 model.fit(xs, ys, epochs=500, verbose=0)
 
-print(model.predict([10.0]))
-print("Here is what I learned: {}".format(l0.get_weights()))
+print(f'y的預測結果為: {model.predict([10.0])}')
+print("模型的兩個參數W,B: {}".format(l0.get_weights()))
 #+end_src
 
 #+RESULTS:
-: [[17.07221]]
-: Here is what I learned: [array([[1.7164488]], dtype=float32), array([-0.09227743], dtype=float32)]
+: y的預測結果為: [[17.07221]]
+: 模型的兩個參數W,B: [array([[1.7164488]], dtype=float32), array([-0.09227743], dtype=float32)]
 
-預測結果為(1.7164488, -0.9227743)，與正確答案(2, -1)相近。
+預測結果y的值為17.072221，而正確答案為19，好像也不怎麼樣....-_-
+兩個參數的值為(1.7164488, -0.9227743)，與正確答案(2, -1)相近。
 
-** 實作2
-如果再多加入兩個線上的點(4, 7)，以三點當成標準答案來進行預測，其實作的程式碼為：
+** 實作3
+讓我們壯起膽子再跟上帝多要兩個線上的點:(-1, -3)、(0, -1)，以五點當成標準答案來進行預測，其實作的程式碼為：
 #+begin_src python -r -n :results output :exports both
 import tensorflow as tf
 import numpy as np
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dense
 
-l0 = Dense(units=1, input_shape=[1])
-model = Sequential([l0])
-model.compile(optimizer='sgd', loss='mean_squared_error')
+l0 = Dense(units=1, input_shape=[1]) (ref:neuron)
+model = Sequential([l0]) (ref:model)
+model.compile(optimizer='sgd', loss='mean_squared_error') (ref:modelCompile)
 
 xs = np.array([-1.0, 0.0, 1.0, 2.0, 3.0, 4.0], dtype=float)
 ys = np.array([-3.0, -1.0, 1.0, 3.0, 5.0, 7.0], dtype=float)
 
-model.fit(xs, ys, epochs=500, verbose=0)
+model.fit(xs, ys, epochs=500, verbose=0) (ref:modelFit)
 
-print(model.predict([10.0]))
-print("Here is what I learned: {}".format(l0.get_weights()))
+print(f'y的預測結果為: {model.predict([10.0])}') (ref:modelPredict)
+print("模型的兩個參數W,B: {}".format(l0.get_weights())) (ref:modelWeights)
 #+end_src
 
 #+RESULTS:
-: [[18.979391]]
-: Here is what I learned: [array([[1.9970131]], dtype=float32), array([-0.99074], dtype=float32)]
+: y的預測結果為:[[18.979391]]
+: 模型的兩個參數W,B: [array([[1.9970131]], dtype=float32), array([-0.99074], dtype=float32)]
 
-預測結果為(1.9970131, -0.99074)，與正確答案(2, -1)已經十分相近。
+模型對 $y$ 的預測結果為18.979391，與正確答案19已經十分相近。
 
-** 實作2程式解說
+** 程式解說
+1. 上述程式使用tensorflow這個模組為主要預測工具，建立了一個模型(第[[(model)]]行)，這個模型中只有一層、裡面有一個神經元(第[[(neuron)]]行)
+2. 定義好模型後，我們以SGD(隨機梯度下降法)為優化器、用它來找出最佳參數；以MSE(均方差)做為損失函數，計算模型訓練過程中生成的參數優劣判斷標準(第[[(modelCompile)]]行)，並編譯此模型
+3. 編譯好模型，我們就拿手僅有的5組資料來訓練模型，訓練500回(第[[(modelFit)]]行)
+4. 訓練好的模型就能拿來預測了，我們拿 $x=10$ 當成預測資料，要求模型給出預測的結果 $y$ (第[[(modelPredict)]]行)
+5. 偷偷看一下這個模型給出答案的關鍵、也就是模型的兩個參數(Weight)(第[[(modelWeights)]]行)
 
 * 機器學習概念釐清
 ** Machine Learning v.s. Statistics
@@ -504,18 +606,16 @@ Neuron
 2. 經由 PCA 計算，取得主要 factor，進行降維度(projection)
 3. 取得合理的維度，進行特徵描述
 
-** 強化學習(<<Reinforcement learning>>Reinforcement learning)
+** [[id:0a5c37c0-741a-4a1a-bec7-f98074830132][增強式學習]]
 - 機器為了達成目標，隨著環境的變動，而逐步調整其行為，並評估每一個行動之後所到 的回饋是正向的或負向的，即，在 try-and-error 的過程中一步步從失敗中找出成功的路徑。
 - 較常用於以下領域：電腦遊戲、下棋、自駕車、機器人。
 - AlphaGo：先以監督式學習(以人類棋譜來訓練)訓練出早期版的 AlphaGo，接下來以增強式學習兩個最期版的 AlphaGo 對奕(40 天內對奕 3000 萬盤棋)。
 - 2017 年的 AlphaZero 則放棄監督式學習(人類棋譜)，完全採取強化學習的模式，三天後摸索出自己的圍棋下法，成為有史以來棋力最強的版本。(不再以人類為師，所以才能超越人類？)
 - Google 也將強化學習用於機房伺服器管理，持續偵測機房室內外用電、溫度、建立模型，由模型決定每台伺服器的運轉(全速、低速、休眠、關機)，並達到省電 40%的目標。
-- 強化學習的效果之所以優於監督式學習，主要原因是：監督式學習是人示範給電腦看，電腦照著做，但如果人做的不夠好，電腦再厲害也無法超越(例如，醫師給的 X 光片在判讀上本身就出現誤解 )；而強化學習則是在做中學，進一步脫離人的指導(或人類的經驗限制)，自行發展出更好的規則。
-- 強化學習其實就是訓練一個 AI 可以通過每一次的錯誤來學習，就跟我們小時候學騎腳踏車一樣，一開始學的時候會一直跌倒，然後經過幾次的失敗後，我們就可以上手也不會跌倒了[fn:1]。強化學習在過去曾被長期忽視，但在 Google DeepMind 成功將其應用來玩 Atari 遊戲後，就開始受到許多關注。
 - 強化學習的目標在於開發一個系統（或代理人，agent）,他會藉由與環境的互動來改進自身的效能。由於當前的環境狀態資訊通常就包含了所謂「奬勵信號」(reward signal)，強化學習的目的就是找到一個最好的 Policy(策略)，可以讓 reward 最多。所以也可以把「強化學習」視為與「監督式學習」相關聯的領域，然而在強化學習中，環境回饋不能視為真實正的事實（或是說，正確的標籤），只能將之視為：測量函數對特定行動所觀測到並回報的一個度量值。如圖[[fig:ReinforcementLearning]]，Agent
 - 最常見的應用是教機器如何「玩遊戲」，在這種情境下，我們不會對某個動作貼標籤說它是「好」或「壞」，而是根據遊戲的結果（輸或是贏）或是遊戲中的信號（得分或失分）來做為回饋。
 
-#+BEGIN_SRC ditaa :file ReinforcementLearning.png
+#+BEGIN_SRC ditaa :file images/ReinforcementLearning.png
                   +-------------+
          +--------+ Environment |
          |  +-----+     cRED    |
@@ -533,12 +633,13 @@ Neuron
 #+ATTR_HTML: :width 600
 #+ATTR_ORG: :width 300
 #+RESULTS:
-[[file:ReinforcementLearning.png]]
+[[file:images/ReinforcementLearning.png]]
 *** 範例
 典型的 reinforcement learning 包括
 - DQN
 - q-learning
-*** Flappy bird: 在這個遊戲中，我們需要簡單的點擊操作來控制小鳥，躲過各種水管，飛的越遠越好，因為飛的越遠就能獲得更高的積分獎勵。這就是一個典型的強化學習場景：
+*** Flappy bird:
+在這個遊戲中，我們需要簡單的點擊操作來控制小鳥，躲過各種水管，飛的越遠越好，因為飛的越遠就能獲得更高的積分獎勵。這就是一個典型的強化學習場景：
 - 機器有一個明確的小鳥角色——代理
 - 需要控制小鳥飛的更遠——目標
 - 整個遊戲過程中需要躲避各種水管——環境
@@ -550,24 +651,6 @@ Neuron
 #+ATTR_ORG: :width 600
 #+RESULTS:
 [[file:images/ReinforceLearningGame.jpg]]
-
-** 自監督式學習(Self-supervised learning)
-這是監督式學習的特例，是一種沒有人工標註標籤的監督式學習，它們的標籤是從輸入資料自己生成的，通常是使用啟發式演算法(heuristic algorithm)。例如：自動編碼器(autoencoders)，它生成的標籤是從未經修改的輸入資料取得的，同樣的，從影片之前的影像來預測下一幅影格(frame)、從文章之前的字詞來預測下一個字詞等，都是這類應用。
-
-Yann Lecun 在 IJCAI 2018 上的演講中提及自監督學習的特色在於能通過輸入的某一部分預測其它部分。在空間層面上包括圖像補全、圖像變換等，在時間層面上包括時序數據預測、視頻幀預測等。Yann LeCun 總結了三類學習範式，分別是強化學習、監督學習和自監督學習，相比於強化學習和監督學習，自監督學習將輸入和輸出當成完整的整體。它們的區別和聯繫在於反饋信息的逐漸增多，模型表徵複雜度、適用任務類型也大幅增加，同時任務中涉及的人類工程比重也大大減少，意味著自動化程度的增加。
-
-在這場演講中，LeCun 認為機器學習的未來不會是監督學習，當然也不會純粹是強化學習，它應該是包含了深度模塊的自監督學習。那麼下一個問題是，自監督學習能夠產生一般的背景知識嗎？這裡重點是模型需要推斷出背景知識，它需要從真實世界收集的背景知識推理出當前它希望預測的任務。如下 LeCun 舉了一個例子，如果接收到一個自然語句，模型應該推斷出當前場景的各種背景知識。對於基於模型的經典最優控制，我們可能需要初始化一個序列來模擬世界，並通過梯度下降調整控制序列來最優化目標函數。而目前我們可以通過強化學習的方式模擬世界，這些模型不僅需要預測下一個可能的動作，同時還需要預測一系列可能的未來。
-
-(原文網址：https://kknews.cc/tech/2lryvjz.html)
-
-** [[file:Deeplearning.org][深度學習]] v.s.強化學習
-
-深度學習：Deep Learning,是一種機器學習的技術，由於深度學習在現代機器學習中的比重和價值非常巨大，因此常常將深度學習單獨拿出來說。最初的深度學習網絡是利用神經網絡來解決特徵層分佈的一種學習過程。通常我們瞭解的 DNN（深度神經網絡），CNN（[[id:20221023T101414.457264][卷積神經網路]]），RNN（[[id:263cb433-d0eb-4400-a373-35175c000c01][循環神經網路]]），LSTM（長短期記憶網絡）都是隸屬於深度學習的範疇。也是現代機器學習最常用的一些手段。通過這些手段，深度學習在視覺識別，語音識別，[[id:20221023T101534.642520][自然語言處理]]（NLP）等領域取得了使用傳統機器學習算法所無法取得的成就。
-
-強化學習：[[Reinforcement Learning]]，又稱再勵學習或者評價學習。也是機器學習的技術之一。所謂強化學習就是智能系統從環境到行為映射的學習，以使獎勵信號（強化信號）函數值最大，由於外部給出的信息很少，強化學習系統必須依靠自身的經歷進行自我學習。通過這種學習獲取知識，改進行動方案以適應環境。強化學習最關鍵的三個因素是狀態，行為和環境獎勵。關於強化學習和深度學習的實例，最典型的莫過於谷歌的 AlphaGo 和 AlphaZero 兩位了，前者通過深度學習中的深度卷積神經網絡，在訓練了大約三千萬組人類的下棋數據，無數度電的情況下才搞出來的模型，而後者使用強化學習的方式，通過自己和自己下棋的方式搞出來的模型。而最終的實驗結果也很讓人震撼。AlphaGo 干敗了人類圍棋頂尖高手,而 AlphaZero 干敗了 AlphaGo.
-
-(原文網址：https://kknews.cc/tech/xln95b8.html)
-#+latex:\newpage
 
 ** Batch and Online Learning[fn:5]
 *** Batch learning: In /batch learning/, the system is incapable of learning incrementally; it must be trained using all the available data.
@@ -757,65 +840,6 @@ Obviously, if your training data is full of errors, outliers, and noise (e.g., d
 Underfitting occurs when your model is too simple to learn the underlying structure of the data.
 
 * Machine Learning 的基本類型
-** Nonlinear Models 非線性模型
-*** 常用的 Nonlinear Models
-**** Supervised Learning
-- Decision tree
-- Ensemble models: Random forest, XGBoost
-- Neural network
-**** Unsupervised Learning
-- tSNE(t-Distributed Stochastic Neighbor Embedding)
-*** Decision Tree
-**** example: https://en.akinator.com
-**** 要定義很多 rule 才能把 tree 建起來
-*** Ensemble Models
-**** 用多棵樹來決定，做法為
-1. Get a set of classifiers, f1(x),f2(x),f3(x),...
-2. Aggregate the classifiers (properly)
-*** 選取 model 的考量
-- Bias v.s. Variance
-- Error from bias
-- Error from variance
-- Error observed
-- underfitting v.s. overfitting
-  overfitting: 完全符合 training data, 但 testing data 效果很差
-*** Bagging
-**** This approach would be helpful when your model is complex, easy to overfit.
-**** 適用系統:
-- decision tree: 只要樹夠深，可以 train 到 100%，但是對新進來的資料完全無用，即 overfitting
-**** Random Forest
-- 將 decision tree 應用到 bagging 的方式
-- 做法：每次從 M 個特徵抽出 m 個來建 decision tree
-*** XGBoost
-**** eXtreme Gradient Boosting
-**** Kaggle 機器學習競賽常用 solution
-**** 為一種集思廣益的策略
-- hello $$E=mc^2$$
-- test
-**** 一次一次加入一棵新的 tree,每加一棵新 tree 都要讓 loss 降低
-*** CNN
-**** 目的在減少類神經網路每一個 layer 的 feature 數量，以減化連結複雜度
-**** CNN 主要用來處理圖片: A neuron does not have to see the whole image to discover the pattern.
-*** CNN in Keras
-
-** Reinforcement Learning
-*** 談機器與環境之間的互動，如圍棋、走迷宮、玩遊戲
-*** 監督式學習 v.s. 增強式學習
-**** 監督式學習會有一個 tutor 或判斷依據，以圍棋來說是有一個棋譜
-**** 增強式學習沒有依據，完全從行為的經驗去自行判斷，以 alpha-go 為例，是以兩台 alpha-go 多次互相對奕來訓練，用這種方式的好處是可以生成大量資料
-**** Reinforcement Learning 的應用實例
-- 開直升機
-- 玩賽車
-- 打 GAME
-*** Reinforcement Learning 的性質
-**** Reward delay
-***** space invader: 只有 fire 才有 reward
-**** 機器人的行為會影響後續.....
-*** Critic 是評估 actor 的方式
-*** How to estimate V
-1. Monte-Carlo based approach
-2. Temporal-difference approach
-*** Asynchronous: A3C
 
 * Classfication
 兩步驟
@@ -923,6 +947,7 @@ Underfitting occurs when your model is too simple to learn the underlying struct
 - [[https://towardsdatascience.com/visualizing-intermediate-activation-in-convolutional-neural-networks-with-keras-260b36d60d0][Visualizing intermediate activation in Convolutional Neural Networks with Keras]]: 查看 training 中 image 的成像
 
 * Footnotes
+
 
 [fn:1] [[https://github.com/rasbt/python-machine-learning-book-2nd-edition][python-machine-learning-book-2nd-edition]]
 
