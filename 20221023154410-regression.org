@@ -1,9 +1,9 @@
 :PROPERTIES:
 :ID:       6ae7fb7a-0b38-4448-b19f-073d262513f2
-:ROAM_ALIASES: 迴歸
+:ROAM_ALIASES: Regression
 :END:
 
-#+TITLE: Regression
+#+TITLE: 迴歸
 # -*- org-export-babel-evaluate: nil -*-
 #+TAGS: AI
 #+OPTIONS: toc:2 ^:nil num:5
@@ -11,6 +11,9 @@
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/muse.css" />
 #+EXCLUDE_TAGS: noexport
 #+latex:\newpage
+#+begin_export html
+<a href="https://letranger.github.io/AI/20221023154410-regression.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20221023154410-regression.html.svg"/></a>
+#+end_export
 
 
 即，根據一組預測特徵（predictor，如里程數、車齡、品牌）來預測目標數值（如二手車車價）[fn:1]，這個目標數值也是label。
@@ -42,7 +45,701 @@
    $f* = arg min L(f)$
    上述可以微分來求最佳解，即求 function L 的最小值
 4. 數值最佳解: Gradient Descent(找拋物面最低點)
-** 迴歸實作
+
+* 迴歸預測流程(以波士頓房價預測為例) :noexport:
+1. Import the required module
+1. Load and configure the Boston housing data set
+1. Chekc the relation between the variable, using pairplot and correlation graph
+1. Descriptive statistics: central tendency and dispersion
+1. Select the required columns
+1. Train the test split
+1. Normalize the data
+1. Build the input pipeline for the TensorFlow model
+1. Model tranining
+1. Predictions
+1. Validation
+
+* 簡單線性迴歸 :noexport:
+** Pizza
+Let's assume that you have recorded the diameters and prices of pizzas that you have previously eaten in your pizza journal. These observations comprise our training data:
+|--------------------+------------------|
+| Diameter in inches | Price in dollars |
+|--------------------+------------------|
+|                  6 |                7 |
+|                  8 |                9 |
+|                 10 |               13 |
+|                 14 |             17.5 |
+|                 18 |               18 |
+|--------------------+------------------|
+*** 觀察數據
+We can visualize our training data by plotting it on a graph using matplotlib:
+#+begin_src python -r -n :results output :exports both
+import numpy as np
+# "np" and "plt" are common aliases for NumPy and Matplotlib, respectively.
+import matplotlib.pyplot as plt
+
+# X represents the features of our training data, the diameters of the pizzas.
+# A scikit–learn convention is to name the matrix of feature vectors X.
+# Uppercase letters indicate matrices, and lowercase letters indicate vectors.
+X = np.array([[6], [8], [10], [14], [18]]).reshape(-1, 1)
+
+y = [7, 9, 13, 17.5 , 18]
+# y is a vector representing the prices of the pizzas.
+
+#plt.figure()
+plt.title('Pizza price plotted against diameter')
+plt.xlabel('Diameter in inches')
+plt.ylabel('Price in dollars')
+plt.plot(X, y, 'k.')
+plt.axis([0, 25, 0, 25])
+plt.grid(True)
+plt.savefig('images/pizza-1.png', dpi=300)
+#+end_src
+
+#+RESULTS:
+#+CAPTION: Pizza Regression #1
+#+LABEL:fig:Pizza-Reg-1
+#+name: fig:Pizza-Reg-1
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/pizza-1.png]]
+We can see from the plot of the training data that there is a positive relationship between the diameter of a pizza and its price, which should be corroborated by our own pizza-eating experience.
+*** 建模: LinearRegression
+The following pizza price predictor program models this relationship using simple linear regression.
+#+begin_src python -r -n :results output :exports both
+import numpy as np
+X = np.array([[6], [8], [10], [14], [18]]).reshape(-1, 1)
+y = [7, 9, 13, 17.5 , 18]
+
+print(X.shape)
+
+from sklearn.linear_model import LinearRegression
+model = LinearRegression()
+# Create an instance of the estimator
+model.fit(X, y)
+# Fit the model on the training data
+
+# Predict the price of a pizza with a diameter that has never been seen before
+test_pizza = np.array([[12]])
+predicted_price = model.predict(test_pizza)[0]
+print('A 12" pizza should cost: $%.2f' % predicted_price)
+#+end_src
+
+#+RESULTS:
+: (5, 1)
+: A 12" pizza should cost: $13.68
+
+- The LinearRegression class is an *estimator*. Estimators predict a value based on observed data.
+- In scikit-learn, all estimators implement the fit methods and predict.
+- The fit method of LinearRegression learns the parameters of the following model for simple linear regression:$$y=\alpha+\beta x$$
+- $y$ is the predicted value of the response variable; in this example, it is the predicted price of the pizza.
+- $x$ is the explanatory variable.
+- The intercept term $\alpha$ and the coefficient $\beta$ are parameters of the model that are learned by the learning algorithm.
+- The hyperplane plotted in the following figure models the relationship between the size of a pizza and its price.
+- Using training data to learn the values of the parameters for simple linear regression that produce the best fitting model is called ordinary least squares (OLS) or linear least squares.
+
+#+begin_src python -r -n :results output :exports both
+import numpy as np
+X = np.array([[6], [8], [10], [14], [18]]).reshape(-1, 1)
+y = [7, 9, 13, 17.5 , 18]
+
+from sklearn.linear_model import LinearRegression
+model = LinearRegression()
+# Create an instance of the estimator
+model.fit(X, y)
+# Fit the model on the training data
+
+from matplotlib import pyplot as plt
+plt.scatter(X, y, color = 'k')
+plt.plot(X, model.predict(X), color='g')
+plt.title('Pizza price plotted against diameter')
+plt.xlabel('Diameter in inches')
+plt.ylabel('Price in dollars')
+plt.savefig('images/pizza-2.png', dpi=300)
+#+end_src
+
+  #+RESULTS:
+
+#+CAPTION: Pizza regression 2
+#+LABEL:fig:Pizza-reg-2
+#+name: fig:Pizza-reg-2
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/pizza-2.png]]
+*** Evaluating the fitness of the model with a cost function
+Regression lines produced by several sets of parameter values are plotted in the following figure. How can we assess which parameters produced the best-fitting regression line?
+#+begin_src python -r -n :results output :exports none
+import numpy as np
+X = np.array([[6], [8], [10], [14], [18]]).reshape(-1, 1)
+y = [7, 9, 13, 17.5 , 18]
+print()
+print(y)
+#from sklearn.linear_model import LinearRegression
+#model = LinearRegression()
+## Create an instance of the estimator
+#model.fit(X, y)
+## Fit the model on the training data
+#
+#from matplotlib import pyplot as plt
+#plt.scatter(X, y, color = 'k')
+#plt.plot(X, model.predict(X), color='g')
+#plt.plot(X, model.predict(X)+.5, color='c', linestyle='--')
+#plt.plot(X, model.predict(X)*.9, color='m', linestyle='-.')
+#plt.title('Pizza price plotted against diameter')
+#plt.xlabel('Diameter in inches')
+#plt.ylabel('Price in dollars')
+#plt.savefig('images/pizza-3.png', dpi=300)
+
+#+end_src
+
+#+RESULTS:
+
+#+CAPTION: Pizza regression 3
+#+LABEL:fig:Pizza-reg-3
+#+name: fig:Pizza-reg-3
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/pizza-3.png]]
+**** cost function
+A cost function, also called a loss function, is used to define and measure the error of a model. The differences between the prices predicted by the model and the observed prices of the pizzas in the training set are called residuals, or training errors. The differences between the predicted and observed values in the test data are called prediction errors, or test errors.
+#+begin_src python -r -n :results output :exports none
+import numpy as np
+X = np.array([[6], [8], [10], [14], [18]]).reshape(-1, 1)
+y = [7, 9, 13, 17.5 , 18]
+
+from sklearn.linear_model import LinearRegression
+model = LinearRegression()
+# Create an instance of the estimator
+model.fit(X, y)
+# Fit the model on the training data
+
+from matplotlib import pyplot as plt
+
+dy = (model.predict(X)-y)/2
+for x, y1, y2 in zip(X, y, model.predict(X)):
+    xs = [x, x]
+    ys = [y1, y2]
+    plt.plot(xs, ys, color='orange')
+plt.scatter(X, y, color = 'k')
+plt.plot(X, model.predict(X), color='g')
+#plt.errorbar(X, model.predict(X)-dy, yerr=dy, fmt='.')
+plt.title('Pizza price plotted against diameter')
+plt.xlabel('Diameter in inches')
+plt.ylabel('Price in dollars')
+plt.savefig('images/pizza-4.png', dpi=300)
+#+end_src
+#+RESULTS:
+#+CAPTION: Pizza regression 4
+#+LABEL:fig:Pizza-reg-4
+#+name: fig:Pizza-reg-4
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/pizza-4.png]]
+
+This measure of the model's fitness is called the residual sum of squares (RSS) cost function. Formally, this function assesses the fitness of a model by summing the squared residuals for all of our training examples. The RSS is calculated with the formula in the following equation, where \(y_i\) is the observed value and \(f(x_i)\) is the predicted value:$$SS_{res}=\sum_{i=1}^{n}(y_i-f(x_i))^2$$
+
+
+
+#+begin_src emacs-lisp
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(setq python-shell-interpreter "/usr/bin/python3")
+(setq python-shell-interpreter-arg "-i")
+(setq py-use-current-dir-when-execute-p t)
+(setq python-shell-prompt-detect-enabled nil)
+(setq python-shell-interpreter "ipython")
+(setq python-shell-interpreter-interactive-args "-i --simple-prompt")
+#+end_src
+
+#+RESULTS:
+: -i --simple-prompt
+
+
+#+begin_src emacs-lisp
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+#+end_src
+
+#+RESULTS:
+: ((gnu . https://elpa.gnu.org/packages/) (melpa . https://melpa.org/packages/) (org . https://orgmode.org/elpa/))
+
+#+begin_src jupyter-python :session py :async yes :kernel python :results scalar both raw drawer :display text/html :exports both
+import numpy as np
+import pandas as pd
+
+a = 3
+print(a)
+data = [[1,2], [3,4]]
+pd.DataFrame(data, columns=["Foo", "Bar"])
+#+end_src
+
+#+RESULTS:
+:results:
+# Out[5]:
+#+BEGIN_EXAMPLE
+  Foo  Bar
+  0    1    2
+  1    3    4
+#+END_EXAMPLE
+:end:
+
+#+begin_src jupyter-python :session py :async yes :kernel python3 :results scalar both raw drawer :exports both
+from ipywidgets import  interact, interactive, fixed, interact_manual
+import ipywidgets as widgets
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+print(data)
+def f(x):
+    plt.plot(np.arange(0, 10), x*np.arange(0, 10))
+    plt.ylim(-30, 30)
+#interact(f, x=10)
+f(10)
+#+end_src
+
+#+RESULTS:
+:results:
+# Out[6]:
+[[file:.ob-ipython-resrcnqInND.png]]
+:end:
+
+:end:
+:end:
+:end:
+
+#+BEGIN_SRC emacs-lisp
+(require 'jupyter)
+#+END_SRC
+
+#+RESULTS:
+: jupyter
+
+* 線性迴歸:年齡身高預測
+** 資料生成
+這是當初上帝創造人類時決定人類身高的規則，我們也可以將之視為這組資料的模型，這個規則或模型是很神祕的，等一下我們要假裝我們不知道這個模型的存在，而迴歸的目的就在於想辦法猜出這個規則或模型。
+#+begin_src ipython -r :results output :exports both :session test
+import numpy as np
+import matplotlib.pyplot as plt
+
+n = 10                               # 資料筆數
+year = 5 + 25 * np.random.rand(n)  # 年紀
+height = 170 - 108 * np.exp(-0.2 * year) + 4 * np.random.randn(n)
+print(year)
+print(height)
+#+end_src
+: [13.3, 16.2, 10.9, 28.7, 19.8, 14.2, 11.7, 26.6, 22.4, 18.3, 19.4]
+: [163.61, 168.53, 155.06, 171.3 , 166.69, 160.98, 158.23, 165.27, 170.83,  161.31, 163.58]
+
+** 查看資料
+對於平凡的人類而言，他們只能看到身邊的人們隨著年齡增長而出現身高的變化，也就是由神袐模型所生成的數字：年齡和身高(如圖[[fig:yearHeight]])。
+#+begin_src python -r :results output :exports none
+import numpy as np
+import matplotlib.pyplot as plt
+
+year = np.array([13.3, 16.2, 10.9, 28.7, 14.2, 11.7, 26.6, 22.4, 18.3, 20.4])
+height = np.array([163.61, 168.53, 155.06, 168.3 ,158.98, 158.23, 165.27, 170.83,  161.31, 163.58])
+
+plt.figure(figsize=(5, 5))
+plt.plot(year, height, marker='o', linestyle='None',
+         markeredgecolor='black', color='cornflowerblue')
+
+plt.xlim(5, 35)
+plt.ylim(150,175)
+
+plt.grid(True)
+plt.ylabel('Height')
+plt.xlabel('Year')
+plt.savefig("images/yearHeight.png")
+#+end_src
+
+#+RESULTS:
+
+#+CAPTION: 年齡與身高的資料分佈
+#+name: fig:yearHeight
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/yearHeight.png]]
+
+但那些一身反骨的數學家則不甘於當平凡人，他們想透過統計、分析、思考、通靈等方式對這個既有現象進行逆向工程，去推估這個現象背後的神祕規則，藉此窺探上帝的意志。
+這些規則也許是如圖[[fig:yearHeightModel]]中的各種線段。一但找到了規則，我們就能根據這些規則進行 *預測* ，例如，由某人的年齡來合理推估他的身高。
+#+begin_src python -r :results output :exports none
+import numpy as np
+import matplotlib.pyplot as plt
+
+year = np.array([13.3, 16.2, 10.9, 28.7, 14.2, 11.7, 26.6, 22.4, 18.3, 20.4])
+height = np.array([163.61, 168.53, 155.06, 168.3 ,158.98, 158.23, 165.27, 170.83,  161.31, 163.58])
+
+plt.figure(figsize=(5, 5))
+plt.plot(year, height, marker='o', linestyle='None',
+         markeredgecolor='black', color='cornflowerblue')
+plt.xlim(5, 35)
+plt.ylim(150,175)
+plt.grid(True)
+plt.plot((10, 30), (153, 173), color='r', linestyle='-')
+plt.plot((10, 30), (160, 169), color='b', linestyle='--')
+plt.plot((10, 30), (157, 171), color='g', linestyle='--')
+
+plt.ylabel('Height')
+plt.xlabel('Year')
+plt.savefig("images/yearHeightModel.png")
+#+end_src
+
+#+RESULTS:
+: [13.3 16.2 10.9 28.7 19.8 14.2 11.7 26.6 22.4 18.3 19.4]
+: [163.61 168.53 155.06 171.3  166.69 160.98 158.23 165.27 170.83 161.31
+:  163.58]
+
+#+CAPTION: 隱藏在年齡與身高資料背後的規則(模型)
+#+name: fig:yearHeightModel
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/yearHeightModel.png]]
+
+** 直線模型
+我們可以在圖[[fig:yearHeightModel]]中畫上無數條線，但，最能代表年齡和身高關係的線應該只有一條，我們要如何找出這條線？
+
+首先，既然我們想以 *直線* 來表示我們想找的模型或規則，那我們就先把這條直線以下列數學示表示出來:
+$$y=ax+b$$ 或 $$f(x)=ax+b$$
+這樣的直線 $y$ 或函數 $f(x)$ 有無限多個，迴歸的目的就是要為函數 $f(x)$ 找出一組最好的參數 $a,b$，或是為直線 $y$ 找到最適合的斜率 $a$ 和截距 $b$。這也是現今許多AI模型的基本精神：找到一組最好的參數，或者說：從無數個可能的模型中挑出最好的一個。
+
+為了從無限多個備選模型中找出最佳的，我們需要有一個評估機制。
+
+** 損失函數
+#+begin_src python -r :results output :exports none
+import numpy as np
+import matplotlib.pyplot as plt
+
+year = np.array([13.3, 16.2, 10.9, 28.7, 14.2, 11.7, 26.6, 22.4, 18.3, 20.4]).reshape([-1, 1])
+height = np.array([163.61, 168.53, 155.06, 168.3 ,158.98, 158.23, 165.27, 170.83,  161.31, 163.58])
+
+from sklearn.linear_model import LinearRegression
+model = LinearRegression()
+# Create an instance of the estimator
+model.fit(year, height)
+
+# Fit the model on the training data
+plt.figure(figsize=(5, 5))
+plt.grid(True)
+plt.xlim(5, 35)
+plt.ylim(150,175)
+plt.scatter(year, height, color = 'k')
+i = 0
+for x, y in zip(year, height):
+    plt.text(x+0.3, y-0.5, rf'$y_{i}$', color='red')
+    i += 1
+
+dy = (model.predict(year)-height)/2
+i = 0
+for x, y1, y2 in zip(year, height, model.predict(year)):
+    xs = [x, x]
+    ys = [y1, y2]
+    plt.plot(xs, ys, color='orange')
+    plt.text(x-0.4, y2+0.5, rf'$\hat y_{i}$', color='blue')
+    i += 1
+#====================
+#plt.scatter(X, y, color = 'k')
+#trueA = (model.predict(year)[1] - model.predict(year)[2])/(year[1][0]- year[2][0])
+#trueB = model.predict(year)[1] - trueA * year[1][0]
+#print(f'{trueA}') #0.7426437155683577
+#print(f'{trueB}') #149.72040800429542
+#====================
+plt.plot(year, model.predict(year), color='g')
+
+
+plt.plot(year, model.predict(year), color='g')
+plt.xlabel('Year')
+plt.ylabel('Height')
+plt.savefig('images/yearHeightLoss.png', dpi=300)
+#+end_src
+
+#+RESULTS:
+
+損失函數(loss function)也稱為成本函數(cost function)，就是最常用來定義、衡量模型誤差的方法。以圖[[fig:yearHeightLoss]]為例，我們可以計算所有原始資料$(x_0, y_0) \dots (x_9, y_9)$ 離這條預測線的距離，這些距離的總和越小，表示預測線離每一點越近，也就是說這個模型越準確。
+
+#+RESULTS:
+#+CAPTION: 直線模型的均方誤差
+#+name: fig:yearHeightLoss
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 600
+[[file:images/yearHeightLoss.png]]
+
+圖[[fig:yearHeightLoss]]中的 $y_i$ 為實際資料 $x_i$ 對應的結果， 而 $\hat{y_i}$ 則是將每個實際資料 $x_i$ 丟入模型後的預測結果，計算 $y_i$ 與 $\hat{y_i}$ 誤差的方法稱為 *殘差平方和* (Residual Sum of Squares, RSS)，計算公式為
+$$ RSS = \sum_{i=1}^{n}(\hat{y_i}-y_i)^2 $$
+把RSS再除以n就或是 *均方差* (Mean Square Error, MSE)，即
+$$ MSE = \frac{1}{n}\sum_{i=1}^{n}(\hat{y_i}-y_i)^2 $$
+迴歸的任務就是把RSS或MSE最小化。
+
+如何讓RSS/MSE最小化呢？
+
+** 窮舉所有的可能性
+#+begin_src python -r :results output :exports none
+import numpy as np
+import matplotlib.pyplot as plt
+
+plt.rcParams['font.sans-serif'] = ['Arial Unicode MS'] # 步驟一（替換系統中的字型，這裡用的是Mac OSX系統）
+plt.rcParams['axes.unicode_minus'] = False  # 步驟二（解決座標軸負數的負號顯示問題）
+year = np.array([13.3, 16.2, 10.9, 28.7, 14.2, 11.7, 26.6, 22.4, 18.3, 20.4]).reshape([-1, 1])
+height = np.array([163.61, 168.53, 155.06, 168.3 ,158.98, 158.23, 165.27, 170.83,  161.31, 163.58])
+
+from sklearn.linear_model import LinearRegression
+model = LinearRegression()
+# 均方誤差函數 ------------------------------
+def mse_line(x, t, w):
+    y = w[0] * x + w[1]
+    mse = np.mean((y - t)**2)
+    return mse
+
+xn = 100    #等高線解析度
+b0, b1 = -40, 41
+a0, a1 = 40, 161
+# Fit the model on the training data
+w0 = np.linspace(b0, b1, xn)
+w1 = np.linspace(a0, a1, xn)
+ww0, ww1 = np.meshgrid(w0, w1)
+J = np.zeros((len(w0), len(w1)))
+for i0 in range(len(w0)):
+    for i1 in range(len(w1)):
+        J[i1, i0] = mse_line(year, height, (w0[i0], w1[i1]))
+
+# 顯示 --------------------------------------
+plt.figure(figsize=(5, 5))
+from matplotlib import ticker
+
+formatter = ticker.ScalarFormatter()
+formatter.set_scientific(False)
+# A
+ax = plt.subplot(1, 1, 1, projection='3d')
+ax.yaxis.set_major_formatter(formatter)
+ax.plot_surface(ww0, ww1, J, rstride=20, cstride=20, alpha=0.3,
+                color='blue', edgecolor='black')
+ax.set_xticks(np.arange(b0, b1, 20))
+ax.set_yticks(np.arange(a0, a1, 20))
+
+ax.set_xlabel('a')
+ax.set_ylabel('b')
+ax.set_zlabel('SSE')
+ax.view_init(20, -60)
+plt.savefig('images/SSELossA.png', dpi=300)
+#+end_src
+
+#+RESULTS:
+
+為了找出哪一組參數 $a,b$ 可以讓模型 $y=ax+b$ 的預測誤差達到最小，我們可以將一些合理的a,b值可能組合都列出來，如圖[[fig:SSELossA]]，我們列出了由參數a(-40~40)、參數b(40~160)的所有可能模型，圖中的z軸代表每一種模型產生的誤差。由圖[[fig:SSELossA]]可以看出兩件事:
+1. 參數a對模型誤差的影響遠大於參數b
+2. 當參數a的值接近0時，所生成的模型會有較低的MSE，也就是模型預測能力較好
+
+#+CAPTION: 不同a,b情況下的均方差
+#+name: fig:SSELossA
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 400
+#+ATTR_HTML: :width 500
+[[file:images/SSELossA.png]]
+
+讓我們回憶一下等高線這個東西，如果我們把圖[[fig:SSELossA]]當成某個山谷的地形圖(z軸為高度)，那我們就可以畫出這個區域的等高線圖[[fig:SSELossB]](先別管我是怎麼畫出來的)，從等高線圖[[fig:SSELossB]]就能大概看出來當a的值約等於0、b的值約等於150時會有最低的SSE(如圖[[fig:SSELossB]]中的灰點，這是我透過觀落音得到的訊息)。
+
+#+begin_src python -r :results output :exports none
+import numpy as np
+import matplotlib.pyplot as plt
+
+plt.rcParams['font.sans-serif'] = ['Arial Unicode MS'] # 步驟一（替換系統中的字型，這裡用的是Mac OSX系統）
+plt.rcParams['axes.unicode_minus'] = False  # 步驟二（解決座標軸負數的負號顯示問題）
+year = np.array([13.3, 16.2, 10.9, 28.7, 14.2, 11.7, 26.6, 22.4, 18.3, 20.4]).reshape([-1, 1])
+height = np.array([163.61, 168.53, 155.06, 168.3 ,158.98, 158.23, 165.27, 170.83,  161.31, 163.58])
+
+from sklearn.linear_model import LinearRegression
+model = LinearRegression()
+# 均方誤差函數 ------------------------------
+def mse_line(x, t, w):
+    y = w[0] * x + w[1]
+    mse = np.mean((y - t)**2)
+    return mse
+
+xn = 100    #等高線解析度
+b0, b1 = -40, 41
+a0, a1 = 40, 161
+# Fit the model on the training data
+w0 = np.linspace(b0, b1, xn)
+w1 = np.linspace(a0, a1, xn)
+ww0, ww1 = np.meshgrid(w0, w1)
+J = np.zeros((len(w0), len(w1)))
+for i0 in range(len(w0)):
+    for i1 in range(len(w1)):
+        J[i1, i0] = mse_line(year, height, (w0[i0], w1[i1]))
+
+# 顯示 --------------------------------------
+plt.figure(figsize=(5, 5))
+from matplotlib import ticker
+
+formatter = ticker.ScalarFormatter()
+formatter.set_scientific(False)
+# B
+cont = plt.contour(ww0, ww1, J, 30, colors='green',
+                   levels=[0, 100, 1000, 10000, 100000, 1000000], linewidths=0.5)
+cont.clabel(fmt='%d', fontsize=6, colors='r')
+plt.scatter(0.74, 150.72, color = 'gray')
+plt.xlabel("a")
+
+plt.ylabel("b")
+plt.grid(True)
+plt.savefig('images/SSELossB.png', dpi=300)
+#+end_src
+
+#+RESULTS:
+
+#+CAPTION: 不同a,b情況下的MSE(俯視/等高線)
+#+name: fig:SSELossB
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 400
+#+ATTR_HTML: :width 500
+[[file:images/SSELossB.png]]
+
+總之，看起來是有辦法找到最佳的模型的，只是有點麻煩...，這個方法稱為梯度下降，在這裡我們先知道有這麼個方法、知道這個方法可以找出最佳模型就好，至於深入探討這個方法是如何運作這件事，等我搞清楚了再說吧(或是等你們上大學再自己去研究)...
+
+** 快速求出最佳解
+雖然從無數組 $(a,b)$ 中找出最好的一組看似困難，不過其實許多現成的相關模組已經有了這些功能，例如[[https://scikit-learn.org/stable/][scikit-learn]]。以底下的程式為例：
+#+begin_src python -r -n :results output :exports both
+import numpy as np
+from sklearn.linear_model import LinearRegression
+
+year = np.array([13.3, 16.2, 10.9, 28.7, 14.2, 11.7, 26.6, 22.4, 18.3, 20.4]).reshape([-1, 1])
+height = np.array([163.61, 168.53, 155.06, 168.3 ,158.98, 158.23, 165.27, 170.83,  161.31, 163.58])
+
+model = LinearRegression() (ref:modelRegression)
+model.fit(year, height) (ref:modelFit)
+
+slope = model.coef_
+intercept = model.intercept_
+heightHat = year * slope + intercept
+
+print('斜率/Slope:', slope)
+print('截距/Intercept:', intercept)
+#+end_src
+
+#+RESULTS:
+: 斜率/Slope: [0.58182444]
+: 截距/Intercept: 152.74006747354875
+
+在上述程式碼中，真正與計算迴歸有關的只有第[[(modelRegression)]]行與第[[(modelFit)]]行，
+夠簡單吧，這樣我們就能畫出最佳的一條迴歸線(如圖[[fig:bestRegressionLine]]):
+#+begin_src python -r -n :results output :exports none
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+
+plt.rcParams['font.sans-serif'] = ['Arial Unicode MS'] # 步驟一（替換系統中的字型，這裡用的是Mac OSX系統）
+plt.rcParams['axes.unicode_minus'] = False  # 步驟二（解決座標軸負數的負號顯示問題）
+
+year = np.array([13.3, 16.2, 10.9, 28.7, 14.2, 11.7, 26.6, 22.4, 18.3, 20.4]).reshape([-1, 1])
+height = np.array([163.61, 168.53, 155.06, 168.3 ,158.98, 158.23, 165.27, 170.83,  161.31, 163.58])
+
+model = LinearRegression()
+model.fit(year, height)
+
+plt.figure(figsize=(5, 5))
+plt.plot(year, height, marker='o', linestyle='None',
+         markeredgecolor='black', color='cornflowerblue')
+plt.xlim(5, 35)
+plt.ylim(150,175)
+plt.grid(True)
+plt.plot(year, heightHat, color='r', linestyle='-')
+
+plt.ylabel('Height')
+plt.xlabel('Year')
+plt.savefig("images/yearHeightModelHat.png")
+#+end_src
+#+CAPTION: 線性迴歸求解
+#+name: fig:bestRegressionLine
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/yearHeightModelHat.png]]
+
+** 逐步找出最佳解
+#+begin_src python -r :results output :exports none
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+plt.rcParams['font.sans-serif'] = ['Arial Unicode MS'] # 步驟一（替換系統中的字型，這裡用的是Mac OSX系統）
+plt.rcParams['axes.unicode_minus'] = False  # 步驟二（解決座標軸負數的負號顯示問題）
+year = np.array([13.3, 16.2, 10.9, 28.7, 14.2, 11.7, 26.6, 22.4, 18.3, 20.4]).reshape([-1, 1])
+height = np.array([163.61, 168.53, 155.06, 168.3 ,158.98, 158.23, 165.27, 170.83,  161.31, 163.58])
+
+from sklearn.linear_model import LinearRegression
+model = LinearRegression()
+# 均方誤差函數 ------------------------------
+def mse_line(x, t, w):
+    y = w[0] * x + w[1]
+    mse = np.mean((y - t)**2)
+    return mse
+
+xn = 100    #等高線解析度
+b0, b1 = -40, 41
+a0, a1 = 40, 161
+# Fit the model on the training data
+w0 = np.linspace(b0, b1, xn)
+w1 = np.linspace(a0, a1, xn)
+ww0, ww1 = np.meshgrid(w0, w1)
+J = np.zeros((len(w0), len(w1)))
+for i0 in range(len(w0)):
+    for i1 in range(len(w1)):
+        J[i1, i0] = mse_line(year, height, (w0[i0], w1[i1]))
+
+# 顯示 --------------------------------------
+plt.figure(figsize=(5, 5))
+from matplotlib import ticker
+from mpl_toolkits.mplot3d import Axes3D
+
+formatter = ticker.ScalarFormatter()
+formatter.set_scientific(False)
+# A
+ax = plt.subplot(1, 1, 1, projection='3d')
+ax.yaxis.set_major_formatter(formatter)
+ax.plot_surface(ww0, ww1, J, rstride=20, cstride=20, alpha=0.3,
+                color='blue', edgecolor='black')
+ax.set_xticks(np.arange(b0, b1, 20))
+ax.set_yticks(np.arange(a0, a1, 20))
+# scatter
+
+#ax.quiver([-20],[80],[300000],[-20],[80],[300000], colors='b')
+#ax.quiver([0],[0],[0],[1],[b],[a], colors='r')
+#ax.quiver([0],[0],[0],[10],[60],[0], colors='r')
+ax.quiver(-20, 70, 300000, -10, 16, 10,  color='blue', arrow_length_ratio = 0.1)
+ax.quiver(-20, 70, 300000, 10, -16, 10,  color='red', arrow_length_ratio = 0.5, pivot='tail', length=1)
+ax.scatter(-20, 70, 300000, color='green')
+#ax.quiver(0,0,0,10,10,10,color='b',arrow_length_ratio = 0.1)
+
+ax.set_xlabel('a')
+ax.set_ylabel('b')
+ax.set_zlabel('SSE')
+ax.view_init(20, -60)
+plt.savefig('images/SSELossC.png', dpi=300)
+#+end_src
+雖然我們可以快速的利用如[[https://scikit-learn.org/][scikit-learn]]這類第三方模組求出最佳解，但是相信對於有志投入AI領域的你來說，光知道如何快速求解顯然遠遠不夠，讓我們來搞清楚這到底是怎麼完成的。
+
+*** 隨機的力量
+:PROPERTIES:
+:ID:       7cd4a142-4cd9-46b6-b9a4-2ad750ae622f
+:END:
+萬事起頭難，要找出最佳的參數組合 $(a,b)$ ，最合理的方式就是我們 *閉上眼睛* 在圖[[fig:SSELossA]]中隨意點圈出一個點b $(a_0, b_0)$，這就是我們的第一步，其結果就如圖[[fig:SSELossC]]所示。有了這個開頭，我們接下來要做的事就是：
+1. 找出 *一個方法* 來判斷要由點 $(a_0, b_0)$ 點沿著這個曲面的 *哪一個方向* 前進 *多遠* ，來到下一點 $(a_1, b_1)$
+2. 利用 *同一個方法* 來判斷接下來要由點 $(a_1, b_1)$ 點沿著這個曲面的 *哪一個方向* 前進 *多遠* ，來到下一點 $(a_2, b_2)$
+3. 重複同樣的步驟，直到找到最佳的點 $(a_n, b_n)$ ，也就是這一點 $(a_n, b_n)$ 能使整個模型的SSE來到最小，讓模型具備最佳的預測效能。
+#+CAPTION: 找出最佳a,b組合的方法
+#+name: fig:SSELossC
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 400
+#+ATTR_HTML: :width 500
+[[file:images/SSELossC.png]]
+
+
+
+* 線性迴歸[fn:2] :noexport:
 [[https://tree.rocks/deep-learning-from-scratch-by-linear-regression-e42f5dcdb024][手刻 Deep Learning — 第零章 — 線性回歸]]
 原始資料:
 #+CAPTION: Caption
@@ -59,7 +756,6 @@ import matplotlib.pyplot as plt
 
 def gen_data(X, a, b):
     return X * a + b
-
 
 ## 重新產生X, y，較合理，而非已存在一條線
 X = np.array(range(1, 10))
@@ -190,265 +886,12 @@ print('Intercept:', model.intercept_)
 : Slope: [8.21666667]
 : Intercept: 18.02777777777777
 
-* 簡單線性迴歸
-** Pizza
-Let's assume that you have recorded the diameters and prices of pizzas that you have previously eaten in your pizza journal. These observations comprise our training data:
-|--------------------+------------------|
-| Diameter in inches | Price in dollars |
-|--------------------+------------------|
-|                  6 |                7 |
-|                  8 |                9 |
-|                 10 |               13 |
-|                 14 |             17.5 |
-|                 18 |               18 |
-|--------------------+------------------|
-*** 觀察數據
-We can visualize our training data by plotting it on a graph using matplotlib:
-#+begin_src python -r -n :results output :exports both
-import numpy as np
-# "np" and "plt" are common aliases for NumPy and Matplotlib, respectively.
-import matplotlib.pyplot as plt
-
-# X represents the features of our training data, the diameters of the pizzas.
-# A scikit–learn convention is to name the matrix of feature vectors X.
-# Uppercase letters indicate matrices, and lowercase letters indicate vectors.
-X = np.array([[6], [8], [10], [14], [18]]).reshape(-1, 1)
-
-y = [7, 9, 13, 17.5 , 18]
-# y is a vector representing the prices of the pizzas.
-
-#plt.figure()
-plt.title('Pizza price plotted against diameter')
-plt.xlabel('Diameter in inches')
-plt.ylabel('Price in dollars')
-plt.plot(X, y, 'k.')
-plt.axis([0, 25, 0, 25])
-plt.grid(True)
-plt.savefig('images/pizza-1.png', dpi=300)
-#+end_src
-
-#+RESULTS:
-#+CAPTION: Pizza Regression #1
-#+LABEL:fig:Pizza-Reg-1
-#+name: fig:Pizza-Reg-1
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
-[[file:images/pizza-1.png]]
-We can see from the plot of the training data that there is a positive relationship between the diameter of a pizza and its price, which should be corroborated by our own pizza-eating experience.
-*** 建模: LinearRegression
-The following pizza price predictor program models this relationship using simple linear regression.
-#+begin_src python -r -n :results output :exports both
-import numpy as np
-X = np.array([[6], [8], [10], [14], [18]]).reshape(-1, 1)
-y = [7, 9, 13, 17.5 , 18]
-
-print(X.shape)
-
-from sklearn.linear_model import LinearRegression
-model = LinearRegression()
-# Create an instance of the estimator
-model.fit(X, y)
-# Fit the model on the training data
-
-# Predict the price of a pizza with a diameter that has never been seen before
-test_pizza = np.array([[12]])
-predicted_price = model.predict(test_pizza)[0]
-print('A 12" pizza should cost: $%.2f' % predicted_price)
-#+end_src
-
-#+RESULTS:
-: (5, 1)
-: A 12" pizza should cost: $13.68
-
-- The LinearRegression class is an *estimator*. Estimators predict a value based on observed data.
-- In scikit-learn, all estimators implement the fit methods and predict.
-- The fit method of LinearRegression learns the parameters of the following model for simple linear regression:$$y=\alpha+\beta x$$
-- $y$ is the predicted value of the response variable; in this example, it is the predicted price of the pizza.
-- $x$ is the explanatory variable.
-- The intercept term $\alpha$ and the coefficient $\beta$ are parameters of the model that are learned by the learning algorithm.
-- The hyperplane plotted in the following figure models the relationship between the size of a pizza and its price.
-- Using training data to learn the values of the parameters for simple linear regression that produce the best fitting model is called ordinary least squares (OLS) or linear least squares.
-
-#+begin_src python -r -n :results output :exports both
-import numpy as np
-X = np.array([[6], [8], [10], [14], [18]]).reshape(-1, 1)
-y = [7, 9, 13, 17.5 , 18]
-
-from sklearn.linear_model import LinearRegression
-model = LinearRegression()
-# Create an instance of the estimator
-model.fit(X, y)
-# Fit the model on the training data
-
-from matplotlib import pyplot as plt
-plt.scatter(X, y, color = 'k')
-plt.plot(X, model.predict(X), color='g')
-plt.title('Pizza price plotted against diameter')
-plt.xlabel('Diameter in inches')
-plt.ylabel('Price in dollars')
-plt.savefig('images/pizza-2.png', dpi=300)
-#+end_src
-
-  #+RESULTS:
-
-#+CAPTION: Pizza regression 2
-#+LABEL:fig:Pizza-reg-2
-#+name: fig:Pizza-reg-2
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
-[[file:images/pizza-2.png]]
-*** Evaluating the fitness of the model with a cost function
-Regression lines produced by several sets of parameter values are plotted in the following figure. How can we assess which parameters produced the best-fitting regression line?
-#+begin_src python -r -n :results output :exports both
-import numpy as np
-X = np.array([[6], [8], [10], [14], [18]]).reshape(-1, 1)
-y = [7, 9, 13, 17.5 , 18]
-
-from sklearn.linear_model import LinearRegression
-model = LinearRegression()
-# Create an instance of the estimator
-model.fit(X, y)
-# Fit the model on the training data
-
-from matplotlib import pyplot as plt
-plt.scatter(X, y, color = 'k')
-plt.plot(X, model.predict(X), color='g')
-plt.plot(X, model.predict(X)+.5, color='c', linestyle='--')
-plt.plot(X, model.predict(X)*.9, color='m', linestyle='-.')
-plt.title('Pizza price plotted against diameter')
-plt.xlabel('Diameter in inches')
-plt.ylabel('Price in dollars')
-plt.savefig('images/pizza-3.png', dpi=300)
-
-#+end_src
-
-#+RESULTS:
-
-#+CAPTION: Pizza regression 3
-#+LABEL:fig:Pizza-reg-3
-#+name: fig:Pizza-reg-3
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
-[[file:images/pizza-3.png]]
-**** cost function
-A cost function, also called a loss function, is used to define and measure the error of a model. The differences between the prices predicted by the model and the observed prices of the pizzas in the training set are called residuals, or training errors. The differences between the predicted and observed values in the test data are called prediction errors, or test errors.
-#+begin_src python -r -n :results output :exports both
-import numpy as np
-X = np.array([[6], [8], [10], [14], [18]]).reshape(-1, 1)
-y = [7, 9, 13, 17.5 , 18]
-
-from sklearn.linear_model import LinearRegression
-model = LinearRegression()
-# Create an instance of the estimator
-model.fit(X, y)
-# Fit the model on the training data
-
-from matplotlib import pyplot as plt
-
-dy = (model.predict(X)-y)/2
-for x, y1, y2 in zip(X, y, model.predict(X)):
-    xs = [x, x]
-    ys = [y1, y2]
-    plt.plot(xs, ys, color='orange')
-plt.scatter(X, y, color = 'k')
-plt.plot(X, model.predict(X), color='g')
-#plt.errorbar(X, model.predict(X)-dy, yerr=dy, fmt='.')
-plt.title('Pizza price plotted against diameter')
-plt.xlabel('Diameter in inches')
-plt.ylabel('Price in dollars')
-plt.savefig('images/pizza-4.png', dpi=300)
-#+end_src
-#+RESULTS:
-#+CAPTION: Pizza regression 4
-#+LABEL:fig:Pizza-reg-4
-#+name: fig:Pizza-reg-4
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
-[[file:images/pizza-4.png]]
-This measure of the model's fitness is called the residual sum of squares (RSS) cost function. Formally, this function assesses the fitness of a model by summing the squared residuals for all of our training examples. The RSS is calculated with the formula in the following equation, where \(y_i\) is the observed value and \(f(x_i\) is the predicted value:$$SS_{res}=\sum_{i=1}^{n}(y_i-f(x_i))^2$$
-
-
-
-#+begin_src emacs-lisp
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-(setq python-shell-interpreter "/usr/bin/python3")
-(setq python-shell-interpreter-arg "-i")
-(setq py-use-current-dir-when-execute-p t)
-(setq python-shell-prompt-detect-enabled nil)
-(setq python-shell-interpreter "ipython")
-(setq python-shell-interpreter-interactive-args "-i --simple-prompt")
-#+end_src
-
-#+RESULTS:
-: -i --simple-prompt
-
-
-#+begin_src emacs-lisp
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-#+end_src
-
-#+RESULTS:
-: ((gnu . https://elpa.gnu.org/packages/) (melpa . https://melpa.org/packages/) (org . https://orgmode.org/elpa/))
-
-#+begin_src jupyter-python :session py :async yes :kernel python :results scalar both raw drawer :display text/html :exports both
-import numpy as np
-import pandas as pd
-
-a = 3
-print(a)
-data = [[1,2], [3,4]]
-pd.DataFrame(data, columns=["Foo", "Bar"])
-#+end_src
-
-#+RESULTS:
-:results:
-# Out[5]:
-#+BEGIN_EXAMPLE
-  Foo  Bar
-  0    1    2
-  1    3    4
-#+END_EXAMPLE
-:end:
-
-#+begin_src jupyter-python :session py :async yes :kernel python3 :results scalar both raw drawer :exports both
-from ipywidgets import  interact, interactive, fixed, interact_manual
-import ipywidgets as widgets
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-print(data)
-def f(x):
-    plt.plot(np.arange(0, 10), x*np.arange(0, 10))
-    plt.ylim(-30, 30)
-#interact(f, x=10)
-f(10)
-#+end_src
-
-#+RESULTS:
-:results:
-# Out[6]:
-[[file:.ob-ipython-resrcnqInND.png]]
-:end:
-
-:end:
-:end:
-:end:
-
-#+BEGIN_SRC emacs-lisp
-(require 'jupyter)
-#+END_SRC
-
-#+RESULTS:
-: jupyter
 
 * BOOK
 - Title: Mastering Machine Learning with scikit-learn
 - Author: Gavin Hackeling
 
 * Footnotes
+[fn:2] [[https://tree.rocks/deep-learning-from-scratch-by-linear-regression-e42f5dcdb024][手刻 Deep Learning — 第零章 — 線性回歸]]
 
 [fn:1] Hands-On Machine Learning with Scikit-Learn: Aurelien Geron

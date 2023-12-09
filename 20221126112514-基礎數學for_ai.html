@@ -1,0 +1,1101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2023-12-09 Sat 12:01 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>基礎數學for AI</title>
+<meta name="author" content="Yung-Chin Yen" />
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<link rel="stylesheet" type="text/css" href="../css/muse.css" />
+<script>
+  window.MathJax = {
+    tex: {
+      ams: {
+        multlineWidth: '85%'
+      },
+      tags: 'ams',
+      tagSide: 'right',
+      tagIndent: '.8em'
+    },
+    chtml: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    svg: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    output: {
+      font: 'mathjax-modern',
+      displayOverflow: 'overflow'
+    }
+  };
+</script>
+
+<script
+  id="MathJax-script"
+  async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">基礎數學for AI</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org2cc05e2">1. 合成函數的微分</a>
+<ul>
+<li><a href="#org010e5ab">1.1. Solution</a></li>
+<li><a href="#org8a87574">1.2. 表示法</a></li>
+</ul>
+</li>
+<li><a href="#org59c84f3">2. 自然常數e的由來</a></li>
+<li><a href="#org0e97d58">3. 指數與對數</a>
+<ul>
+<li><a href="#orgfe91244">3.1. 指數函數</a></li>
+<li><a href="#org23d3d55">3.2. 對數函數</a></li>
+</ul>
+</li>
+<li><a href="#org1a6571b">4. 損失函數</a>
+<ul>
+<li><a href="#org5aca6cc">4.1. 均方誤差(Mean Squared Error)</a></li>
+<li><a href="#org3639436">4.2. 交叉熵誤差(Cross Entropy Error)</a></li>
+</ul>
+</li>
+<li><a href="#orgbab56b4">5. -------</a></li>
+<li><a href="#org686cf56">6. 微積分找極值方式</a>
+<ul>
+<li><a href="#orgb13feb4">6.1. 微分</a></li>
+<li><a href="#org5abfbd9">6.2. 二階微分</a></li>
+<li><a href="#org34aa94a">6.3. 導數</a></li>
+</ul>
+</li>
+<li><a href="#org53a0e85">7. 導函數與梯度下降 </a></li>
+<li><a href="#org3f48a8e">8. 微分</a>
+<ul>
+<li><a href="#orgae2f753">8.1. 定義</a></li>
+<li><a href="#orgb4e7d31">8.2. 基本運算</a></li>
+<li><a href="#org82872b3">8.3. 微分公式</a></li>
+</ul>
+</li>
+<li><a href="#org914f13d">9. 數值微分</a>
+<ul>
+<li><a href="#org70680a6">9.1. 定義</a></li>
+<li><a href="#orge782a84">9.2. wrong solution</a></li>
+<li><a href="#orgbae51a6">9.3. correct solution</a></li>
+<li><a href="#org0ae6679">9.4. Example: \( y = 0.01x^2+0.1x) \)，求\(\frac{dy}{dx}&vert;_{x=5}=?</a></li>
+<li><a href="#orgb132d6e">9.5. 偏微分(partial differentiation)</a></li>
+</ul>
+</li>
+<li><a href="#org2649d10">10. 梯度與梯度下降法(Gradient Descent)</a>
+<ul>
+<li><a href="#orgb2b5747">10.1. 梯度</a></li>
+</ul>
+</li>
+<li><a href="#org621c598">11. 梯度下降法</a></li>
+</ul>
+</div>
+</div>
+<a href="https://letranger.github.io/AI/20221126112514-基礎數學for_ai.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20221126112514-基礎數學for_ai.html.svg"/></a>
+<div id="outline-container-org2cc05e2" class="outline-2">
+<h2 id="org2cc05e2"><span class="section-number-2">1.</span> 合成函數的微分</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+函數 \(f(x)=(x^2+x-1)^{10}\) 為合成函數，因為可視為
+</p>
+<ul class="org-ul">
+<li>\[g(x) = (x^2+x-1)^{10} \]</li>
+<li>\[f(x) = g(x)^{10} \]</li>
+</ul>
+<p>
+若要對合成函數 \(f(x)=(x^2+x-1)^{10}\) 做微分，由於不可能將10次方展開，所以要採取間接的方法：鏈鎖律(Chain Rule)或稱Onion rule
+</p>
+</div>
+<div id="outline-container-org010e5ab" class="outline-3">
+<h3 id="org010e5ab"><span class="section-number-3">1.1.</span> Solution</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+先假設 \(f'(x) = \frac{dy}{dx}=\frac{dy}{dQ}\times\frac{dQ}{dx}\)， \(Q=x^2+x-1\)
+</p>
+\begin{align*}
+f'(x)&=\frac{dy}{dx}=\frac{dy}{dQ}\times\frac{dQ}{dx}\\
+&=10Q^9 \times (x^2+x-1)'\\
+&=10(x^2+x-1)^9 \times (2x+1)
+\end{align*}
+<p>
+故
+\[f'(1)=10(1+1-1)^9\times3=30\]
+</p>
+</div>
+</div>
+<div id="outline-container-org8a87574" class="outline-3">
+<h3 id="org8a87574"><span class="section-number-3">1.2.</span> 表示法</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+合成函數 \(f(x)\) (即\(f(g(x))\))的微分: \(\frac{\partial f(x)}{\partial x} = \frac{\partial y(g)}{\partial g}\frac{\partial g(x)}{\partial x}\)
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org59c84f3" class="outline-2">
+<h2 id="org59c84f3"><span class="section-number-2">2.</span> 自然常數e的由來</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+假設於銀行存 a元本金:
+</p>
+<ul class="org-ul">
+<li>當銀行年利率為100%，則一年後本利和為 \(a(1+\frac{100}{100})=2a\)</li>
+<li>當銀行半年利率50%，每次的利率為 \(\frac{1}{2}\)，則一年後本利和為 \(a (1+\frac{1}{2}) (1+\frac{2}{2}) = a (1+\frac{2}{2})^2\)</li>
+<li>當銀行每季利率25%，每次的利率為 \(\frac{1}{4}\)，則一年後本利和為 \(a(1+\frac{1}{4)})(1+\frac{1}{4)})(1+\frac{1}{4)})(1+\frac{1}{4)})=(1+\frac{1}{4)})^4\)</li>
+<li>當銀行每年計n次利息，每次的利率則為 \(\frac{1}{n}\)，則一年後本利和為
+\[a(1+\frac{1}{n})(1+\frac{1}{n})\dots=a(1+\frac{1}{n})^n\]
+當n接近於無限大時，上式記為 \(\lim_{n\to\infty} a(1+\frac{1}{n})^n \approx 2.71828\)
+這個神奇的值2.71828又被稱為自然對數\(e\)</li>
+<li>尤拉(Euler)將上式改為，為指數函數的最早定義
+\(exp(x)=\lim_{n\to\infty}a(1+\frac{x}{n})^n\)</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org0e97d58" class="outline-2">
+<h2 id="org0e97d58"><span class="section-number-2">3.</span> 指數與對數</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-orgfe91244" class="outline-3">
+<h3 id="orgfe91244"><span class="section-number-3">3.1.</span> 指數函數</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+指數函數以 \(e^x\) 或 \(exp(x)\) 表示，即 \(y=e^x=exp(x)\)，當x=1時，\(y=e^1=2.71827\)
+</p>
+</div>
+</div>
+<div id="outline-container-org23d3d55" class="outline-3">
+<h3 id="org23d3d55"><span class="section-number-3">3.2.</span> 對數函數</h3>
+<div class="outline-text-3" id="text-3-2">
+<ul class="org-ul">
+<li>以2為底: 若 \(2^y=x\) 則 \(y=\log_2x\)，當 x=1時， \(y=\log_2 1=0\)</li>
+<li>以e為底: \(y=\log_e\)，當\(x=1\) 時，\(y=\log_x 1=0\)</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org1a6571b" class="outline-2">
+<h2 id="org1a6571b"><span class="section-number-2">4.</span> 損失函數</h2>
+<div class="outline-text-2" id="text-4">
+</div>
+<div id="outline-container-org5aca6cc" class="outline-3">
+<h3 id="org5aca6cc"><span class="section-number-3">4.1.</span> 均方誤差(Mean Squared Error)</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+可以用來比較「兩個」或「兩組」數值間的差異，例如以下為兩個學生的考試成績：
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">考生</th>
+<th scope="col" class="org-right">國文</th>
+<th scope="col" class="org-right">英文</th>
+<th scope="col" class="org-right">數學</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">James</td>
+<td class="org-right">78</td>
+<td class="org-right">92</td>
+<td class="org-right">96</td>
+</tr>
+
+<tr>
+<td class="org-left">Vanessa</td>
+<td class="org-right">96</td>
+<td class="org-right">92</td>
+<td class="org-right">85</td>
+</tr>
+
+<tr>
+<td class="org-left">Ruby</td>
+<td class="org-right">96</td>
+<td class="org-right">78</td>
+<td class="org-right">76</td>
+</tr>
+</tbody>
+</table>
+<p>
+如何以數學式求出一個「數值」來代表這些學生之間的整體差異？
+</p>
+
+<p>
+\[ E=\frac{1}{2}\sum_k(y_k-t_k)^2\]
+以上表為例，三人彼此間的均方誤差為：
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">from</span> sklearn.metrics <span style="color: #51afef;">import</span> mean_squared_error
+<span class="linenr">2: </span><span style="color: #dcaeea;">sc</span> = {<span style="color: #98be65;">'James'</span>: {<span style="color: #98be65;">'ch'</span>:<span style="color: #da8548; font-weight: bold;">78</span>, <span style="color: #98be65;">'en'</span>:<span style="color: #da8548; font-weight: bold;">92</span>, <span style="color: #98be65;">'ma'</span>:<span style="color: #da8548; font-weight: bold;">96</span>},
+<span class="linenr">3: </span>      <span style="color: #98be65;">'Vanessa'</span>: {<span style="color: #98be65;">'ch'</span>:<span style="color: #da8548; font-weight: bold;">96</span>, <span style="color: #98be65;">'en'</span>:<span style="color: #da8548; font-weight: bold;">92</span>, <span style="color: #98be65;">'ma'</span>:<span style="color: #da8548; font-weight: bold;">85</span>},
+<span class="linenr">4: </span>      <span style="color: #98be65;">'Ruby'</span>: {<span style="color: #98be65;">'ch'</span>:<span style="color: #da8548; font-weight: bold;">96</span>, <span style="color: #98be65;">'en'</span>:<span style="color: #da8548; font-weight: bold;">78</span>, <span style="color: #98be65;">'ma'</span>:<span style="color: #da8548; font-weight: bold;">76</span>},}
+<span class="linenr">5: </span><span style="color: #51afef;">for</span> s <span style="color: #51afef;">in</span> sc.keys():
+<span class="linenr">6: </span>    <span style="color: #51afef;">for</span> c <span style="color: #51afef;">in</span> sc.keys():
+<span class="linenr">7: </span>        <span style="color: #51afef;">if</span> s != c:
+<span class="linenr">8: </span>            <span style="color: #dcaeea;">sl</span>, <span style="color: #dcaeea;">tl</span> = <span style="color: #c678dd;">list</span>(sc[s].values()), <span style="color: #c678dd;">list</span>(sc[c].values())
+<span class="linenr">9: </span>            <span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">'</span>{s}<span style="color: #98be65;"> v.s. </span>{c}<span style="color: #98be65;">:  </span>{mean_squared_error(sl, tl):.2f}<span style="color: #98be65;">'</span>)
+</pre>
+</div>
+
+<pre class="example">
+James v.s. Vanessa:  148.33
+James v.s. Ruby:  306.67
+Vanessa v.s. James:  148.33
+Vanessa v.s. Ruby:  92.33
+Ruby v.s. James:  306.67
+Ruby v.s. Vanessa:  92.33
+</pre>
+
+
+<p>
+應用於機器學習中：
+</p>
+<ul class="org-ul">
+<li>\(y\) 為機器學習演算法的預測結果， \(t\) 為代表正確答案的標籤</li>
+<li>為何要乘上 \(\frac{1}{2}\) ? 未來對均方誤差進行微分時，前面的 \(\frac{1}{2}\) 可以和次方項2相互抵消</li>
+<li>機器學習演算法經常視情況，為了方便而在式子中任意加東西進行調整</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org3639436" class="outline-3">
+<h3 id="org3639436"><span class="section-number-3">4.2.</span> 交叉熵誤差(Cross Entropy Error)</h3>
+<div class="outline-text-3" id="text-4-2">
+<p>
+如果想要計算兩個群體間的差異，但群體內的值無法如上例直接相減求個別差異時，該如何處理？
+例如：給一張圖，讓讀者去猜這是貓或狗，但要求以機率來表示
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">讀者</th>
+<th scope="col" class="org-left">預測</th>
+<th scope="col" class="org-left">圖片答案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">James</td>
+<td class="org-left">貓: 0.37, 狗: 0.63</td>
+<td class="org-left">狗</td>
+</tr>
+
+<tr>
+<td class="org-left">Vanessa</td>
+<td class="org-left">貓: 0.42, 狗: 0.58</td>
+<td class="org-left">狗</td>
+</tr>
+
+<tr>
+<td class="org-left">Ruby</td>
+<td class="org-left">貓: 0.28, 狗: 0.72</td>
+<td class="org-left">狗</td>
+</tr>
+</tbody>
+</table>
+<p>
+如何將這三人的猜測能力數值化?
+</p>
+
+<p>
+因為圖片的答案為標籤，無法計算，一般我們會將這類資料進行one hot encoding轉換。即：
+</p>
+<ul class="org-ul">
+<li>如果答案是貓，就寫為：(1, 0)</li>
+<li>如果答案是狗，就寫為：(0, 1)</li>
+</ul>
+<p>
+那&#x2026;如果答案有三種可能性(例如剪刀、石頭、布)  呢？one hot encoding轉換後的可能結果為：
+</p>
+<ul class="org-ul">
+<li>剪刀: (1, 0, 0)</li>
+<li>石頭: (0, 1, 0)</li>
+<li>布  : (0, 0, 1)</li>
+</ul>
+<p>
+這樣就可以把真實答案拿來和模型的預測結果進行比較、計算二者間的差異。計算模型猜測值與正確答案的距離方式如下：
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> math
+<span class="linenr"> 2: </span>
+<span class="linenr"> 3: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">CrosEntLos</span>(m, n):
+<span class="linenr"> 4: </span>    <span style="color: #dcaeea;">res</span> = <span style="color: #da8548; font-weight: bold;">0</span>
+<span class="linenr"> 5: </span>    <span style="color: #51afef;">for</span> x, y <span style="color: #51afef;">in</span> <span style="color: #c678dd;">zip</span>(m, n):
+<span class="linenr"> 6: </span>        <span style="color: #dcaeea;">res</span> += y*math.log(x)
+<span class="linenr"> 7: </span>    <span style="color: #51afef;">return</span> -res
+<span class="linenr"> 8: </span>
+<span class="linenr"> 9: </span><span style="color: #dcaeea;">sc</span> = {<span style="color: #98be65;">'James'</span>: [<span style="color: #da8548; font-weight: bold;">0.37</span>, <span style="color: #da8548; font-weight: bold;">0.63</span>],
+<span class="linenr">10: </span>      <span style="color: #98be65;">'Vanessa'</span>: [<span style="color: #da8548; font-weight: bold;">0.42</span>, <span style="color: #da8548; font-weight: bold;">0.58</span>],
+<span class="linenr">11: </span>      <span style="color: #98be65;">'Ruby'</span>: [<span style="color: #da8548; font-weight: bold;">0.28</span>, <span style="color: #da8548; font-weight: bold;">0.72</span>]}
+<span class="linenr">12: </span><span style="color: #dcaeea;">ans</span> = (<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr">13: </span><span style="color: #51afef;">for</span> s <span style="color: #51afef;">in</span> sc.keys():
+<span class="linenr">14: </span>    <span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">'</span>{s}<span style="color: #98be65;">:  </span>{CrosEntLos(sc[s], ans):.2f}<span style="color: #98be65;">'</span>)
+<span class="linenr">15: </span>
+</pre>
+</div>
+
+<pre class="example">
+James:  0.46
+Vanessa:  0.54
+Ruby:  0.33
+</pre>
+
+
+<p>
+交叉熵的公式如下：
+</p>
+
+<p>
+\[ E=-\sum_kt_k\log_e(y_k)\]
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> torch
+<span class="linenr"> 2: </span>
+<span class="linenr"> 3: </span><span style="color: #dcaeea;">sc</span> = {<span style="color: #98be65;">'James'</span>: [<span style="color: #da8548; font-weight: bold;">0.37</span>, <span style="color: #da8548; font-weight: bold;">0.63</span>],
+<span class="linenr"> 4: </span>      <span style="color: #98be65;">'Vanessa'</span>: [<span style="color: #da8548; font-weight: bold;">0.42</span>, <span style="color: #da8548; font-weight: bold;">0.58</span>],
+<span class="linenr"> 5: </span>      <span style="color: #98be65;">'Ruby'</span>: [<span style="color: #da8548; font-weight: bold;">0.28</span>, <span style="color: #da8548; font-weight: bold;">0.72</span>]}
+<span class="linenr"> 6: </span><span style="color: #dcaeea;">ans</span> = [<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">1</span>]
+<span class="linenr"> 7: </span>
+<span class="linenr"> 8: </span><span style="color: #dcaeea;">loss</span> = torch.nn.CrossEntropyLoss()
+<span class="linenr"> 9: </span><span style="color: #51afef;">for</span> s <span style="color: #51afef;">in</span> sc.keys():
+<span class="linenr">10: </span>    <span style="color: #dcaeea;">y1</span> = torch.FloatTensor(sc[s])
+<span class="linenr">11: </span>    <span style="color: #dcaeea;">y2</span> = torch.FloatTensor(ans)
+<span class="linenr">12: </span>    <span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">'</span>{s}<span style="color: #98be65;">:  </span>{loss(y1, y2):.2f}<span style="color: #98be65;">'</span>)
+</pre>
+</div>
+
+<pre class="example">
+James:  0.57
+Vanessa:  0.62
+Ruby:  0.50
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgbab56b4" class="outline-2">
+<h2 id="orgbab56b4"><span class="section-number-2">5.</span> -------</h2>
+</div>
+
+<div id="outline-container-org686cf56" class="outline-2">
+<h2 id="org686cf56"><span class="section-number-2">6.</span> 微積分找極值方式</h2>
+<div class="outline-text-2" id="text-6">
+</div>
+<div id="outline-container-orgb13feb4" class="outline-3">
+<h3 id="orgb13feb4"><span class="section-number-3">6.1.</span> 微分</h3>
+<div class="outline-text-3" id="text-6-1">
+<p>
+一般微積分說「要找極大值或極小值的式子做微分等於 0 找解」，找到的不是極大值，就是極小值，是極大還是極小就看二階微分帶入找出來的解，看結果是大於 0，還是小於 0。<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>
+</p>
+
+<p>
+以\(f(x)=x^2 - 10x + 1\)為例
+</p>
+
+<p>
+其微分結果為\(f^\prime (x) = \frac{\partial f(x)}{\partial x} = 2x-10\)
+</p>
+
+<p>
+設微分值等於 0，則\(f^\prime (x) = \frac{\partial f(x)}{\partial x} = 2x-10 = 0 \)
+</p>
+
+<p>
+故\(x=5\)
+</p>
+</div>
+</div>
+<div id="outline-container-org5abfbd9" class="outline-3">
+<h3 id="org5abfbd9"><span class="section-number-3">6.2.</span> 二階微分</h3>
+<div class="outline-text-3" id="text-6-2">
+<p>
+即是對\(f^\prime (x)\)再次微分，以\(f^{\prime \prime}(x)\)表示，
+\[ f^{\prime\prime}(x) = \frac{\partial f^\prime (x)}{\partial x} = 2 > 0  \]
+所以，剛剛的式子找到的極小值，即，當\(x=5\)時有極小值-24。這個範例是可以找到唯一解的式子，若無法找到唯一解，就要靠找近似解的方式去逼近極值，其中一種方法就是梯度下降法(gradient descent)。
+</p>
+</div>
+</div>
+<div id="outline-container-org34aa94a" class="outline-3">
+<h3 id="org34aa94a"><span class="section-number-3">6.3.</span> 導數</h3>
+<div class="outline-text-3" id="text-6-3">
+<p>
+導數（英語：Derivative）是微積分學中重要的基礎概念。一個函數在某一點的導數描述了這個函數在這一點附近的變化率。導數的本質是通過極限的概念對函數進行局部的線性逼近。當函數\(f\)的自變數在一點\(x_0\)上產生一個增量\(h\)時，函數輸出值的增量與自變量增量\(h\)的比值在\(h\)趨於 0 時的極限如果存在，即為\(f\)在\(x_0\)處的導數，記作\(f'(x_0)\)或\(\frac{df}{dx}(x_0)\)。例如在運動學中，物體的位移對於時間的導數就是物體的瞬時速度。<sup><a id="fnr.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup>
+</p>
+
+<p>
+導數是函數的局部性質。不是所有的函數都有導數，一個函數也不一定在所有的點上都有導數。若某函數在某一點導數存在，則稱其在這一點可導，否則稱為不可導。如果函數的自變數和取值都是實數的話，那麼函數在某一點的導數就是該函數所代表的曲線在這一點上的切線斜率。
+</p>
+
+<p>
+以曲線 \( y=0.01x^2+0.4x \)為例，求曲線在 \(x=5\)這點的斜率之計算方式為：
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">coding: utf-8</span>
+<span class="linenr"> 2: </span><span style="color: #51afef;">from</span> pylab <span style="color: #51afef;">import</span> *
+<span class="linenr"> 3: </span>mpl.<span style="color: #dcaeea;">rcParams</span>[<span style="color: #98be65;">'font.sans-serif'</span>] = [<span style="color: #98be65;">'SimHei'</span>]
+<span class="linenr"> 4: </span>plt.<span style="color: #dcaeea;">rcParams</span>[<span style="color: #98be65;">'axes.unicode_minus'</span>]=<span style="color: #a9a1e1;">False</span>
+<span class="linenr"> 5: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 6: </span><span style="color: #51afef;">import</span> matplotlib.pylab <span style="color: #51afef;">as</span> plt
+<span class="linenr"> 7: </span>
+<span class="linenr"> 8: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">numerical_diff</span>(f,x):
+<span class="linenr"> 9: </span>    <span style="color: #dcaeea;">h</span> = 1e-<span style="color: #da8548; font-weight: bold;">4</span>
+<span class="linenr">10: </span>    <span style="color: #51afef;">return</span> (f(x+h) - f(x-h))/(<span style="color: #da8548; font-weight: bold;">2</span>*h)
+<span class="linenr">11: </span>
+<span class="linenr">12: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">function_1</span>(x):
+<span class="linenr">13: </span>    <span style="color: #51afef;">return</span> <span style="color: #da8548; font-weight: bold;">0.1</span>*x**<span style="color: #da8548; font-weight: bold;">2</span> - <span style="color: #da8548; font-weight: bold;">0.4</span>*x
+<span class="linenr">14: </span>
+<span class="linenr">15: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">tangent_line</span>(f, x):
+<span class="linenr">16: </span>    <span style="color: #dcaeea;">d</span> = numerical_diff(f, x)
+<span class="linenr">17: </span>    <span style="color: #c678dd;">print</span>(d)
+<span class="linenr">18: </span>    <span style="color: #dcaeea;">y</span> = f(x) - d*x
+<span class="linenr">19: </span>    <span style="color: #51afef;">return</span> <span style="color: #51afef;">lambda</span> t:d*t + y
+<span class="linenr">20: </span>
+<span class="linenr">21: </span>plt.clf()
+<span class="linenr">22: </span><span style="color: #dcaeea;">x</span> = np.arange( <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">20.0</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>)
+<span class="linenr">23: </span><span style="color: #dcaeea;">y</span> = function_1(x)
+<span class="linenr">24: </span>plt.xlabel(<span style="color: #98be65;">"x"</span>)
+<span class="linenr">25: </span>plt.ylabel(<span style="color: #98be65;">"f(x)"</span>)
+<span class="linenr">26: </span>plt.xlim(-<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">20</span>)
+<span class="linenr">27: </span>plt.ylim(-<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">20</span>)
+<span class="linenr">28: </span><span style="color: #dcaeea;">tf</span> = tangent_line(function_1, <span style="color: #da8548; font-weight: bold;">5</span>)
+<span class="linenr">29: </span><span style="color: #dcaeea;">y2</span> = tf(x)
+<span class="linenr">30: </span>
+<span class="linenr">31: </span>plt.plot(x, y, label=<span style="color: #98be65;">'&#26354;&#32218;'</span>)
+<span class="linenr">32: </span>plt.plot(x, y2, label=<span style="color: #98be65;">'&#20999;&#32218;'</span>)
+<span class="linenr">33: </span>plt.plot(x, x-<span style="color: #da8548; font-weight: bold;">4.5</span>, label=<span style="color: #98be65;">'&#21106;&#32218;'</span>)
+<span class="linenr">34: </span>plt.legend(loc=<span style="color: #98be65;">'upper left'</span>)
+<span class="linenr">35: </span>plt.savefig(<span style="color: #98be65;">"numDiff-1.png"</span>)
+</pre>
+</div>
+
+<p>
+s: 0.5999999999994898
+</p>
+
+<div id="org4914937" class="figure">
+<p><img src="images/numDiff-1.png" alt="numDiff-1.png" />
+</p>
+<p><span class="figure-number">Figure 1: </span>微分：某一點的斜率</p>
+</div>
+
+<p>
+如圖<a href="#org4914937">1</a>，若要求曲線在某一點(\(x=5\))的斜率，可以先畫出一條曲線上通過\(x=5\)的割線，此割線通過曲線上的兩個點(\(x=5, x=5+h\))，透過這兩點可求出該割線之斜率，若將\(h\)的值最小化，即可求出曲終在點\(x=5\)上的斜率，此即微分的概念。
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org53a0e85" class="outline-2">
+<h2 id="org53a0e85"><span class="section-number-2">7.</span> 導函數與梯度下降 <sup><a id="fnr.3" class="footref" href="#fn.3" role="doc-backlink">3</a></sup></h2>
+<div class="outline-text-2" id="text-7">
+<p>
+想像一個連續平滑函數\(f(x)=y\)，即，\(f\)將一個實數\(x\)映射(mapping)到另一個實數\(y\)，因為函數是連續實數，所以在 x 的微小變化也只會導致 y 的微小變化。假設 x 增力了一個很小的值\(\epsilon_x\)，導致 y 做了\(\epsilon_y\)的改變，其數學式可以寫成：
+\[f(x+\epsilon_x) = y + \epsilon_y\]
+因為函數\(f\)為平滑連續函數，故當\(\epsilon_x\)足夠小時，在 x 附近\(f(x)\)的變化(\(\epsilon_y\))和\(\epsilon_x\)是成線性關係的，即
+\[f(x+\epsilon_x) = y + a*\epsilon_x \]，即
+\[f(x+\epsilon_x) - y = a*\epsilon_x \]，也即
+\[f(x+\epsilon_x) -f(x) = a*\epsilon_x \]
+</p>
+
+<p>
+這個線性逼近只有在當\(\epsilon_x\)足夠小時才有效，因為是線性關係，\(a\)變是斜率，也就是 rate of change。這個斜率\(a\)被稱為\(f\)在\(x\)這個點上的導函數(簡稱導數或稱微分，derivative)，也就是圖<a href="#org4914937">1</a>上的切線斜率。當\(a\)大於 0，表示若\(x\)稍微增大，則\(f(x)\)變大，反之亦然；而\(a\)的絕對值(導數的大小)則表示\(f(x)\)在\(x\)值變化了\(\epsilon_x\)後所增加或減少的幅度。
+</p>
+
+<p>
+數學上通常以\(f^{'}(x)\)來代表\(f(x)\)的導函數，\(f^{'}(x)\)就是\(f(x)\)在\(x\)處的斜率。如果把變數\(x\)推廣成張量變數\(W\)，則：函數\(f(W)\)在\(W\)點的梯度就是該函數的張量導函數(\(f^{'}(W)\)，這就是把導函數的概念從單一變數函數\(f(x)\)推廣到多維張量函數\(f(W)\)上，這時斜率就變成梯度，斜率 slope 是 rate of change in x space，而梯度 gradient 則是 rate of change in W space。
+</p>
+
+<p>
+假設有一個輸入向量\(x\)、一個轉換矩陣\(W\)、目標值\(y\)和一個損失函數 loss，我們可以使用 W 來計算預測值\(y_{pred}\)和目標值 y 之間的損失(差距)：
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>  <span style="color: #dcaeea;">y_pred</span> = dot(W, x)
+<span class="linenr">2: </span>  <span style="color: #dcaeea;">loss_value</span> = loss(<span style="color: #dcaeea;">y_pred</span>, <span style="color: #dcaeea;">y</span>) = loss(dot(W, x), y)
+</pre>
+</div>
+
+<p>
+上述式子也可以寫成
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>  <span style="color: #dcaeea;">loss_value</span> = f(W)
+</pre>
+</div>
+
+<p>
+也就是損失函數\(f\)是以\(W\)為變數的函數。
+</p>
+
+<p>
+回憶上述導函數的運用，對每個可微分函數\(f(W)\)，其對於變數\(W\)的導函數就是\(f(W)\)在\(W\)處的梯度，我們把\(f(W)\)的梯度用 gradient \(f(W)\)來表示，\(f(W)\)是一個純量，但 gradient \(f(W)\)是一個張量，它的 shape 和\(W\)是一樣的。
+</p>
+
+<p>
+那麼，何謂隨機梯度下降？給定一個可微分函數，在函數的導數為 0 時(斜率為 0)，那個點就可能是一個區域的極大或極小值，所以只需找到導數為 0 的所有點，並加以檢查，就可以知道函數\(f(x)\)在哪個 x 為最小值。
+</p>
+
+<p>
+套用到神經網路，這可藉求解方程式\(f^{'}(W)=0\)的\(W\)來完成，也就是找出在哪個權重組合\(W\)點上\(f(W)\)有最小值。這是 N 個變量的多項方程式，其中，N是神經網路張量元素的數量，雖然當 N=2 或 N=3 時可以手動求解，但實際的神經網路其參數通常不會少於幾千個，且可能超過千萬，所以要解這樣的方程式並非易事。
+</p>
+
+<p>
+面對這個問題，我們可以依據下列步驟逐步逐個修改參數：
+</p>
+<ol class="org-ol">
+<li>取出一批次量的訓練樣本 x 和相對應的目標 y(即 label)</li>
+<li>以 x 為輸入資料，執行神經網路獲得預測值\(y_{pred}\)。</li>
+<li>計算這個批次量神經網路的損失值，所謂的損失就是 y 與\(y_{pred}\)間的差距。</li>
+<li>計算損失值的神經網路權重的梯度(反向傳播)。</li>
+<li>將參數稍微向梯度的反方向移動，例如\(W=step*gradient\)，從而降低一點批次的損失。</li>
+</ol>
+
+<p>
+上述這種方法稱為小批次隨機梯度下降(mini-batch stochastic gradient descent, mini-batch SGD)，名稱中的隨機(stochastic)指的是每批次資料都是隨機抽取的(stochastic 為 random 的同義詞)。圖<a href="#orga7de497">2</a>展示的是只有一個參數、一個訓練樣本的簡單神經網路訓練過程，如圖所示，為每個 step 選一個合理值是很重要的，step 太小則需要多次迭代才能下降曲線，且易進入局部最小值；若 step 過大，則參數的更新可能會跳到曲線上一個毫不相干的點，並可能略過真正的最小值。
+</p>
+
+
+<div id="orga7de497" class="figure">
+<p><img src="images/img-191113090614.jpg" alt="img-191113090614.jpg" />
+</p>
+<p><span class="figure-number">Figure 2: </span>SGD 應用於 1D 損失函數</p>
+</div>
+
+<p>
+mini-batch SGD 演算法可以在每次迭代時只取單一筆樣本和目標，而非一次取一批資料（即，batch 等於 1 時），此時變成為真正的 SGD；相反的，當 batch 等於所有可用資料時，則變成 batch SGD(整批 SGD)。實務上，梯度下降法應用於神經網路的情境多在高維空間，每個權重係數都會成為空間中的一個自由維度，其數量可能達到上千萬。故而，其真正的下降過程不可能以影像方式呈現，圖<a href="#org5e28b94">3</a>為一典型的 2D 曲面損失值的梯度下降，然而在多維、多軸的真實下降並非如此。
+</p>
+
+
+<div id="org5e28b94" class="figure">
+<p><img src="images/tiduxiajiang-1.png" alt="tiduxiajiang-1.png" />
+</p>
+<p><span class="figure-number">Figure 3: </span>2D 曲面的損失值梯度下降(有兩個參數)</p>
+</div>
+
+<p>
+除上述 SGD 模式外，SGD 尚存在許多變體，常見的有：momentum SGD, Adagrad, RMSProp 等，這些 SGD 我們稱為最佳化方法(optimization methods)或優化器(optimiaers)。
+</p>
+</div>
+</div>
+<div id="outline-container-org3f48a8e" class="outline-2">
+<h2 id="org3f48a8e"><span class="section-number-2">8.</span> 微分</h2>
+<div class="outline-text-2" id="text-8">
+<p>
+微分也是一種線性描述函數在一點附近變化的方式。微分和導數是兩個不同的概念。但是，對一元函數來說，可微與可導是完全等價的。可微的函數，其微分等於導數乘以自變數的微分\(dx\)，換句話說，函數的微分與自變數的微分之商等於該函數的導數。因此，導數也叫做微商。函數\(y=f(x)\)的微分又可記作\(dy=f'(x)dx\)。
+</p>
+</div>
+<div id="outline-container-orgae2f753" class="outline-3">
+<h3 id="orgae2f753"><span class="section-number-3">8.1.</span> 定義</h3>
+<div class="outline-text-3" id="text-8-1">
+<p>
+\( \frac{df(x)}{dx}=\lim\limits_{\Delta x \to 0}\frac{f(x+\Delta x)-f(x)}{\Delta x} \)，亦可寫成 \( f'(x) = \frac{df}{dx} = \frac{dy}{dx} \)，此為\( f(x) \)的導函數。導函數的幾何意義為：某曲線的斜率。
+</p>
+</div>
+</div>
+<div id="outline-container-orgb4e7d31" class="outline-3">
+<h3 id="orgb4e7d31"><span class="section-number-3">8.2.</span> 基本運算</h3>
+<div class="outline-text-3" id="text-8-2">
+<ul class="org-ul">
+<li>\( f(x)=k: f'(x) = \lim\limits_{\Delta x \to 0} \frac{f(x+\Delta x)-f(x)}{\Delta x} = \lim\limits_{\Delta x \to 0} \frac{k - k}{\Delta x} = 0 \), 即，所有常數的微分均為 0</li>
+<li>\( f(x)=x: f'(x) = \lim\limits_{\Delta x \to 0} \frac{f(x+\Delta x)-f(x)}{\Delta x} = \lim\limits_{\Delta x \to 0} \frac{(x+\Delta x) - x}{\Delta x} = 1 \)</li>
+<li>\( f(x) = x: \frac {dx}{dx} = \lim\limits_{\Delta x \to 0} \frac{(x+ \Delta x) - x}{\Delta x} = \lim\limits_{\Delta x \to 0} \frac {\Delta x}{\Delta x} = 1 \)</li>
+<li>\( f(x)=x^2: f'(x)=\lim\limits_{\Delta x \to 0}\frac{f(x+\Delta x)-f(x)}{\Delta x} = \lim\limits_{\Delta x \to 0} \frac{(x+\Delta x)^2-x^2}{\Delta x} \\= \lim\limits_{\Delta x} \frac{(x^2+2x\Delta x+(\Delta x)^2-x^2}{\Delta x} \\= \lim\limits_{\Delta x \to 0}\frac{2x+\Delta x}{1} = 2x \)</li>
+<li>\( f(x) = ax^2: \frac{df(x)}{dx} = \lim\limits_{\Delta x \to 0} \frac {a(x+\Delta x)^2-ax^2}{\Delta x} = a\lim\limits_{\Delta x \to 0} \frac {x^2 + ax \Delta x+(\Delta x)^2-x^2} {\Delta x} = a \lim\limits_{\Delta x \to 0} \frac{2x\Delta x + (\Delta x)}{\Delta x} = a \lim\limits_{\Delta x \to 0}(2x+\Delta x) = 2ax \)</li>
+<li>\( f(x) = ax^n = \frac{dax^n}{dx}=a\frac{dx^n}{dx}=anx^{n-1} \)</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org82872b3" class="outline-3">
+<h3 id="org82872b3"><span class="section-number-3">8.3.</span> 微分公式</h3>
+<div class="outline-text-3" id="text-8-3">
+<ol class="org-ol">
+<li>乘法: \( (f \cdot g)' = f'\cdot g + f \cdot g' \)</li>
+<li>除法：\( (\frac{f}{g})' = \frac{f' \cdot g - f \cdot g'}{g^2} \)，例：\( \\f(x)=\frac{x^2+5}{3x+2},  f'(x)=\frac{(2x)(3x+2)-(x^2+5)(3)}{(3x+2)^2}  \)</li>
+<li>連鎖律：\( (f(g))'=f'(g)\cdot g' \)，例：\( \\f(x)=(x^2+4x+5)^{10}, f'(x)=10(x^2+4x+5)^9(2x+4) \)</li>
+</ol>
+</div>
+</div>
+</div>
+<div id="outline-container-org914f13d" class="outline-2">
+<h2 id="org914f13d"><span class="section-number-2">9.</span> 數值微分</h2>
+<div class="outline-text-2" id="text-9">
+</div>
+<div id="outline-container-org70680a6" class="outline-3">
+<h3 id="org70680a6"><span class="section-number-3">9.1.</span> 定義</h3>
+<div class="outline-text-3" id="text-9-1">
+<p>
+\( \frac{df(x)}{dx} = \lim\limits_ {\Delta x \to 0}\frac{f(x+\Delta x)-f(x)}{\Delta x} \)
+</p>
+</div>
+</div>
+<div id="outline-container-orge782a84" class="outline-3">
+<h3 id="orge782a84"><span class="section-number-3">9.2.</span> wrong solution</h3>
+<div class="outline-text-3" id="text-9-2">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">numerical_diff</span>(f,x):
+<span class="linenr">2: </span>      <span style="color: #dcaeea;">h</span> = 1e-<span style="color: #da8548; font-weight: bold;">50</span>
+<span class="linenr">3: </span>      <span style="color: #51afef;">return</span> (f(x+h) - f(x))/(h)
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgbae51a6" class="outline-3">
+<h3 id="orgbae51a6"><span class="section-number-3">9.3.</span> correct solution</h3>
+<div class="outline-text-3" id="text-9-3">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">numerical_diff</span>(f,x):
+<span class="linenr">2: </span>        <span style="color: #dcaeea;">h</span> = 1e-<span style="color: #da8548; font-weight: bold;">4</span>
+<span class="linenr">3: </span>        <span style="color: #51afef;">return</span> (f(x+h) - f(x-h))/(<span style="color: #da8548; font-weight: bold;">2</span>*h)
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org0ae6679" class="outline-3">
+<h3 id="org0ae6679"><span class="section-number-3">9.4.</span> Example: \( y = 0.01x^2+0.1x) \)，求\(\frac{dy}{dx}&vert;_{x=5}=?</h3>
+<div class="outline-text-3" id="text-9-4">
+<p>
+\( \frac{dy}{dx}\vert_{x=5} = (0.02x+0.1)\vert_{x=5} = 0.2 \)
+</p>
+</div>
+</div>
+<div id="outline-container-orgb132d6e" class="outline-3">
+<h3 id="orgb132d6e"><span class="section-number-3">9.5.</span> 偏微分(partial differentiation)</h3>
+<div class="outline-text-3" id="text-9-5">
+<p>
+當變數個數超過 1 個時，以\(\partial\)來取代\(d\)，使其中某一變數可變、固定其他變數，對函數進行微分，即偏微分。例：
+</p>
+<ul class="org-ul">
+<li>\( \frac{\partial f}{\partial x}\vert_{x_0,y_0} = \lim\limits_{\Delta x \to 0}\frac{f(x_0+\Delta x, y_0)-f(x_0+y_0)}{\Delta x}\)，以\(x\)為變數，固定變數 y，對函數\(f\)做偏微，\(f\)為一雙變數函數。</li>
+<li>\( \frac{\partial f}{\partial y}\vert_{x_0,y_0} = \lim\limits_{\Delta y \to 0}\frac{f(x_0, \Delta y, y_0)-f(x_0+y_0)}{\Delta y}\)，以\(y\)為變數，固定變數 x，對函數\(f\)做偏微。</li>
+</ul>
+
+<p>
+圖<a href="#orgba33128">4</a><sup><a id="fnr.4" class="footref" href="#fn.4" role="doc-backlink">4</a></sup>為多元函數\(J(\theta_1,\theta_2)=\theta_1^2+\theta_2^2\)的曲面，因為曲面上的每一點都有無窮多條切線，描述這種函數的導數相當困難。偏導數就是選擇其中一條切線，並求出它的斜率。<sup><a id="fnr.5" class="footref" href="#fn.5" role="doc-backlink">5</a></sup>
+</p>
+<p>
+<img src="images/partialDerivative.png" alt="partialDerivative.png" />
+一種求出這些切線的好辦法是把其他變量視為常數，圖<a href="#orgba33128">4</a>即是將\(\theta_2\)固定在 0、以變數\(\theta_1\)對曲面函數\(J(\theta _1, \theta _2)=\theta^2_1+\theta^2_2)\)做偏微，換言之，求\(\theta_1^2\)的偏導數。固定\(\theta_2\)的結果為一平面(圖中的藍色方框)，圖中灰色曲面與藍色平面的紅色交集曲線可以如下公式表示：
+</p>
+\begin{equation}
+\label{orgb559fd9}
+\left\{
+  \begin{aligned}.
+    J(\theta _1, \theta _2) = \theta^2_1+\theta^2_2) \\
+    \theta = \theta_2 \\
+  \end{aligned}
+\right.
+\end{equation}
+<p>
+而偏導數\(J_{\theta}(\theta_1,\theta_2)\)則表示曲線在點(0, 0, 0)處的切線關於\(\theta_2\)軸的斜率。
+</p>
+
+<p>
+若曲面函數為\(f(x_0,x_1)=x_0^2+x-1^2\)，當\(x_0\)=3、\(x_1\)=0 時，計算\(x_0\)的偏微分\(\frac{\partial f}{\partial x_0}\)方式如下：
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">numerical_diff</span>(f,x):
+<span class="linenr">2: </span>      <span style="color: #dcaeea;">h</span> = 1e-<span style="color: #da8548; font-weight: bold;">4</span>
+<span class="linenr">3: </span>      <span style="color: #51afef;">return</span> (f(x+h) - f(x-h))/(<span style="color: #da8548; font-weight: bold;">2</span>*h)
+<span class="linenr">4: </span>
+<span class="linenr">5: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">function_tmp1</span>(x0):
+<span class="linenr">6: </span>      <span style="color: #51afef;">return</span> x0*x0+<span style="color: #da8548; font-weight: bold;">4.0</span>**<span style="color: #da8548; font-weight: bold;">2.0</span>
+<span class="linenr">7: </span>  <span style="color: #c678dd;">print</span>(numerical_diff(function_tmp1,<span style="color: #da8548; font-weight: bold;">3.0</span>))
+</pre>
+</div>
+
+<pre class="example">
+6.00000000000378
+</pre>
+
+
+<p>
+當\(x_0\)=3、\(x_1\)=0 時，計算\(x_1\)的偏微分\(\frac{\partial f}{\partial x_1}\)方式如下：
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">numerical_diff</span>(f,x):
+<span class="linenr">2: </span>      <span style="color: #dcaeea;">h</span> = 1e-<span style="color: #da8548; font-weight: bold;">4</span>
+<span class="linenr">3: </span>      <span style="color: #51afef;">return</span> (f(x+h) - f(x-h))/(<span style="color: #da8548; font-weight: bold;">2</span>*h)
+<span class="linenr">4: </span>
+<span class="linenr">5: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">function_tmp2</span>(x1):
+<span class="linenr">6: </span>      <span style="color: #51afef;">return</span> <span style="color: #da8548; font-weight: bold;">3.0</span>**<span style="color: #da8548; font-weight: bold;">2.0</span>+x1*x1
+<span class="linenr">7: </span>  <span style="color: #c678dd;">print</span>(numerical_diff(function_tmp2,<span style="color: #da8548; font-weight: bold;">4.0</span>))
+</pre>
+</div>
+
+<pre class="example">
+7.999999999999119
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org2649d10" class="outline-2">
+<h2 id="org2649d10"><span class="section-number-2">10.</span> 梯度與梯度下降法(Gradient Descent)<sup><a id="fnr.6" class="footref" href="#fn.6" role="doc-backlink">6</a></sup></h2>
+<div class="outline-text-2" id="text-10">
+<p>
+各種 AI 模組的主要精神，基本上都是希望透過一組或多組函數的合作來精準預測正確的輸出結果，而所謂的精準預測，主要就是讓預測的誤差最小化。以最簡單的函數\(f(x)=ax+b\)為例，其預測誤差可表示為：\(error=(y-f(x)))^2\)，其中 x 為輸入，y為輸出。可透過微分將誤差最小化。
+</p>
+
+<p>
+回顧微分的定義：\(f'(h)=\lim\limits_{xh}\frac{f(x)-f(h)}{x-h} \)，我們希望透過逐步的調整(增加或減少)\(a\)的值來降低誤差，在這樣的狀況中，由於只有一個變數，所以可以求算導數，讓導數為 0，求得最小值。
+</p>
+
+<p>
+然而對多變數方程式來說，找到導數是十分困難的，以圖 fig:partialDerivative]]為例，由於切面是一個平面，就有無限多條切線，在實際的 AI 模組中，更可能有成千上萬個，所以我們的做法是透過偏微分來求算單一個變數的微小變化在整個函數的變化為何。
+</p>
+
+<p>
+如何確定我們調整權重的方向是正確的？對一個二次曲線而言，只要沿著切線的方向走即可；而對更多維度的做法，則是梯度。假定有一函數\(f(x,y)=x^2+y^2\)，其梯度的定義是對函數中每個變數做偏微分所組成的向量空間：\( \bigtriangledown f = \left[ \frac{\partial f(x,y)}{\partial x} \frac{\partial f(x,y)}{\partial y} \right] \)。
+</p>
+
+<p>
+不過這在幾何到底有什麼意義？在二維平面當中，我們可以透過畫圖的方式很快地理解，微分就是函數在某個點上變化的方向。因此，我們可以把梯度想像成一個指向最低點的指南針，他會告訴你該往哪裡走，順著走總有一天會到達最小值。那麼我們該怎麼走呢？梯度下降法給了一個公式，每次計算函數點上面的梯度，並且沿著反向的步長（step）迭代，總有一天會走到局部最小值。\( w:=w-\alpha \triangledown F(a) \)
+</p>
+</div>
+<div id="outline-container-orgb2b5747" class="outline-3">
+<h3 id="orgb2b5747"><span class="section-number-3">10.1.</span> 梯度</h3>
+<div class="outline-text-3" id="text-10-1">
+</div>
+<div id="outline-container-org6598d14" class="outline-4">
+<h4 id="org6598d14"><span class="section-number-4">10.1.1.</span> 公式</h4>
+<div class="outline-text-4" id="text-10-1-1">
+\begin{equation}
+\label{org42e79be}
+  \begin{bmatrix}
+  x_1 \\
+  x_2 \\
+  \vdots \\
+  x_d \\
+  \end{bmatrix},
+  \triangledown f(x)=
+  \begin{bmatrix}
+  \frac{\partial f(x)}{\partial x_1} \\
+  \frac{\partial f(x)}{\partial x_2} \\
+  \vdots \\
+  \frac{\partial f(x)}{\partial x_d} \\
+  \end{bmatrix}
+\end{equation}
+</div>
+</div>
+<div id="outline-container-orgbd4f86a" class="outline-4">
+<h4 id="orgbd4f86a"><span class="section-number-4">10.1.2.</span> 範例</h4>
+<div class="outline-text-4" id="text-10-1-2">
+<p>
+已知
+</p>
+\begin{equation}
+\label{org7e329c1}
+  x =
+  \begin{bmatrix}
+  x_1 \\
+  x_2 \\
+  \end{bmatrix}, a=
+  \begin{bmatrix}
+  10 \\
+  1 \\
+  \end{bmatrix}, b=
+  \begin{bmatrix}
+  5 & 4 \\
+  3 & 2 \\
+  \end{bmatrix}
+\end{equation}
+<p>
+則
+\( f(x)=a^Tx+1=\begin{bmatrix}10\\1\end{bmatrix}^T\begin{bmatrix}x_1\\x_2\end{bmatrix}+1=10x_1+x_2+1  \)
+\( \triangledown f(x)=
+\begin{bmatrix}
+  \frac{ \partial f(x) }{\partial x_1} \\
+  \frac{ \partial f(x) }{\partial x_2}
+\end{bmatrix}=\begin{bmatrix}\frac{\partial (10x_1+x_2+1}{\partial x_1} \\ \frac{\partial (10x_1+x_2+1}{\partial x_2}\end{bmatrix}=\begin{bmatrix}10 \\ 1\end{bmatrix}  \)
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org621c598" class="outline-2">
+<h2 id="org621c598"><span class="section-number-2">11.</span> 梯度下降法<sup><a id="fnr.7" class="footref" href="#fn.7" role="doc-backlink">7</a></sup></h2>
+<div class="outline-text-2" id="text-11">
+<p>
+梯度下降法(gradient descent)是最佳化理論裡面的一個一階找最佳解的一種方法，主要是希望用梯度下降法找到函數(剛剛舉例的式子)的局部最小值，因為梯度的方向是走向局部最大的方向，所以在梯度下降法中是往梯度的反方向走。
+</p>
+
+<p>
+這邊我們先大概說一下梯度，要算一個函數 f(x)的梯度有一個前提，就是這個函數要是任意可微分函數，這也是深度學習為什麼都要找可微分函數出來當激活函數(activation function)。
+</p>
+
+<ul class="org-ul">
+<li>一維度的純量 x 的梯度，通常用\( f'(x) \)表示。</li>
+<li>多維度的向量 x 的梯度，通常用\( \triangledown f(x) \)表示。</li>
+</ul>
+
+<p>
+白話一點，一維度的純量 x 的梯度就是算 f(x)對 x 的微分，多維度的向量 x 的梯度就是算 f(x)對 x 所有元素的偏微分。在機器學習，通常有一個損失函數(loss function 或稱為 cost function，在最佳化理論我們會稱為目標函數 objection function)，我們通常是希望這個函數越小越好(也就是找極小值)。
+</p>
+
+<p>
+梯度下降法是一種不斷去更新參數(這邊參數用 x 表示)找「解」的方法，所以一定要先隨機產生一組初始參數的「解」，然後根據這組隨機產生的「解」開始算此「解」的梯度方向大小，然後將這個「解」去減去梯度方向，很饒舌，公式如下:
+</p>
+
+\begin{equation}
+\label{org143e8db}
+x^{(t+1)} = x^{(t)} - \eta f(x^{(t)}) \)
+\end{equation}
+
+<p>
+這邊的 t 是第幾次更新參數，\( \eta \)是學習率(Learning rate)。梯度的方向我們知道了，但找「解」的時候公式是往梯度的方向更新，一次要更新多少，就是由學習率來控制的。另一方面，learning rate(\(\eta\))應該要隨著每次 t 的更新而逐漸縮小，以便利收歛，典型的作法可以讓 learning rate 以如下方式 decay: \( \eta ^ t = \frac{\eta}{\sqrt{t+1}}\)。
+</p>
+</div>
+</div>
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://medium.com/@chih.sheng.huang821/%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92-%E5%9F%BA%E7%A4%8E%E6%95%B8%E5%AD%B8-%E4%BA%8C-%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95-gradient-descent-406e1fd001f">機器/深度學習-基礎數學(二):梯度下降法(gradient descent)</a>
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.2" class="footnum" href="#fnr.2" role="doc-backlink">2</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://zh.wikipedia.org/wiki/%E5%AF%BC%E6%95%B0">導數</a>
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.3" class="footnum" href="#fnr.3" role="doc-backlink">3</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://www.books.com.tw/products/0010822932">Deep learning 深度學習必讀：Keras 大神帶你用 Python 實作</a>
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.4" class="footnum" href="#fnr.4" role="doc-backlink">4</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://towardsdatascience.com/machine-learning-bit-by-bit-multivariate-gradient-descent-e198fdd0df85">Intuition (and maths!) behind multivariate gradient descent</a>
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.5" class="footnum" href="#fnr.5" role="doc-backlink">5</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://zh.wikipedia.org/wiki/%E5%81%8F%E5%AF%BC%E6%95%B0">偏導數</a>
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.6" class="footnum" href="#fnr.6" role="doc-backlink">6</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://ithelp.ithome.com.tw/articles/10193297?sc=iThomeR">梯度下降法（Gradient Descent）</a>
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.7" class="footnum" href="#fnr.7" role="doc-backlink">7</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://medium.com/@chih.sheng.huang821/%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92-%E5%9F%BA%E7%A4%8E%E6%95%B8%E5%AD%B8-%E4%BA%8C-%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95-gradient-descent-406e1fd001f">機器/深度學習-基礎數學(二):梯度下降法(gradient descent)</a>
+</p></div></div>
+
+
+</div>
+</div></div>
+<div id="postamble" class="status">
+<p class="author">Author: Yung-Chin Yen</p>
+<p class="date">Created: 2023-12-09 Sat 12:01</p>
+</div>
+</body>
+</html>

@@ -21,17 +21,17 @@
 1. 數據特徵選取
 
 * 驗證集 v.s. 測試集
-- 訓練集（training): 舉例來說就是上課學習。主要用在訓練階段，用於模型擬合，直接參與了模型參數調整的過程[fn:4]。
-- 驗證集（validation）: 舉例來說就是模擬考，你會根據模擬考的成績繼續學習、或調整學習方式重新學習。在訓練過程中，用於評估模型的初步能力與超參數調整的依據。不過驗證集是非必需的，不像訓練集和測試集。如果不需要調整超參數，就可以不使用驗證集[fn:4]。
-- 測試集（test）就像是學測，用來評估你最終的學習結果。用來評估模型最終的泛化能力。為了能評估模型真正的能力，測試集不應該為參數調整、選擇特徵等依據[fn:4]。
-使用學測來比喻，是因為測試集不應該做為參數調整、選擇特徵等依據。這些選擇與調整可以想像成學習方式的調整，但學測已經考完，你不能時光倒轉回到最初調整學習方式[fn:4]。
+- 訓練集（training): 舉例來說就是上課學習。主要用在訓練階段，用於模型擬合，直接參與了模型參數調整的過程[fn:1]。
+- 驗證集（validation）: 舉例來說就是模擬考，你會根據模擬考的成績繼續學習、或調整學習方式重新學習。在訓練過程中，用於評估模型的初步能力與超參數調整的依據。不過驗證集是非必需的，不像訓練集和測試集。如果不需要調整超參數，就可以不使用驗證集[fn:1]。
+- 測試集（test）就像是學測，用來評估你最終的學習結果。用來評估模型最終的泛化能力。為了能評估模型真正的能力，測試集不應該為參數調整、選擇特徵等依據[fn:1]。
+使用學測來比喻，是因為測試集不應該做為參數調整、選擇特徵等依據。這些選擇與調整可以想像成學習方式的調整，但學測已經考完，你不能時光倒轉回到最初調整學習方式[fn:1]。
 
 * One Hot Encoding
 將類別 (categorical)或是文字(text)的資料轉換成數字，而讓程式能夠更好的去理解及運算。理由:
 1. 字串無法套入數學模型進行運算
 2. 直接換成數字會造成誤解
 ** pd.get_dummies
-get_dummies 是利用pandas实现one hot encode的方式[fn:5]。
+get_dummies 是利用pandas实现one hot encode的方式[fn:2]。
 #+begin_src python -r -n :results output :exports both
 import pandas as pd
 df = pd.DataFrame([
@@ -411,7 +411,7 @@ scikit-learn 的 LabelENcoder 類別可以用來將「類別特徵」編碼為�
 
 * 縮放特徵值、維持特徵值影響比例：正規化(normalization)
 當我們在比較分析兩組數據資料時，可能會遭遇因單位的不同(例如：身高與體重)，或數字大小的代表性不同(例如：粉專1萬人與滿足感0.8)，造成各自變化的程度不一，進而影響統計分析的結果；為解決此類的問題，我們可利用資料的正規化(Normalization
-)與標準化(Standardization)，藉由將原始資料轉換成無量綱(Dimensionless)的純量後，來進行數據的比較及分析[fn:6]。
+)與標準化(Standardization)，藉由將原始資料轉換成無量綱(Dimensionless)的純量後，來進行數據的比較及分析[fn:3]。
 ** Normalization
 資料的正規化(Normalization)是將原始資料的數據按比例縮放於 [0, 1] 區間中，且不改變其原本分佈。舉例來說，若我們現有兩組數據資料，分別表示 500 項商品的銷售量 Sample 1 及銷售額 Sample 2，如下圖所示，很明顯地，此兩組資料的單位不同，且數字上有著懸殊的差異，分別透過資料正規化後，兩組資料將同時轉換成純量縮放於 [0,1] 區間中，如下右圖所示；這樣的資料轉換，能排除資料單位的限制，提供我們一個相同的基準來進行後續比較分析。
 #+CAPTION: Caption
@@ -471,7 +471,7 @@ overfitting 的產生原因是模型過度遷就於訓練數據，導致面對�
 
 ** L1L2 regularzation
 
-一個典型的解釋[fn:1]如圖[[fig:OverFitting-1]]，"我們知道, 過擬合就是所謂的模型對可見的數據過度自信, 非常完美的擬合上了這些數據, 如果具備過擬合的能力, 那麼這個方程就可能是一個比較複雜的非線性方程 , 正是因為這裡的 x^3 和 x^2 使得這條虛線能夠被彎來彎去, 所以整個模型就會特別努力地去學習作用在 x^3 和 x^2 上的 c, d 參數. 但是我們期望模型要學到的卻是 這條藍色的曲線. 因為它能更有效地概括數據.而且只需要一個 y=a+bx 就能表達出數據的規律. 或者是說, 藍色的線最開始時, 和紅色線同樣也有 c d 兩個參數, 可是最終學出來時, c 和 d 都學成了 0, 雖然藍色方程的誤差要比紅色大, 但是概括起數據來還是藍色好. 那我們如何保證能學出來這樣的參數呢? 這就是 l1 l2 正規化出現的原因啦."
+一個典型的解釋[fn:4]如圖[[fig:OverFitting-1]]，"我們知道, 過擬合就是所謂的模型對可見的數據過度自信, 非常完美的擬合上了這些數據, 如果具備過擬合的能力, 那麼這個方程就可能是一個比較複雜的非線性方程 , 正是因為這裡的 $x^3$ 和 $x^2$ 使得這條虛線能夠被彎來彎去, 所以整個模型就會特別努力地去學習作用在 $x^3$ 和 $x^2$ 上的 $c$, $d$ 參數. 但是我們期望模型要學到的卻是 *這條藍色的曲線*. 因為它能更有效地概括數據.而且只需要一個 $y=a+bx$ 就能表達出數據的規律. 或者是說, 藍色的線最開始時, 和紅色線同樣也有 $c,d$ 兩個參數, 可是最終學出來時, $c$ 和 $d$ 都學成了 0, 雖然藍色方程的誤差要比紅色大, 但是概括起數據來還是藍色好. 那我們如何保證能學出來這樣的參數呢? 這就是 l1 l2 正規化出現的原因。"
 
 #+CAPTION: 過擬合問題
 #+LABEL:fig: OverFitting-1
@@ -479,14 +479,14 @@ overfitting 的產生原因是模型過度遷就於訓練數據，導致面對�
 #+ATTR_LATEX: :width 300
 [[file:images/L1l2regularization2.png]]
 
-對於上述訓練出的兩個方程式，我們可以用\((y_{\theta}(x)-y)^2\)來計算模型預測值\(y(x)\)和真實數據\(y\)的誤差，而 L1, L2 就只是在這個誤差公式後加上一些式子來修正這個公式(如圖[[fig:OverFitting-2]])，其目的在於讓誤差的最佳化不僅取決於訓練數據擬合的優劣，同時也取決於參數值(如 c,d)的大小；L2 正規化以參數平方來做為計算方式，L1 正規化則是計算每個參數的絕對值。
+對於上述訓練出的兩個方程式，我們可以用\((y_{\theta}(x)-y)^2\)來計算模型預測值\(y(x)\)和真實數據\(y\)的誤差，而 L1, L2 就只是在這個誤差公式後加上一些式子來修正這個公式(如圖[[fig:OverFitting-2]])，其目的在於讓誤差的最佳化不僅取決於訓練數據擬合的優劣，同時也取決於參數值(如 $c,d$)的大小；L2 正規化以參數平方來做為計算方式，L1 正規化則是計算每個參數的絕對值。
 #+CAPTION: L1,L2 正規化公式
 #+LABEL:fig: OverFitting-2
 #+name: fig:OverFitting-2
 #+ATTR_LATEX: :width 300
 [[file:images/L1l2regularization3.png]]
 
-進一步以 Tensorflow Playground 的圖示來觀察 L1,L2 正規化的差異[fn:2]，如果把正規化(Regularization)設定為 L1，再執行訓練。可以看到很多權重都被設定為 0，特徵輸入與隱藏層的神經元被大大的減少，如圖[[fig:L1l2regularization4]]，整個模型的複雜度簡化很多。L1 正規化確實有助於將我們的複雜模型縮減為更小的泛化模型。添加正規化後，我們看到無用的功能全部變為零，並且連接線變得稀疏並顯示為灰色。倖存下來的唯一特徵是 x_1 平方和 x_2 平方，這是有道理的，因為這 2 個特徵加在一起就構成了一個圓的方程。
+進一步以 Tensorflow Playground 的圖示來觀察 L1,L2 正規化的差異[fn:5]，如果把正規化(Regularization)設定為 L1，再執行訓練。可以看到很多權重都被設定為 0，特徵輸入與隱藏層的神經元被大大的減少，如圖[[fig:L1l2regularization4]]，整個模型的複雜度簡化很多。L1 正規化確實有助於將我們的複雜模型縮減為更小的泛化模型。添加正規化後，我們看到無用的功能全部變為零，並且連接線變得稀疏並顯示為灰色。倖存下來的唯一特徵是 $x_1$ 平方和 $x_2$ 平方，這是有道理的，因為這 2 個特徵加在一起就構成了一個圓的方程式。
 
 #+CAPTION: L1 正規化
 #+LABEL:fig: L1l2regularization4
@@ -494,7 +494,7 @@ overfitting 的產生原因是模型過度遷就於訓練數據，導致面對�
 #+ATTR_LATEX: :width 400
 [[file:images/L1l2regularization4.png]]
 
-反觀 L2 正規化，當我們訓練它時，每個權重與神經元都還是處於活動狀態，但是非常虛弱，如圖[[fig:OverFitting-3]]，L1 正規化使用其中一個特徵而將某些拋棄，而 L2 正規化將同時保留特徵並使權重值保持較小。因此，使用 L1，您可以得到一個較小的模型，但預測性可能較低。。所以：
+反觀 L2 正規化，當我們訓練它時，每個權重與神經元都還是處於活動狀態，但是非常虛弱，如圖[[fig:OverFitting-3]]，L1 正規化使用其中一個特徵而將某些拋棄，而 L2 正規化將同時保留特徵並使權重值保持較小。因此，使用 L1，您可以得到一個較小的模型，但預測性可能較低。所以：
 
 - L1 正規化：有可能導致零權重，因刪除更多特徵而使模型稀疏。
 - L2 正規化：會對更大的權重值造成更大的影響，將使權重值保持較小。
@@ -509,252 +509,14 @@ overfitting 的產生原因是模型過度遷就於訓練數據，導致面對�
 - [[https://cynthiachuang.github.io/Augmentor-Image-Augmentation-Library-in-Python/][Augmentor：影像資料增強工具庫]]
 - [[https://chtseng.wordpress.com/2017/11/11/data-augmentation-%E8%B3%87%E6%96%99%E5%A2%9E%E5%BC%B7/][Data Augmentation 資料增強]]
 
-* 循序特徵選擇法
-
-另一種降低模型複雜度以避免過度擬合的方式是經由「特徵選擇」(feature selection)來做「降維」(dimensionality reduction)，降維的做法有二：
-- 特徵選擇：feature selection, 由原本的特徵中，選出一個子集合
-- 特徵提取：feature extraction，由原本的特徵中，導出資訊來建構新的特徵
-
-循序特徵選擇法(sequential feature selection)為貪婪演算法的一種，目標在移除不相關或相關較低的特徵，以提高計算效率，這對於不支援「正規化」的演算法來說是很有用的。「循序向後選擇」(Sequential Backward Selection, SBS)便是一個典型的循序特徵選擇法，其做法是逐一從特徵空間中移除特徵，直到只剩下所要的特徵個數。為了達到這個目的，我們要定義一個最小化的「準則函數」(criterion function), 這個準則可以簡化為「模型在移除某特徵前/後的效能差異。SBS 的 python 實作如下：
-
-#+BEGIN_SRC python -r -n :results output :exports both
-  # ## Sequential feature selection algorithms
-  from sklearn.base import clone
-  from sklearn.metrics import accuracy_score
-  from itertools import combinations
-  class SBS():
-      def __init__(self, estimator, k_features, scoring=accuracy_score,
-                   test_size=0.25, random_state=1):
-          self.scoring = scoring
-          self.estimator = clone(estimator)
-          self.k_features = k_features
-          self.test_size = test_size
-          self.random_state = random_state
-
-      def fit(self, X, y):
-
-          X_train, X_test, y_train, y_test =             train_test_split(X, y, test_size=self.test_size,
-                               random_state=self.random_state)
-
-          dim = X_train.shape[1]
-          self.indices_ = tuple(range(dim))
-          self.subsets_ = [self.indices_]
-          score = self._calc_score(X_train, y_train,
-                                   X_test, y_test, self.indices_)
-          self.scores_ = [score]
-
-          while dim > self.k_features: (ref:fitWhile)
-              scores = []
-              subsets = []
-
-              for p in combinations(self.indices_, r=dim - 1):
-                  score = self._calc_score(X_train, y_train,
-                                           X_test, y_test, p) (ref:scoreXtest)
-                  scores.append(score)
-                  subsets.append(p)
-
-              best = np.argmax(scores)
-              self.indices_ = subsets[best]
-              self.subsets_.append(self.indices_)
-              dim -= 1
-
-              self.scores_.append(scores[best]) (ref:bestScore)
-          self.k_score_ = self.scores_[-1]
-
-          return self
-
-      def transform(self, X):
-          return X[:, self.indices_]
-
-      def _calc_score(self, X_train, y_train, X_test, y_test, indices):
-          self.estimator.fit(X_train[:, indices], y_train)
-          y_pred = self.estimator.predict(X_test[:, indices])
-          score = self.scoring(y_test, y_pred)
-          return score
-
-  import matplotlib.pyplot as plt
-  from sklearn.neighbors import KNeighborsClassifier
-
-  knn = KNeighborsClassifier(n_neighbors=5)
-
-  ##========
-  # 讀入資料
-  from sklearn import datasets
-  import numpy as np
-  import pandas as pd
-  df_wine = pd.read_csv('https://archive.ics.uci.edu/'
-                      'ml/machine-learning-databases/wine/wine.data',
-                      header=None)
-  df_wine.columns = ['Class label', 'Alcohol', 'Malic acid', 'Ash',
-                     'Alcalinity of ash', 'Magnesium', 'Total phenols',
-                     'Flavanoids', 'Nonflavanoid phenols', 'Proanthocyanins',
-                     'Color intensity', 'Hue', 'OD280/OD315 of diluted wines',
-                     'Proline']
-  X, y = df_wine.iloc[:, 1:].values, df_wine.iloc[:, 0].values
-  from sklearn.model_selection import train_test_split
-  X_train, X_test, y_train, y_test =    train_test_split(X, y,
-                       test_size=0.3,
-                       random_state=0,
-                       stratify=y)
-
-  # 將資料標準化: 利用preprocessing模組裡的StandardScaler類別
-  from sklearn.preprocessing import StandardScaler
-  sc = StandardScaler() # 實例化一個StandardScaler物件
-  # 利用fit方法，對X_train中每個特徵值估平均數和標準差
-  # 然後對每個特徵值進行標準化(train和test都要做)
-  sc.fit(X_train)
-  X_train_std = sc.transform(X_train)
-  X_test_std = sc.transform(X_test)
-
-  ##===
-
-  # selecting features
-  sbs = SBS(knn, k_features=1) (ref:kFeatures)
-  sbs.fit(X_train_std, y_train)
-
-  # plotting performance of feature subsets
-  k_feat = [len(k) for k in sbs.subsets_]
-
-  plt.plot(k_feat, sbs.scores_, marker='o')  (ref:accuracyScore)
-  plt.ylim([0.7, 1.02])
-  plt.ylabel('Accuracy')
-  plt.xlabel('Number of features')
-  plt.grid()
-  plt.tight_layout()
-  plt.savefig('04_08.png', dpi=300)
-  #plt.show()
-  print(sbs.subsets_) # 全部列出，找到3個特徵值是在第幾個位置 (ref:sbsSubsets)
-  print(list(sbs.subsets_[10]))
-  k3 = list(sbs.subsets_[10])
-  print(df_wine.columns[1:][k3])
-  ## 比較全部特徵值與三個特徵值的效能
-  knn.fit(X_train_std, y_train)
-  print('Training accuracy (FULL):', knn.score(X_train_std, y_train))
-  print('Test accuracy (FULL):', knn.score(X_test_std, y_test))
-  knn.fit(X_train_std[:, k3], y_train)
-  print('Training accuracy (K3):', knn.score(X_train_std[:,k3], y_train))
-  print('Test accuracy (K3):', knn.score(X_test_std[:,k3], y_test))
-
-#+END_SRC
-
-#+RESULTS:
-: [(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12), (0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12), (0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11), (0, 1, 2, 3, 4, 5, 6, 7, 9, 11), (0, 1, 2, 3, 4, 5, 7, 9, 11), (0, 1, 2, 3, 5, 7, 9, 11), (0, 1, 2, 3, 5, 7, 11), (0, 1, 2, 3, 5, 11), (0, 1, 2, 3, 11), (0, 1, 2, 11), (0, 1, 11), (0, 11), (0,)]
-: [0, 1, 11]
-: Index(['Alcohol', 'Malic acid', 'OD280/OD315 of diluted wines'], dtype='object')
-: Training accuracy (FULL): 0.967741935483871
-: Test accuracy (FULL): 0.9629629629629629
-: Training accuracy (K3): 0.9516129032258065
-: Test accuracy (K3): 0.9259259259259259
-
-#+CAPTION: SBS
-#+LABEL:fig: SBS-1
-#+name: fig:SBS-1
-#+ATTR_LATEX: :width 400
-#+ATTR_HTML: :width 500
-[[file:images/04_08.png]]
-
-前述實作中，k\under{}features 參數(程式第[[(kFeatures)]]行)定義了我們希望演算法「最後要保留多少特徵」，在預設情況下，以 accuracy\under{}score(程式第[[(accuracyScore)]]行)來評估模型效能。在 fit 的 while 迴圈中([[(fitWhile)]]行)，由 itertools 模組的 combinations 方法所產生的特徵子集合會被評估並降維，直到只剩下所要的特徵個數。
-
-在每次迭代中，演算法使用內部創建的測試數據集 X\under{}test(第[[(scoreXtest)]]行)來評估特徵子集合，然後留下精確度最佳的特徵子集合所得分數，加入串列 self.scores\under{}中(第[[(bestScore)]]行)，之後再以這些分數來評估結果。最後的特徵子集合「行索引」會被分派到變數 self.indices\under{}中，然後以 transform 將這些所選定的特徵轉為新的數據陣列。
-
-由圖[[fig:SBS-1]]可以看到，當特徵數 k={3, 7, 8, 9, 10, 11, 12}時，KNN 分類器的準確率為 100%。若進一步想確定當 k=3 時，是哪三個特徵，則可以由 sbs.subset\under{}中逐步探索出來(程式第[[(sbsSubsets)]]行)。
-
-進一步比較「全部特徵值」以及「三個特徵值」所得出的模型效能，可以看到即使只留下三個特徵值，模型的效能仍相去不遠，更重要的是，透過降低維度，可以有效的提升運算效能。
-
-* 以隨機森林評估特徵的重要性
-
-隨機森林顧名思義，是用隨機的方式建立一個森林，森林裡面有很多的決策樹組成，隨機森林的每一棵決策樹之間是沒有關聯的。在得到森林之後，當有一個新的輸入樣本進入的時候，就讓森林中的每一棵決策樹分別進行一下判斷，看看這個樣本應該屬於哪一類（對於分類演算法），然後看看哪一類被選擇最多，就預測這個樣本為那一類[fn:3]。上述 SBS 演算法係將低相關的特徵刪除、留下重要的特徵；而隨機森林則是利用許多決策樹來票選最後的決定。
-
-
-#+BEGIN_SRC python -r -n :results output :exports both
-  from sklearn import datasets
-  import pandas as pd
-  import numpy as np
-  import matplotlib.pyplot as plt
-
-  df_wine = pd.read_csv('https://archive.ics.uci.edu/'
-                      'ml/machine-learning-databases/wine/wine.data',
-                      header=None)
-  df_wine.columns = ['Class label', 'Alcohol', 'Malic acid', 'Ash',
-                     'Alcalinity of ash', 'Magnesium', 'Total phenols',
-                     'Flavanoids', 'Nonflavanoid phenols', 'Proanthocyanins',
-                     'Color intensity', 'Hue', 'OD280/OD315 of diluted wines',
-                     'Proline']
-  X, y = df_wine.iloc[:, 1:].values, df_wine.iloc[:, 0].values
-  from sklearn.model_selection import train_test_split
-  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3,
-                                                      random_state=0,
-                                                      stratify=y)
-
-
-  from sklearn.ensemble import RandomForestClassifier
-  feat_labels = df_wine.columns[1:]
-  forest = RandomForestClassifier(n_estimators=500,
-                                  random_state=1)
-
-  forest.fit(X_train, y_train)
-  importances = forest.feature_importances_
-
-  indices = np.argsort(importances)[::-1]
-
-  for f in range(X_train.shape[1]):
-      print("%2d) %-*s %f" % (f + 1, 30,
-                              feat_labels[indices[f]],
-                              importances[indices[f]]))
-
-  plt.title('Feature Importance')
-  plt.bar(range(X_train.shape[1]),
-          importances[indices],
-          align='center')
-1
-  plt.xticks(range(X_train.shape[1]),
-             feat_labels[indices], rotation=90)
-  plt.xlim([-1, X_train.shape[1]])
-  plt.tight_layout()
-  plt.savefig('04_09.png', dpi=300)
-  #plt.show()
-
-#+END_SRC
-
-#+RESULTS:
-#+begin_example
- 1) Proline                        0.185453
- 2) Flavanoids                     0.174751
- 3) Color intensity                0.143920
- 4) OD280/OD315 of diluted wines   0.136162
- 5) Alcohol                        0.118529
- 6) Hue                            0.058739
- 7) Total phenols                  0.050872
- 8) Magnesium                      0.031357
- 9) Malic acid                     0.025648
-10) Proanthocyanins                0.025570
-11) Alcalinity of ash              0.022366
-12) Nonflavanoid phenols           0.013354
-13) Ash                            0.013279
-#+end_example
-
-#+CAPTION: FandomForest
-#+LABEL:fig: 04_09
-#+name: fig:04_09
-#+ATTR_LATEX: :width 400
-#+ATTR_HTML: :width 500
-[[file:images/04_09.png]]
-
-
-由圖[[fig:04_09]]的特徵排序為從 500 棵「決策樹」的「不純度」中最具「判別性」的特徵排列順序，
-
-#+latex:\newpage
-
 * Footnotes
 
-[fn:1][[https://morvanzhou.github.io/tutorials/machine-learning/ML-intro/3-09-l1l2regularization/][L1 / L2 正規化]]
+[fn:1] [[https://cynthiachuang.github.io/What-is-the-Difference-between-Training-Validation-and-Test-Dataset/][訓練集、驗證集、測試集的定義與劃分]]
 
-[fn:2][[https://ithelp.ithome.com.tw/articles/10219648?sc=rss.iron][Google ML課程筆記 - Overfitting 與 L1 /L2 Regularization ]]
+[fn:2] [[https://blog.csdn.net/maymay_/article/details/80198468][pandas.get_dummies 的用法]]
 
-[fn:3][[https://www.itread01.com/content/1549579879.html][機器學習十大演算法---8. 隨機森林演算法]]
+[fn:3] [[https://aifreeblog.herokuapp.com/posts/54/data_science_203/][資料的正規化(Normalization)及標準化(Standardization)]]
 
-[fn:4] [[https://cynthiachuang.github.io/What-is-the-Difference-between-Training-Validation-and-Test-Dataset/][訓練集、驗證集、測試集的定義與劃分]]
+[fn:4][[https://morvanzhou.github.io/tutorials/machine-learning/ML-intro/3-09-l1l2regularization/][L1 / L2 正規化]]
 
-[fn:5] [[https://blog.csdn.net/maymay_/article/details/80198468][pandas.get_dummies 的用法]]
-
-[fn:6] [[https://aifreeblog.herokuapp.com/posts/54/data_science_203/][資料的正規化(Normalization)及標準化(Standardization)]]
+[fn:5][[https://ithelp.ithome.com.tw/articles/10219648?sc=rss.iron][Google ML課程筆記 - Overfitting 與 L1 /L2 Regularization ]]

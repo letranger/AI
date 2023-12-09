@@ -2,6 +2,15 @@
 :ID:       3ce884c1-cd16-4310-b757-37cdd1ddcdef
 :END:
 #+title: 基礎數學for AI
+#+TAGS: AI
+#+OPTIONS: toc:2 ^:nil num:5
+#+PROPERTY: header-args :eval never-export
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/muse.css" />
+#+EXCLUDE_TAGS: noexport
+#+latex:\newpage
+#+begin_export html
+<a href="https://letranger.github.io/AI/20221126112514-基礎數學for_ai.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20221126112514-基礎數學for_ai.html.svg"/></a>
+#+end_export
 
 * 合成函數的微分
 函數 $f(x)=(x^2+x-1)^{10}$ 為合成函數，因為可視為
@@ -23,22 +32,22 @@ $$f'(1)=10(1+1-1)^9\times3=30$$
 
 * 自然常數e的由來
 假設於銀行存 a元本金:
-- 當銀行年利率為100%，則一年後本利和為 $a(1+\frac{100}{1100})=2a$
-- 當銀行半年利率50% ($\frac{1}{2}$)，則一年後本利和為 $a(1+\frac{50}{100})(1+\frac{50}{100})=a(1+\frac{50}{100}})^2$
-- 當銀行每季利率25% ($\frac{1}{4}$)，則一年後本利和為 $a(1+\frac{25}{100)})(1+\frac{25}{100)})(1+\frac{25}{100)})=(1+\frac{25}{100)})=(1+\frac{25}{100)})^4$
-- 當銀行每年計n次利息，每次的利率則為 $\fac{1}{n}$，則一年後本利和為
+- 當銀行年利率為100%，則一年後本利和為 $a(1+\frac{100}{100})=2a$
+- 當銀行半年利率50%，每次的利率為 $\frac{1}{2}$，則一年後本利和為 $a (1+\frac{1}{2}) (1+\frac{2}{2}) = a (1+\frac{2}{2})^2$
+- 當銀行每季利率25%，每次的利率為 $\frac{1}{4}$，則一年後本利和為 $a(1+\frac{1}{4)})(1+\frac{1}{4)})(1+\frac{1}{4)})(1+\frac{1}{4)})=(1+\frac{1}{4)})^4$
+- 當銀行每年計n次利息，每次的利率則為 $\frac{1}{n}$，則一年後本利和為
   $$a(1+\frac{1}{n})(1+\frac{1}{n})\dots=a(1+\frac{1}{n})^n$$
-  當n接近於無限大時，上式記為 \[\lim_{n\to\infty} a(1+\frac{1}{n})^n \approx 2.71828\]
-  2.71828又被稱為自然對數$e$
+  當n接近於無限大時，上式記為 $\lim_{n\to\infty} a(1+\frac{1}{n})^n \approx 2.71828$
+  這個神奇的值2.71828又被稱為自然對數$e$
 - 尤拉(Euler)將上式改為，為指數函數的最早定義
-  \[exp(x)=\lim_{n\to\infty}a(1+\frac{x}{n}})^n\]
+  $exp(x)=\lim_{n\to\infty}a(1+\frac{x}{n})^n$
 
 * 指數與對數
 ** 指數函數
 指數函數以 $e^x$ 或 $exp(x)$ 表示，即 $y=e^x=exp(x)$，當x=1時，$y=e^1=2.71827$
 ** 對數函數
 - 以2為底: 若 $2^y=x$ 則 $y=\log_2x$，當 x=1時， $y=\log_2 1=0$
-- 以e為底: $y=\log_e$，當x=1時，$y=\log_x 1=0$
+- 以e為底: $y=\log_e$，當$x=1$ 時，$y=\log_x 1=0$
 
 * 損失函數
 ** 均方誤差(Mean Squared Error)
@@ -89,7 +98,11 @@ for s in sc.keys():
 因為圖片的答案為標籤，無法計算，一般我們會將這類資料進行one hot encoding轉換。即：
 - 如果答案是貓，就寫為：(1, 0)
 - 如果答案是狗，就寫為：(0, 1)
-這樣就可以拿來和每個讀者的預測結果進行比較運算，計算每個人的猜測與正確答案的距離方式如下：
+那...如果答案有三種可能性(例如剪刀、石頭、布)  呢？one hot encoding轉換後的可能結果為：
+- 剪刀: (1, 0, 0)
+- 石頭: (0, 1, 0)
+- 布  : (0, 0, 1)
+這樣就可以把真實答案拿來和模型的預測結果進行比較、計算二者間的差異。計算模型猜測值與正確答案的距離方式如下：
 #+begin_src python -r -n :results output :exports both
 import math
 
@@ -216,11 +229,11 @@ s: 0.5999999999994898
 * 導函數與梯度下降 [fn:3]
 
 想像一個連續平滑函數\(f(x)=y\)，即，\(f\)將一個實數\(x\)映射(mapping)到另一個實數\(y\)，因為函數是連續實數，所以在 x 的微小變化也只會導致 y 的微小變化。假設 x 增力了一個很小的值\(\epsilon_x\)，導致 y 做了\(\epsilon_y\)的改變，其數學式可以寫成：
-\(f(x+\epsilon_x) = y + \epsilon_y \)
+$$f(x+\epsilon_x) = y + \epsilon_y$$
 因為函數\(f\)為平滑連續函數，故當\(\epsilon_x\)足夠小時，在 x 附近\(f(x)\)的變化(\(\epsilon_y\))和\(\epsilon_x\)是成線性關係的，即
-\(f(x+\epsilon_x) = y + a*\epsilon_x \)，即
-\(f(x+\epsilon_x) - y = a*\epsilon_x \)，也即
-\(f(x+\epsilon_x) -f(x) = a*\epsilon_x \)
+$$f(x+\epsilon_x) = y + a*\epsilon_x $$，即
+$$f(x+\epsilon_x) - y = a*\epsilon_x $$，也即
+$$f(x+\epsilon_x) -f(x) = a*\epsilon_x $$
 
 這個線性逼近只有在當\(\epsilon_x\)足夠小時才有效，因為是線性關係，\(a\)變是斜率，也就是 rate of change。這個斜率\(a\)被稱為\(f\)在\(x\)這個點上的導函數(簡稱導數或稱微分，derivative)，也就是圖[[fig:numDiff-1]]上的切線斜率。當\(a\)大於 0，表示若\(x\)稍微增大，則\(f(x)\)變大，反之亦然；而\(a\)的絕對值(導數的大小)則表示\(f(x)\)在\(x\)值變化了\(\epsilon_x\)後所增加或減少的幅度。
 
