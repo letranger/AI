@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-12-21 Thu 10:38 -->
+<!-- 2023-12-21 Thu 20:53 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>迴歸</title>
@@ -234,156 +234,131 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgb4fbad9">1. 線性迴歸:年齡身高預測#1</a>
+<li><a href="#orgf651fcf">1. 簡介</a>
 <ul>
-<li><a href="#orgaf7457c">1.1. 資料生成</a></li>
-<li><a href="#orgde6e2fd">1.2. 查看資料</a></li>
-<li><a href="#org517536c">1.3. 直線模型</a></li>
-<li><a href="#orgbcdd3e7">1.4. 損失函數</a></li>
-<li><a href="#org2c34419">1.5. 窮舉所有的可能性</a></li>
-<li><a href="#org7ad3ad6">1.6. 快速求出最佳解</a></li>
-<li><a href="#org501f6e1">1.7. 逐步找出最佳解</a></li>
+<li><a href="#org9c616b2">1.1. 迴歸類型</a></li>
+<li><a href="#org5c731de">1.2. 迴歸原理</a></li>
+<li><a href="#org8232a2a">1.3. 迴歸預測流程(以波士頓房價預測為例)</a></li>
 </ul>
 </li>
-<li><a href="#orge2a477a">2. 保持距離以測安全</a>
+<li><a href="#org181afb3">2. 線性迴歸:年齡身高預測#1</a>
 <ul>
-<li><a href="#org5170c1e">2.1. 模型的目的</a></li>
-<li><a href="#org27721d3">2.2. 沿著曲線上下爬</a></li>
-<li><a href="#org5783d48">2.3. 確定方向</a></li>
-<li><a href="#org1fb14fb">2.4. 確定移動距離與重複次數</a></li>
-<li><a href="#org9b408d4">2.5. 斜率與微分</a></li>
+<li><a href="#org0dbd532">2.1. 資料生成</a></li>
+<li><a href="#orge5d883b">2.2. 查看資料</a></li>
+<li><a href="#orgc73a598">2.3. 直線模型</a></li>
+<li><a href="#org4139531">2.4. 損失函數</a></li>
+<li><a href="#orge48bf4f">2.5. 窮舉所有的可能性</a></li>
+<li><a href="#org3beedb8">2.6. 快速求出最佳解</a></li>
+<li><a href="#org6d37272">2.7. 逐步找出最佳解</a></li>
 </ul>
 </li>
+<li><a href="#org83354ee">3. 保持距離以測安全</a>
+<ul>
+<li><a href="#org4b8552b">3.1. 模型的目的</a></li>
+<li><a href="#org8486712">3.2. 沿著曲線上下爬</a></li>
+<li><a href="#orgafc591c">3.3. 確定方向</a></li>
+<li><a href="#org19221b9">3.4. 確定移動距離與重複次數</a></li>
+<li><a href="#org55ed03d">3.5. 斜率與微分</a></li>
+</ul>
+</li>
+<li><a href="#org2ece2b8">4. 線性迴歸:年齡身高預測#2</a></li>
 </ul>
 </div>
 </div>
-<p>
-the model on the training data
-</p>
-
-<p>
-from matplotlib import pyplot as plt
-plt.scatter(X, y, color = &rsquo;k&rsquo;)
-plt.plot(X, model.predict(X), color=&rsquo;g&rsquo;)
-plt.title(&rsquo;Pizza price plotted against diameter&rsquo;)
-plt.xlabel(&rsquo;Diameter in inches&rsquo;)
-plt.ylabel(&rsquo;Price in dollars&rsquo;)
-plt.savefig(&rsquo;images/pizza-2.png&rsquo;, dpi=300)
-#+end_src
-</p>
-
-
-<div id="orga2177d2" class="figure">
-<p><img src="images/pizza-2.png" alt="pizza-2.png" width="500" />
-</p>
-<p><span class="figure-number">Figure 1: </span>Pizza regression 2</p>
-</div>
-<div id="outline-container-org9619146" class="outline-4">
-<h4 id="org9619146"><span class="section-number-4">0.0.1.</span> Evaluating the fitness of the model with a cost function</h4>
-<div class="outline-text-4" id="text-0-0-1">
-<p>
-Regression lines produced by several sets of parameter values are plotted in the following figure. How can we assess which parameters produced the best-fitting regression line?
-</p>
-
-<div id="org068c4da" class="figure">
-<p><img src="images/pizza-3.png" alt="pizza-3.png" width="500" />
-</p>
-<p><span class="figure-number">Figure 2: </span>Pizza regression 3</p>
-</div>
-</div>
-<ol class="org-ol">
-<li><a id="org9f6ff4e"></a>cost function<br />
-<div class="outline-text-5" id="text-0-0-1-1">
-<p>
-A cost function, also called a loss function, is used to define and measure the error of a model. The differences between the prices predicted by the model and the observed prices of the pizzas in the training set are called residuals, or training errors. The differences between the predicted and observed values in the test data are called prediction errors, or test errors.
-</p>
-
-<div id="orge181d31" class="figure">
-<p><img src="images/pizza-4.png" alt="pizza-4.png" width="500" />
-</p>
-<p><span class="figure-number">Figure 3: </span>Pizza regression 4</p>
-</div>
-
-<p>
-This measure of the model&rsquo;s fitness is called the residual sum of squares (RSS) cost function. Formally, this function assesses the fitness of a model by summing the squared residuals for all of our training examples. The RSS is calculated with the formula in the following equation, where \(y_i\) is the observed value and \(f(x_i)\) is the predicted value:\[SS_{res}=\sum_{i=1}^{n}(y_i-f(x_i))^2\]
-</p>
-
-
-
-<div class="org-src-container">
-<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #a9a1e1;">add-to-list</span> <span style="color: #51afef;">'</span><span style="color: #dcaeea;">package-archives</span> <span style="color: #51afef;">'</span><span style="color: #c678dd;">(</span><span style="color: #98be65;">"melpa"</span> . <span style="color: #98be65;">"https://melpa.org/packages/"</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
-<span style="color: #51afef;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">python-shell-interpreter</span> <span style="color: #98be65;">"/usr/bin/python3"</span><span style="color: #51afef;">)</span>
-<span style="color: #51afef;">(</span><span style="color: #51afef;">setq</span> python-shell-interpreter-arg <span style="color: #98be65;">"-i"</span><span style="color: #51afef;">)</span>
-<span style="color: #51afef;">(</span><span style="color: #51afef;">setq</span> py-use-current-dir-when-execute-p t<span style="color: #51afef;">)</span>
-<span style="color: #51afef;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">python-shell-prompt-detect-enabled</span> nil<span style="color: #51afef;">)</span>
-<span style="color: #51afef;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">python-shell-interpreter</span> <span style="color: #98be65;">"ipython"</span><span style="color: #51afef;">)</span>
-<span style="color: #51afef;">(</span><span style="color: #51afef;">setq</span> python-shell-interpreter-interactive-args <span style="color: #98be65;">"-i --simple-prompt"</span><span style="color: #51afef;">)</span>
-</pre>
-</div>
-
-
-<div class="org-src-container">
-<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #a9a1e1;">add-to-list</span> <span style="color: #51afef;">'</span><span style="color: #dcaeea;">package-archives</span> <span style="color: #51afef;">'</span><span style="color: #c678dd;">(</span><span style="color: #98be65;">"melpa"</span> . <span style="color: #98be65;">"https://melpa.org/packages/"</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
-</pre>
-</div>
-
-<div class="org-src-container">
-<pre class="src src-jupyter-python"><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
-<span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
-
-<span style="color: #dcaeea;">a</span> = <span style="color: #da8548; font-weight: bold;">3</span>
-<span style="color: #c678dd;">print</span>(a)
-<span style="color: #dcaeea;">data</span> = [[<span style="color: #da8548; font-weight: bold;">1</span>,<span style="color: #da8548; font-weight: bold;">2</span>], [<span style="color: #da8548; font-weight: bold;">3</span>,<span style="color: #da8548; font-weight: bold;">4</span>]]
-pd.DataFrame(data, columns=[<span style="color: #98be65;">"Foo"</span>, <span style="color: #98be65;">"Bar"</span>])
-</pre>
-</div>
-
-<pre class="example" id="org1c1db2c">
-  Foo  Bar
-  0    1    2
-  1    3    4
-</pre>
-
-<div class="org-src-container">
-<pre class="src src-jupyter-python"><span style="color: #51afef;">from</span> ipywidgets <span style="color: #51afef;">import</span>  interact, interactive, fixed, interact_manual
-<span style="color: #51afef;">import</span> ipywidgets <span style="color: #51afef;">as</span> widgets
-<span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
-<span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
-<span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
-<span style="color: #c678dd;">print</span>(data)
-<span style="color: #51afef;">def</span> <span style="color: #c678dd;">f</span>(x):
-    plt.plot(np.arange(<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">10</span>), x*np.arange(<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">10</span>))
-    plt.ylim(-<span style="color: #da8548; font-weight: bold;">30</span>, <span style="color: #da8548; font-weight: bold;">30</span>)
-<span style="color: #5B6268;">#</span><span style="color: #5B6268;">interact(f, x=10)</span>
-f(<span style="color: #da8548; font-weight: bold;">10</span>)
-</pre>
-</div>
-
-
-<div id="org52e8b23" class="figure">
-<p><img src=".ob-ipython-resrcnqInND.png" alt=".ob-ipython-resrcnqInND.png" />
-</p>
-</div>
-
-<p>
-:end:
-</p>
-
-<div class="org-src-container">
-<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #a9a1e1;">require</span> <span style="color: #51afef;">'</span><span style="color: #a9a1e1;">jupyter</span><span style="color: #51afef;">)</span>
-</pre>
-</div>
-</div>
-</li>
-</ol>
-</div>
-<div id="outline-container-orgb4fbad9" class="outline-2">
-<h2 id="orgb4fbad9"><span class="section-number-2">1.</span> 線性迴歸:年齡身高預測#1</h2>
+<a href="https://letranger.github.io/AI/20221023154410-regression.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20221023154410-regression.html.svg"/></a>
+<div id="outline-container-orgf651fcf" class="outline-2">
+<h2 id="orgf651fcf"><span class="section-number-2">1.</span> 簡介</h2>
 <div class="outline-text-2" id="text-1">
 </div>
-<div id="outline-container-orgaf7457c" class="outline-3">
-<h3 id="orgaf7457c"><span class="section-number-3">1.1.</span> 資料生成</h3>
+<div id="outline-container-org9c616b2" class="outline-3">
+<h3 id="org9c616b2"><span class="section-number-3">1.1.</span> 迴歸類型</h3>
 <div class="outline-text-3" id="text-1-1">
+<p>
+即，根據一組預測特徵（predictor，如里程數、車齡、品牌）來預測目標數值（如二手車車價）<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>，這個目標數值也叫label。
+</p>
+
+<p>
+部份迴歸演算法也可以用來分類，例如Logistic，它可以輸出一個數值，以這個數值來表示對應到特定類別的機率，例如，某封email為垃圾郵件的機率為20%、某張圖片為狗的機率為70%。
+</p>
+
+<p>
+迴歸問題可分為兩類：
+</p>
+<ul class="org-ul">
+<li>Linear regression:
+<ul class="org-ul">
+<li>假設輸入變量(x)與單一輸出變量(y)間存在線性關係，並以此建立模型。</li>
+<li>優點: 簡單、容易解釋</li>
+<li>缺點: 輸入與輸出變量關係為線性時會導致低度擬合</li>
+<li>例: 身高與體重間的關係</li>
+</ul></li>
+<li>Logistic regression
+<ul class="org-ul">
+<li>也是線性方法，但使用logist function轉換輸出的預測結果，其輸出結果為類別機率(class probabilities)</li>
+<li>優點: 簡單、容易解釋</li>
+<li>缺點: 輸入與輸出變量關係為線性時無法處理分類問題</li>
+</ul></li>
+</ul>
+
+<p>
+典型迴歸案例: Boston Housing Data
+</p>
+</div>
+</div>
+<div id="outline-container-org5c731de" class="outline-3">
+<h3 id="org5c731de"><span class="section-number-3">1.2.</span> 迴歸原理</h3>
+<div class="outline-text-3" id="text-1-2">
+</div>
+<div id="outline-container-org15971a5" class="outline-4">
+<h4 id="org15971a5"><span class="section-number-4">1.2.1.</span> Step 1</h4>
+<div class="outline-text-4" id="text-1-2-1">
+<ol class="org-ol">
+<li>Model: \(y = w*x+b\)</li>
+<li>Data: 找一堆現成的資料</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-orgc8dcd1e" class="outline-4">
+<h4 id="orgc8dcd1e"><span class="section-number-4">1.2.2.</span> Step 2: Goodness of Function</h4>
+<div class="outline-text-4" id="text-1-2-2">
+<ol class="org-ol">
+<li>Training Data</li>
+<li>Loss function L: 越小越好
+input: a function / output: how bad it is</li>
+<li>Pick the &ldquo;Best: Function
+\(f* = arg min L(f)\)
+上述可以微分來求最佳解，即求 function L 的最小值</li>
+<li>數值最佳解: Gradient Descent(找拋物面最低點)</li>
+</ol>
+</div>
+</div>
+</div>
+<div id="outline-container-org8232a2a" class="outline-3">
+<h3 id="org8232a2a"><span class="section-number-3">1.3.</span> 迴歸預測流程(以波士頓房價預測為例)</h3>
+<div class="outline-text-3" id="text-1-3">
+<ol class="org-ol">
+<li>Import the required module</li>
+<li>Load and configure the Boston housing data set</li>
+<li>Chekc the relation between the variable, using pairplot and correlation graph</li>
+<li>Descriptive statistics: central tendency and dispersion</li>
+<li>Select the required columns</li>
+<li>Train the test split</li>
+<li>Normalize the data</li>
+<li>Build the input pipeline for the TensorFlow model</li>
+<li>Model tranining</li>
+<li>Predictions</li>
+<li>Validation</li>
+</ol>
+</div>
+</div>
+</div>
+<div id="outline-container-org181afb3" class="outline-2">
+<h2 id="org181afb3"><span class="section-number-2">2.</span> 線性迴歸:年齡身高預測#1</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-org0dbd532" class="outline-3">
+<h3 id="org0dbd532"><span class="section-number-3">2.1.</span> 資料生成</h3>
+<div class="outline-text-3" id="text-2-1">
 <p>
 這是當初上帝創造人類時決定人類身高的規則，我們也可以將之視為這組資料的模型，這個規則或模型是很神祕的，等一下我們要假裝我們不知道這個模型的存在，而迴歸的目的就在於想辦法猜出這個規則或模型。
 </p>
@@ -404,36 +379,36 @@ f(<span style="color: #da8548; font-weight: bold;">10</span>)
 </pre>
 </div>
 </div>
-<div id="outline-container-orgde6e2fd" class="outline-3">
-<h3 id="orgde6e2fd"><span class="section-number-3">1.2.</span> 查看資料</h3>
-<div class="outline-text-3" id="text-1-2">
+<div id="outline-container-orge5d883b" class="outline-3">
+<h3 id="orge5d883b"><span class="section-number-3">2.2.</span> 查看資料</h3>
+<div class="outline-text-3" id="text-2-2">
 <p>
-對於平凡的人類而言，他們只能看到身邊的人們隨著年齡增長而出現身高的變化，也就是由神袐模型所生成的數字：年齡和身高(如圖<a href="#org0ecb3de">4</a>)。
+對於平凡的人類而言，他們只能看到身邊的人們隨著年齡增長而出現身高的變化，也就是由神袐模型所生成的數字：年齡和身高(如圖<a href="#orgc1293ab">1</a>)。
 </p>
 
-<div id="org0ecb3de" class="figure">
+<div id="orgc1293ab" class="figure">
 <p><img src="images/yearHeight.png" alt="yearHeight.png" width="500" />
 </p>
-<p><span class="figure-number">Figure 4: </span>年齡與身高的資料分佈</p>
+<p><span class="figure-number">Figure 1: </span>年齡與身高的資料分佈</p>
 </div>
 
 <p>
 但那些一身反骨的數學家則不甘於當平凡人，他們想透過統計、分析、思考、通靈等方式對這個既有現象進行逆向工程，去推估這個現象背後的神祕規則，藉此窺探上帝的意志。
-這些規則也許是如圖<a href="#org3067a51">5</a>中的各種線段。一但找到了規則，我們就能根據這些規則進行 <b>預測</b> ，例如，由某人的年齡來合理推估他的身高。
+這些規則也許是如圖<a href="#org69464ff">2</a>中的各種線段。一但找到了規則，我們就能根據這些規則進行 <b>預測</b> ，例如，由某人的年齡來合理推估他的身高。
 </p>
 
-<div id="org3067a51" class="figure">
+<div id="org69464ff" class="figure">
 <p><img src="images/yearHeightModel.png" alt="yearHeightModel.png" width="500" />
 </p>
-<p><span class="figure-number">Figure 5: </span>隱藏在年齡與身高資料背後的規則(模型)</p>
+<p><span class="figure-number">Figure 2: </span>隱藏在年齡與身高資料背後的規則(模型)</p>
 </div>
 </div>
 </div>
-<div id="outline-container-org517536c" class="outline-3">
-<h3 id="org517536c"><span class="section-number-3">1.3.</span> 直線模型</h3>
-<div class="outline-text-3" id="text-1-3">
+<div id="outline-container-orgc73a598" class="outline-3">
+<h3 id="orgc73a598"><span class="section-number-3">2.3.</span> 直線模型</h3>
+<div class="outline-text-3" id="text-2-3">
 <p>
-我們可以在圖<a href="#org3067a51">5</a>中畫上無數條線，但，最能代表年齡和身高關係的線應該只有一條，我們要如何找出這條線？
+我們可以在圖<a href="#org69464ff">2</a>中畫上無數條線，但，最能代表年齡和身高關係的線應該只有一條，我們要如何找出這條線？
 </p>
 
 <p>
@@ -447,22 +422,22 @@ f(<span style="color: #da8548; font-weight: bold;">10</span>)
 </p>
 </div>
 </div>
-<div id="outline-container-orgbcdd3e7" class="outline-3">
-<h3 id="orgbcdd3e7"><span class="section-number-3">1.4.</span> 損失函數</h3>
-<div class="outline-text-3" id="text-1-4">
+<div id="outline-container-org4139531" class="outline-3">
+<h3 id="org4139531"><span class="section-number-3">2.4.</span> 損失函數</h3>
+<div class="outline-text-3" id="text-2-4">
 <p>
-損失函數(loss function)也稱為成本函數(cost function)，就是最常用來定義、衡量模型誤差的方法。以圖<a href="#orgbd1184f">6</a>為例，我們可以計算所有原始資料\((x_0, y_0) \dots (x_9, y_9)\) 離這條預測線的距離(預測結果為 \(\hat{y_0} \dots \hat{y_9}\))，這些距離( \(y_0 - \hat{y_0} \dots y_9 - \hat{y_9}\) )的總和越小，表示預測線離每一點越近，也就是說這個模型越準確。
+損失函數(loss function)也稱為成本函數(cost function)，就是最常用來定義、衡量模型誤差的方法。以圖<a href="#orgd5a040f">3</a>為例，我們可以計算所有原始資料\((x_0, y_0) \dots (x_9, y_9)\) 離這條預測線的距離(預測結果為 \(\hat{y_0} \dots \hat{y_9}\))，這些距離( \(y_0 - \hat{y_0} \dots y_9 - \hat{y_9}\) )的總和越小，表示預測線離每一點越近，也就是說這個模型越準確。
 </p>
 
 
-<div id="orgbd1184f" class="figure">
+<div id="orgd5a040f" class="figure">
 <p><img src="images/yearHeightLoss.png" alt="yearHeightLoss.png" width="600" />
 </p>
-<p><span class="figure-number">Figure 6: </span>直線模型的均方誤差</p>
+<p><span class="figure-number">Figure 3: </span>直線模型的均方誤差</p>
 </div>
 
 <p>
-圖<a href="#orgbd1184f">6</a>中的 \(y_i\) 為實際資料 \(x_i\) 對應的結果， 而 \(\hat{y_i}\) 則是將每個實際資料 \(x_i\) 丟入模型後的預測結果，計算 \(y_i\) 與 \(\hat{y_i}\) 誤差的方法稱為 <b>殘差平方和</b> (Residual Sum of Squares, RSS)，計算公式為
+圖<a href="#orgd5a040f">3</a>中的 \(y_i\) 為實際資料 \(x_i\) 對應的結果， 而 \(\hat{y_i}\) 則是將每個實際資料 \(x_i\) 丟入模型後的預測結果，計算 \(y_i\) 與 \(\hat{y_i}\) 誤差的方法稱為 <b>殘差平方和</b> (Residual Sum of Squares, RSS)，計算公式為
 \[ RSS = \sum_{i=1}^{n}(\hat{y_i}-y_i)^2 \]
 把RSS再除以n就或是 <b>均方差</b> (Mean Square Error, MSE)，即
 \[ MSE = \frac{1}{n}\sum_{i=1}^{n}(\hat{y_i}-y_i)^2 \]
@@ -474,11 +449,11 @@ f(<span style="color: #da8548; font-weight: bold;">10</span>)
 </p>
 </div>
 </div>
-<div id="outline-container-org2c34419" class="outline-3">
-<h3 id="org2c34419"><span class="section-number-3">1.5.</span> 窮舉所有的可能性</h3>
-<div class="outline-text-3" id="text-1-5">
+<div id="outline-container-orge48bf4f" class="outline-3">
+<h3 id="orge48bf4f"><span class="section-number-3">2.5.</span> 窮舉所有的可能性</h3>
+<div class="outline-text-3" id="text-2-5">
 <p>
-為了找出哪一組參數 \(a,b\) 可以讓模型 \(y=ax+b\) 的預測誤差達到最小，我們可以將一些合理的a,b值可能組合都列出來，如圖<a href="#orgd256e5e">7</a>，我們列出了由參數 \(a\) (-40~40)、參數 \(b\) (40~160)的所有可能模型，圖中的 \(z\) 軸代表每一種模型產生的誤差(RSS)。由圖<a href="#orgd256e5e">7</a>可以看出兩件事:
+為了找出哪一組參數 \(a,b\) 可以讓模型 \(y=ax+b\) 的預測誤差達到最小，我們可以將一些合理的a,b值可能組合都列出來，如圖<a href="#org170a4e6">4</a>，我們列出了由參數 \(a\) (-40~40)、參數 \(b\) (40~160)的所有可能模型，圖中的 \(z\) 軸代表每一種模型產生的誤差(RSS)。由圖<a href="#org170a4e6">4</a>可以看出兩件事:
 </p>
 <ol class="org-ol">
 <li>參數 \(a\) 對模型誤差的影響遠大於參數 \(b\)</li>
@@ -486,21 +461,21 @@ f(<span style="color: #da8548; font-weight: bold;">10</span>)
 </ol>
 
 
-<div id="orgd256e5e" class="figure">
+<div id="org170a4e6" class="figure">
 <p><img src="images/SSELossA.png" alt="SSELossA.png" width="500" />
 </p>
-<p><span class="figure-number">Figure 7: </span>不同a,b情況下的均方差</p>
+<p><span class="figure-number">Figure 4: </span>不同a,b情況下的均方差</p>
 </div>
 
 <p>
-讓我們回憶一下等高線這個東西，如果我們把圖<a href="#orgd256e5e">7</a>當成某個山谷的地形圖(z軸為高度)，那我們就可以畫出這個區域的等高線圖<a href="#orgd0b3781">8</a>(先別管我是怎麼畫出來的)，從等高線圖<a href="#orgd0b3781">8</a>就能大概看出來當a的值約等於0、b的值約等於150時會有最低的SSE(如圖<a href="#orgd0b3781">8</a>中的紅點，這是我透過觀落音得到的訊息)。
+讓我們回憶一下等高線這個東西，如果我們把圖<a href="#org170a4e6">4</a>當成某個山谷的地形圖(z軸為高度)，那我們就可以畫出這個區域的等高線圖<a href="#orgcccc681">5</a>(先別管我是怎麼畫出來的)，從等高線圖<a href="#orgcccc681">5</a>就能大概看出來當a的值約等於0、b的值約等於150時會有最低的SSE(如圖<a href="#orgcccc681">5</a>中的紅點，這是我透過觀落音得到的訊息)。
 </p>
 
 
-<div id="orgd0b3781" class="figure">
+<div id="orgcccc681" class="figure">
 <p><img src="images/SSELossB.png" alt="SSELossB.png" width="500" />
 </p>
-<p><span class="figure-number">Figure 8: </span>不同a,b情況下的MSE(俯視/等高線)</p>
+<p><span class="figure-number">Figure 5: </span>不同a,b情況下的MSE(俯視/等高線)</p>
 </div>
 
 <p>
@@ -508,9 +483,9 @@ f(<span style="color: #da8548; font-weight: bold;">10</span>)
 </p>
 </div>
 </div>
-<div id="outline-container-org7ad3ad6" class="outline-3">
-<h3 id="org7ad3ad6"><span class="section-number-3">1.6.</span> 快速求出最佳解</h3>
-<div class="outline-text-3" id="text-1-6">
+<div id="outline-container-org3beedb8" class="outline-3">
+<h3 id="org3beedb8"><span class="section-number-3">2.6.</span> 快速求出最佳解</h3>
+<div class="outline-text-3" id="text-2-6">
 <p>
 雖然從無數組 \((a,b)\) 中找出最好的一組看似困難，不過其實許多現成的相關模組已經有了這些功能，例如<a href="https://scikit-learn.org/stable/">scikit-learn</a>。以底下的程式為例：
 </p>
@@ -541,46 +516,46 @@ f(<span style="color: #da8548; font-weight: bold;">10</span>)
 
 <p>
 在上述程式碼中，真正與計算迴歸有關的只有第<a href="#coderef-modelRegression" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-modelRegression');" onmouseout="CodeHighlightOff(this, 'coderef-modelRegression');">7</a>行(利用scikit-learn建立一個線性迴歸模型)與第<a href="#coderef-modelFit" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-modelFit');" onmouseout="CodeHighlightOff(this, 'coderef-modelFit');">8</a>行(把手上的10組 \((a,b)\) 資料丟進模型訓練)，
-夠簡單吧，這樣我們就能畫出一條斜率約為0.58、截距約為152.74的最佳迴歸線(如圖<a href="#org29b4bf3">9</a>):
+夠簡單吧，這樣我們就能畫出一條斜率約為0.58、截距約為152.74的最佳迴歸線(如圖<a href="#org7dbac71">6</a>):
 </p>
 
-<div id="org29b4bf3" class="figure">
+<div id="org7dbac71" class="figure">
 <p><img src="images/yearHeightModelHat.png" alt="yearHeightModelHat.png" width="500" />
 </p>
-<p><span class="figure-number">Figure 9: </span>線性迴歸求解</p>
+<p><span class="figure-number">Figure 6: </span>線性迴歸求解</p>
 </div>
 </div>
 </div>
-<div id="outline-container-org501f6e1" class="outline-3">
-<h3 id="org501f6e1"><span class="section-number-3">1.7.</span> 逐步找出最佳解</h3>
-<div class="outline-text-3" id="text-1-7">
+<div id="outline-container-org6d37272" class="outline-3">
+<h3 id="org6d37272"><span class="section-number-3">2.7.</span> 逐步找出最佳解</h3>
+<div class="outline-text-3" id="text-2-7">
 <p>
-<a id="org8f78228"></a>
+<a id="orgdb7f14b"></a>
 雖然我們可以快速的利用如<a href="https://scikit-learn.org/">scikit-learn</a>這類第三方模組求出最佳解，但是相信對於有志投入AI領域的你來說，光知道如何快速求解顯然遠遠不夠，讓我們來搞清楚這到底是怎麼完成的。
 </p>
 </div>
-<div id="outline-container-org4b3698f" class="outline-4">
-<h4 id="org4b3698f"><span class="section-number-4">1.7.1.</span> 隨機的力量</h4>
-<div class="outline-text-4" id="text-1-7-1">
+<div id="outline-container-orgf655cab" class="outline-4">
+<h4 id="orgf655cab"><span class="section-number-4">2.7.1.</span> 隨機的力量</h4>
+<div class="outline-text-4" id="text-2-7-1">
 <p>
-萬事起頭難，要找出最佳的參數組合 \((a,b)\) ，最合理的方式就是我們 <b>閉上眼睛</b> 在圖<a href="#orgd256e5e">7</a>中隨意點圈出一個點b \((a_0, b_0)\)，這就是我們的第一步，其結果就如圖<a href="#org13a5b99">10</a>所示。有了這個開頭，我們接下來要做的事就是：
+萬事起頭難，要找出最佳的參數組合 \((a,b)\) ，最合理的方式就是我們 <b>閉上眼睛</b> 在圖<a href="#org170a4e6">4</a>中隨意點圈出一個點b \((a_0, b_0)\)，這就是我們的第一步，其結果就如圖<a href="#orgcd74b0a">7</a>所示。有了這個開頭，我們接下來要做的事就是：
 </p>
 <ol class="org-ol">
-<li>找出 <b>一個方法</b> 來判斷要由點 \((a_0, b_0)\) 點沿著這個曲面的 <b>哪一個方向</b> 前進 <b>多遠</b> ，來到下一點 \((a_1, b_1)\)。也許是沿著曲面往上移一小段(如圖<a href="#org13a5b99">10</a>中的藍色線段)、也許是沿著曲面往下移一小段(如圖<a href="#org13a5b99">10</a>中的紅色線段)。</li>
+<li>找出 <b>一個方法</b> 來判斷要由點 \((a_0, b_0)\) 點沿著這個曲面的 <b>哪一個方向</b> 前進 <b>多遠</b> ，來到下一點 \((a_1, b_1)\)。也許是沿著曲面往上移一小段(如圖<a href="#orgcd74b0a">7</a>中的藍色線段)、也許是沿著曲面往下移一小段(如圖<a href="#orgcd74b0a">7</a>中的紅色線段)。</li>
 <li>利用 <b>同一個方法</b> 來判斷接下來要由點 \((a_1, b_1)\) 點沿著這個曲面的 <b>哪一個方向</b> 繼續前進 <b>多遠</b> ，來到下一點 \((a_2, b_2)\)</li>
 <li>重複同樣的步驟，直到找到最佳的點 \((a_n, b_n)\) ，也就是這一點 \((a_n, b_n)\) 能使整個模型的SSE來到最小，讓模型具備最佳的預測效能。</li>
 </ol>
 
-<div id="org13a5b99" class="figure">
+<div id="orgcd74b0a" class="figure">
 <p><img src="images/SSELossC.png" alt="SSELossC.png" width="500" />
 </p>
-<p><span class="figure-number">Figure 10: </span>找出最佳a,b組合的方法</p>
+<p><span class="figure-number">Figure 7: </span>找出最佳a,b組合的方法</p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgadd8a1d" class="outline-4">
-<h4 id="orgadd8a1d"><span class="section-number-4">1.7.2.</span> 何去何從</h4>
-<div class="outline-text-4" id="text-1-7-2">
+<div id="outline-container-org0d769ff" class="outline-4">
+<h4 id="org0d769ff"><span class="section-number-4">2.7.2.</span> 何去何從</h4>
+<div class="outline-text-4" id="text-2-7-2">
 <p>
 發現了嗎？其實AI的本質就是在解數學問題，我們在求某個方程式的最小值。
 </p>
@@ -601,9 +576,9 @@ f(<span style="color: #da8548; font-weight: bold;">10</span>)
 </div>
 </div>
 </div>
-<div id="outline-container-orge2a477a" class="outline-2">
-<h2 id="orge2a477a"><span class="section-number-2">2.</span> 保持距離以測安全</h2>
-<div class="outline-text-2" id="text-2">
+<div id="outline-container-org83354ee" class="outline-2">
+<h2 id="org83354ee"><span class="section-number-2">3.</span> 保持距離以測安全</h2>
+<div class="outline-text-2" id="text-3">
 <p>
 讓我們先來看一個更簡單的例子。
 </p>
@@ -616,13 +591,13 @@ f(<span style="color: #da8548; font-weight: bold;">10</span>)
 <li>dist: 所需剎車距離</li>
 </ul>
 <p>
-資料分佈如圖<a href="#orgad7281a">11</a>所示
+資料分佈如圖<a href="#org73dfd12">8</a>所示
 </p>
 
-<div id="orgad7281a" class="figure">
+<div id="org73dfd12" class="figure">
 <p><img src="images/carsScatter.png" alt="carsScatter.png" width="500" />
 </p>
-<p><span class="figure-number">Figure 11: </span>車速與剎車距離關係分佈圖</p>
+<p><span class="figure-number">Figure 8: </span>車速與剎車距離關係分佈圖</p>
 </div>
 
 <p>
@@ -649,17 +624,17 @@ f(<span style="color: #da8548; font-weight: bold;">10</span>)
 在這個例子中，我們的任務就變成：提出一個假設模型( \(y=w*x\) )，然後找出最理想的參數( \(w\) )，讓這個模型可以俱備最好的預測能力(Loss值最小)。
 </p>
 </div>
-<div id="outline-container-org5170c1e" class="outline-3">
-<h3 id="org5170c1e"><span class="section-number-3">2.1.</span> 模型的目的</h3>
-<div class="outline-text-3" id="text-2-1">
+<div id="outline-container-org4b8552b" class="outline-3">
+<h3 id="org4b8552b"><span class="section-number-3">3.1.</span> 模型的目的</h3>
+<div class="outline-text-3" id="text-3-1">
 <p>
 顯然，對於如何解出方程式(或是說找到最佳模型) ，一開始當然沒啥頭緒，那，不如就暴力一點吧，弄個窮舉法：試試從 \(w=-20\) try到 \(w=+20\) 吧，觀察一下損失函數Loss的變化：
 </p>
 
-<div id="org0123c3c" class="figure">
+<div id="orgee1197e" class="figure">
 <p><img src="images/carsLoss.png" alt="carsLoss.png" width="500" />
 </p>
-<p><span class="figure-number">Figure 12: </span>不同參數w下的損失函數Loss分佈圖</p>
+<p><span class="figure-number">Figure 9: </span>不同參數w下的損失函數Loss分佈圖</p>
 </div>
 
 <p>
@@ -667,11 +642,11 @@ f(<span style="color: #da8548; font-weight: bold;">10</span>)
 </p>
 </div>
 </div>
-<div id="outline-container-org27721d3" class="outline-3">
-<h3 id="org27721d3"><span class="section-number-3">2.2.</span> 沿著曲線上下爬</h3>
-<div class="outline-text-3" id="text-2-2">
+<div id="outline-container-org8486712" class="outline-3">
+<h3 id="org8486712"><span class="section-number-3">3.2.</span> 沿著曲線上下爬</h3>
+<div class="outline-text-3" id="text-3-2">
 <p>
-雖然我們從圖<a href="#org0123c3c">12</a>大概可以看出來模型大概在參數 \(w\) 介於0和5之間會有最小的Loss，也就是模型會最準確，但身為嚴謹的學術研究者，我們不能這樣蠻幹，這是土匪的行為，我們要用最科學的方法：既然不知道從哪裡著手，就閉著眼睛隨意給個 \(w\) 好了，例如：-15，如圖<a href="#orgbd51f82">13</a>。
+雖然我們從圖<a href="#orgee1197e">9</a>大概可以看出來模型大概在參數 \(w\) 介於0和5之間會有最小的Loss，也就是模型會最準確，但身為嚴謹的學術研究者，我們不能這樣蠻幹，這是土匪的行為，我們要用最科學的方法：既然不知道從哪裡著手，就閉著眼睛隨意給個 \(w\) 好了，例如：-15，如圖<a href="#org986b26d">10</a>。
 </p>
 
 <p>
@@ -683,14 +658,14 @@ f(<span style="color: #da8548; font-weight: bold;">10</span>)
 </p>
 
 
-<div id="orgbd51f82" class="figure">
+<div id="org986b26d" class="figure">
 <p><img src="images/carsLoss1.png" alt="carsLoss1.png" width="500" />
 </p>
-<p><span class="figure-number">Figure 13: </span>先隨機假設一個數(-15)為最佳參數w的值</p>
+<p><span class="figure-number">Figure 10: </span>先隨機假設一個數(-15)為最佳參數w的值</p>
 </div>
 
 <p>
-有了出發點(我們估且稱之為 \(w_0\) 好了，如圖<a href="#orgbd51f82">13</a>)，接下來就只要決定下一個「較好的下一個 \(w_1\) 」是在 \(w_0\) 的左邊還是右邊(根據Loss值來判斷)，然後繼續往左或往右移(如圖<a href="#org244b838">14</a>。
+有了出發點(我們估且稱之為 \(w_0\) 好了，如圖<a href="#org986b26d">10</a>)，接下來就只要決定下一個「較好的下一個 \(w_1\) 」是在 \(w_0\) 的左邊還是右邊(根據Loss值來判斷)，然後繼續往左或往右移(如圖<a href="#org0249f9f">11</a>。
 </p>
 
 <p>
@@ -702,18 +677,18 @@ f(<span style="color: #da8548; font-weight: bold;">10</span>)
 </ol>
 
 
-<div id="org244b838" class="figure">
+<div id="org0249f9f" class="figure">
 <p><img src="images/carsLoss2.png" alt="carsLoss2.png" width="500" />
 </p>
-<p><span class="figure-number">Figure 14: </span>決定w應往哪個方向移動</p>
+<p><span class="figure-number">Figure 11: </span>決定w應往哪個方向移動</p>
 </div>
 </div>
 </div>
-<div id="outline-container-org5783d48" class="outline-3">
-<h3 id="org5783d48"><span class="section-number-3">2.3.</span> 確定方向</h3>
-<div class="outline-text-3" id="text-2-3">
+<div id="outline-container-orgafc591c" class="outline-3">
+<h3 id="orgafc591c"><span class="section-number-3">3.3.</span> 確定方向</h3>
+<div class="outline-text-3" id="text-3-3">
 <p>
-BUT，相信學過幾何學的你一定有想到另一種策略：切線。既然 \(w\) 與 Loss的關係是如圖<a href="#org244b838">14</a>的曲線，我們應該可以找出 \(w_0\) 這個點的 <b>切線</b> 。如果我們從點 \(w_0\) 的 \(x\) 軸各向左、右移動一段很小的距離(例如0.0000001)，所連接的這條線(如圖<a href="#org9428ff0">15</a>)就很接近點 \(w_0\) 沿曲線的切線了。
+BUT，相信學過幾何學的你一定有想到另一種策略：切線。既然 \(w\) 與 Loss的關係是如圖<a href="#org0249f9f">11</a>的曲線，我們應該可以找出 \(w_0\) 這個點的 <b>切線</b> 。如果我們從點 \(w_0\) 的 \(x\) 軸各向左、右移動一段很小的距離(例如0.0000001)，所連接的這條線(如圖<a href="#org25763bd">12</a>)就很接近點 \(w_0\) 沿曲線的切線了。
 </p>
 
 <p>
@@ -725,10 +700,10 @@ BUT，相信學過幾何學的你一定有想到另一種策略：切線。既�
 </ol>
 
 
-<div id="org9428ff0" class="figure">
+<div id="org25763bd" class="figure">
 <p><img src="images/carsLoss3.png" alt="carsLoss3.png" width="500" />
 </p>
-<p><span class="figure-number">Figure 15: </span>決定w應往哪個方向移動</p>
+<p><span class="figure-number">Figure 12: </span>決定w應往哪個方向移動</p>
 </div>
 
 <p>
@@ -736,12 +711,12 @@ BUT，相信學過幾何學的你一定有想到另一種策略：切線。既�
 </p>
 </div>
 </div>
-<div id="outline-container-org1fb14fb" class="outline-3">
-<h3 id="org1fb14fb"><span class="section-number-3">2.4.</span> 確定移動距離與重複次數</h3>
-<div class="outline-text-3" id="text-2-4">
+<div id="outline-container-org19221b9" class="outline-3">
+<h3 id="org19221b9"><span class="section-number-3">3.4.</span> 確定移動距離與重複次數</h3>
+<div class="outline-text-3" id="text-3-4">
 <p>
-<a id="org96b0f42"></a>
-由圖<a href="#org9428ff0">15</a>的 \(w\) 與Loss分佈，不難發現可以逐步往右移動w，Loss的值就會慢慢降下來，所以我們可以先這麼計畫：
+<a id="orgacc7829"></a>
+由圖<a href="#org25763bd">12</a>的 \(w\) 與Loss分佈，不難發現可以逐步往右移動w，Loss的值就會慢慢降下來，所以我們可以先這麼計畫：
 </p>
 <ul class="org-ul">
 <li>每次由 \(w0\) 的 \(x\) 軸往右邊加0.5、直到Loss不再變小。</li>
@@ -807,14 +782,14 @@ NEXT: w值:3.5, Loss:351.44
 
 
 <p>
-由執行結果可發現隨著 \(w\) 值的增加，Loss值也隨之減少，直到 \(w\) 值為3時可以得到最低的Loss值(261.26)，過了這一點，Loss值便又開始增加。圖<a href="#orgfb3a677">17</a>為w值持續修正的模擬結果，圖<a href="#org02fde59">16</a>則為假設\(w\) 值為3所畫出的預測線(模型)。
+由執行結果可發現隨著 \(w\) 值的增加，Loss值也隨之減少，直到 \(w\) 值為3時可以得到最低的Loss值(261.26)，過了這一點，Loss值便又開始增加。圖<a href="#orgb16db07">14</a>為w值持續修正的模擬結果，圖<a href="#org541e356">13</a>則為假設\(w\) 值為3所畫出的預測線(模型)。
 </p>
 
 
-<div id="org02fde59" class="figure">
+<div id="org541e356" class="figure">
 <p><img src="images/carsLine.png" alt="carsLine.png" width="500" />
 </p>
-<p><span class="figure-number">Figure 16: </span>車速與剎車距離關係分佈及預測模型</p>
+<p><span class="figure-number">Figure 13: </span>車速與剎車距離關係分佈及預測模型</p>
 </div>
 
 
@@ -823,21 +798,21 @@ NEXT: w值:3.5, Loss:351.44
 </p>
 
 
-<div id="orgfb3a677" class="figure">
+<div id="orgb16db07" class="figure">
 <p><img src="images/carsLoss4.png" alt="carsLoss4.png" width="500" />
 </p>
-<p><span class="figure-number">Figure 17: </span>決定w應往哪個方向移動</p>
+<p><span class="figure-number">Figure 14: </span>決定w應往哪個方向移動</p>
 </div>
 </div>
 </div>
-<div id="outline-container-org9b408d4" class="outline-3">
-<h3 id="org9b408d4"><span class="section-number-3">2.5.</span> 斜率與微分</h3>
-<div class="outline-text-3" id="text-2-5">
+<div id="outline-container-org55ed03d" class="outline-3">
+<h3 id="org55ed03d"><span class="section-number-3">3.5.</span> 斜率與微分</h3>
+<div class="outline-text-3" id="text-3-5">
 <p>
-在前節中我們計算圖<a href="#orgfb3a677">17</a>中 \(w_0\) 的斜率方法是由 \(w=-15\) 這點各往左、右移動0.0000001，這個方法當然不太準確，最好的方法是各往左、右移動 <b>無限小</b> 的距離，這樣畫出來的就是點 \(w_0\) 的切線，而這條切線的斜率也就是 \(w_0\) 的斜率。為什麼 <b>找出曲線上各點的斜率</b> 這件事如此重要呢？原因有二
+在前節中我們計算圖<a href="#orgb16db07">14</a>中 \(w_0\) 的斜率方法是由 \(w=-15\) 這點各往左、右移動0.0000001，這個方法當然不太準確，最好的方法是各往左、右移動 <b>無限小</b> 的距離，這樣畫出來的就是點 \(w_0\) 的切線，而這條切線的斜率也就是 \(w_0\) 的斜率。為什麼 <b>找出曲線上各點的斜率</b> 這件事如此重要呢？原因有二
 </p>
 <ul class="org-ul">
-<li>在第<a href="#org96b0f42">2.4</a>中，我們據以移動 \(w\) 值的依據是 &ldquo; <b>每次往右邊加0.5、直到Loss開始變大(因為越過了曲線最低點)</b>&rdquo; ，其實我們有另一種更方便的判斷方式：在曲線最低點左側所有點的斜率均為負、在曲線最低點右側所有點的斜率均為正，知道了某點的斜率為正或負，我們就知道該往左側或右側去移動，找出最低點的位置。</li>
+<li>在第<a href="#orgacc7829">3.4</a>中，我們據以移動 \(w\) 值的依據是 &ldquo; <b>每次往右邊加0.5、直到Loss開始變大(因為越過了曲線最低點)</b>&rdquo; ，其實我們有另一種更方便的判斷方式：在曲線最低點左側所有點的斜率均為負、在曲線最低點右側所有點的斜率均為正，知道了某點的斜率為正或負，我們就知道該往左側或右側去移動，找出最低點的位置。</li>
 <li>曲線最低點的斜率為0，我們只要能找到斜率為0的這一點，就能找到模型的最佳參數。</li>
 </ul>
 
@@ -845,9 +820,9 @@ NEXT: w值:3.5, Loss:351.44
 事實上，如果我們知道曲線 \(y=f(x)\) 的實際內容，我們就能用<a href="20221126112514-基礎數學for_ai.html#ID-3ce884c1-cd16-4310-b757-37cdd1ddcdef">微分</a>來找到曲線上的最低點。
 </p>
 </div>
-<div id="outline-container-orgefbd731" class="outline-4">
-<h4 id="orgefbd731"><span class="section-number-4">2.5.1.</span> 微分求模型最佳參數</h4>
-<div class="outline-text-4" id="text-2-5-1">
+<div id="outline-container-orge68ca53" class="outline-4">
+<h4 id="orge68ca53"><span class="section-number-4">3.5.1.</span> 頂點公式求函數解</h4>
+<div class="outline-text-4" id="text-3-5-1">
 <p>
 如假設損失函數L為 \[ Loss = MSE = \frac{1}{n}\sum_{i=1}^{n}(\hat{y_i}-y_i)^2 \]
 其中
@@ -868,8 +843,15 @@ Loss=\frac{1}{n}\sum_{i=1}^{n}(\hat{y_i}-y_i)^2 \\
 =\frac{1}{n}(w^2\sum_{i=1}^{n}x_i^2 -2w\sum_{i=1}^{n}x_iy_i + ny_i^2) \\
 \end{align}
 <p>
-最小的Loss會出現在
+雖然可以用微分來解，但是這個一元二次函數也可以用頂點公式來找出曲線頂點(模型最小值)，求出的最小Loss會出現在
 \[ w=\frac{\sum_{i=1}^{n}x_iy_i}{\sum_{i=1}^{n}x_i^2} \]
+因為當 \(a>0\)
+\[ ax^2+bx+c = a(x+\frac{b}{2a})+\frac{4ac-b^2}{4a} \]
+故 函數在 \(x=\frac{-b}{2a}\) 時有最小值
+</p>
+
+<p>
+以程式驗證如下：
 </p>
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">from</span> pydataset <span style="color: #51afef;">import</span> data
@@ -888,12 +870,62 @@ Loss=\frac{1}{n}\sum_{i=1}^{n}(\hat{y_i}-y_i)^2 \\
 </pre>
 </div>
 </div>
+<div id="outline-container-orgda17f78" class="outline-4">
+<h4 id="orgda17f78"><span class="section-number-4">3.5.2.</span> 微分求函數頂點</h4>
+<div class="outline-text-4" id="text-3-5-2">
+<p>
+當 \(a>0\)
+</p>
+\begin{align}
+f(x)=ax^2+bx+c \\
+f'(x)=2ax+b
+\end{align}
+<p>
+找曲線最低點、令函式為0
+\[2ax+b=0\]
+故$x=\frac{-b}{2a}時有最小值
+</p>
 </div>
 </div>
 </div>
+</div>
+<div id="outline-container-org2ece2b8" class="outline-2">
+<h2 id="org2ece2b8"><span class="section-number-2">4.</span> 線性迴歸:年齡身高預測#2</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+回到第<a href="#orgdb7f14b">2.7</a>節，我們提及要找出最佳的參數組合 \((a,b)\) ，最合理的方式是在圖<a href="#org170a4e6">4</a>中隨意點圈出一個點b \((a_0, b_0)\) (如圖<a href="#orgcd74b0a">7</a>)。接下來：
+</p>
+<ol class="org-ol">
+<li>找出 <b>一個方法</b> 來判斷要由點 \((a_0, b_0)\) 點沿著這個曲面的 <b>哪一個方向</b> 前進 <b>多遠</b> ，來到下一點 \((a_1, b_1)\)。也許是沿著曲面往上移一小段(如圖<a href="#orgcd74b0a">7</a>中的藍色線段)、也許是沿著曲面往下移一小段(如圖<a href="#orgcd74b0a">7</a>中的紅色線段)。</li>
+<li>利用 <b>同一個方法</b> 來判斷接下來要由點 \((a_1, b_1)\) 點沿著這個曲面的 <b>哪一個方向</b> 繼續前進 <b>多遠</b> ，來到下一點 \((a_2, b_2)\)</li>
+<li>重複同樣的步驟，直到找到最佳的點 \((a_n, b_n)\) ，也就是這一點 \((a_n, b_n)\) 能使整個模型的SSE來到最小，讓模型具備最佳的預測效能。</li>
+</ol>
+
+<p>
+假設損失函數L為 \[ L = MSE = \frac{1}{n}\sum_{i=1}^{n}(\hat{y_i}-y_i)^2 \]
+因為 \(\hat{y_i}\) 代表直線模型
+實際的做法就變成：
+</p>
+<ol class="org-ol">
+<li>計算點 \((a_0, b_0)\) 的斜率，然後朝著 <b>使Loss(MSE)減小得最快的方向</b> 稍微移動 \(a, b\)</li>
+<li>重複步驟1</li>
+</ol>
+</div>
+</div>
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+Hands-On Machine Learning with Scikit-Learn: Aurelien Geron
+</p></div></div>
+
+
+</div>
+</div></div>
 <div id="postamble" class="status">
 <p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2023-12-21 Thu 10:38</p>
+<p class="date">Created: 2023-12-21 Thu 20:53</p>
 </div>
 </body>
 </html>
