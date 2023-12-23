@@ -15,12 +15,13 @@
 <a href="https://letranger.github.io/AI/20221023154410-regression.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20221023154410-regression.html.svg"/></a>
 #+end_export
 
+* 簡介
+** 迴歸類型
+即，根據一組預測特徵（predictor，如里程數、車齡、品牌）來預測目標數值（如二手車車價）[fn:1]，這個目標數值也叫label。
 
-即，根據一組預測特徵（predictor，如里程數、車齡、品牌）來預測目標數值（如二手車車價）[fn:1]，這個目標數值也是label。
+部份迴歸演算法也可以用來分類，例如Logistic，它可以輸出一個數值，以這個數值來表示對應到特定類別的機率，例如，某封email為垃圾郵件的機率為20%、某張圖片為狗的機率為70%。
 
-有些迴歸演算法也可以用來分類，例如Logistic，它可以輸出一個數值，以這個數值來表示對應到特定類別的機率，例如，某封email為垃圾郵件的機率為20%、某張圖片為狗的機率為70%。
-
-迴歸問題可再細分為兩類：
+迴歸問題可分為兩類：
 - Linear regression:
   * 假設輸入變量(x)與單一輸出變量(y)間存在線性關係，並以此建立模型。
   * 優點: 簡單、容易解釋
@@ -33,11 +34,11 @@
 
 典型迴歸案例: Boston Housing Data
 
-* 迴歸原理
-** Step 1
+** 迴歸原理
+*** Step 1
 1. Model: $y = w*x+b$
 2. Data: 找一堆現成的資料
-** Step 2: Goodness of Function
+*** Step 2: Goodness of Function
 1. Training Data
 2. Loss function L: 越小越好
    input: a function / output: how bad it is
@@ -46,7 +47,7 @@
    上述可以微分來求最佳解，即求 function L 的最小值
 4. 數值最佳解: Gradient Descent(找拋物面最低點)
 
-* 迴歸預測流程(以波士頓房價預測為例) :noexport:
+** 迴歸預測流程(以波士頓房價預測為例)
 1. Import the required module
 1. Load and configure the Boston housing data set
 1. Chekc the relation between the variable, using pairplot and correlation graph
@@ -316,7 +317,7 @@ f(10)
 #+RESULTS:
 : jupyter
 
-* 線性迴歸:年齡身高預測
+* 線性迴歸:年齡身高預測#1
 ** 資料生成
 這是當初上帝創造人類時決定人類身高的規則，我們也可以將之視為這組資料的模型，這個規則或模型是很神祕的，等一下我們要假裝我們不知道這個模型的存在，而迴歸的目的就在於想辦法猜出這個規則或模型。
 #+begin_src ipython -r :results output :exports both :session test
@@ -458,7 +459,7 @@ plt.savefig('images/yearHeightLoss.png', dpi=300)
 
 #+RESULTS:
 
-損失函數(loss function)也稱為成本函數(cost function)，就是最常用來定義、衡量模型誤差的方法。以圖[[fig:yearHeightLoss]]為例，我們可以計算所有原始資料$(x_0, y_0) \dots (x_9, y_9)$ 離這條預測線的距離，這些距離的總和越小，表示預測線離每一點越近，也就是說這個模型越準確。
+損失函數(loss function)也稱為成本函數(cost function)，就是最常用來定義、衡量模型誤差的方法。以圖[[fig:yearHeightLoss]]為例，我們可以計算所有原始資料$(x_0, y_0) \dots (x_9, y_9)$ 離這條預測線的距離(預測結果為 $\hat{y_0} \dots \hat{y_9}$)，這些距離( $y_0 - \hat{y_0} \dots y_9 - \hat{y_9}$ )的總和越小，表示預測線離每一點越近，也就是說這個模型越準確。
 
 #+RESULTS:
 #+CAPTION: 直線模型的均方誤差
@@ -520,19 +521,22 @@ ax.plot_surface(ww0, ww1, J, rstride=20, cstride=20, alpha=0.3,
                 color='blue', edgecolor='black')
 ax.set_xticks(np.arange(b0, b1, 20))
 ax.set_yticks(np.arange(a0, a1, 20))
+ax.tick_params(axis='x', labelsize=8)
+ax.tick_params(axis='y', labelsize=8)
+ax.tick_params(axis='z', labelsize=8)
 
 ax.set_xlabel('a')
 ax.set_ylabel('b')
-ax.set_zlabel('SSE')
+ax.set_zlabel('RSS')
 ax.view_init(20, -60)
 plt.savefig('images/SSELossA.png', dpi=300)
 #+end_src
 
 #+RESULTS:
 
-為了找出哪一組參數 $a,b$ 可以讓模型 $y=ax+b$ 的預測誤差達到最小，我們可以將一些合理的a,b值可能組合都列出來，如圖[[fig:SSELossA]]，我們列出了由參數a(-40~40)、參數b(40~160)的所有可能模型，圖中的z軸代表每一種模型產生的誤差。由圖[[fig:SSELossA]]可以看出兩件事:
-1. 參數a對模型誤差的影響遠大於參數b
-2. 當參數a的值接近0時，所生成的模型會有較低的MSE，也就是模型預測能力較好
+為了找出哪一組參數 $a,b$ 可以讓模型 $y=ax+b$ 的預測誤差達到最小，我們可以將一些合理的a,b值可能組合都列出來，如圖[[fig:SSELossA]]，我們列出了由參數 $a$ (-40~40)、參數 $b$ (40~160)的所有可能模型，圖中的 $z$ 軸代表每一種模型產生的誤差(RSS)。由圖[[fig:SSELossA]]可以看出兩件事:
+1. 參數 $a$ 對模型誤差的影響遠大於參數 $b$
+2. 當參數 $a$ 的值接近0時，所生成的模型會有較低的MSE，也就是模型預測能力較好
 
 #+CAPTION: 不同a,b情況下的均方差
 #+name: fig:SSELossA
@@ -541,7 +545,7 @@ plt.savefig('images/SSELossA.png', dpi=300)
 #+ATTR_HTML: :width 500
 [[file:images/SSELossA.png]]
 
-讓我們回憶一下等高線這個東西，如果我們把圖[[fig:SSELossA]]當成某個山谷的地形圖(z軸為高度)，那我們就可以畫出這個區域的等高線圖[[fig:SSELossB]](先別管我是怎麼畫出來的)，從等高線圖[[fig:SSELossB]]就能大概看出來當a的值約等於0、b的值約等於150時會有最低的SSE(如圖[[fig:SSELossB]]中的灰點，這是我透過觀落音得到的訊息)。
+讓我們回憶一下等高線這個東西，如果我們把圖[[fig:SSELossA]]當成某個山谷的地形圖(z軸為高度)，那我們就可以畫出這個區域的等高線圖[[fig:SSELossB]](先別管我是怎麼畫出來的)，從等高線圖[[fig:SSELossB]]就能大概看出來當a的值約等於0、b的值約等於150時會有最低的SSE(如圖[[fig:SSELossB]]中的紅點，這是我透過觀落音得到的訊息)。
 
 #+begin_src python -r :results output :exports none
 import numpy as np
@@ -582,7 +586,7 @@ formatter.set_scientific(False)
 cont = plt.contour(ww0, ww1, J, 30, colors='green',
                    levels=[0, 100, 1000, 10000, 100000, 1000000], linewidths=0.5)
 cont.clabel(fmt='%d', fontsize=6, colors='r')
-plt.scatter(0.74, 150.72, color = 'gray')
+plt.scatter(0.74, 150.72, color = 'red')
 plt.xlabel("a")
 
 plt.ylabel("b")
@@ -599,7 +603,7 @@ plt.savefig('images/SSELossB.png', dpi=300)
 #+ATTR_HTML: :width 500
 [[file:images/SSELossB.png]]
 
-總之，看起來是有辦法找到最佳的模型的，只是有點麻煩...，這個方法稱為梯度下降，在這裡我們先知道有這麼個方法、知道這個方法可以找出最佳模型就好，至於深入探討這個方法是如何運作這件事，等我搞清楚了再說吧(或是等你們上大學再自己去研究)...
+總之，看起來是有辦法找到最佳的模型的(只是有點麻煩)，這個方法稱為梯度下降，在這裡我們先知道有這麼個方法、知道這個方法可以找出最佳模型就好，至於深入探討這個方法是如何運作這件事，等我搞清楚了再說吧(或是等你們上大學再自己去研究)...
 
 ** 快速求出最佳解
 雖然從無數組 $(a,b)$ 中找出最好的一組看似困難，不過其實許多現成的相關模組已經有了這些功能，例如[[https://scikit-learn.org/stable/][scikit-learn]]。以底下的程式為例：
@@ -661,6 +665,7 @@ plt.savefig("images/yearHeightModelHat.png")
 [[file:images/yearHeightModelHat.png]]
 
 ** 逐步找出最佳解
+<<sec:sbs>>
 #+begin_src python -r :results output :exports none
 import numpy as np
 import matplotlib.pyplot as plt
@@ -760,11 +765,16 @@ plt.savefig('images/SSELossC.png', dpi=300)
 from pydataset import data
 import matplotlib.pyplot as plt
 
+plt.rcParams['font.sans-serif'] = ['Arial Unicode MS'] # 步驟一（替換系統中的字型，這裡用的是Ma
+plt.rcParams['axes.unicode_minus'] = False  # 步驟二（解決座標軸負數的負號顯示問題）
+
 #print("\n\n","There are %s" %len(data()), "datasets in pydataset library")
 ## access data
-#cars = data('cars')
+cars = data('cars')
 #print(len(cars))
 #print(cars.head(5))
+plt.xlabel('speed:車速',fontsize=12)
+plt.ylabel('dist:所需剎車距離',fontsize=12)
 plt.scatter(cars['speed'], cars['dist'])
 plt.savefig("images/carsScatter.png", dpi=300)
 #+end_src
@@ -779,11 +789,11 @@ plt.savefig("images/carsScatter.png", dpi=300)
 
 我們為了這組簡單的資料分佈建了一個如下的模型
 $$dist=w*speed$$
-建立這組模型的最終目的當然是希望輸入 *車速* ($x$) 後就能得到 *預測的剎車距離* ( $y_{predicted}$ ) ，即
+建立這組模型的最終目的當然是希望輸入 *車速* ($speed$) 後就能得到 *預測的剎車距離* ( $dist$ ) 。我們也可以用更常見的數學表示法( $x$ 為車速、$y_{predicted}$ 為預測的剎車距離) ：
 $$ y_{predicted} = w * x $$
-或是更常見的寫法：
+或是更常見的寫法( $\hat{y}$ 為預測的剎車距離)：
 $$ \hat{y} = w * x $$
-同時，為了評估不同 $w$ 值下模型的優劣，我們當也要提出相對應的損失函數：
+同時，為了評估不同 $w$ 值下模型的優劣，我們當也要提出相對應的損失函數( $y_{predicted}$ 為模型預測的剎車距離、 $y_{actual}$ 為實際資料的剎車距離)：
 $$ Loss = \frac{1}{n}\sum_{1}^{n}(y_{predicted} - y_{actual})^2 $$
 例如：
 - 當 $w$ 為-15時，Loss值為85113.26
@@ -793,8 +803,10 @@ $$ Loss = \frac{1}{n}\sum_{1}^{n}(y_{predicted} - y_{actual})^2 $$
 - 當 $w$ 為  5時，Loss為1415.66
 - 當 $w$ 為 10時，Loss為17152.28
 
+在這個例子中，我們的任務就變成：提出一個假設模型( $y=w*x$ )，然後找出最理想的參數( $w$ )，讓這個模型可以俱備最好的預測能力(Loss值最小)。
+
 ** 模型的目的
-顯然，解出方程式(或是說找到最佳模型) $dist=w*speed$ 在於找到一個最佳的參數 $w$，一開始當然沒啥頭緒，那，不如就暴力一點吧，弄個窮舉法：試試從-20 try到+20吧，觀察一下損失函數Loss的變化：
+顯然，對於如何解出方程式(或是說找到最佳模型) ，一開始當然沒啥頭緒，那，不如就暴力一點吧，弄個窮舉法：試試從 $w=-20$ try到 $w=+20$ 吧，觀察一下損失函數Loss的變化：
 #+begin_src python -r -n :results output :exports none
 from pydataset import data
 import matplotlib.pyplot as plt
@@ -871,7 +883,9 @@ plt.savefig("images/carsLoss1.png", dpi=300)
 #+ATTR_HTML: :width 500
 [[file:images/carsLoss1.png]]
 
-有了出發點(我們估且稱之為 $w_0$ 好了，如圖[[fig:carLoss1]])，接下來就只要決定下一個「較好的下一個 $w_1$ 」是在 $w_0$ 的左邊還是右邊(根據Loss值來判斷)，然後繼續往左或往右移(如圖[[fig:carLoss2]])。接下來我們只要決定以下兩個因素，就可以利用python把模型的最佳參數 $w$ 找出來了。
+有了出發點(我們估且稱之為 $w_0$ 好了，如圖[[fig:carLoss1]])，接下來就只要決定下一個「較好的下一個 $w_1$ 」是在 $w_0$ 的左邊還是右邊(根據Loss值來判斷)，然後繼續往左或往右移(如圖[[fig:carLoss2]]。
+
+總之，我們只要決定以下兩個因素，就可以利用python把模型的最佳參數 $w$ 找出來了。
 1. 每次要往左或往右移多少距離?
 2. 這樣的修正動作要重複幾次？（或，結束的條件為何？)
 
@@ -925,7 +939,7 @@ plt.savefig("images/carsLoss2.png", dpi=300)
 [[file:images/carsLoss2.png]]
 
 ** 確定方向
-BUT，相信學過幾何學的你一定有想到另一種策略：切線。既然 $w$ 與 Loss的關係是如圖[[fig:carLoss2]]的曲線，我們應該可以找出 $w_0$ 這個點的 *切線* 。如果我們從點 $w_0$ 各向左、右移動一段很小的距離(例如0.0000001)，所連接的這條線(如圖[[fig:carLoss3]])就很接近點 $w_0$ 沿曲線的切線了。
+BUT，相信學過幾何學的你一定有想到另一種策略：切線。既然 $w$ 與 Loss的關係是如圖[[fig:carLoss2]]的曲線，我們應該可以找出 $w_0$ 這個點的 *切線* 。如果我們從點 $w_0$ 的 $x$ 軸各向左、右移動一段很小的距離(例如0.0000001)，所連接的這條線(如圖[[fig:carLoss3]])就很接近點 $w_0$ 沿曲線的切線了。
 
 根據斜率的計算公式(或是以肉眼觀察這條切線)，我們發現這條切線的斜率是負的。這表示
 1. 曲線的最低點應該是出現在點 $w_0$ 的右側
@@ -1001,8 +1015,9 @@ plt.savefig("images/carsLoss3.png", dpi=300)
 問題是：該往右邊移動多少距離呢？要移動幾次？
 
 ** 確定移動距離與重複次數
-由圖[[fig:carLoss3]]的w與Loss分佈，不難發現可以逐步往右移動w，Loss的值就會慢慢降下來，所以我們可以先這麼計畫：
-- 每次往右邊加0.5、直到Loss不再變小。
+<<sec:move>>
+由圖[[fig:carLoss3]]的 $w$ 與Loss分佈，不難發現可以逐步往右移動w，Loss的值就會慢慢降下來，所以我們可以先這麼計畫：
+- 每次由 $w0$ 的 $x$ 軸往右邊加0.5、直到Loss不再變小。
 或換另一種說法：
 - 每次往右邊加0.5、直到Loss開始變大(因為越過了曲線最低點)。
 
@@ -1028,21 +1043,19 @@ for i in w:
 
 # 找最佳w值, 這裡以x代表w值
 x, y = -15, loss[np.where(w == -15)[0][0]]
-while True:
+while True: (ref:keepIncrease)
     loss = np.mean(loss_func(dist, x*speed)**2)
-
-    x += 0.5
+    x += 0.5 (ref:increaseX)
     newLoss = np.mean(loss_func(dist, x*speed)**2)
-    if newLoss >= loss:
+    if newLoss >= loss: (ref:breakWhile)
         print(f'STOP: w值:{x-0.5}, Loss:{loss}')
         print(f'NEXT: w值:{x}, Loss:{newLoss}')
         break
-    if int(x) % 5 == 0:
+    if int(x) % 5 == 0: (ref:monitorW)
         print(f'w值:{x}, Loss:{newLoss}')
 #+end_src
-由執行結果可發現隨著 $w$ 值的增加，Loss值也隨之減少，直到 $w$ 值為3時可以得到最低的Loss值(261.26)，過了這一點，Loss值便又開始增加。圖[[fig:carLoss4]]為w值持續修正的模擬結果。
+逐步右移的控制主要由第[[(keepIncrease)]]行的while負責，$w$ 每次右移0.5，直到Loss值不再變小就停止(第[[(breakWhile)]]行)，為簡化輸出，每移動10次 $w$ 我們就把對應的 $w$ 和Loss輸出來觀察一下（第[[(monitorW)]]行)。輸出結果如下：
 
-針對這個策略，你有什麼可以更快找到更精確的「使Loss最低的 $w$ 值」的修正方案嗎？
 #+RESULTS:
 : w值:-10.5, Loss:47828.24
 : w值:-10.0, Loss:44346.86
@@ -1053,6 +1066,43 @@ while True:
 : w值:0.5, Loss:1794.56
 : STOP: w值:3.0, Loss:261.26
 : NEXT: w值:3.5, Loss:351.44
+
+由執行結果可發現隨著 $w$ 值的增加，Loss值也隨之減少，直到 $w$ 值為3時可以得到最低的Loss值(261.26)，過了這一點，Loss值便又開始增加。圖[[fig:carLoss4]]為w值持續修正的模擬結果，圖[[fig:carLine]]則為假設$w$ 值為3所畫出的預測線(模型)。
+
+#+begin_src shell -r -n :results output :exports none
+pip3 install matplotlib
+#+end_src
+
+#+begin_src python -r -n :results output :exports none
+# use library pydatset to get data
+from pydataset import data
+import matplotlib.pyplot as plt
+
+plt.rcParams['font.sans-serif'] = ['Arial Unicode MS'] # 步驟一（替換系統中的字型，這裡用的是Ma
+plt.rcParams['axes.unicode_minus'] = False  # 步驟二（解決座標軸負數的負號顯示問題）
+
+#print("\n\n","There are %s" %len(data()), "datasets in pydataset library")
+## access data
+cars = data('cars')
+#print(len(cars))
+#print(cars.head(5))
+plt.xlabel('speed:車速',fontsize=12)
+plt.ylabel('dist:所需剎車距離',fontsize=12)
+plt.scatter(cars['speed'], cars['dist'])
+plt.plot(cars['speed'], cars['speed']*3, 'r')
+plt.savefig("images/carsLine.png", dpi=300)
+#+end_src
+
+#+RESULTS:
+#+CAPTION: 車速與剎車距離關係分佈及預測模型
+#+name: fig:carLine
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/carsLine.png]]
+
+
+然而，這個 $w=3$ 的模型就是最佳模型嗎？你有什麼可以更快找到更精確的「使Loss最低的 $w$ 值」的修正方案嗎？
 
 #+begin_src python -r -n :results output :exports none
 from pydataset import data
@@ -1102,44 +1152,7 @@ while True:
 ax.set_xlabel(r'w')
 ax.set_ylabel(r'Loss')
 
-'''
-
-arrowprop1 = dict(arrowstyle="->",color='red')
-arrowprop2 = dict(arrowstyle="->",color='blue')
-
-ax.scatter(x, y, color='r')
-
-# 計算斜率用
-xdist = 0.5
-m = (y1-y2)/(x1-x2)
-
-ax.text(x1+4, y1, rf'$w_0+0.0000001$', color='blue')
-ax.plot([x1+3, x1], [y1, y1], 'b--')
-
-ax.text(x2+4, y2, rf'$w_0-0.0000001$', color='blue')
-ax.plot([x2+3, x2], [y2, y2], 'b--')
-
-ax.scatter(x1, y1, color='b')
-ax.scatter(x2, y2, color='b')
-ax.plot([-15, -15], [0, loss[np.where(w == -15)[0][0]]], 'g--')
-xdist = 0.5
-x1, y1 = -15+xdist, loss[np.where(w == -15+xdist)[0][0]]
-x2, y2 = -15-xdist, loss[np.where(w == -15-xdist)[0][0]]
-#---???
-m = (y1-y2)/(x1-x2)
-x1, x2 = -15 - 5, -15 + 5
-y1, y2 = y-5*m, y+5*m
-ax.plot([x1, x2], [y1, y2], c='black')
-#---???
-ax.annotate('',xy=(x-5, 200), xytext=(x, 0),arrowprops=arrowprop1)
-ax.annotate('',xy=(x+5, 200), xytext=(x, 0),arrowprops=arrowprop2)
-
-ax.text(x-5, y, rf'$w_0$', color='red')
-ax.plot([x-3, x], [y, y], 'r--')
-
-'''
 plt.savefig("images/carsLoss4.png", dpi=300)
-
 #+end_src
 
 #+CAPTION: 決定w應往哪個方向移動
@@ -1148,6 +1161,72 @@ plt.savefig("images/carsLoss4.png", dpi=300)
 #+ATTR_ORG: :width 500
 #+ATTR_HTML: :width 500
 [[file:images/carsLoss4.png]]
+
+** 斜率與微分
+:PROPERTIES:
+:ID:       5dc9ce02-13b4-4a1c-b5fd-813820407adb
+:END:
+在前節中我們計算圖[[fig:carLoss4]]中 $w_0$ 的斜率方法是由 $w=-15$ 這點各往左、右移動0.0000001，這個方法當然不太準確，最好的方法是各往左、右移動 *無限小* 的距離，這樣畫出來的就是點 $w_0$ 的切線，而這條切線的斜率也就是 $w_0$ 的斜率。為什麼 *找出曲線上各點的斜率* 這件事如此重要呢？原因有二
+- 在第[[sec:move]]中，我們據以移動 $w$ 值的依據是 " *每次往右邊加0.5、直到Loss開始變大(因為越過了曲線最低點)*" ，其實我們有另一種更方便的判斷方式：在曲線最低點左側所有點的斜率均為負、在曲線最低點右側所有點的斜率均為正，知道了某點的斜率為正或負，我們就知道該往左側或右側去移動，找出最低點的位置。
+- 曲線最低點的斜率為0，我們只要能找到斜率為0的這一點，就能找到模型的最佳參數。
+
+事實上，如果我們知道曲線 $y=f(x)$ 的實際內容，我們就能用[[id:3ce884c1-cd16-4310-b757-37cdd1ddcdef][微分]]來找到曲線上的最低點。
+
+*** 頂點公式求函數解
+如假設損失函數L為 $$ Loss = MSE = \frac{1}{n}\sum_{i=1}^{n}(\hat{y_i}-y_i)^2 $$
+其中
+- \(n=50\)(實際有50筆資料)
+- \(\hat{y_i}\)為用模型\(y=wx\)所預測出來的剎車距離
+- \(y_i\)為當實測車速為\(x_i\)時所對應的剎車距離
+故
+\begin{align}
+
+Loss=\frac{1}{n}\sum_{i=1}^{n}(\hat{y_i}-y_i)^2 \\
+=\frac{1}{n}\sum_{i=1}^{n}(wx_i - y_i)^2 \\
+=\frac{1}{n}\sum_{i=1}^{n}(w^2x_i^2 -2wx_iy_i + y_i^2) \\
+=\frac{1}{n}(w^2\sum_{i=1}^{n}x_i^2 -2w\sum_{i=1}^{n}x_iy_i + ny_i^2) \\
+\end{align}
+雖然可以用微分來解，但是這個一元二次函數也可以用頂點公式來找出曲線頂點(模型最小值)，求出的最小Loss會出現在
+$$ w=\frac{\sum_{i=1}^{n}x_iy_i}{\sum_{i=1}^{n}x_i^2} $$
+因為當 $a>0$
+$$ ax^2+bx+c = a(x+\frac{b}{2a})+\frac{4ac-b^2}{4a} $$
+故 函數在 $x=\frac{-b}{2a}$ 時有最小值
+
+以程式驗證如下：
+#+begin_src python -r -n :results output :exports both
+from pydataset import data
+import numpy as np
+
+cars = data('cars')
+speed = np.array(cars['speed'])
+dist = np.array(cars['dist'])
+
+print('最小Loss的參數w值:',sum(speed*dist) / sum(speed*speed))
+#+end_src
+
+#+RESULTS:
+: 最小Loss的參數w值: 2.909132143937103
+*** 微分求函數頂點
+當 $a>0$
+\begin{align}
+f(x)=ax^2+bx+c \\
+f'(x)=2ax+b
+\end{align}
+找曲線最低點、令函式為0
+$$2ax+b=0$$
+故 $x=\frac{-b}{2a}$ 時有最小值
+
+* 線性迴歸:年齡身高預測#2
+回到第[[sec:sbs]]節以年齡預測身高的例子，我們提及要找出最佳的參數組合 $(a,b)$ ，最合理的方式是在圖[[fig:SSELossA]]中隨意點圈出一個點b $(a_0, b_0)$ (如圖[[fig:SSELossC]])。接下來：
+1. 找出 *一個方法* 來判斷要由點 $(a_0, b_0)$ 點沿著這個曲面的 *哪一個方向* 前進 *多遠* ，來到下一點 $(a_1, b_1)$。也許是沿著曲面往上移一小段(如圖[[fig:SSELossC]]中的藍色線段)、也許是沿著曲面往下移一小段(如圖[[fig:SSELossC]]中的紅色線段)。
+3. 利用 *同一個方法* 來判斷接下來要由點 $(a_1, b_1)$ 點沿著這個曲面的 *哪一個方向* 繼續前進 *多遠* ，來到下一點 $(a_2, b_2)$
+4. 重複同樣的步驟，直到找到最佳的點 $(a_n, b_n)$ ，也就是這一點 $(a_n, b_n)$ 能使整個模型的SSE來到最小，讓模型具備最佳的預測效能。
+
+假設損失函數L為 $$ L = MSE = \frac{1}{n}\sum_{i=1}^{n}(\hat{y_i}-y_i)^2 $$
+因為 $\hat{y_i}$ 代表直線模型
+實際的做法就變成：
+1. 計算點 $(a_0, b_0)$ 的斜率，然後朝著 *使Loss(MSE)減小得最快的方向* 稍微移動 $a, b$
+2. 重複步驟1
 
 * 線性迴歸[fn:2] :noexport:
 [[https://tree.rocks/deep-learning-from-scratch-by-linear-regression-e42f5dcdb024][手刻 Deep Learning — 第零章 — 線性回歸]]
@@ -1295,11 +1374,6 @@ print('Intercept:', model.intercept_)
 #+RESULTS:
 : Slope: [8.21666667]
 : Intercept: 18.02777777777777
-
-
-* BOOK
-- Title: Mastering Machine Learning with scikit-learn
-- Author: Gavin Hackeling
 
 * Footnotes
 [fn:2] [[https://tree.rocks/deep-learning-from-scratch-by-linear-regression-e42f5dcdb024][手刻 Deep Learning — 第零章 — 線性回歸]]
