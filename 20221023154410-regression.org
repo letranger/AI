@@ -318,6 +318,7 @@ f(10)
 : jupyter
 
 * 線性迴歸:年齡身高預測#1
+<<datagen>>
 ** 資料生成
 這是當初上帝創造人類時決定人類身高的規則，我們也可以將之視為這組資料的模型，這個規則或模型是很神祕的，等一下我們要假裝我們不知道這個模型的存在，而迴歸的目的就在於想辦法猜出這個規則或模型。
 #+begin_src ipython -r :results output :exports both :session test
@@ -545,7 +546,7 @@ plt.savefig('images/SSELossA.png', dpi=300)
 #+ATTR_HTML: :width 500
 [[file:images/SSELossA.png]]
 
-讓我們回憶一下等高線這個東西，如果我們把圖[[fig:SSELossA]]當成某個山谷的地形圖(z軸為高度)，那我們就可以畫出這個區域的等高線圖[[fig:SSELossB]](先別管我是怎麼畫出來的)，從等高線圖[[fig:SSELossB]]就能大概看出來當a的值約等於0、b的值約等於150時會有最低的SSE(如圖[[fig:SSELossB]]中的紅點，這是我透過觀落音得到的訊息)。
+讓我們回憶一下等高線這個東西，如果我們把圖[[fig:SSELossA]]當成某個山谷的地形圖(z軸為高度)，那我們就可以畫出這個區域的等高線圖[[fig:SSELossB]](先別管我是怎麼畫出來的)，從等高線圖[[fig:SSELossB]]就能大概看出來當a的值約等於0、b的值約等於150時會有最低的SSE(如圖[[fig:SSELossB]]中的紅點，這是我透過觀落陰得到的訊息)。
 
 #+begin_src python -r :results output :exports none
 import numpy as np
@@ -732,7 +733,7 @@ plt.savefig('images/SSELossC.png', dpi=300)
 :PROPERTIES:
 :ID:       7cd4a142-4cd9-46b6-b9a4-2ad750ae622f
 :END:
-萬事起頭難，要找出最佳的參數組合 $(a,b)$ ，最合理的方式就是我們 *閉上眼睛* 在圖[[fig:SSELossA]]中隨意點圈出一個點b $(a_0, b_0)$，這就是我們的第一步，其結果就如圖[[fig:SSELossC]]所示。有了這個開頭，我們接下來要做的事就是：
+萬事起頭難，要找出最佳的參數組合 $(a,b)$ ，最合理的方式就是我們 *閉上眼睛* 在圖[[fig:SSELossA]]中隨意點圈出一個點 $(a_0, b_0)$，這就是我們的第一步，其結果就如圖[[fig:SSELossC]]所示。有了這個開頭，我們接下來要做的事就是：
 1. 找出 *一個方法* 來判斷要由點 $(a_0, b_0)$ 點沿著這個曲面的 *哪一個方向* 前進 *多遠* ，來到下一點 $(a_1, b_1)$。也許是沿著曲面往上移一小段(如圖[[fig:SSELossC]]中的藍色線段)、也許是沿著曲面往下移一小段(如圖[[fig:SSELossC]]中的紅色線段)。
 3. 利用 *同一個方法* 來判斷接下來要由點 $(a_1, b_1)$ 點沿著這個曲面的 *哪一個方向* 繼續前進 *多遠* ，來到下一點 $(a_2, b_2)$
 4. 重複同樣的步驟，直到找到最佳的點 $(a_n, b_n)$ ，也就是這一點 $(a_n, b_n)$ 能使整個模型的SSE來到最小，讓模型具備最佳的預測效能。
@@ -744,7 +745,7 @@ plt.savefig('images/SSELossC.png', dpi=300)
 [[file:images/SSELossC.png]]
 
 *** 何去何從
-發現了嗎？其實AI的本質就是在解數學問題，我們在求某個方程式的最小值。
+發現了嗎？其實我們就只是在求某個方程式的最小值。
 
 到這裡我想你一定會發現上面那個方法的幾個漏洞：
 - 我怎麼知道要往哪個方向移呢？
@@ -789,12 +790,12 @@ plt.savefig("images/carsScatter.png", dpi=300)
 
 我們為了這組簡單的資料分佈建了一個如下的模型
 $$dist=w*speed$$
-建立這組模型的最終目的當然是希望輸入 *車速* ($speed$) 後就能得到 *預測的剎車距離* ( $dist$ ) 。我們也可以用更常見的數學表示法( $x$ 為車速、$y_{predicted}$ 為預測的剎車距離) ：
+建立這組模型的最終目的當然是希望輸入 *車速* ($speed$) 後就能得到 *預測的所需剎車距離* ( $dist$ ) 。我們也可以用常見的數學表示法( $x$ 為車速、$y_{predicted}$ 為預測的剎車距離)：
 $$ y_{predicted} = w * x $$
 或是更常見的寫法( $\hat{y}$ 為預測的剎車距離)：
 $$ \hat{y} = w * x $$
-同時，為了評估不同 $w$ 值下模型的優劣，我們當也要提出相對應的損失函數( $y_{predicted}$ 為模型預測的剎車距離、 $y_{actual}$ 為實際資料的剎車距離)：
-$$ Loss = \frac{1}{n}\sum_{1}^{n}(y_{predicted} - y_{actual})^2 $$
+我們的任務就是找到一個最佳的 $w$ 值，也就是這個模型的參數。同時，為了評估不同 $w$ 值下模型的優劣，我們當也要提出相對應的損失函數( $\hat{y}$ 為模型預測的剎車距離、 $y_i$ 為實際資料的剎車距離，$n$ 為資料筆數，共有50筆資料)：
+$$ Loss = \frac{1}{n}\sum_{i=1}^{n}(\hat{y} - y_i)^2 $$
 例如：
 - 當 $w$ 為-15時，Loss值為85113.26
 - 當 $w$ 為-10時，Loss值為44346.86
@@ -803,7 +804,7 @@ $$ Loss = \frac{1}{n}\sum_{1}^{n}(y_{predicted} - y_{actual})^2 $$
 - 當 $w$ 為  5時，Loss為1415.66
 - 當 $w$ 為 10時，Loss為17152.28
 
-在這個例子中，我們的任務就變成：提出一個假設模型( $y=w*x$ )，然後找出最理想的參數( $w$ )，讓這個模型可以俱備最好的預測能力(Loss值最小)。
+在這個例子中，我們的任務就變成：提出一個假設模型 $f(x)=w*x$，然後找出最理想的參數 $w$，讓這個模型可以俱備最好的預測能力(Loss值最小)。
 
 ** 模型的目的
 顯然，對於如何解出方程式(或是說找到最佳模型) ，一開始當然沒啥頭緒，那，不如就暴力一點吧，弄個窮舉法：試試從 $w=-20$ try到 $w=+20$ 吧，觀察一下損失函數Loss的變化：
@@ -837,7 +838,7 @@ plt.savefig("images/carsLoss.png", dpi=300)
 #+ATTR_HTML: :width 500
 [[file:images/carsLoss.png]]
 
-現在我們可以想辦法找出最好的 $w$ 在哪裡了。
+現在我們來想辦法找出最好的 $w$ 在哪裡。
 
 ** 沿著曲線上下爬
 雖然我們從圖[[fig:carLoss]]大概可以看出來模型大概在參數 $w$ 介於0和5之間會有最小的Loss，也就是模型會最準確，但身為嚴謹的學術研究者，我們不能這樣蠻幹，這是土匪的行為，我們要用最科學的方法：既然不知道從哪裡著手，就閉著眼睛隨意給個 $w$ 好了，例如：-15，如圖[[fig:carLoss1]]。
@@ -883,11 +884,11 @@ plt.savefig("images/carsLoss1.png", dpi=300)
 #+ATTR_HTML: :width 500
 [[file:images/carsLoss1.png]]
 
-有了出發點(我們估且稱之為 $w_0$ 好了，如圖[[fig:carLoss1]])，接下來就只要決定下一個「較好的下一個 $w_1$ 」是在 $w_0$ 的左邊還是右邊(根據Loss值來判斷)，然後繼續往左或往右移(如圖[[fig:carLoss2]]。
+有了出發點(我們估且稱之為 $w_0$ 好了，如圖[[fig:carLoss1]])，接下來就只要決定下一個「較好的下一個 $w$ 」是在 $w_0$ 的左邊還是右邊(根據Loss值來判斷)，然後繼續往左或往右移(如圖[[fig:carLoss2]]。
 
-總之，我們只要決定以下兩個因素，就可以利用python把模型的最佳參數 $w$ 找出來了。
+總之，我們只要決定以下兩個因素，就可以利用[[https://letranger.github.io/PythonCourse/][Python]]把模型的最佳參數 $w$ 找出來了。
 1. 每次要往左或往右移多少距離?
-2. 這樣的修正動作要重複幾次？（或，結束的條件為何？)
+2. 這樣的修正動作要重複幾次？或者說，程式結束的條件為何？
 
 #+begin_src python -r -n :results output :exports none
 from pydataset import data
@@ -926,11 +927,14 @@ ax.annotate('',xy=(x-5, 200), xytext=(x, 0),arrowprops=arrowprop1)
 ax.annotate('',xy=(x+5, 200), xytext=(x, 0),arrowprops=arrowprop2)
 ax.text(x+1, y, rf'$w_0$', color='green')
 ax.text(x1+1, y1, rf'$w_1$', color='green')
-ax.text(x2+1, y2, rf'$w_1$', color='green')
+ax.text(x2+1, y2, rf'$w_2$', color='green')
 ax.text(x-4, 5000, '往左移', color='red')
 ax.text(x+1, 5000, '往右移', color='blue')
 plt.savefig("images/carsLoss2.png", dpi=300)
 #+end_src
+
+#+RESULTS:
+
 #+CAPTION: 決定w應往哪個方向移動
 #+name: fig:carLoss2
 #+ATTR_LATEX: :width 400
@@ -939,11 +943,9 @@ plt.savefig("images/carsLoss2.png", dpi=300)
 [[file:images/carsLoss2.png]]
 
 ** 確定方向
-BUT，相信學過幾何學的你一定有想到另一種策略：切線。既然 $w$ 與 Loss的關係是如圖[[fig:carLoss2]]的曲線，我們應該可以找出 $w_0$ 這個點的 *切線* 。如果我們從點 $w_0$ 的 $x$ 軸各向左、右移動一段很小的距離(例如0.0000001)，所連接的這條線(如圖[[fig:carLoss3]])就很接近點 $w_0$ 沿曲線的切線了。
+相信學過幾何學的你一定有想到一種策略：切線。既然 $w$ 與  $Loss$ 的關係是如圖[[fig:carLoss2]]的曲線，我們應該可以找出 $w_0$ 這個點的 *切線* ，根據這條切線的斜率(也就是點 $w_0$ 的斜率)為正或負來判斷要往哪個方向移動，如果切線是負的，也就是一條左上右下的線，那我們就知道曲線的最低點應該是在這個點的右側。
 
-根據斜率的計算公式(或是以肉眼觀察這條切線)，我們發現這條切線的斜率是負的。這表示
-1. 曲線的最低點應該是出現在點 $w_0$ 的右側
-2. 下一點 $w_1$ 要往右邊找
+讓我們從點 $w_0$ 的 $x$ 軸向左移動一段距離(例如5)，就會在曲線上找到 $w_1$ 對應的 $Loss_1$ ，然後連接點$(w_0, Loss_0)$ 、點$(w_1, Loss_1)$ ，就會得到一條經過點$(w_0, Loss_0)$ 的割線。
 
 #+begin_src python -r -n :results output :exports none
 from pydataset import data
@@ -967,56 +969,146 @@ fig, ax = plt.subplots()
 arrowprop1 = dict(arrowstyle="->",color='red')
 arrowprop2 = dict(arrowstyle="->",color='blue')
 ax.plot(w, loss, 'y--')
-x, y = -15, loss[np.where(w == -15)[0][0]]
-ax.scatter(x, y, color='r')
+x0, y0 = -15, loss[np.where(w == -15)[0][0]]
 
+ax.annotate('',xy=(x0-5, 200), xytext=(x0, 0),arrowprops=arrowprop1)
+ax.annotate('',xy=(x0+5, 200), xytext=(x0, 0),arrowprops=arrowprop2)
+ax.plot([x0, x0], [0, y0], 'y--')
+ax.text(x0-4, 5000, '往左移', color='red')
+ax.text(x0+1, 5000, '往右移', color='blue')
 # 計算斜率用
-xdist = 0.5
-x1, y1 = -15+xdist, loss[np.where(w == -15+xdist)[0][0]]
-x2, y2 = -15-xdist, loss[np.where(w == -15-xdist)[0][0]]
+xdist = 5
+x2, y2 = x0+xdist, loss[np.where(w == x0+xdist)[0][0]]
+x1, y1 = x0-xdist, loss[np.where(w == x0-xdist)[0][0]]
 m = (y1-y2)/(x1-x2)
-#print('斜率:',m)
-ax.text(x1+4, y1, rf'$w_0+0.0000001$', color='blue')
-ax.plot([x1+3, x1], [y1, y1], 'b--')
+ax.plot([x1, x0], [y0, y0], 'c-.')
+ax.plot([x1, x1], [y1, y0], 'c-.')
+ax.text(x0-3, y0-5000, rf'$\Delta x$', color='c')
+ax.text(-19.7, (y0+y1)/2, rf'$\Delta y$', color='c')
 
-ax.text(x2+4, y2, rf'$w_0-0.0000001$', color='blue')
-ax.plot([x2+3, x2], [y2, y2], 'b--')
-
-ax.scatter(x1, y1, color='b')
-ax.scatter(x2, y2, color='b')
-ax.plot([-15, -15], [0, loss[np.where(w == -15)[0][0]]], 'g--')
-xdist = 0.5
-x1, y1 = -15+xdist, loss[np.where(w == -15+xdist)[0][0]]
-x2, y2 = -15-xdist, loss[np.where(w == -15-xdist)[0][0]]
-#---???
-m = (y1-y2)/(x1-x2)
-x1, x2 = -15 - 5, -15 + 5
-y1, y2 = y-5*m, y+5*m
-ax.plot([x1, x2], [y1, y2], c='black')
+# w0
+ax.scatter(x0, y0, color='k')
+ax.text(x0+3, y0, rf'$w_0, Loss_0$', color='black')
+ax.plot([x0+3, x0], [y0, y0], 'k--')
+# w1
+ax.scatter(x1, y1, color='r')
+ax.text(x1+3, y1, rf'$w_1, Loss_1$', color='red')
+ax.plot([x1, x1+3], [y1, y1], c='red')
+ax.plot([x1, x0], [y1, y0], c='red')
 #---???
 ax.set_xlabel(r'w')
 ax.set_ylabel(r'Loss')
-ax.annotate('',xy=(x-5, 200), xytext=(x, 0),arrowprops=arrowprop1)
-ax.annotate('',xy=(x+5, 200), xytext=(x, 0),arrowprops=arrowprop2)
 
-ax.text(x-5, y, rf'$w_0$', color='red')
-ax.plot([x-3, x], [y, y], 'r--')
-ax.text(x-4, 5000, '往左移', color='red')
-ax.text(x+1, 5000, '往右移', color='blue')
-plt.savefig("images/carsLoss3.png", dpi=300)
+plt.savefig("images/carsLoss30.png", dpi=300)
 #+end_src
-#+CAPTION: 決定w應往哪個方向移動
-#+name: fig:carLoss3
+
+#+RESULTS:
+
+#+CAPTION: 決定w應往哪個方向移動#1
+#+name: fig:carLoss30
 #+ATTR_LATEX: :width 400
 #+ATTR_ORG: :width 400
 #+ATTR_HTML: :width 500
-[[file:images/carsLoss3.png]]
+[[file:images/carsLoss30.png]]
 
-問題是：該往右邊移動多少距離呢？要移動幾次？
+這條割線的斜率計算方式為 $$ Slope = \frac{\Delta Loss}{\Delta x} = \frac{Loss_0-Loss_1}{x_0-x_1} $$
+讓我們進一步把 *移動距離* 縮到無限小，也就是把割線斜率中的 $\Delta x$ 逼近於0，就能得到一條點 $(w_0, Loss_0)$ 的在曲線上的切線，其斜率計算方式為：
+$$f'(w_0)=lim_{w_1 \rightarrow w_0}\frac{f(w_1)-f(w_0)}{w_1-w_0}$$
+
+#+begin_src python -r -n :results output :exports none
+from pydataset import data
+import matplotlib.pyplot as plt
+import numpy as np
+
+cars = data('cars')
+speed = np.array(cars['speed'])
+dist = np.array(cars['dist'])
+w = np.arange(-20,21,0.5)
+loss = []
+for i in w:
+    yHat =  i * speed
+    loss.append(np.mean((yHat - dist)**2))
+
+# 畫圖====================
+plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
+plt.rcParams['axes.unicode_minus'] = False
+fig, ax = plt.subplots()
+
+arrowprop1 = dict(arrowstyle="->",color='red')
+arrowprop2 = dict(arrowstyle="->",color='blue')
+ax.plot(w, loss, 'y--')
+x0, y0 = -15, loss[np.where(w == -15)[0][0]]
+
+
+ax.annotate('',xy=(x0-2, 200), xytext=(x0, 0),arrowprops=arrowprop1)
+ax.plot([x0, x0], [0, y0], 'y--')
+
+ax.text(x0-1, 5000, '往左移', color='red')
+
+# 計算斜率用
+xdist = 0.5
+x2, y2 = x0+xdist, loss[np.where(w == x0+xdist)[0][0]]
+x1, y1 = x0-xdist, loss[np.where(w == x0-xdist)[0][0]]
+# w0
+ax.scatter(x0, y0, color='k')
+ax.text(x0+3, y0, rf'$w_0, Loss_0$', color='black')
+ax.plot([x0+3, x0], [y0, y0], 'k--')
+# w1
+ax.scatter(x1, y1, color='r')
+ax.text(x1+3, y1, rf'$w_1, Loss_1$', color='red')
+ax.plot([x1, x1+3], [y1, y1], c='red')
+ax.plot([x1, x0], [y1, y0], c='red')
+#---???
+ax.set_xlabel(r'w')
+ax.set_ylabel(r'Loss')
+
+plt.savefig("images/carsLoss31.png", dpi=300)
+#+end_src
+
+#+RESULTS:
+
+#+CAPTION: 決定w應往哪個方向移動#2
+#+name: fig:carLoss31
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 400
+#+ATTR_HTML: :width 500
+[[file:images/carsLoss31.png]]
+
+以程式計算斜率的方式也很簡單，甚至不需要懂微分，所謂把 *移動距離* 縮到無限小，我們可以用作弊的方式，直接將 $\Delta x$ 設為一個很小的值，例如 0.5。
+#+begin_src python -r -n :results output :exports both
+from pydataset import data
+import numpy as np
+
+# 取得資料集
+cars = data('cars')
+speed = np.array(cars['speed'])
+dist = np.array(cars['dist'])
+
+# 計算Loss用的function
+def loss_func(y_true, y_predict):
+    return y_true - y_predict
+
+w = np.arange(-20,21,0.5)
+loss = []
+for i in w:
+    yHat =  i * speed
+    loss.append(np.mean(loss_func(dist, yHat)**2))
+
+
+x, y = -5, loss[np.where(w == -5)[0][0]]
+x1, y1 = -4.5, loss[np.where(w == -4.5)[0][0]]
+# 計算切線斜率
+print((y-y1)/(x-x1))
+#+end_src
+
+#+RESULTS:
+: -4052.5999999999985
+
+計算結果 $Slope<0$ ，表示這是條左上右下的切線，顯然接下來該往右側去找到最低點。問題是：該往右邊移動多少距離呢？要移動幾次？
 
 ** 確定移動距離與重複次數
 <<sec:move>>
-由圖[[fig:carLoss3]]的 $w$ 與Loss分佈，不難發現可以逐步往右移動w，Loss的值就會慢慢降下來，所以我們可以先這麼計畫：
+由圖[[fig:carLoss31]]中點 $(w_0, Loss_0)$ 的斜率可知應逐步往右移動w，Loss的值就會慢慢降下來，所以我們可以先這麼計畫：
 - 每次由 $w0$ 的 $x$ 軸往右邊加0.5、直到Loss不再變小。
 或換另一種說法：
 - 每次往右邊加0.5、直到Loss開始變大(因為越過了曲線最低點)。
@@ -1054,6 +1146,7 @@ while True: (ref:keepIncrease)
     if int(x) % 5 == 0: (ref:monitorW)
         print(f'w值:{x}, Loss:{newLoss}')
 #+end_src
+
 逐步右移的控制主要由第[[(keepIncrease)]]行的while負責，$w$ 每次右移0.5，直到Loss值不再變小就停止(第[[(breakWhile)]]行)，為簡化輸出，每移動10次 $w$ 我們就把對應的 $w$ 和Loss輸出來觀察一下（第[[(monitorW)]]行)。輸出結果如下：
 
 #+RESULTS:
@@ -1166,11 +1259,9 @@ plt.savefig("images/carsLoss4.png", dpi=300)
 :PROPERTIES:
 :ID:       5dc9ce02-13b4-4a1c-b5fd-813820407adb
 :END:
-在前節中我們計算圖[[fig:carLoss4]]中 $w_0$ 的斜率方法是由 $w=-15$ 這點各往左、右移動0.0000001，這個方法當然不太準確，最好的方法是各往左、右移動 *無限小* 的距離，這樣畫出來的就是點 $w_0$ 的切線，而這條切線的斜率也就是 $w_0$ 的斜率。為什麼 *找出曲線上各點的斜率* 這件事如此重要呢？原因有二
-- 在第[[sec:move]]中，我們據以移動 $w$ 值的依據是 " *每次往右邊加0.5、直到Loss開始變大(因為越過了曲線最低點)*" ，其實我們有另一種更方便的判斷方式：在曲線最低點左側所有點的斜率均為負、在曲線最低點右側所有點的斜率均為正，知道了某點的斜率為正或負，我們就知道該往左側或右側去移動，找出最低點的位置。
-- 曲線最低點的斜率為0，我們只要能找到斜率為0的這一點，就能找到模型的最佳參數。
-
-事實上，如果我們知道曲線 $y=f(x)$ 的實際內容，我們就能用[[id:3ce884c1-cd16-4310-b757-37cdd1ddcdef][微分]]來找到曲線上的最低點。
+為什麼 *找出曲線上各點的斜率* 這件事如此重要呢？原因有二
+- 在第[[sec:move]]中，我們據以移動 $w$ 值的依據是 " *每次往右邊加0.5、直到Loss開始變大(因為越過了曲線最低點)*" ，其實我們有另一種更方便的判斷方式：在曲線最低點左側所有點的斜率均為負、在曲線最低點右側所有點的斜率均為正，知道了某點的斜率為正或負，我們就知道該往左側或右側去移動，找出最低點的位置。理解這件事，我們可以用程式來求出接近的最低點。
+- 曲線最低點的斜率為0，我們只要能找到斜率為0的這一點，就能找到模型的最佳參數。理解這件事，我們就能用數學的方式求出最低點的位置。 事實上，如果我們知道曲線 $y=f(x)$ 的實際內容，我們就能用[[id:3ce884c1-cd16-4310-b757-37cdd1ddcdef][微分]]來找到曲線上的最低點。
 
 *** 頂點公式求函數解
 如假設損失函數L為 $$ Loss = MSE = \frac{1}{n}\sum_{i=1}^{n}(\hat{y_i}-y_i)^2 $$
@@ -1180,7 +1271,6 @@ plt.savefig("images/carsLoss4.png", dpi=300)
 - \(y_i\)為當實測車速為\(x_i\)時所對應的剎車距離
 故
 \begin{align}
-
 Loss=\frac{1}{n}\sum_{i=1}^{n}(\hat{y_i}-y_i)^2 \\
 =\frac{1}{n}\sum_{i=1}^{n}(wx_i - y_i)^2 \\
 =\frac{1}{n}\sum_{i=1}^{n}(w^2x_i^2 -2wx_iy_i + y_i^2) \\
@@ -1217,165 +1307,191 @@ $$2ax+b=0$$
 故 $x=\frac{-b}{2a}$ 時有最小值
 
 * 線性迴歸:年齡身高預測#2
-回到第[[sec:sbs]]節以年齡預測身高的例子，我們提及要找出最佳的參數組合 $(a,b)$ ，最合理的方式是在圖[[fig:SSELossA]]中隨意點圈出一個點b $(a_0, b_0)$ (如圖[[fig:SSELossC]])。接下來：
+回到第[[sec:sbs]]節[[datagen][以年齡預測身高]]的例子，我們提及要找出最佳的參數組合 $(a,b)$ ，最合理的方式是在圖[[fig:SSELossA]]中隨意點圈出一個點 $(a_0, b_0)$ (如圖[[fig:SSELossC]])。接下來：
 1. 找出 *一個方法* 來判斷要由點 $(a_0, b_0)$ 點沿著這個曲面的 *哪一個方向* 前進 *多遠* ，來到下一點 $(a_1, b_1)$。也許是沿著曲面往上移一小段(如圖[[fig:SSELossC]]中的藍色線段)、也許是沿著曲面往下移一小段(如圖[[fig:SSELossC]]中的紅色線段)。
 3. 利用 *同一個方法* 來判斷接下來要由點 $(a_1, b_1)$ 點沿著這個曲面的 *哪一個方向* 繼續前進 *多遠* ，來到下一點 $(a_2, b_2)$
 4. 重複同樣的步驟，直到找到最佳的點 $(a_n, b_n)$ ，也就是這一點 $(a_n, b_n)$ 能使整個模型的SSE來到最小，讓模型具備最佳的預測效能。
 
 假設損失函數L為 $$ L = MSE = \frac{1}{n}\sum_{i=1}^{n}(\hat{y_i}-y_i)^2 $$
-因為 $\hat{y_i}$ 代表直線模型
+因為 $\hat{y_i}$ 代表直線模型 $y=ax+b$ 的預測結果。
+
 實際的做法就變成：
 1. 計算點 $(a_0, b_0)$ 的斜率，然後朝著 *使Loss(MSE)減小得最快的方向* 稍微移動 $a, b$
 2. 重複步驟1
+** 梯度(Gradient)
+為了符合機器學習的表達習慣，我們稍微修正一下上面的式子，將 $a,b$ 改為 $w_0, w_1$ ，因為對機器學習來說， $a,b$ 都是模型的權重(weight) ，訓練模型的目的就是找出最佳的權重，讓模型的預測最準確，所以上述式子就變成了 $y=w_0x+w_1$ 。
 
-* 線性迴歸[fn:2] :noexport:
-[[https://tree.rocks/deep-learning-from-scratch-by-linear-regression-e42f5dcdb024][手刻 Deep Learning — 第零章 — 線性回歸]]
-原始資料:
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
-[[file:images/Xyh-1.png]]
+假設我們就站在下圖(圖[[fig:SSELossD]])中的點 $(w_0, w_1)$ 上，環顧四周，由這點往上的方向可以用 $L$ 對 $w_0,w_1$ 的偏導數向量
+\(
+\begin{bmatrix}
+\frac{\delta L}{\delta w_0} \frac{\delta L}{\delta w_1}
+\end{bmatrix}^T
+\)
+，也稱之為 *梯度(gradient)* ，以符號 $\nabla_wL$ 表示。為了使 $L$ 最小，我們要朝著著 $L$ 梯度的反方向前進，也就是
+\(
+-\nabla_wL =
+-\begin{bmatrix}
+\frac{\delta L}{\delta w_0} \frac{\delta L}{\delta w_1}
+\end{bmatrix}^T
+\)
 
-#+begin_src python -r -n :results output :exports both
+#+begin_src python -r :results output :exports none
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
-def gen_data(X, a, b):
-    return X * a + b
-
-## 重新產生X, y，較合理，而非已存在一條線
-X = np.array(range(1, 10))
-y = np.array([27, 35, 40, 50, 66, 60, 76, 88, 90])
-#y = gen_data(X, a=8, b=20)
-
-plt.scatter(X, y, color='black')
-plt.plot(X, 1 * X + 1)
-plt.plot(X, 4 * X + 10)
-plt.plot(X, 4 * X + 10)
-plt.plot(X, 8 * X + 30)
-plt.ylim(0, 121)
-plt.legend(['Raw Data', 'Line 1', 'Line 2', 'Line 3'])
-plt.savefig("images/Xyh-1.png", dpi=300)
-
-a = 1
-b = 1
-yh = a * X + b #y hat
-
-
-plt.plot(X, yh)
-#plt.savefig("images/Xyh.png", dpi=300)
-
-def loss_func(y_true, y_predict):
-    return y_true - y_predict
-
-def optimizer(d, loss):
-    return np.mean(d * loss * 0.01)
-
-N = 1000
-for i in range(N):
-    p_y = a * X + b
-    loss = loss_func(y, p_y)
-    a -= optimizer(-2 * X, loss)
-    b -= optimizer(-2, loss)
-    if i % int(N/10) == 0:
-        print('誤差: {:.2f}'.format(np.mean(loss)), '目前 a: {:.2f}, b: {:.2f}'.format(a, b))
-
-yh = a * X + b #y hat
-#plt.plot(X, yh)
-#plt.legend(['Target', 'Initialization', 'Optimization'])
-#plt.savefig("images/Xyh.png", dpi=300)
-#+end_src
-
-#+RESULTS:
-#+begin_example
-[[1]
- [2]
- [3]
- [4]
- [5]
- [6]
- [7]
- [8]
- [9]]
-誤差: 53.11 目前 a: 7.27, b: 2.06
-誤差: 2.11 目前 a: 9.84, b: 7.81
-誤差: 1.40 目前 a: 9.29, b: 11.26
-誤差: 0.93 目前 a: 8.93, b: 13.54
-誤差: 0.61 目前 a: 8.69, b: 15.05
-誤差: 0.41 目前 a: 8.53, b: 16.06
-誤差: 0.27 目前 a: 8.42, b: 16.72
-誤差: 0.18 目前 a: 8.35, b: 17.16
-誤差: 0.12 目前 a: 8.31, b: 17.45
-誤差: 0.08 目前 a: 8.28, b: 17.65
-#+end_example
-
-
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
-[[file:images/Xyh.png]]
-
-開始 Linear Regression (線性回歸)
-
-練習投藍的時後，我們需要知道籃筐位置，誤差多少，做出丟球的修正；做 Machine Learning 也是一樣道理，我們需要 :
-1. 找出誤差
-2. 做出修正
-
-所以我們這邊帶入兩個觀念:
-1. loss function (誤差計算，找出誤差)
-2. optimizer (最佳化方法，做出修正)
-
-我們用程式碼來看
-loss function: 其中 loss_func 的 y_true 表示商店的真實價格，y_predict 是我們預測的價格，我們這邊採用 真實價格 減去 預測價格，就是預測的誤差
-#+begin_src python -r -n :results output :exports both
-def loss_func(y_true, y_predict):
-    return y_true - y_predict
-#+end_src
-optimizer: 這邊有個參數叫做 d ，其實他是 partial derivative ，這是微積分的概念。optimizer的修正並非最佳，可以自行修正找出最佳參數
-#+begin_src python -r -n :results output :exports both
-def optimizer(d, loss):
-    return np.mean(d * loss * 0.01)
-#+end_src
-
-上面就是我們的訓練用程式碼，跑 1000 次訓練，每 100 次 ( N/10 ) 我們印出一次誤差讓我們看看過程
-其中：
-a -= optimizer(-2 * X, loss)
-b -= optimizer(-2, loss)
-這邊就是每次的訓練我們都在調整 a 與 b，就像是我們投籃丟歪球了，每次練習都在調整力道
-
-各位可以試看看將 a 與 b 改成任意數值 ( 不要太過極端以免 overflow )，在這個訓練過程中，不管 a, b 初始是多少，都會逐漸往我們正確答案靠近，為什麼會這樣呢？
-
-    這就是微積分的力量
-
-大多的 Machine Learning 也是類似這種方法，不停的 Training ( 訓練 ) 找到答案，微積分這部分日後有空再來解說 XD
-
-微分: https://tree.rocks/deep-learning-from-scratch-introduce-differential-91f5b4400d1a
-
-** sklear版solution
-#+begin_src python -r -n :results output :exports both
-import numpy as np
-X = np.arange(1, 10).reshape(-1, 1) #轉換矩陣形狀以符合sklearn要求
-y = [27, 35, 40, 50, 66, 60, 76, 88, 90]
+plt.rcParams['font.sans-serif'] = ['Arial Unicode MS'] # 步驟一（替換系統中的字型，這裡用的是Mac OSX系統）
+plt.rcParams['axes.unicode_minus'] = False  # 步驟二（解決座標軸負數的負號顯示問題）
+year = np.array([13.3, 16.2, 10.9, 28.7, 14.2, 11.7, 26.6, 22.4, 18.3, 20.4]).reshape([-1, 1])
+height = np.array([163.61, 168.53, 155.06, 168.3 ,158.98, 158.23, 165.27, 170.83,  161.31, 163.58])
 
 from sklearn.linear_model import LinearRegression
 model = LinearRegression()
-model.fit(X, y)
+# 均方誤差函數 ------------------------------
+def mse_line(x, t, w):
+    y = w[0] * x + w[1]
+    mse = np.mean((y - t)**2)
+    return mse
 
-print('Slope:', model.coef_)
-print('Intercept:', model.intercept_)
+xn = 100    #等高線解析度
+b0, b1 = -40, 41
+a0, a1 = 40, 161
+# Fit the model on the training data
+w0 = np.linspace(b0, b1, xn)
+w1 = np.linspace(a0, a1, xn)
+ww0, ww1 = np.meshgrid(w0, w1)
+J = np.zeros((len(w0), len(w1)))
+for i0 in range(len(w0)):
+    for i1 in range(len(w1)):
+        J[i1, i0] = mse_line(year, height, (w0[i0], w1[i1]))
+
+# 顯示 --------------------------------------
+plt.figure(figsize=(5, 5))
+from matplotlib import ticker
+from mpl_toolkits.mplot3d import Axes3D
+
+formatter = ticker.ScalarFormatter()
+formatter.set_scientific(False)
+# A
+ax = plt.subplot(1, 1, 1, projection='3d')
+ax.yaxis.set_major_formatter(formatter)
+ax.plot_surface(ww0, ww1, J, rstride=20, cstride=20, alpha=0.3,
+                color='blue', edgecolor='black')
+ax.set_xticks(np.arange(b0, b1, 20))
+ax.set_yticks(np.arange(a0, a1, 20))
+
+ax.quiver(-20, 70, 300000, -10, 16, 10,  color='blue', arrow_length_ratio = 0.1)
+ax.quiver(-20, 70, 300000, 10, -16, 10,  color='red', arrow_length_ratio = 0.5, pivot='tail', length=1)
+ax.scatter(-20, 70, 300000, color='green')
+
+ax.quiver(-20, 70, 300000, -10, 16, 10,  color='blue', arrow_length_ratio = 0.1)
+ax.text(-18, 75, 350000, rf'隨意指定一點$(w_0,w_1)$', color='blue')
+
+ax.set_xlabel(rf'$w_0$')
+ax.set_ylabel(rf'$w_1$')
+ax.set_zlabel('SSE')
+ax.view_init(20, -60)
+plt.savefig('images/SSELossD.png', dpi=300)
 #+end_src
 
 #+RESULTS:
-: Slope: [8.21666667]
-: Intercept: 18.02777777777777
+
+#+CAPTION: 隨意於曲面指定一點(a,b)
+#+LABEL:fig:Labl
+#+name: fig:SSELossD
+#+ATTR_LATEX: :width 500
+#+ATTR_ORG: :width 500
+#+ATTR_HTML: :width 500
+[[file:images/SSELossD.png]]
+
+確定移動方向後，我們就要來研究出一個適當的移動距離。我們先定義幾個表達式：
+- $\nabla_wL$ 為 $w$ 的函數
+- $w(\tau)$ 代表目前的 $(w_0, w_1)$ 所在位置
+- $w(\tau+1)$ 代表下一次移動的新 $(w_0, w_1)$ 所在位置
+- $\alpha$ 為一個大於0的數，稱為學習率，用來控制調整權重的步幅，其值越大，調整的幅度就越大。典型的值可能為 $0.001$
+- $y_i$ 為實際由第i個年齡 *對應* 到的身高
+- $\hat y_i$ 為模型由第i個年齡 *預測出來* 的身高
+兩個權重的下一步的調整步幅為：
+- $w_0(\tau+1) = w_0(\tau)-\alpha\frac{\partial L}{\partial w_0}$
+- $w_1(\tau+1) = w_0(\tau)-\alpha\frac{\partial L}{\partial w_1}$
+因為 $$L=\frac{1}{n}\sum\limits_{i=1}^{n}(\hat y_i - y_i)^2 = \frac{1}{n}\sum\limits_{i=1}^{n}(w_0x_i + w_1 - y_i)^2$$
+對 $w_0$ 求偏導數：
+$$\frac{\partial L}{\partial w_0} = \frac{2}{n}\sum\limits_{i=1}^{n}(w_0x_i + w_1 - y_i)x_i = \frac{2}{n}\sum\limits_{i=1}^{n}(\hat y_i - y_i)x_i$$
+對 $w_1$ 求偏導數：
+$$\frac{\partial L}{\partial w_1} = \frac{2}{n}\sum\limits_{i=1}^{n}(w_0x_i + w_1 - y_i)= \frac{2}{n}\sum\limits_{i=1}^{n}(\hat y_i - y_i)$$
+即 $(w_0, w_1)$ 的下一次移動距離為：
+- $w_0(\tau+1) = w_0(\tau)-\alpha\frac{\partial L}{\partial w_0} = \frac{2}{n}\sum\limits_{i=1}^{n}(\hat y_i - y_i)x_i$
+- $w_1(\tau+1) = w_0(\tau)-\alpha\frac{\partial L}{\partial w_1} = \frac{2}{n}\sum\limits_{i=1}^{n}(\hat y_i - y_i)$
+上面數學式中貌似有很複雜的計算，但是如果我們以Numpy的array來儲存 $x_i, y_i, \hat y_i$，就能利用Numpy的矩陣運算np.mean()輕易求出結果，例如當 $(w_0, w_1) = (-20, 70)$ (如圖[[fig:SSELossD]])，則下一個點梯度的計算方式為
+#+begin_src python -r -n :results output :exports both
+import numpy as np
+year = np.array([13.3, 16.2, 10.9, 28.7, 14.2, 11.7, 26.6, 22.4, 18.3, 20.4]).reshape([-1, 1])
+height = np.array([163.61, 168.53, 155.06, 168.3 ,158.98, 158.23, 165.27, 170.83,  161.31, 163.58])
+# 均方差的梯度
+def dw(x, y, w):
+    yhat = w[0]*x + w[1]
+    d_w0 = 2*np.mean((yhat-y)*x)
+    d_w1 = 2*np.mean(yhat-y)
+    return d_w0, d_w1
+w = dw(year, height, [-20, 70])
+print(w)
+#+end_src
+
+#+RESULTS:
+: (-18134.659799999998, -917.54)
+結果分別是 $w_0, w_1$ 方向的斜率，可以看出斜率都非常小，且 $w_0$ 斜率比 $w_1$ 方向的斜度更大，這與由圖[[fig:SSELossD]]觀察結果一致。
+
+** 實作
+#+begin_src python -r -n :results output :exports both
+import numpy as np
+year = np.array([13.3, 16.2, 10.9, 28.7, 14.2, 11.7, 26.6, 22.4, 18.3, 20.4]).reshape([-1, 1])
+height = np.array([163.61, 168.53, 155.06, 168.3 ,158.98, 158.23, 165.27, 170.83,  161.31, 163.58])
+
+def mse(x, t, w):
+    y = w[0] * x + w[1]
+    mse = np.mean((y - t)**2)
+    return mse
+
+# 均方差的梯度
+def dw(x, y, w):
+    yhat = w[0]*x + w[1]
+    d_w0 = 2*np.mean((yhat-y)*x)
+    d_w1 = 2*np.mean(yhat-y)
+    return d_w0, d_w1
+
+# 梯度法 ------------------------------------
+def fit_gd(x, y):
+    w_init = [-20, 70]  # 初始參數
+    alpha = 0.001  # 學習率
+    tau_max = 100000  # 重複的最大次數
+    eps = 0.1  # 停止重複的梯度絕對值的閥值
+    w_hist = np.zeros([tau_max, 2])
+    w_hist[0, :] = w_init
+    for tau in range(1, tau_max):
+        dmse = dw(x, y, w_hist[tau - 1])
+        w_hist[tau, 0] = w_hist[tau - 1, 0] - alpha * dmse[0]
+        w_hist[tau, 1] = w_hist[tau - 1, 1] - alpha * dmse[1]
+        if max(np.absolute(dmse)) < eps: # 結束判斷
+            break
+    w0 = w_hist[tau, 0]
+    w1 = w_hist[tau, 1]
+    w_hist = w_hist[:tau, :]
+    return w0, w1, dmse, w_hist
+
+# 調用梯度法
+W0, W1, dMSE, W_history = fit_gd(year, height)
+print('重複次數 {0}'.format(W_history.shape[0]))
+print('W=[{0:.6f}, {1:.6f}]'.format(W0, W1))
+print('dMSE=[{0:.6f}, {1:.6f}]'.format(dMSE[0], dMSE[1]))
+print('MSE={0:.6f}'.format(mse(year, height, [W0, W1])))
+#+end_src
+
+#+RESULTS:
+: 重複次數 27678
+: W=[0.026711, 162.832008]
+: dMSE=[0.004964, -0.099983]
+: MSE=22.955476
 
 * Footnotes
-[fn:2] [[https://tree.rocks/deep-learning-from-scratch-by-linear-regression-e42f5dcdb024][手刻 Deep Learning — 第零章 — 線性回歸]]
 
 [fn:1] Hands-On Machine Learning with Scikit-Learn: Aurelien Geron

@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-11-29 Wed 16:17 -->
+<!-- 2024-01-05 Fri 17:25 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>生成對抗網路</title>
@@ -193,27 +193,39 @@
     { background-color: #ffff00; color: #000000; font-weight: bold; }
   .org-svg { }
 </style>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        displayAlign: "center",
-        displayIndent: "0em",
-
-        "HTML-CSS": { scale: 100,
-                        linebreaks: { automatic: "false" },
-                        webFont: "TeX"
-                       },
-        SVG: {scale: 100,
-              linebreaks: { automatic: "false" },
-              font: "TeX"},
-        NativeMML: {scale: 100},
-        TeX: { equationNumbers: {autoNumber: "AMS"},
-               MultLineWidth: "85%",
-               TagSide: "right",
-               TagIndent: ".8em"
-             }
-});
+<link rel="stylesheet" type="text/css" href="../css/muse.css" />
+<script>
+  window.MathJax = {
+    tex: {
+      ams: {
+        multlineWidth: '85%'
+      },
+      tags: 'ams',
+      tagSide: 'right',
+      tagIndent: '.8em'
+    },
+    chtml: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    svg: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    output: {
+      font: 'mathjax-modern',
+      displayOverflow: 'overflow'
+    }
+  };
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+
+<script
+  id="MathJax-script"
+  async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
 </head>
 <body>
 <div id="content" class="content">
@@ -222,158 +234,164 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org69d94d4">1. 生成模型</a>
+<li><a href="#orgb8a9f13">1. GAN</a></li>
+<li><a href="#orgb74b99b">2. 生成模型</a>
 <ul>
-<li><a href="#org3ed2f06">1.1. 生成模型與鑑別模型</a>
-<ul>
-<li><a href="#orgdf621c8">1.1.1. 生成模型的應用</a></li>
-<li><a href="#orgc768229">1.1.2. 生成學習與強化學習</a></li>
+<li><a href="#org2cf6bd1">2.1. 生成模型與鑑別模型</a></li>
+<li><a href="#org5884ede">2.2. 生成模型的框架: 兩維度的生成模型遊戲</a></li>
 </ul>
 </li>
-<li><a href="#org0329fa5">1.2. 生成模型的框架: 兩維度的生成模型遊戲</a></li>
-</ul>
-</li>
-<li><a href="#org9a435ad">2. Keras GAN</a></li>
-<li><a href="#org0dc7a94">3. 應用領域</a></li>
-<li><a href="#org21694e7">4. DCGANs</a></li>
-<li><a href="#orgb383aa9">5. DeepLearning 的 convolution 動畫</a></li>
-<li><a href="#org8fc3613">6. 比賽只有 CNN v.s. RNN</a></li>
-<li><a href="#org357ce6a">7. ideas</a></li>
+<li><a href="#org950c825">3. Keras GAN</a></li>
+<li><a href="#org3a14777">4. 應用領域</a></li>
+<li><a href="#orgb5b2fba">5. DCGANs</a></li>
+<li><a href="#orgb3be99c">6. DeepLearning 的 convolution 動畫</a></li>
+<li><a href="#org5b872f1">7. 比賽只有 CNN v.s. RNN</a></li>
+<li><a href="#orgd3837c8">8. ideas</a></li>
 </ul>
 </div>
 </div>
 <a href="https://hits.sh/letranger.github.io/AI-course/GPU.html/"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI-course/GPU.html.svg"/></a>
-
-<div id="outline-container-org69d94d4" class="outline-2">
-<h2 id="org69d94d4"><span class="section-number-2">1.</span> 生成模型</h2>
+<div id="outline-container-orgb8a9f13" class="outline-2">
+<h2 id="orgb8a9f13"><span class="section-number-2">1.</span> GAN</h2>
 <div class="outline-text-2" id="text-1">
+<p>
+生成對抗網路是由蒙特婁大學的研究生伊思・古德費洛(Ian Goodfellow)所發明。2014年的一個晚上，Goodfellow和他的幾個朋友去了當地的一家酒館，他們討論到打造可以生成高畫質圖像的深度學習系統會碰到到的問題。在喝了不知道多少啤酒後，Goodfellow提出了生成對抗網路背後的基本概念，但受到了其他人很大的質疑。之後，Goodfellow一回到家立即開始寫程式。幾個小時內，他就有了第一個功能強大的生成對抗網路。這個成就使Goodfellow成為深度學習社群的傳奇人物。Meta首席AI科學家楊立昆表示，生成對抗網路是「深度學習領域過去二十年來最酷的概念」<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgb74b99b" class="outline-2">
+<h2 id="orgb74b99b"><span class="section-number-2">2.</span> 生成模型</h2>
+<div class="outline-text-2" id="text-2">
 <ul class="org-ul">
-<li>生成模型是以 <b>機率模型</b> 的方式來描述資料集的 <b>產生方式</b> 。對這個模型抽樣就可以生成新的資料。</li>
-<li>例如：建置一個包含了許多馬匹的影像資料庫，我們想建一個能生成 <b>未出現過的、逼真的馬</b> 的模型。</li>
-<li>首先需要一個有許多馬的資料集，裡面有許多實例(instance)，每個資枓點為一個觀察值(obwervation)</li>
-<li>每個觀察值都包含了許多特徵（對於圖片來說就是像素值），生成模型的目標就是建置個能生成多組新特徵的模型，讓這個新特徵看起來和原始資料很類似。</li>
-<li>生成模型必須是機率型(probabilistic)而非決定型(deterministic)，如果模型是將所有圖片的像素值取平均，則每次產生的結果就都會想同，這就不是生成，模型要包含一個隨機元素來影響其所生成的個別樣本。</li>
-<li>可以想像有一個未知的機率分配來決定為什麼有些影像比較容易在訓練集資料中找到，有些則否。我們的目標是建置一個模型去盡可能模仿這樣的機率分配，並從中抽樣來生成全新且具鑑別度的觀察值。</li>
-<li>很難當比賽題目，因為做出來的都是假的，不易評分</li>
+<li>生成模型是以 <b>機率模型</b> 的方式來描述資料集的 <b>產生方式</b> 。對這個模型抽樣就可以生成新的資料。<br /></li>
+<li>例如：建置一個包含了許多馬匹的影像資料庫，我們想建一個能生成 <b>未出現過的、逼真的馬</b> 的模型。<br /></li>
+<li>首先需要一個有許多馬的資料集，裡面有許多實例(instance)，每個資枓點為一個觀察值(obwervation)<br /></li>
+<li>每個觀察值都包含了許多特徵（對於圖片來說就是像素值），生成模型的目標就是建置個能生成多組新特徵的模型，讓這個新特徵看起來和原始資料很類似。<br /></li>
+<li>生成模型必須是機率型(probabilistic)而非決定型(deterministic)，如果模型是將所有圖片的像素值取平均，則每次產生的結果就都會想同，這就不是生成，模型要包含一個隨機元素來影響其所生成的個別樣本。<br /></li>
+<li>可以想像有一個未知的機率分配來決定為什麼有些影像比較容易在訓練集資料中找到，有些則否。我們的目標是建置一個模型去盡可能模仿這樣的機率分配，並從中抽樣來生成全新且具鑑別度的觀察值。<br /></li>
+<li>很難當比賽題目，因為做出來的都是假的，不易評分<br /></li>
 </ul>
 </div>
-
-<div id="outline-container-org3ed2f06" class="outline-3">
-<h3 id="org3ed2f06"><span class="section-number-3">1.1.</span> 生成模型與鑑別模型</h3>
-<div class="outline-text-3" id="text-1-1">
+<div id="outline-container-org2cf6bd1" class="outline-3">
+<h3 id="org2cf6bd1"><span class="section-number-3">2.1.</span> 生成模型與鑑別模型</h3>
+<div class="outline-text-3" id="text-2-1">
 <p>
-生成模型的訓練資料中有許多馬的照片，透過觀察所有照片的特徵值（像素），我們生成一個能描述這些特徵值的機率分配，並用這個機率分配來生成一張全新的圖片。生成模型通常是搭配無標籤資料集學會一個 <b>可將輸入映射到特定輸出的映射函數</b> 。
+生成模型的訓練資料中有許多馬的照片，透過觀察所有照片的特徵值（像素），我們生成一個能描述這些特徵值的機率分配，並用這個機率分配來生成一張全新的圖片。生成模型通常是搭配無標籤資料集學會一個 <b>可將輸入映射到特定輸出的映射函數</b> 。<br />
 </p>
 
 <p width="500">
-<img src="images/GAN-flow-1.jpg" alt="GAN-flow-1.jpg" width="500" />
-對鑑別模型來說，訓練資料中的每個觀察值（instance）都有對應的label（如，這張是否為梵谷的畫），如此這個模型就能學習如何鑑別這兩個群組，因此，我們可以將之視為監督式學習。
+<img src="images/GAN-flow-1.jpg" alt="GAN-flow-1.jpg" width="500" /><br />
+對鑑別模型來說，訓練資料中的每個觀察值（instance）都有對應的label（如，這張是否為梵谷的畫），如此這個模型就能學習如何鑑別這兩個群組，因此，我們可以將之視為監督式學習。<br />
 </p>
 
-<div id="org0584abb" class="figure">
-<p><img src="images/GAN-flow-1.jpg" alt="GAN-flow-1.jpg" width="500" />
+<div id="org7ff104e" class="figure">
+<p><img src="images/GAN-flow-1.jpg" alt="GAN-flow-1.jpg" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 1: </span>鑑別模型處理流程</p>
 </div>
 
 <p>
-鑑別模型的估計值為 \(p(y|x)\)，即，觀察到 \(x\) 時其標籤為 \(y\) 的機率，鑑別模型會試著去估計出某個觀測值 \(x\) 屬於類別 \(y\) 的機率。
+鑑別模型的估計值為 \(p(y|x)\)，即，觀察到 \(x\) 時其標籤為 \(y\) 的機率，鑑別模型會試著去估計出某個觀測值 \(x\) 屬於類別 \(y\) 的機率。<br />
 </p>
 </div>
-<div id="outline-container-orgdf621c8" class="outline-4">
-<h4 id="orgdf621c8"><span class="section-number-4">1.1.1.</span> 生成模型的應用</h4>
-<div class="outline-text-4" id="text-1-1-1">
-<ul class="org-ul">
-<li>NVIDIA的StyleGAN: 可以產生超逼真的人臉影像</li>
-<li>OpenAI的GPT-2語言模型: 指定一小段前言，完成一整段文字。</li>
-</ul>
-</div>
-</div>
-<div id="outline-container-orgc768229" class="outline-4">
-<h4 id="orgc768229"><span class="section-number-4">1.1.2.</span> 生成學習與強化學習</h4>
-<div class="outline-text-4" id="text-1-1-2">
-<p>
-強化學習可以訓練一台機器在某個地形上行走，一般的作法是建立許多地形的電腦模擬環境，再訓練代理人(agent)去嚐試各種策略。如果能透過生成模型來模擬生成環境將會更有效率。
-</p>
-</div>
-</div>
-</div>
-<div id="outline-container-org0329fa5" class="outline-3">
-<h3 id="org0329fa5"><span class="section-number-3">1.2.</span> 生成模型的框架: 兩維度的生成模型遊戲</h3>
-</div>
-</div>
-
-<div id="outline-container-org9a435ad" class="outline-2">
-<h2 id="org9a435ad"><span class="section-number-2">2.</span> Keras GAN</h2>
-<div class="outline-text-2" id="text-2">
-<p>
-<a href="https://github.com/eriklindernoren/Keras-GAN">https://github.com/eriklindernoren/Keras-GAN</a>
-</p>
-</div>
-</div>
-
-<div id="outline-container-org0dc7a94" class="outline-2">
-<h2 id="org0dc7a94"><span class="section-number-2">3.</span> 應用領域</h2>
-<div class="outline-text-2" id="text-3">
-<ul class="org-ul">
-<li>PairedCycleGAN</li>
-<li>TwinGAN</li>
-<li>Paired</li>
-<li>GigGANs</li>
-<li>Image-to-Text</li>
-<li>Text-to-Image</li>
-<li>繪圖</li>
-<li>書寫</li>
-<li>作曲</li>
-<li>遊戲</li>
-</ul>
-</div>
-</div>
-
-
-<div id="outline-container-org21694e7" class="outline-2">
-<h2 id="org21694e7"><span class="section-number-2">4.</span> DCGANs</h2>
-<div class="outline-text-2" id="text-4">
 <ol class="org-ol">
-<li>使用 strided convolutions 取代 pooling layers</li>
-<li>移除全連接層 fully</li>
+<li><a id="org01dbc9b"></a>生成模型的應用<br />
+<div class="outline-text-4" id="text-2-1-1">
+<ul class="org-ul">
+<li>NVIDIA的StyleGAN: 可以產生超逼真的人臉影像<br /></li>
+<li>OpenAI的GPT-2語言模型: 指定一小段前言，完成一整段文字。<br /></li>
+</ul>
+</div>
+</li>
+<li><a id="org9a3dbf1"></a>生成學習與強化學習<br />
+<div class="outline-text-4" id="text-2-1-2">
+<p>
+強化學習可以訓練一台機器在某個地形上行走，一般的作法是建立許多地形的電腦模擬環境，再訓練代理人(agent)去嚐試各種策略。如果能透過生成模型來模擬生成環境將會更有效率。<br />
+</p>
+</div>
+</li>
+</ol>
+</div>
+<div id="outline-container-org5884ede" class="outline-3">
+<h3 id="org5884ede"><span class="section-number-3">2.2.</span> 生成模型的框架: 兩維度的生成模型遊戲</h3>
+</div>
+</div>
+<div id="outline-container-org950c825" class="outline-2">
+<h2 id="org950c825"><span class="section-number-2">3.</span> Keras GAN</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+<a href="https://github.com/eriklindernoren/Keras-GAN">https://github.com/eriklindernoren/Keras-GAN</a><br />
+</p>
+</div>
+</div>
+<div id="outline-container-org3a14777" class="outline-2">
+<h2 id="org3a14777"><span class="section-number-2">4.</span> 應用領域</h2>
+<div class="outline-text-2" id="text-4">
+<ul class="org-ul">
+<li>PairedCycleGAN<br /></li>
+<li>TwinGAN<br /></li>
+<li>Paired<br /></li>
+<li>GigGANs<br /></li>
+<li>Image-to-Text<br /></li>
+<li>Text-to-Image<br /></li>
+<li>繪圖<br /></li>
+<li>書寫<br /></li>
+<li>作曲<br /></li>
+<li>遊戲<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgb5b2fba" class="outline-2">
+<h2 id="orgb5b2fba"><span class="section-number-2">5.</span> DCGANs</h2>
+<div class="outline-text-2" id="text-5">
+<ol class="org-ol">
+<li>使用 strided convolutions 取代 pooling layers<br /></li>
+<li>移除全連接層 fully<br /></li>
 </ol>
 </div>
 </div>
-
-<div id="outline-container-orgb383aa9" class="outline-2">
-<h2 id="orgb383aa9"><span class="section-number-2">5.</span> DeepLearning 的 convolution 動畫</h2>
-<div class="outline-text-2" id="text-5">
+<div id="outline-container-orgb3be99c" class="outline-2">
+<h2 id="orgb3be99c"><span class="section-number-2">6.</span> DeepLearning 的 convolution 動畫</h2>
+<div class="outline-text-2" id="text-6">
 <ul class="org-ul">
-<li><a href="https://github.com/vdumoulin/conv_arithmetic">A technical report on convolution arithmetic in the context of deep learning</a></li>
+<li><a href="https://github.com/vdumoulin/conv_arithmetic">A technical report on convolution arithmetic in the context of deep learning</a><br /></li>
 </ul>
 </div>
 </div>
-
-<div id="outline-container-org8fc3613" class="outline-2">
-<h2 id="org8fc3613"><span class="section-number-2">6.</span> 比賽只有 CNN v.s. RNN</h2>
+<div id="outline-container-org5b872f1" class="outline-2">
+<h2 id="org5b872f1"><span class="section-number-2">7.</span> 比賽只有 CNN v.s. RNN</h2>
 </div>
 
-<div id="outline-container-org357ce6a" class="outline-2">
-<h2 id="org357ce6a"><span class="section-number-2">7.</span> ideas</h2>
-<div class="outline-text-2" id="text-7">
+<div id="outline-container-orgd3837c8" class="outline-2">
+<h2 id="orgd3837c8"><span class="section-number-2">8.</span> ideas</h2>
+<div class="outline-text-2" id="text-8">
 <ul class="org-ul">
-<li>文字 -&gt; POP</li>
-<li>有一種應用是將照片中的衣服移除，那，如何判別是真的沒穿衣服還是被 GAN 產生的</li>
-<li>ZARA：把衣服套在人身上</li>
-<li>如何 judge 一張圖是生成的還是真實的</li>
-<li>Pix2pix: 黑白照片轉彩色、畫輸廓轉照片(圖片)(Paired)、給照片轉 3D</li>
-<li>把同一張照片轉成各種畫家的畫風</li>
-<li>Explaining and Harnessing Adverssaral Examples: Goodfellow
-把一張圖片特意加上噪點，結果使的 AI 的判斷確認為其他圖
-後果：可能影響自駕車的安全&#x2026;..</li>
+<li>文字 -&gt; POP<br /></li>
+<li>有一種應用是將照片中的衣服移除，那，如何判別是真的沒穿衣服還是被 GAN 產生的<br /></li>
+<li>ZARA：把衣服套在人身上<br /></li>
+<li>如何 judge 一張圖是生成的還是真實的<br /></li>
+<li>Pix2pix: 黑白照片轉彩色、畫輸廓轉照片(圖片)(Paired)、給照片轉 3D<br /></li>
+<li>把同一張照片轉成各種畫家的畫風<br /></li>
+<li>Explaining and Harnessing Adverssaral Examples: Goodfellow<br />
+把一張圖片特意加上噪點，結果使的 AI 的判斷確認為其他圖<br />
+後果：可能影響自駕車的安全&#x2026;..<br /></li>
 </ul>
 </div>
 </div>
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://www.books.com.tw/products/E050141335">AI無所不在的教來, Rule of the Robots</a>, P.248<br />
+</p></div></div>
+
+
 </div>
+</div></div>
 <div id="postamble" class="status">
 <p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2023-11-29 Wed 16:17</p>
+<p class="date">Created: 2024-01-05 Fri 17:25</p>
 </div>
 </body>
 </html>
