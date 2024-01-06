@@ -1,5 +1,6 @@
 :PROPERTIES:
 :ID:       20221023T101456.955364
+:ROAM_ALIASES: Machine Learning
 :END:
 #+title: 機器學習
 
@@ -14,10 +15,6 @@
 #+end_export
 
 * 機器學習
-** 機器學習簡介影片
-[[https://www.youtube.com/watch?v=OXNC_sefxi4][机器学习简介（机器学习从零到一第一集)]]
-[[https://www.youtube.com/watch?v=ifj5bAzrzMw][机器学习中的基本计算机视觉概念（机器学习从零到一第二集）]]
-
 ** 簡介
 - 機器學習是[[id:20221023T101138.945879][人工智慧]]的一個分支，在[[id:20221023T101138.945879][人工智慧]]的研究歷史有著一條從以「推理」為重點，到以「知識」為重點，再到以 「學習」為重點的自然、清晰的脈絡。
 - 機器學習是實現[[file:AI-Introduction.org][人工智慧]]的一個途徑，即以機器學習為手段解決[[file:AI-Introduction.org][人工智慧]]中的問題。
@@ -63,7 +60,7 @@
 
 * 機器是如何學習的
 ** 傳統程式設計
-假設有一個用來描述直線的函數(模型): $y=Wx+B$，直線上的每個點都可以用 $x$ 值乘以$W$(權重值)再加上$B$(偏差值)，得到相應的 $y$ 值。
+假設有一個用來描述直線的函數(模型): $y=wx+b$，直線上的每個點都可以用 $x$ 值乘以$w$(權重值)再加上$b$(偏差值)，得到相應的 $y$ 值。
 現在假設直線上有兩個點，分別是 $x=2, y=3$ 和 $x=3, y=5$ (如圖[[fig:LinearQuestion]])，那麼，請問當 $x=10$ 時，$y$ 的值是多少呢？
 #+begin_src python -r -n :results output :exports both
 import matplotlib.pyplot as plt
@@ -86,20 +83,20 @@ plt.savefig('images/TrandPlot.png', dpi=300)
 #+ATTR_HTML: :width 500
 [[file:images/TrandPlot.png]]
 
-以下是傳統的程式設計模式，受了十數年高深數學教育的你，第一反應大概是會想先求出連接這兩個點的直線所相應的 $W$ 值與 $B$ 值(也就是模型中的兩個參數)。
+以下是傳統的程式設計模式，受了十數年高深數學教育的你，第一反應大概是會想先求出連接這兩個點的直線所相應的 $w$ 值與 $b$ 值(也就是模型中的兩個參數)。
 *** 解法1: class版
 看不懂的可以看底下的tuple版
 #+begin_src python -r:results output :exports both
 def get_slope(p1, p2):
-    W = (p2.y - p1.y) / (p2.x - p1.x)
-    return W
+    w = (p2.y - p1.y) / (p2.x - p1.x)
+    return w
 
-def get_bias(p1, W):
-    B = p1.y - (W*p1.x)
-    return B
+def get_bias(p1, w):
+    b = p1.y - (w*p1.x)
+    return b
 
-def get_y(x, W, B):
-    y = W*x + B
+def get_y(x, w, b):
+    y = w*x + b
 
 from dataclasses import dataclass
 @dataclass
@@ -110,12 +107,12 @@ class Point:
 p1 = Point(2, 3)
 p2 = Point(3, 5)
 
-W = get_slope(p1, p2)
-B = get_bias(p1, W)
+w = get_slope(p1, p2)
+b = get_bias(p1, w)
 
-print("Slope:", W)
-print("Bias:", B)
-print(f'當x=10時，y={W}*10+{B}={W*10+B}')
+print("Slope:", w)
+print("Bias:", b)
+print(f'當x=10時，y={w}*10+{b}={w*10+b}')
 #+end_src
 
 #+RESULTS:
@@ -128,27 +125,27 @@ print(f'當x=10時，y={W}*10+{B}={W*10+B}')
 def get_slope(p1, p2):
     p1x, p1y = p1 #取出tuple中的(x, y)
     p2x, p2y = p2 #取出tuple中的(x, y)
-    W = (p2y - p1y) / (p2x - p1x)
-    return W
+    w = (p2y - p1y) / (p2x - p1x)
+    return w
 
-def get_bias(p1, W):
+def get_bias(p1, w):
     p1x, p1y = p1 #取出tuple中的(x, y)
-    B = p1y - (W*p1x)
-    return B
+    b = p1y - (w*p1x)
+    return b
 
-def get_y(x, W, B):
-    y = W*x + B
+def get_y(x, w, b):
+    y = w*x + b
 
 # 以tuple來描述(x, y)
 p1 = (2, 3)
 p2 = (3, 5)
 
-W = get_slope(p1, p2)
-B = get_bias(p1, W)
+w = get_slope(p1, p2)
+b = get_bias(p1, w)
 
-print("Slope:", W)
-print("Bias:", B)
-print(f'當x=10時，y={W}*10+{B}={W*10+B}')
+print("Slope:", w)
+print("Bias:", b)
+print(f'當x=10時，y={w}*10+{b}={w*10+b}')
 #+end_src
 
 #+RESULTS:
@@ -174,11 +171,11 @@ print(f'當x=10時，y={W}*10+{B}={W*10+B}')
 [[file:images/TradProg.png]]
 
 ** 機器學習的策略
-機器學習把這個線性函數當成一個模型，而我們想求的 $W$ 和 $B$ 則為模型的兩個參數，如果要以機器學習的方式來解題，其策略大致如下：
+機器學習把這個線性函數當成一個模型，而我們想求的 $w$ 和 $b$ 則為模型的兩個參數，如果要以機器學習的方式來解題，其策略大致如下：
 1. 第一步：猜答案
-   一開始我們並不知道正確答案是什麼，所以用猜的：以隨機亂數來做為 $W$ 和$B$ 值，例如：$y=10x+5$。
+   一開始我們並不知道正確答案是什麼，所以用猜的：以隨機亂數來做為 $w$ 和$b$ 值，例如：$y=10x+5$。
 2. 第二步：評估猜測答案的品質
-   上個步驟中所猜的 $W$ 和$B$ 值夠不夠準確呢？我們可以用$y=10x+5$ 這個函數來計算出每個 $x$ 值相對應的 $y$ 值，再和 *正確* 的 $y$ 值比較，看看還差多少。這個比較的方式稱為「損失」(loss)或「誤差」(error)。
+   上個步驟中所猜的 $w$ 和$b$ 值夠不夠準確呢？我們可以用$y=10x+5$ 這個函數來計算出每個 $x$ 值相對應的 $y$ 值，再和 *正確* 的 $y$ 值比較，看看還差多少。這個比較的方式稱為「損失」(loss)或「誤差」(error)。
 3. 第三步：對所猜測的策略進行最佳化調整
    依據上一步驟猜測結果的品質(loss或error)做出更好的猜測，這個步驟稱為「最佳化」(optimization)。微積分可以用「梯度遞減」(gradient descent)的方式來進行。
 
@@ -216,13 +213,13 @@ ys = np.array([3.0, 5.0], dtype=float)
 model.fit(xs, ys, epochs=500, verbose=0)
 
 print(f'y的預測結果為: {model.predict([10.0])}')
-print("模型的兩個參數W,B: {}".format(l0.get_weights()))
+print("模型的兩個參數w,b: {}".format(l0.get_weights()))
 #+end_src
 
 #+RESULTS:
 : 1/1 [==============================] - 0s 172ms/step
 : y的預測結果為: 14.709847
-: 模型的兩個參數W,B: [array([[1.4212971]], dtype=float32), array([0.49687672], dtype=float32)]
+: 模型的兩個參數w, b: [array([[1.4212971]], dtype=float32), array([0.49687672], dtype=float32)]
 
 但是正確答案為19，預測的結果好像不太準....QQ
 
@@ -244,12 +241,12 @@ ys = np.array([3.0, 5.0, 7.0], dtype=float)
 model.fit(xs, ys, epochs=500, verbose=0)
 
 print(f'y的預測結果為: {model.predict([10.0])}')
-print("模型的兩個參數W,B: {}".format(l0.get_weights()))
+print("模型的兩個參數w,b: {}".format(l0.get_weights()))
 #+end_src
 
 #+RESULTS:
 : y的預測結果為: [[17.07221]]
-: 模型的兩個參數W,B: [array([[1.7164488]], dtype=float32), array([-0.09227743], dtype=float32)]
+: 模型的兩個參數w,b: [array([[1.7164488]], dtype=float32), array([-0.09227743], dtype=float32)]
 
 預測結果y的值為17.072221，而正確答案為19，好像也不怎麼樣....-_-
 兩個參數的值為(1.7164488, -0.9227743)，與正確答案(2, -1)相近。
@@ -272,12 +269,12 @@ ys = np.array([-3.0, -1.0, 1.0, 3.0, 5.0, 7.0], dtype=float)
 model.fit(xs, ys, epochs=500, verbose=0) (ref:modelFit)
 
 print(f'y的預測結果為: {model.predict([10.0])}') (ref:modelPredict)
-print("模型的兩個參數W,B: {}".format(l0.get_weights())) (ref:modelWeights)
+print("模型的兩個參數w,b: {}".format(l0.get_weights())) (ref:modelWeights)
 #+end_src
 
 #+RESULTS:
 : y的預測結果為:[[18.979391]]
-: 模型的兩個參數W,B: [array([[1.9970131]], dtype=float32), array([-0.99074], dtype=float32)]
+: 模型的兩個參數w,b: [array([[1.9970131]], dtype=float32), array([-0.99074], dtype=float32)]
 
 模型對 $y$ 的預測結果為18.979391，與正確答案19已經十分相近。
 
@@ -316,7 +313,7 @@ print("模型的兩個參數W,B: {}".format(l0.get_weights())) (ref:modelWeights
 #+RESULTS:
 #+CAPTION: Traditional Programming v.s. Machine Learning
 #+name: fig:NLTP
-#+ATTR_HTML: :width 600
+#+ATTR_HTML: :width 500
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 [[file:images/MLTP.png]]
@@ -345,7 +342,7 @@ Inference Phase
 #+END_SRC
 #+CAPTION: Training and Inference Phase of ML
 #+name: fig: TPIP
-#+ATTR_HTML: :width 600
+#+ATTR_HTML: :width 500
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+RESULTS:
@@ -379,16 +376,14 @@ Inference Phase
 [[file:images/2022-10-03_09-26-40.png]]
 
 ** [[id:20221023T101626.420918][監督式學習]](Supervised learning)
-- 目前九成以上的機器學習應用均屬此類
-- 監督式學習指在訓練過程中直接告訴機器答案，也就是將資料進行標註(label)，例如，在 1000 張訓練集照片中標註「貓/狗」。
-- 從給定的訓練資料集中學習出一個函式，當新的資料到來時，可以根據這個函式預測結果。
-- 監督學習的訓練集要求是包括輸入和輸出， 也可以說是特徵和目標。 訓練集中的目標是由人標註的。
+- [[id:20221023T101626.420918][監督式學習]]指在訓練過程中直接告訴機器答案，也就是將資料進行標註(label:人力標註)，例如，在 1000 張訓練集照片中標註「貓/狗」。目前九成以上的機器學習應用均屬此類。
+- 監督學習的訓練集要求是包括輸入和輸出， 也可以說是特徵和目標。做法是從給定的訓練資料集中學習出一個函式，當新的資料到來時，可以根據這個函式預測結果。
 - 為迄今為止最常見的機器學習，泛指一群的機器學習演算法，是從一組「已標記」的「訓練數據集」(training dataset)來學習(訓練)，並導出模型。然後，以此一模型對「未標記」的類似數據進行預測分類，其運作流程如圖[[fig:FlowChartOfSupervisedLearning]][fn:1]所示。典型的例子為早期電子郵件的垃圾信件是讓使用者先去標記某些信為垃圾郵件，然後藉由這些被標記的郵件來推論找出其他可能的垃圾郵件；由此看來，我們以為 Gmail 很好心的提供給我們為信件加註「垃圾」、「廣告」的功能，其實是 Google 利用我們當免費勞工為他們提供信件加註標籤的工作。
 #+CAPTION: 監督式學習流程圖
 #+name: fig:FlowChartOfSupervisedLearning
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 600
+#+ATTR_HTML: :width 500
 #+Results:
 [[file:images/FlowChartOfSupervisedLearning.png]]
 *** 方法
@@ -410,7 +405,7 @@ Inference Phase
 #+name: fig:01_03
 #+ATTR_LATEX: :width 200
 #+ATTR_ORG: :width 200
-#+ATTR_HTML: :width 600
+#+ATTR_HTML: :width 500
 #+RESULTS:
 [[file:images/01_03.png]]
 - 線性迴歸: 利用輸入數據的「特徵」來預測出一個「值」，例如，根據房屋的地點、坪數、樓層、房間數等變數, 發掘出這些變數之間的關係，進而預測房價，如圖[[fig:01_04]]。
@@ -418,15 +413,15 @@ Inference Phase
 #+name: fig:01_04
 #+ATTR_LATEX: :width 200一火
 #+ATTR_ORG: :width 200
-#+ATTR_HTML: :width 600
+#+ATTR_HTML: :width 500
 #+RESULTS:
 [[file:images/01_04.png]]
 - 決策樹: 精典例子為「鳶尾花數據集」(http://archive.ics.uci.deu/ml/datasets/Iris)。
-- 支援向量機: 主要用來處理分類問題，它不僅能將數據分門別類，甚至遇可以找到最大化的「分離超平面」（類似於三維以上空間中的一個平面），會最大化每個樣本點與該「超平面」的差。此外，當數據是「不可線性分離」時，支援向量機還可以透過「軟邊界」(soft margin)和「核技巧」(kernel trick)來處理。
+- 支援向量機: 主要用來處理分類問題，它不僅能將數據分門別類，甚至還可以找到最大化的「分離超平面」（類似於三維以上空間中的一個平面），會最大化每個樣本點與該「超平面」的差。此外，當數據是「不可線性分離」時，支援向量機還可以透過「軟邊界」(soft margin)和「核技巧」(kernel trick)來處理。
 
 ** [[id:20221023T101716.467694][非監督式學習]](Unsupervised learning)
-- 非監親式學習只有觀測值，單純給電腦大量觀測資料，然後從這些資料找出潛在規則。例如：將 10 萬張片依據電腦自己歸納的規則分為數個不同的群組。
-- 在「監督式學習」中，我們事先會知道訓練集數據的正確答案(label)，並依此訓練我們的模型；在強化學習的環境中，我們會為代理人定義如何度量特定行動的奬勵；然而，在「非監督式學習」的環境中，我們面對的是未標記類別的數據或未知結構的數據。而是讓演算法導出結論。最典型的例子就是「集群」(clustering)，即，讓演算法自己根據數據的特性把它們依某種特質分類為不同子集合，這裡的子集合不一定要是有限集合，也可能是無界子集(unbounded subsets)。「受限玻爾茲曼機」以及「深度信念網路」(deep belief networks, DBN)都屬此類。
+- 非監督式學習只有觀測值，單純給電腦大量觀測資料，然後從這些資料找出潛在規則。例如：將 10 萬張照片依據電腦自己歸納的規則分為數個不同的群組。
+- 在[[id:20221023T101626.420918][監督式學習]]中，我們事先會知道訓練集數據的正確答案(label)，並依此訓練我們的模型；在[[id:0a5c37c0-741a-4a1a-bec7-f98074830132][強化學習]]的環境中，我們會為代理人定義如何度量特定行動的奬勵；然而，在「非監督式學習」的環境中，我們面對的是未標記類別的數據或未知結構的數據，目的是讓演算法導出結論。最典型的例子就是「集群」(clustering)，即，讓演算法自己根據數據的特性把它們依某種特質分類為不同子集合，這裡的子集合不一定要是有限集合，也可能是無界子集(unbounded subsets)。「受限玻爾茲曼機」以及「深度信念網路」(deep belief networks, DBN)都屬此類。
 - 非監督式學習經常被運用於資料分析的前置階段，用來先將資料分群或降低維度(減少變數量)，以利後續的分析或監督式學習的進行。
 *** 方法：
 - K平均法(K-means): Clustering
@@ -452,7 +447,7 @@ Inference Phase
 #+name: fig:DimensionalityReduction-1
 #+ATTR_LATEX: :width 200
 #+ATTR_ORG: :width 200
-#+ATTR_HTML: :width 600
+#+ATTR_HTML: :width 500
 #+RESULTS:
 [[file:images/PCA.jpg]]
 **** Nonlinear dimensionality reduction
@@ -471,7 +466,7 @@ Inference Phase
 #+name: fig:DimensionalityReduction-1
 #+ATTR_LATEX: :width 200
 #+ATTR_ORG: :width 200
-#+ATTR_HTML: :width 600
+#+ATTR_HTML: :width 500
 #+RESULTS:
 [[file:images/DimensionalityReduction-1.jpg]]
 - 降維的選擇
@@ -479,7 +474,7 @@ Inference Phase
 #+name: fig:DimensionalityReduction-1
 #+ATTR_LATEX: :width 200
 #+ATTR_ORG: :width 200
-#+ATTR_HTML: :width 600
+#+ATTR_HTML: :width 500
 #+RESULTS:
 [[file:images/DimensionalityReduction-2.jpg]]
 *** face recognition 做法
@@ -511,7 +506,7 @@ Inference Phase
 #+CAPTION: 強化學習流程圖
 #+name: fig:ReinforcementLearning
 #+ATTR_LATEX: :width 300
-#+ATTR_HTML: :width 600
+#+ATTR_HTML: :width 500
 #+ATTR_ORG: :width 300
 #+RESULTS:
 [[file:images/ReinforcementLearning.png]]
@@ -528,8 +523,8 @@ Inference Phase
 - 飛的越遠，就會獲得越多的積分——獎勵
 #+CAPTION: 強化學習流程圖
 #+name: fig:ReinforcementLearning
-#+ATTR_LATEX: :width 600
-#+ATTR_ORG: :width 600
+#+ATTR_LATEX: :width 500
+#+ATTR_ORG: :width 500
 #+RESULTS:
 [[file:images/ReinforceLearningGame.jpg]]
 
@@ -607,9 +602,9 @@ Even for very simple problems you typically need thousands of examples, and for 
   2. Second, less than 25% of the people who were polled answered.
 #+CAPTION: 加入更多資料會使 modle 更具代表性
 #+name: fig:GDP1
-#+ATTR_LATEX: :width 600
-#+ATTR_ORG: :width 600
-#+ATTR_HTML: :width 600
+#+ATTR_LATEX: :width 500
+#+ATTR_ORG: :width 500
+#+ATTR_HTML: :width 500
 [[file:images/GDP2.jpg]]
 
 ** Poor-quality data
@@ -698,28 +693,27 @@ Neuron
   #+CAPTION: Stone
   #+LABEL:fig:Stone
   #+name: fig:Stone
-  #+ATTR_LATEX: :width 600
-  #+ATTR_ORG: :width 600
+  #+ATTR_LATEX: :width 500
+  #+ATTR_ORG: :width 500
   #+ATTR_HTML: :width 500
   [[file:images/stone.jpg]]
 - 輸入image為paper
   #+CAPTION: Paper
   #+LABEL:fig:Paper
   #+name: fig:Paper
-  #+ATTR_LATEX: :width 600
-  #+ATTR_ORG: :width 600
+  #+ATTR_LATEX: :width 500
+  #+ATTR_ORG: :width 500
   #+ATTR_HTML: :width 500
   [[file:images/paper.jpg]]
 
-接下來，
 ** Model v.s. Layer: Training step by step
 - Input layer
   此的輸入為image，對model來說，其feature為150*150*3
   #+CAPTION: input_shape
   #+LABEL:fig:input_shape
   #+name: fig:input_shape
-  #+ATTR_LATEX: :width 600
-  #+ATTR_ORG: :width 600
+  #+ATTR_LATEX: :width 500
+  #+ATTR_ORG: :width 500
   #+ATTR_HTML: :width 500
   [[file:images/input_shape.jpg]]
 - Hidden layer
@@ -727,8 +721,8 @@ Neuron
   #+CAPTION: hidden_layer
   #+LABEL:fig:hidden_layer
   #+name: fig:hidden_layer
-  #+ATTR_LATEX: :width 600
-  #+ATTR_ORG: :width 600
+  #+ATTR_LATEX: :width 500
+  #+ATTR_ORG: :width 500
   #+ATTR_HTML: :width 500
   [[file:images/hidden_layer.jpg]]
 - Output layer
@@ -736,8 +730,8 @@ Neuron
   #+CAPTION: output_layer
   #+LABEL:fig:output_layer
   #+name: fig:output_layer
-  #+ATTR_LATEX: :width 600
-  #+ATTR_ORG: :width 600
+  #+ATTR_LATEX: :width 500
+  #+ATTR_ORG: :width 500
   #+ATTR_HTML: :width 500
   [[file:images/output_layer.jpg]]
 ** compile v.s. fit
@@ -746,102 +740,10 @@ Neuron
 #+CAPTION: compile-phase
 #+LABEL:fig:compile-phase
 #+name: fig:compile-phase
-#+ATTR_LATEX: :width 600
-#+ATTR_ORG: :width 600
+#+ATTR_LATEX: :width 500
+#+ATTR_ORG: :width 500
 #+ATTR_HTML: :width 500
 [[file:images/compile_phase.jpg]]
-
-* 學習資源
-** Machine Learning [台大李宏毅]
-*** Lecture 0
-- [[http://speech.ee.ntu.edu.tw/~tlkagk/courses_ML19.html][ML19: 台大機器學習課程大綱]]
-- [[https://www.youtube.com/watch?v=CXgbekl66jc][ML Lecture 0-1: Introduction of Machine Learning]]
-- [[https://www.youtube.com/watch?v=On1N8u1z2Ng][ML Lecture 0-2: Why we need to learn machine learning?]]
-*** Lecture 1
-- [[https://www.youtube.com/watch?v=fegAeph9UaA][ML Lecture 1: Regression - Case Study]]
-- [[https://www.youtube.com/watch?v=1UqCjFQiiy0][ML Lecture 1: Regression - Demo]]
-*** Lecture 2
-- [[https://www.youtube.com/watch?v=D_S6y0Jm6dQ][ML Lecture 2: Where does the error come from?]]
-*** Lecture 3
-- [[https://www.youtube.com/watch?v=yKKNr-QKz2Q][ML Lecture 3-1: Gradient Descent]]
-- [[https://www.youtube.com/watch?v=1_HBTJyWgNA][ML Lecture 3-2: Gradient Descent (Demo by AOE)]]
-- [[https://www.youtube.com/watch?v=wzPAInDF_gI][ML Lecture 3-3: Gradient Descent (Demo by Minecraft)]]
-*** Lecture 4
-- [[https://www.youtube.com/watch?v=fZAZUYEeIMg][ML Lecture 4: Classification]]
-*** Lecture 5
-- [[https://www.youtube.com/watch?v=hSXFuypLukA][ML Lecture 5: Logistic Regression]]
-*** Lecture 6
-- [[https://www.youtube.com/watch?v=Dr-WRlEFefw][ML Lecture 6: Brief Introduction of Deep Learning]]
-*** Lecture 7
-- [[https://www.youtube.com/watch?v=ibJpTrp5mcE][ML Lecture 7: Backpropagation]]
-- [[https://www.youtube.com/watch?v=gDp2LXGnVLQ&list=PLJV_el3uVTsOK_ZK5L0Iv_EQoL1JefRL4&index=3&t=0s][Anomaly Detection (1/7)]]
-- [[https://www.youtube.com/playlist?list=PLJV_el3uVTsOK_ZK5L0Iv_EQoL1JefRL4][Next Step of Machine Learning (Hung-yi Lee, NTU, 2019)]]
-*** Lecture 8
-- [[https://www.youtube.com/watch?v=Lx3l4lOrquw][ML Lecture 8-1: “Hello world” of deep learning]]
-- [[https://www.youtube.com/watch?v=5BJDJd-dzzg][ML Lecture 8-2: Keras 2.0]]
-- [[https://www.youtube.com/watch?v=L8unuZNpWw8][ML Lecture 8-3: Keras Demo]]
-*** Explainable ML
-  1) [[https://www.youtube.com/watch?v=lnjrn3bF9lA][Explainable ML (1/8)]]
-  2) [[https://www.youtube.com/watch?v=pNpk6DPYUh8&list=PL9McrqOpq3mUCXF5E8rVLjw8f878zkBfX&index=16][Explainable ML (2/8)]]
-  3) Explainable ML (3/8)
-  4) [[https://www.youtube.com/watch?v=yORbWn7UsBs][Explainable ML (4/8)]]
-  5) [[https://www.youtube.com/watch?v=1xnhQbAV1m0][Explainable ML (5/8)]]
-  6) [[https://www.youtube.com/watch?v=K1mWgthGS-A][Explainable ML (6/8)]]
-  7) [[https://www.youtube.com/watch?v=1xnhQbAV1m0][Explainable ML (7/8)]]
-  8) [[https://www.youtube.com/watch?v=ah_Ttx6cIVU][Explainable ML (8/8)]]
-*** TODO Attack ML Models
-:PROPERTIES:
-:ID:       124c5a49-e887-4a77-9aef-a4f72c81c315
-:END:
-  1) [[https://www.youtube.com/watch?v=NI6yb0WgMBM][Attack ML Models (1/8)]]
-  2) [[https://www.youtube.com/watch?v=zOdg05BwE7I][Attack ML Models (2/8)]]
-  3) [[https://www.youtube.com/watch?v=F9N5zF7N0qY][Attack ML Models (3/8)]]
-  4) [[https://www.youtube.com/watch?v=qjnMoWmn1FQ][Attack ML Models (4/8)]]
-  5) [[https://www.youtube.com/watch?v=2mgLPZJOHNk][Attack ML Models (5/8)]]
-  6) [[https://www.youtube.com/watch?v=z2nmPDLEXI0][Attack ML Models (6/8)]]
-  7) [[https://www.youtube.com/watch?v=KH48zq2RfBA&t=1s][Attack ML Models (7/8)]]
-  8) [[https://www.youtube.com/watch?v=ah_Ttx6cIVU][Attack ML Models (8/8)]]
-*** Lecture 9
-- [[https://www.youtube.com/watch?v=xki61j7z-30][ML Lecture 9-1: Tips for Training DNN]]
-- [[https://www.youtube.com/watch?v=Ky1ku1miDow][ML Lecture 9-2: Keras Demo 2]]
-- [[https://www.youtube.com/watch?v=F1vek6ULo9w][ML Lecture 9-3: Fizz Buzz in Tensorflow (sequel)]]
-*** Lecture 10
-- [[https://www.youtube.com/watch?v=FrKWiRv254g][ML Lecture 10: Convolutional Neural Network]]
-- [[https://www.youtube.com/watch?v=XsC9byQkUH8][ML Lecture 11: Why Deep?]]
-- [[https://www.youtube.com/watch?v=fX_guE7JNnY][ML Lecture 12: Semi-supervised]]
-- [[https://www.youtube.com/watch?v=iwh5o_M4BNU][ML Lecture 13: Unsupervised Learning - Linear Methods]]
-- [[https://www.youtube.com/watch?v=X7PH3NuYW0Q][ML Lecture 14: Unsupervised Learning - Word Embedding]]
-- [[https://www.youtube.com/watch?v=GBUEjkpoxXc][ML Lecture 15: Unsupervised Learning - Neighbor Embedding]]
-- [[https://www.youtube.com/watch?v=yyKaACh_j3M&list=PLJV_el3uVTsOK_ZK5L0Iv_EQoL1JefRL4&index=45&t=0s][Meta Learning – Metric-based (1/3)]]
-- [[https://www.youtube.com/watch?v=Tk5B4seA-AU][ML Lecture 16: Unsupervised Learning - Auto-encoder]]
-- [[https://www.youtube.com/watch?v=YNUek8ioAJk][ML Lecture 17: Unsupervised Learning - Deep Generative Model (Part I)]]
-- [[https://www.youtube.com/watch?v=8zomhgKrsmQ][ML Lecture 18: Unsupervised Learning - Deep Generative Model (Part II)]]
-- [[https://www.youtube.com/watch?v=6ZWu4L7XOiQ&list=PLJV_el3uVTsOK_ZK5L0Iv_EQoL1JefRL4&index=48&t=0s][More about Auto-encoder (1/4)]]
-- [[https://www.youtube.com/watch?v=qD6iD4TFsdQ][ML Lecture 19: Transfer Learning]]
-- [[https://www.youtube.com/watch?v=7qT5P9KJnWo&list=PLJV_el3uVTsOK_ZK5L0Iv_EQoL1JefRL4&index=25][Life Long Learning (1/7)]]
-- [[https://www.youtube.com/watch?v=ZjfjPzXw6og&feature=youtu.be][Sequence-to-sequence Learning]]
-- [[https://www.youtube.com/watch?v=EkAqYbpCYAc&list=PLJV_el3uVTsOK_ZK5L0Iv_EQoL1JefRL4&index=33&t=0s][Meta Learning – MAML (1/9)]]
-- [[https://www.youtube.com/watch?v=QSEPStBgwRQ][ML Lecture 20: Support Vector Machine (SVM)]]
-- [[https://www.youtube.com/watch?v=xCGidAeyS4M][ML Lecture 21-1: Recurrent Neural Network (Part I)]]
-- [[https://www.youtube.com/watch?v=rTqmWlnwz_0][ML Lecture 21-2: Recurrent Neural Network (Part II)]]
-- [[https://www.youtube.com/watch?v=YIuBHB9Ejok&feature=youtu.be][Unsupervised Syntactic Parsing (ft. 莊永松同學)]]
-- [[https://www.youtube.com/watch?v=tH9FH1DH5n0][ML Lecture 22: Ensemble]]
-- [[https://www.youtube.com/watch?v=W8XF3ME8G2I][ML Lecture 23-1: Deep Reinforcement Learning]]
-- [[https://www.youtube.com/watch?v=y8UPGr36ccI][ML Lecture 23-2: Policy Gradient (Supplementary Explanation)]]
-- [[https://www.youtube.com/watch?v=2-JNBzCq77c][ML Lecture 23-3: Reinforcement Learning (including Q-learning)]]
-- [[https://www.youtube.com/playlist?list=PLJV_el3uVTsODxQFgzMzPLa16h6B8kWM_][Deep Reinforcement Learning, 2018]]
-- [[https://www.youtube.com/watch?v=dPp8rCAnU_A&list=PLJV_el3uVTsOK_ZK5L0Iv_EQoL1JefRL4&index=52&t=0s][Network Compression (1/6)]]
-- [[https://www.youtube.com/watch?v=ufcKFjdpT98&list=PLJV_el3uVTsOK_ZK5L0Iv_EQoL1JefRL4&index=58&t=0s][GAN (Quick Review)]]
-- [[https://www.youtube.com/playlist?list=PLJV_el3uVTsMq6JEFPW35BCiOQTsoqwNw][Generative Adversarial Network (GAN), 2018]]
-- [[https://www.youtube.com/watch?v=ugWDIIOHtPA&list=PLJV_el3uVTsOK_ZK5L0Iv_EQoL1JefRL4&index=58][Transformer]]
-- [[https://www.youtube.com/watch?v=UYPa347-DdE&list=PLJV_el3uVTsOK_ZK5L0Iv_EQoL1JefRL4&index=62&t=0s][ELMO, BERT, GPT]]
-- [[https://www.youtube.com/watch?v=uXY18nzdSsM&list=PLJV_el3uVTsOK_ZK5L0Iv_EQoL1JefRL4&index=59][Flow-based Generative Model]]
-- [[https://brohrer.mcknote.com/zh-Hant/statistics/how_bayesian_inference_works.html][貝葉斯推斷的運作原理]]
-** Digital Speech Processing
-- [[http://ocw.aca.ntu.edu.tw/ntu-ocw/ocw/cou/104S204/1][第一章 Introduction to Digital Speech Processing  ]]
-
-* code references
-- [[https://towardsdatascience.com/visualizing-intermediate-activation-in-convolutional-neural-networks-with-keras-260b36d60d0][Visualizing intermediate activation in Convolutional Neural Networks with Keras]]: 查看 training 中 image 的成像
 
 * Footnotes
 [fn:1] [[https://github.com/rasbt/python-machine-learning-book-2nd-edition][python-machine-learning-book-2nd-edition]]
