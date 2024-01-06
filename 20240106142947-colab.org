@@ -1,0 +1,97 @@
+:PROPERTIES:
+:ID:       a2cc4686-5e51-46e4-84b3-e930dccb4b91
+:ROAM_ALIASES: Google CoLab
+:END:
+#+title: CoLab
+#+OPTIONS: toc:2 ^:nil num:3
+#+TAGS: Python, Basic
+#+PROPERTY: header-args :eval never-export
+#+include: ../pdf.org
+#+EXCLUDE_TAGS: noexport
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/muse.css" />
+
+#+begin_export html
+<a href="https://letranger.github.io/AI/20240106142947-colab.html"><img align="right" alt="Hits" src="https://letranger.github.io/AI/20240106142947-colab.html.svg?style=plastic"/></a>
+
+#+end_export
+
+Google Colaboratory 是一個基於雲端的Python開發環境，由Google提供開發者虛擬機，提供免費的GPU和TPU資源，並支援Python程式及機器學習TensorFlow演算法。Google Colab具有強大的協作功能，可以與他人共享和編輯程式碼，支援Jupyter筆記本，並提供預裝的Python套件，方便進行數據分析、機器學習等任務。
+
+#+CAPTION: 標題
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/2024-01-06_14-35-48_2024-01-06_14-35-11.png]]
+
+* Colab編寫環境
+- [[https://colab.research.google.com/drive/1IowJ_8ZYdGLCdxCJarYbhR_haic66v30?usp=sharing][20231111專題式程式教學1-Colab環境.ipynb]]
+- 儲存格的類型
+- Text Cell
+- 練習1
+- Code Cell: 輸出
+- Code Cell: 輸入
+
+* 進階操作
+- Google 提供的 VM
+#+begin_src shell -r -n :results output :exports both
+!pwd
+!cat /proc/meminfo
+!cat  /proc/cpuinfo
+#+end_src
+- use colab to mount google drive
+- 同時最多 5 個 session
+- 每個 session 最多 24hr
+- 查看 colab 已安裝了哪些 package
+#+begin_src shell -r -n :results output :exports both
+!pip list
+#+end_src
+
+* 如何確定有在跑 GPU: [[file:TensorFlow.org][Tensorflow 2020]]
+#+begin_src python -r -n :results output :exports both
+import tensorflow as tf
+gpu_name = tf.test.gpu_device_name()
+if gpu_name != '/device:GPU:0':
+  raise SystemError('無 GPU')
+print(f'有 GPU: {gpu_name}')
+#+end_src
+
+#+RESULTS:
+
+* 如何 mount google drive
+#+begin_src python -r :results output :exports both :noeval
+from google.colab import drive
+import os
+drive.mount('/content/gdrive')
+#+end_src
+
+* 如何用 python 上傳本機檔案到 colab
+#+begin_src python -r :results output :exports both :noeval
+from google.colab import files
+uploaded = files.upload()
+#+end_src
+
+* Command Line
+ Colab 其中一個厲害的地方就是，你除了可以執行 Python、也能執行 Command Line，只要在 Command Line 指令加上驚嘆號就能做到，像是 !mkdir。你可以在 Colab 裡 Python 程式碼寫到一半的時候，突然加進幾行 Command Line 來操作檔案，完成後，再讓 Python 程式碼接著寫下去，Python 與 Command Line 可以無痛切換。更厲害的是，Colab 甚至讓你在同一段程式碼裡 Python 和 Command Line 能夠 混合使用，例如，可以把 !ls 輸出的內容存進 Python 變數裡[fn:1]。
+
+此外，Colab 還有「魔法」指令（Magic Command），這個指令的寫法是在最前面加上 % 或 %% 符號，例如 %timeit，Magic 為 Colab 補充一些方便的功能。筆者最常用的功能有二：
+
+- %%timeit：算出你的程式碼區塊花多少時間執行，分析你的演算法效率時很好用
+- %run my_script.py：執行你的另一個 Python 程式，如果你的程式還需要呼叫另一個程式，就需要使用這個 Magic 指令
+
+* 進階操作
+Google 提供的 VM
+#+begin_src shell -r -n :results output :exports both
+!pwd
+!cat /proc/meminfo
+!cat  /proc/cpuinfo
+#+end_src
+- use colab to mount google drive
+- 同時最多 5 個 session
+- 每個 session 最多 24hr
+- 查看 colab 已安裝了哪些 package
+
+* Footnotes
+
+[fn:1] [[https://haosquare.com/why-google-colab-python/][為什麼我超愛用 Google Colab？Python 菜鳥與老手都適合的利器]]
