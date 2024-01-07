@@ -42,10 +42,10 @@
 1. Training Data
 2. Loss function L: 越小越好
    input: a function / output: how bad it is
-3. Pick the "Best: Function
+3. Pick the *Best Function* :
    $f* = arg min L(f)$
    上述可以微分來求最佳解，即求 function L 的最小值
-4. 數值最佳解: Gradient Descent(找拋物面最低點)
+4. 數值最佳解: Gradient Descent(找拋物線/面最低點)
 
 ** 迴歸預測流程(以波士頓房價預測為例)
 1. Import the required module
@@ -59,263 +59,6 @@
 1. Model tranining
 1. Predictions
 1. Validation
-
-* 簡單線性迴歸 :noexport:
-** Pizza
-Let's assume that you have recorded the diameters and prices of pizzas that you have previously eaten in your pizza journal. These observations comprise our training data:
-|--------------------+------------------|
-| Diameter in inches | Price in dollars |
-|--------------------+------------------|
-|                  6 |                7 |
-|                  8 |                9 |
-|                 10 |               13 |
-|                 14 |             17.5 |
-|                 18 |               18 |
-|--------------------+------------------|
-*** 觀察數據
-We can visualize our training data by plotting it on a graph using matplotlib:
-#+begin_src python -r -n :results output :exports both
-import numpy as np
-# "np" and "plt" are common aliases for NumPy and Matplotlib, respectively.
-import matplotlib.pyplot as plt
-
-# X represents the features of our training data, the diameters of the pizzas.
-# A scikit–learn convention is to name the matrix of feature vectors X.
-# Uppercase letters indicate matrices, and lowercase letters indicate vectors.
-X = np.array([[6], [8], [10], [14], [18]]).reshape(-1, 1)
-
-y = [7, 9, 13, 17.5 , 18]
-# y is a vector representing the prices of the pizzas.
-
-#plt.figure()
-plt.title('Pizza price plotted against diameter')
-plt.xlabel('Diameter in inches')
-plt.ylabel('Price in dollars')
-plt.plot(X, y, 'k.')
-plt.axis([0, 25, 0, 25])
-plt.grid(True)
-plt.savefig('images/pizza-1.png', dpi=300)
-#+end_src
-
-#+RESULTS:
-#+CAPTION: Pizza Regression #1
-#+LABEL:fig:Pizza-Reg-1
-#+name: fig:Pizza-Reg-1
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
-[[file:images/pizza-1.png]]
-We can see from the plot of the training data that there is a positive relationship between the diameter of a pizza and its price, which should be corroborated by our own pizza-eating experience.
-*** 建模: LinearRegression
-The following pizza price predictor program models this relationship using simple linear regression.
-#+begin_src python -r -n :results output :exports both
-import numpy as np
-X = np.array([[6], [8], [10], [14], [18]]).reshape(-1, 1)
-y = [7, 9, 13, 17.5 , 18]
-
-print(X.shape)
-
-from sklearn.linear_model import LinearRegression
-model = LinearRegression()
-# Create an instance of the estimator
-model.fit(X, y)
-# Fit the model on the training data
-
-# Predict the price of a pizza with a diameter that has never been seen before
-test_pizza = np.array([[12]])
-predicted_price = model.predict(test_pizza)[0]
-print('A 12" pizza should cost: $%.2f' % predicted_price)
-#+end_src
-
-#+RESULTS:
-: (5, 1)
-: A 12" pizza should cost: $13.68
-
-- The LinearRegression class is an *estimator*. Estimators predict a value based on observed data.
-- In scikit-learn, all estimators implement the fit methods and predict.
-- The fit method of LinearRegression learns the parameters of the following model for simple linear regression:$$y=\alpha+\beta x$$
-- $y$ is the predicted value of the response variable; in this example, it is the predicted price of the pizza.
-- $x$ is the explanatory variable.
-- The intercept term $\alpha$ and the coefficient $\beta$ are parameters of the model that are learned by the learning algorithm.
-- The hyperplane plotted in the following figure models the relationship between the size of a pizza and its price.
-- Using training data to learn the values of the parameters for simple linear regression that produce the best fitting model is called ordinary least squares (OLS) or linear least squares.
-
-#+begin_src python -r -n :results output :exports both
-import numpy as np
-X = np.array([[6], [8], [10], [14], [18]]).reshape(-1, 1)
-y = [7, 9, 13, 17.5 , 18]
-
-from sklearn.linear_model import LinearRegression
-model = LinearRegression()
-# Create an instance of the estimator
-model.fit(X, y)
-# Fit the model on the training data
-
-from matplotlib import pyplot as plt
-plt.scatter(X, y, color = 'k')
-plt.plot(X, model.predict(X), color='g')
-plt.title('Pizza price plotted against diameter')
-plt.xlabel('Diameter in inches')
-plt.ylabel('Price in dollars')
-plt.savefig('images/pizza-2.png', dpi=300)
-#+end_src
-
-  #+RESULTS:
-
-#+CAPTION: Pizza regression 2
-#+LABEL:fig:Pizza-reg-2
-#+name: fig:Pizza-reg-2
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
-[[file:images/pizza-2.png]]
-*** Evaluating the fitness of the model with a cost function
-Regression lines produced by several sets of parameter values are plotted in the following figure. How can we assess which parameters produced the best-fitting regression line?
-#+begin_src python -r -n :results output :exports none
-import numpy as np
-X = np.array([[6], [8], [10], [14], [18]]).reshape(-1, 1)
-y = [7, 9, 13, 17.5 , 18]
-print()
-print(y)
-#from sklearn.linear_model import LinearRegression
-#model = LinearRegression()
-## Create an instance of the estimator
-#model.fit(X, y)
-## Fit the model on the training data
-#
-#from matplotlib import pyplot as plt
-#plt.scatter(X, y, color = 'k')
-#plt.plot(X, model.predict(X), color='g')
-#plt.plot(X, model.predict(X)+.5, color='c', linestyle='--')
-#plt.plot(X, model.predict(X)*.9, color='m', linestyle='-.')
-#plt.title('Pizza price plotted against diameter')
-#plt.xlabel('Diameter in inches')
-#plt.ylabel('Price in dollars')
-#plt.savefig('images/pizza-3.png', dpi=300)
-
-#+end_src
-
-#+RESULTS:
-
-#+CAPTION: Pizza regression 3
-#+LABEL:fig:Pizza-reg-3
-#+name: fig:Pizza-reg-3
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
-[[file:images/pizza-3.png]]
-**** cost function
-A cost function, also called a loss function, is used to define and measure the error of a model. The differences between the prices predicted by the model and the observed prices of the pizzas in the training set are called residuals, or training errors. The differences between the predicted and observed values in the test data are called prediction errors, or test errors.
-#+begin_src python -r -n :results output :exports none
-import numpy as np
-X = np.array([[6], [8], [10], [14], [18]]).reshape(-1, 1)
-y = [7, 9, 13, 17.5 , 18]
-
-from sklearn.linear_model import LinearRegression
-model = LinearRegression()
-# Create an instance of the estimator
-model.fit(X, y)
-# Fit the model on the training data
-
-from matplotlib import pyplot as plt
-
-dy = (model.predict(X)-y)/2
-for x, y1, y2 in zip(X, y, model.predict(X)):
-    xs = [x, x]
-    ys = [y1, y2]
-    plt.plot(xs, ys, color='orange')
-plt.scatter(X, y, color = 'k')
-plt.plot(X, model.predict(X), color='g')
-#plt.errorbar(X, model.predict(X)-dy, yerr=dy, fmt='.')
-plt.title('Pizza price plotted against diameter')
-plt.xlabel('Diameter in inches')
-plt.ylabel('Price in dollars')
-plt.savefig('images/pizza-4.png', dpi=300)
-#+end_src
-#+RESULTS:
-#+CAPTION: Pizza regression 4
-#+LABEL:fig:Pizza-reg-4
-#+name: fig:Pizza-reg-4
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
-[[file:images/pizza-4.png]]
-
-This measure of the model's fitness is called the residual sum of squares (RSS) cost function. Formally, this function assesses the fitness of a model by summing the squared residuals for all of our training examples. The RSS is calculated with the formula in the following equation, where \(y_i\) is the observed value and \(f(x_i)\) is the predicted value:$$SS_{res}=\sum_{i=1}^{n}(y_i-f(x_i))^2$$
-
-
-
-#+begin_src emacs-lisp
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-(setq python-shell-interpreter "/usr/bin/python3")
-(setq python-shell-interpreter-arg "-i")
-(setq py-use-current-dir-when-execute-p t)
-(setq python-shell-prompt-detect-enabled nil)
-(setq python-shell-interpreter "ipython")
-(setq python-shell-interpreter-interactive-args "-i --simple-prompt")
-#+end_src
-
-#+RESULTS:
-: -i --simple-prompt
-
-
-#+begin_src emacs-lisp
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-#+end_src
-
-#+RESULTS:
-: ((gnu . https://elpa.gnu.org/packages/) (melpa . https://melpa.org/packages/) (org . https://orgmode.org/elpa/))
-
-#+begin_src jupyter-python :session py :async yes :kernel python :results scalar both raw drawer :display text/html :exports both
-import numpy as np
-import pandas as pd
-
-a = 3
-print(a)
-data = [[1,2], [3,4]]
-pd.DataFrame(data, columns=["Foo", "Bar"])
-#+end_src
-
-#+RESULTS:
-:results:
-# Out[5]:
-#+BEGIN_EXAMPLE
-  Foo  Bar
-  0    1    2
-  1    3    4
-#+END_EXAMPLE
-:end:
-
-#+begin_src jupyter-python :session py :async yes :kernel python3 :results scalar both raw drawer :exports both
-from ipywidgets import  interact, interactive, fixed, interact_manual
-import ipywidgets as widgets
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-print(data)
-def f(x):
-    plt.plot(np.arange(0, 10), x*np.arange(0, 10))
-    plt.ylim(-30, 30)
-#interact(f, x=10)
-f(10)
-#+end_src
-
-#+RESULTS:
-:results:
-# Out[6]:
-[[file:.ob-ipython-resrcnqInND.png]]
-:end:
-
-:end:
-:end:
-:end:
-
-#+BEGIN_SRC emacs-lisp
-(require 'jupyter)
-#+END_SRC
-
-#+RESULTS:
-: jupyter
 
 * 線性迴歸:年齡身高預測#1
 <<datagen>>
@@ -1491,6 +1234,235 @@ print('MSE={0:.6f}'.format(mse(year, height, [W0, W1])))
 : W=[0.026711, 162.832008]
 : dMSE=[0.004964, -0.099983]
 : MSE=22.955476
+
+* 簡單線性迴歸建模：Pizza
+Let's assume that you have recorded the diameters and prices of pizzas that you have previously eaten in your pizza journal. These observations comprise our training data:
+|--------------------+------------------|
+| Diameter in inches | Price in dollars |
+|--------------------+------------------|
+|                  6 |                7 |
+|                  8 |                9 |
+|                 10 |               13 |
+|                 14 |             17.5 |
+|                 18 |               18 |
+|--------------------+------------------|
+** 觀察數據
+We can visualize our training data by plotting it on a graph using matplotlib:
+#+begin_src python -r -n :results output :exports both
+import numpy as np
+# "np" and "plt" are common aliases for NumPy and Matplotlib, respectively.
+import matplotlib.pyplot as plt
+
+# X represents the features of our training data, the diameters of the pizzas.
+# A scikit–learn convention is to name the matrix of feature vectors X.
+# Uppercase letters indicate matrices, and lowercase letters indicate vectors.
+X = np.array([[6], [8], [10], [14], [18]]).reshape(-1, 1)
+
+y = [7, 9, 13, 17.5 , 18]
+# y is a vector representing the prices of the pizzas.
+
+#plt.figure()
+plt.title('Pizza price plotted against diameter')
+plt.xlabel('Diameter in inches')
+plt.ylabel('Price in dollars')
+plt.plot(X, y, 'k.')
+plt.axis([0, 25, 0, 25])
+plt.grid(True)
+plt.savefig('images/pizza-1.png', dpi=300)
+#+end_src
+
+#+RESULTS:
+#+CAPTION: Pizza Regression #1
+#+LABEL:fig:Pizza-Reg-1
+#+name: fig:Pizza-Reg-1
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/pizza-1.png]]
+We can see from the plot of the training data that there is a positive relationship between the diameter of a pizza and its price, which should be corroborated by our own pizza-eating experience.
+** 建模: LinearRegression
+The following pizza price predictor program models this relationship using simple linear regression.
+#+begin_src python -r -n :results output :exports both
+import numpy as np
+X = np.array([[6], [8], [10], [14], [18]]).reshape(-1, 1)
+y = [7, 9, 13, 17.5 , 18]
+
+print(X.shape)
+
+from sklearn.linear_model import LinearRegression
+model = LinearRegression()
+# Create an instance of the estimator
+model.fit(X, y)
+# Fit the model on the training data
+
+# Predict the price of a pizza with a diameter that has never been seen before
+test_pizza = np.array([[12]])
+predicted_price = model.predict(test_pizza)[0]
+print('A 12" pizza should cost: $%.2f' % predicted_price)
+#+end_src
+
+#+RESULTS:
+: (5, 1)
+: A 12" pizza should cost: $13.68
+
+- The LinearRegression class is an *estimator*. Estimators predict a value based on observed data.
+- In scikit-learn, all estimators implement the fit methods and predict.
+- The fit method of LinearRegression learns the parameters of the following model for simple linear regression:$$y=\alpha+\beta x$$
+- $y$ is the predicted value of the response variable; in this example, it is the predicted price of the pizza.
+- $x$ is the explanatory variable.
+- The intercept term $\alpha$ and the coefficient $\beta$ are parameters of the model that are learned by the learning algorithm.
+- The hyperplane plotted in the following figure models the relationship between the size of a pizza and its price.
+- Using training data to learn the values of the parameters for simple linear regression that produce the best fitting model is called ordinary least squares (OLS) or linear least squares.
+
+#+begin_src python -r -n :results output :exports both
+import numpy as np
+X = np.array([[6], [8], [10], [14], [18]]).reshape(-1, 1)
+y = [7, 9, 13, 17.5 , 18]
+
+from sklearn.linear_model import LinearRegression
+model = LinearRegression()
+# Create an instance of the estimator
+model.fit(X, y)
+# Fit the model on the training data
+
+from matplotlib import pyplot as plt
+plt.scatter(X, y, color = 'k')
+plt.plot(X, model.predict(X), color='g')
+plt.title('Pizza price plotted against diameter')
+plt.xlabel('Diameter in inches')
+plt.ylabel('Price in dollars')
+plt.savefig('images/pizza-2.png', dpi=300)
+#+end_src
+
+  #+RESULTS:
+
+#+CAPTION: Pizza regression 2
+#+LABEL:fig:Pizza-reg-2
+#+name: fig:Pizza-reg-2
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/pizza-2.png]]
+** Evaluating the fitness of the model with a cost function
+Regression lines produced by several sets of parameter values are plotted in the following figure. How can we assess which parameters produced the best-fitting regression line?
+#+begin_src python -r -n :results output :exports none
+import numpy as np
+X = np.array([[6], [8], [10], [14], [18]]).reshape(-1, 1)
+y = [7, 9, 13, 17.5 , 18]
+print()
+print(y)
+#from sklearn.linear_model import LinearRegression
+#model = LinearRegression()
+## Create an instance of the estimator
+#model.fit(X, y)
+## Fit the model on the training data
+#
+#from matplotlib import pyplot as plt
+#plt.scatter(X, y, color = 'k')
+#plt.plot(X, model.predict(X), color='g')
+#plt.plot(X, model.predict(X)+.5, color='c', linestyle='--')
+#plt.plot(X, model.predict(X)*.9, color='m', linestyle='-.')
+#plt.title('Pizza price plotted against diameter')
+#plt.xlabel('Diameter in inches')
+#plt.ylabel('Price in dollars')
+#plt.savefig('images/pizza-3.png', dpi=300)
+
+#+end_src
+
+#+RESULTS:
+
+#+CAPTION: Pizza regression 3
+#+LABEL:fig:Pizza-reg-3
+#+name: fig:Pizza-reg-3
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/pizza-3.png]]
+*** cost function
+A cost function, also called a loss function, is used to define and measure the error of a model. The differences between the prices predicted by the model and the observed prices of the pizzas in the training set are called residuals, or training errors. The differences between the predicted and observed values in the test data are called prediction errors, or test errors.
+#+begin_src python -r -n :results output :exports none
+import numpy as np
+X = np.array([[6], [8], [10], [14], [18]]).reshape(-1, 1)
+y = [7, 9, 13, 17.5 , 18]
+
+from sklearn.linear_model import LinearRegression
+model = LinearRegression()
+# Create an instance of the estimator
+model.fit(X, y)
+# Fit the model on the training data
+
+from matplotlib import pyplot as plt
+
+dy = (model.predict(X)-y)/2
+for x, y1, y2 in zip(X, y, model.predict(X)):
+    xs = [x, x]
+    ys = [y1, y2]
+    plt.plot(xs, ys, color='orange')
+plt.scatter(X, y, color = 'k')
+plt.plot(X, model.predict(X), color='g')
+#plt.errorbar(X, model.predict(X)-dy, yerr=dy, fmt='.')
+plt.title('Pizza price plotted against diameter')
+plt.xlabel('Diameter in inches')
+plt.ylabel('Price in dollars')
+plt.savefig('images/pizza-4.png', dpi=300)
+#+end_src
+#+RESULTS:
+#+CAPTION: Pizza regression 4
+#+LABEL:fig:Pizza-reg-4
+#+name: fig:Pizza-reg-4
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/pizza-4.png]]
+
+This measure of the model's fitness is called the residual sum of squares (RSS) cost function. Formally, this function assesses the fitness of a model by summing the squared residuals for all of our training examples. The RSS is calculated with the formula in the following equation, where \(y_i\) is the observed value and \(f(x_i)\) is the predicted value:$$SS_{res}=\sum_{i=1}^{n}(y_i-f(x_i))^2$$
+
+#+begin_src emacs-lisp :exports none
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(setq python-shell-interpreter "/usr/bin/python3")
+(setq python-shell-interpreter-arg "-i")
+(setq py-use-current-dir-when-execute-p t)
+(setq python-shell-prompt-detect-enabled nil)
+(setq python-shell-interpreter "ipython")
+(setq python-shell-interpreter-interactive-args "-i --simple-prompt")
+#+end_src
+
+#+RESULTS:
+: -i --simple-prompt
+
+#+begin_src emacs-lisp :exports none
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+#+end_src
+
+#+RESULTS:
+: ((gnu . https://elpa.gnu.org/packages/) (melpa . https://melpa.org/packages/) (org . https://orgmode.org/elpa/))
+
+* TNFSH作業
+
+- 線上資料: [[https://letranger.github.io/AI/2023A-CS-Data.csv][https://letranger.github.io/AI/2023A-CS-Data.csv]]
+
+** Solution
+#+begin_src python -r -n :results output :exports both
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+docURL = 'https://letranger.github.io/AI/2023A-CS-Data.csv'
+df = pd.read_csv(docURL)
+print(type(df))
+df = df.to_numpy()
+print(type(df))
+print(df[:5])
+#+end_src
+
+#+RESULTS:
+: <class 'pandas.core.frame.DataFrame'>
+: <class 'numpy.ndarray'>
+: [['期中考' '期末成績']
+:  ['105.0' '99']
+:  ['33.0' '66']
+:  ['24.0' '75']
+:  ['40.0' '67']]
 
 * Footnotes
 
