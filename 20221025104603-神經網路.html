@@ -3,11 +3,11 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-12-19 Mon 20:45 -->
+<!-- 2024-01-19 Fri 08:16 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>神經網路</title>
-<meta name="author" content="Yung Chin, Yen" />
+<meta name="author" content="Yung-Chin Yen" />
 <meta name="generator" content="Org Mode" />
 <style>
   #content { max-width: 60em; margin: auto; }
@@ -194,27 +194,38 @@
   .org-svg { }
 </style>
 <link rel="stylesheet" type="text/css" href="../css/muse.css" />
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        displayAlign: "center",
-        displayIndent: "0em",
-
-        "HTML-CSS": { scale: 100,
-                        linebreaks: { automatic: "false" },
-                        webFont: "TeX"
-                       },
-        SVG: {scale: 100,
-              linebreaks: { automatic: "false" },
-              font: "TeX"},
-        NativeMML: {scale: 100},
-        TeX: { equationNumbers: {autoNumber: "AMS"},
-               MultLineWidth: "85%",
-               TagSide: "right",
-               TagIndent: ".8em"
-             }
-});
+<script>
+  window.MathJax = {
+    tex: {
+      ams: {
+        multlineWidth: '85%'
+      },
+      tags: 'ams',
+      tagSide: 'right',
+      tagIndent: '.8em'
+    },
+    chtml: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    svg: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    output: {
+      font: 'mathjax-modern',
+      displayOverflow: 'overflow'
+    }
+  };
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+
+<script
+  id="MathJax-script"
+  async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
 </head>
 <body>
 <div id="content" class="content">
@@ -223,123 +234,128 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgb10619f">1. 類神經網路</a>
+<li><a href="#org0be955a">1. 類神經網路</a>
 <ul>
-<li><a href="#org23d8cf3">1.1. 概念</a></li>
-<li><a href="#org2ad217c">1.2. NN如何學習</a></li>
-<li><a href="#org9d558a1">1.3. 為什麼沒有Activation Function的perceptron為linear model</a></li>
-<li><a href="#org8e647d6">1.4. Backprogation: 如何快速計算 w 與 b 的更新</a></li>
-<li><a href="#orgfbd4759">1.5. Activation Function</a></li>
+<li><a href="#orgfc1bb20">1.1. 概念</a></li>
+<li><a href="#org3602fa8">1.2. NN如何學習</a></li>
+<li><a href="#org48ca111">1.3. Activation Function的重要性</a></li>
+<li><a href="#org3b30484">1.4. Backprogation</a></li>
+<li><a href="#org821ae9a">1.5. Activation Function</a></li>
 </ul>
 </li>
-<li><a href="#orgd416e02">2. 神經網路的學習</a>
+<li><a href="#orgcf86080">2. 神經網路的學習</a>
 <ul>
-<li><a href="#org11aaeb4">2.1. 從資料中學習</a></li>
-<li><a href="#org7a13087">2.2. Overfitting v.s. underfitting</a></li>
-<li><a href="#org1012fdd">2.3. 三層神經網路</a></li>
-<li><a href="#org7fbaef3">2.4. 損失函數</a></li>
-<li><a href="#orgf16eb39">2.5. 數值微分</a></li>
-<li><a href="#orgdd6c6e4">2.6. Forward propagation</a></li>
-<li><a href="#orgb11fa36">2.7. Backward propagation</a></li>
-<li><a href="#orgbca7180">2.8. 輸出層的設計：恆等函數與 softmax 函數</a></li>
-<li><a href="#org1bbffb6">2.9. softmax 函數的特色</a></li>
-<li><a href="#orgacbbe82">2.10. 梯度</a></li>
-<li><a href="#org42c5656">2.11. 梯度下降法</a></li>
-<li><a href="#org1f39f50">2.12. 學習演算法</a></li>
+<li><a href="#org886ad44">2.1. 從資料中學習</a></li>
+<li><a href="#org2020634">2.2. Overfitting v.s. underfitting</a></li>
+<li><a href="#orgcf573f8">2.3. 三層神經網路</a></li>
+<li><a href="#org39d607b">2.4. 損失函數</a></li>
+<li><a href="#org58a89e1">2.5. 數值微分</a></li>
+<li><a href="#orgaf99eea">2.6. Forward propagation</a></li>
+<li><a href="#orgef341c1">2.7. Backward propagation</a></li>
+<li><a href="#org268a218">2.8. 輸出層的設計：恆等函數與 softmax 函數</a></li>
+<li><a href="#org544582d">2.9. softmax 函數的特色</a></li>
+<li><a href="#orgad7ea51">2.10. 梯度</a></li>
+<li><a href="#orgbdcc52d">2.11. 梯度下降法</a></li>
+<li><a href="#orgdbdced5">2.12. 學習演算法</a></li>
 </ul>
 </li>
-<li><a href="#orgacadd26">3. 深度神經網路 DNN (Deep Neural Network)</a>
+<li><a href="#org0f4536e">3. 深度神經網路 DNN (Deep Neural Network)</a>
 <ul>
-<li><a href="#orgdd7c4bf">3.1. 學習與參數:以迴歸問題為例</a></li>
-<li><a href="#org93b8710">3.2. 如何調整參數</a></li>
-<li><a href="#orgda48958">3.3. 模型的極限</a></li>
-<li><a href="#org917a9de">3.4. 神經網路為什麼要有那麼多層</a></li>
+<li><a href="#orga44420b">3.1. 學習與參數:以迴歸問題為例</a></li>
+<li><a href="#org5472a72">3.2. 如何調整參數</a></li>
+<li><a href="#org0bab142">3.3. 模型的極限</a></li>
+<li><a href="#org0e0585c">3.4. 神經網路為什麼要有那麼多層</a></li>
 </ul>
 </li>
-<li><a href="#orgd6a8ff4">4. CNN 卷積神經網路:&#xa0;&#xa0;&#xa0;<span class="tag"><span class="CNN">CNN</span>&#xa0;<span class=""></span>&#xa0;<span class="Keeras">Keeras</span></span></a>
+<li><a href="#org27af94a">4. CNN 卷積神經網路:&#xa0;&#xa0;&#xa0;<span class="tag"><span class="CNN">CNN</span>&#xa0;<span class=""></span>&#xa0;<span class="Keeras">Keeras</span></span></a>
 <ul>
-<li><a href="#org94957dc">4.1. CNN v.s. MLP</a></li>
-<li><a href="#orgf9416a4">4.2. 卷積運算</a></li>
-<li><a href="#orgef20826">4.3. 池化層(Pooling Layer)</a></li>
-<li><a href="#org8a5baa9">4.4. 以 CNN 實作 MNIST</a></li>
-<li><a href="#org9adb58d">4.5. 以 Keras 實作 Cifar-10</a></li>
+<li><a href="#orga062b35">4.1. CNN v.s. MLP</a></li>
+<li><a href="#org3440e6c">4.2. 卷積運算</a></li>
+<li><a href="#org6277905">4.3. 池化層(Pooling Layer)</a></li>
+<li><a href="#org8ee7308">4.4. 以 CNN 實作 MNIST</a></li>
+<li><a href="#orgd14baca">4.5. 以 Keras 實作 Cifar-10</a></li>
 </ul>
 </li>
-<li><a href="#org4f179eb">5. 辨識手寫數字: MNIST 資料集</a>
+<li><a href="#orgca5d138">5. 辨識手寫數字: MNIST 資料集</a>
 <ul>
-<li><a href="#orgde8a301">5.1. MNIST 資料集</a></li>
-<li><a href="#org926e9db">5.2. MNIST 資料集:以 DNN Sequential 模型為例</a></li>
+<li><a href="#org651ab69">5.1. MNIST 資料集</a></li>
+<li><a href="#org5f931aa">5.2. MNIST 資料集:以 DNN Sequential 模型為例</a></li>
 </ul>
 </li>
-<li><a href="#org8eddfec">6. 名詞解釋</a>
+<li><a href="#org314bbef">6. 名詞解釋</a>
 <ul>
-<li><a href="#org43ccc17">6.1. Supervised neural networks</a></li>
-<li><a href="#org978e7e1">6.2. Unsupervised Pre-trained Neural Networks</a></li>
+<li><a href="#org6f0fec7">6.1. Supervised neural networks</a></li>
+<li><a href="#org44374fd">6.2. Unsupervised Pre-trained Neural Networks</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
-
-<div id="outline-container-orgb10619f" class="outline-2">
-<h2 id="orgb10619f"><span class="section-number-2">1.</span> 類神經網路</h2>
+<div id="outline-container-org0be955a" class="outline-2">
+<h2 id="org0be955a"><span class="section-number-2">1.</span> 類神經網路</h2>
 <div class="outline-text-2" id="text-1">
 </div>
-<div id="outline-container-org23d8cf3" class="outline-3">
-<h3 id="org23d8cf3"><span class="section-number-3">1.1.</span> 概念</h3>
+<div id="outline-container-orgfc1bb20" class="outline-3">
+<h3 id="orgfc1bb20"><span class="section-number-3">1.1.</span> 概念</h3>
 <div class="outline-text-3" id="text-1-1">
 <p>
-生物神經系統的結構，神經元(Neuron)之間 互相連結，由外部神經元接收信號，再層層 傳導至其他神經元，最後作出反應的過程<br />
+生物神經系統的結構，神經元(Neuron)之間 互相連結，由外部神經元接收信號，再逐層傳導至其他神經元，最後作出反應的過程<br />
 </p>
 
-<div id="orgaecd94c" class="figure">
-<p><img src="images/Neuron.jpg" alt="Neuron.jpg" width="400" /><br />
+<div id="orgfcfef2c" class="figure">
+<p><img src="images/Neuron.jpg" alt="Neuron.jpg" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 1: </span>神經元與神經網路</p>
 </div>
-<p width="400">
-<img src="images/Perceptron.jpg" alt="Perceptron.jpg" width="400" /><br />
+
+<p>
 神經網絡是非常重要的一種機器學習機制，它是一種模仿人類大腦學習機制的一種方法。人類的大腦從外界接受刺激，並處理這些輸入（通過神經元處理），最終產生輸出<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。<br />
 當任務變得複雜的時候，大腦會使用多個神經元來形成一個複雜的網絡，並在神經元之間傳遞信息，人工神經網絡就是模仿這種處理機制的一種算法。如下圖的網絡是一種由多個互聯的神經元組成的網絡<sup><a id="fnr.1.100" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。<br />
 </p>
 
 
-<div id="orgda4fd06" class="figure">
+<div id="orga4ad28d" class="figure">
 <p><img src="images/2021-05-22_23-30-45.jpg" alt="2021-05-22_23-30-45.jpg" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 2: </span>DEEP NEURAL NETWORK</p>
 </div>
 
+
+<div id="org89bba63" class="figure">
+<p><img src="images/Perceptron.jpg" alt="Perceptron.jpg" width="500" /><br />
+</p>
+<p><span class="figure-number">Figure 3: </span>神經元/感知器</p>
+</div>
+
 <ul class="org-ul">
 <li><p>
-圖<a href="#orgda4fd06">2</a>中的圓圈就是神經元(perceptron)。每一個perceptron都由weight、bias和activation function(如圖<a href="#org1b2a3b5">3</a>)組成。數據由input layer輸入。然後perceptron基於weight和bias，通過線性變換將輸入數據進行轉換。activation function則是用來完成非線性的轉換。數據從輸入層輸入後，會來到隱藏層。隱藏層將會對數據進行處理並輸送到輸出層。這種數據處理方式就是著名的前向傳播。<br />
+圖<a href="#orga4ad28d">2</a>中的圓圈就是神經元(perceptron)，其內部組成如圖<a href="#org89bba63">3</a>所示，每一個perceptron都由weight、bias和activation function(如圖<a href="#orgc3ad4dc">4</a>)組成。數據由input layer輸入。然後perceptron基於weight和bias，通過線性變換將輸入數據進行轉換。activation function則是用來完成非線性的轉換。數據從輸入層輸入後，會來到隱藏層。隱藏層將會對數據進行處理並輸送到輸出層。這種數據處理方式就是著名的前向傳播。<br />
 </p>
 
-<div id="org1b2a3b5" class="figure">
+<div id="orgc3ad4dc" class="figure">
 <p><img src="images/ActivationFunction.jpg" alt="ActivationFunction.jpg" width="400" /><br />
 </p>
-<p><span class="figure-number">Figure 3: </span>Activation function</p>
+<p><span class="figure-number">Figure 4: </span>Activation function</p>
 </div></li>
 
 <li><p>
-當輸出層的結果和我們期望的結果相差很大怎麼辦呢？在神經網絡中，我們可以基於這種錯誤來更新神經元的權重和偏移。這種處理方式被稱為後向傳播算法。一旦所有的數據經歷過這個處理，最終的權重和便宜就可以用來做預測了<sup><a id="fnr.1.100" class="footref" href="#fn.1" role="doc-backlink">1</a></sup><sup>, </sup><sup><a id="fnr.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup>。<br />
+當輸出層的結果和我們期望的結果相差很大怎麼辦呢？在神經網絡中，我們可以基於這種錯誤來更新神經元的權重和偏移。這種處理方式被稱為向後傳播算法(back propagation)。一旦所有的數據經歷過這個處理，最終的權重和偏移就可以用來做預測了<sup><a id="fnr.1.100" class="footref" href="#fn.1" role="doc-backlink">1</a></sup><sup>, </sup><sup><a id="fnr.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup>。<br />
 </p>
 
-<div id="org956c274" class="figure">
+<div id="org744518f" class="figure">
 <p><img src="images/nn.gif" alt="nn.gif" width="500" /><br />
 </p>
-<p><span class="figure-number">Figure 4: </span>Neural Network</p>
+<p><span class="figure-number">Figure 5: </span>Neural Network</p>
 </div></li>
 </ul>
 </div>
 </div>
-
-<div id="outline-container-org2ad217c" class="outline-3">
-<h3 id="org2ad217c"><span class="section-number-3">1.2.</span> NN如何學習</h3>
+<div id="outline-container-org3602fa8" class="outline-3">
+<h3 id="org3602fa8"><span class="section-number-3">1.2.</span> NN如何學習</h3>
 <div class="outline-text-3" id="text-1-2">
 </div>
 <ol class="org-ol">
-<li><a id="orgd8ef919"></a>神經網路學習(ANN)的基本步驟<br />
+<li><a id="org08cbe72"></a>神經網路學習(ANN)的基本步驟<br />
 <div class="outline-text-4" id="text-1-2-1">
 <p>
 利用隨機梯度下降法(SGD)求梯度並更新 weight 和 bias 參數<br />
@@ -353,7 +369,7 @@
 </ol>
 </div>
 </li>
-<li><a id="org461fd8c"></a>Error Function<br />
+<li><a id="org350350d"></a>Error Function<br />
 <div class="outline-text-4" id="text-1-2-2">
 <p>
 Error(錯誤) = 真正的值(t) + 預測值(y)<br />
@@ -362,7 +378,7 @@ Error(錯誤) = 真正的值(t) + 預測值(y)<br />
 </p>
 </div>
 </li>
-<li><a id="org09ce029"></a>Keras 在 losses.py 定義常用的損失函數<br />
+<li><a id="org67b6443"></a>Keras 在 losses.py 定義常用的損失函數<br />
 <div class="outline-text-4" id="text-1-2-3">
 <ul class="org-ul">
 <li><a href="https://github.com/keras-team/keras/blob/master/keras/losses.py">https://github.com/keras-team/keras/blob/master/keras/losses.py</a><br /></li>
@@ -375,23 +391,23 @@ Error(錯誤) = 真正的值(t) + 預測值(y)<br />
 </ul>
 </div>
 </li>
-<li><a id="org9c732c2"></a>誤差實際計算<br />
+<li><a id="orgabb2965"></a>誤差實際計算<br />
 <div class="outline-text-4" id="text-1-2-4">
 
-<div id="orgda9e99b" class="figure">
+<div id="orgf1adf0c" class="figure">
 <p><img src="images/Error-Computation.jpg" alt="Error-Computation.jpg" width="400" /><br />
 </p>
-<p><span class="figure-number">Figure 5: </span>誤差計算範例</p>
+<p><span class="figure-number">Figure 6: </span>誤差計算範例</p>
 </div>
 </div>
 </li>
-<li><a id="org7f15828"></a>學習步驟<br />
+<li><a id="orgce6d49a"></a>學習步驟<br />
 <div class="outline-text-4" id="text-1-2-5">
 
-<div id="org96ec7fb" class="figure">
+<div id="org737b29d" class="figure">
 <p><img src="images/ANN-1.jpg" alt="ANN-1.jpg" width="400" /><br />
 </p>
-<p><span class="figure-number">Figure 6: </span>類神經網路</p>
+<p><span class="figure-number">Figure 7: </span>類神經網路</p>
 </div>
 <ol class="org-ol">
 <li>將 weight 與 bias 隨機設定，例如，全設為 0<br /></li>
@@ -399,10 +415,10 @@ Error(錯誤) = 真正的值(t) + 預測值(y)<br />
 <li>計算出誤差：即計算結果與真實值之差異<br /></li>
 </ol>
 
-<div id="orgfed0c50" class="figure">
+<div id="org38e89e7" class="figure">
 <p><img src="images/ANN-4.jpg" alt="ANN-4.jpg" width="400" /><br />
 </p>
-<p><span class="figure-number">Figure 7: </span>類神經網路</p>
+<p><span class="figure-number">Figure 8: </span>類神經網路</p>
 </div>
 <ol class="org-ol">
 <li>定義 weight 與 bias 的更新策略(update the weights and bias)，其更新策略為從錯誤中學習。學習規則為<br />
@@ -410,10 +426,10 @@ Error(錯誤) = 真正的值(t) + 預測值(y)<br />
 \[\Delta b=\eta (\hat{y} - y)\]: \(b\)(新的)=\(b\)(前靣)+\(\Delta b\)(誤差變動)<br /></li>
 </ol>
 
-<div id="org5dc2cf3" class="figure">
+<div id="org1836468" class="figure">
 <p><img src="images/ANN-5.jpg" alt="ANN-5.jpg" width="400" /><br />
 </p>
-<p><span class="figure-number">Figure 8: </span>類神經網路</p>
+<p><span class="figure-number">Figure 9: </span>類神經網路</p>
 </div>
 <ol class="org-ol">
 <li>使用新的 weight 與 bias，計算直到誤差很小(定義何時結束)<br />
@@ -425,18 +441,21 @@ Error(錯誤) = 真正的值(t) + 預測值(y)<br />
 </li>
 </ol>
 </div>
-
-<div id="outline-container-org9d558a1" class="outline-3">
-<h3 id="org9d558a1"><span class="section-number-3">1.3.</span> 為什麼沒有Activation Function的perceptron為linear model</h3>
+<div id="outline-container-org48ca111" class="outline-3">
+<h3 id="org48ca111"><span class="section-number-3">1.3.</span> Activation Function的重要性</h3>
 <div class="outline-text-3" id="text-1-3">
+<p>
+由沒有Activation Function的perceptron所組成的神網網路都只是linear model，linear model無法處理複雜的問題。<br />
+</p>
+
 <p>
 思考下方堆疊兩層感知器的例子(這裡我們捨棄偏權值b，使問題單純化)：<br />
 </p>
 
-<div id="org77878bc" class="figure">
+<div id="orgd170457" class="figure">
 <p><img src="images/2perceptrons.png" alt="2perceptrons.png" width="500" /><br />
 </p>
-<p><span class="figure-number">Figure 9: </span>Stacked perceptrons</p>
+<p><span class="figure-number">Figure 10: </span>Stacked perceptrons</p>
 </div>
 
 <p>
@@ -459,13 +478,15 @@ y_2 = w_3^1x_1 + w_4^1x_2 \\
 </p>
 </div>
 </div>
-
-<div id="outline-container-org8e647d6" class="outline-3">
-<h3 id="org8e647d6"><span class="section-number-3">1.4.</span> Backprogation: 如何快速計算 w 與 b 的更新</h3>
+<div id="outline-container-org3b30484" class="outline-3">
+<h3 id="org3b30484"><span class="section-number-3">1.4.</span> Backprogation</h3>
 <div class="outline-text-3" id="text-1-4">
+<p>
+Backprogation的目的在於快速計算 w 與 b 的更新<br />
+</p>
 </div>
 <ol class="org-ol">
-<li><a id="org4f09a08"></a>Godfather of Deep Learning<br />
+<li><a id="orgcfef78e"></a>Godfather of Deep Learning<br />
 <div class="outline-text-4" id="text-1-4-1">
 <ul class="org-ul">
 <li>1986: the backpropagation algorithm for training multi-layer neural networks<br /></li>
@@ -478,9 +499,9 @@ y_2 = w_3^1x_1 + w_4^1x_2 \\
 </p>
 </div>
 </li>
-<li><a id="orgb7f81e5"></a>倒遞神經網路(Back-Propagation) 數學推導<br />
+<li><a id="org275a41c"></a>倒遞神經網路(Back-Propagation) 數學推導<br />
 <ol class="org-ol">
-<li><a id="org309a608"></a><a href="https://honglung.pixnet.net/blog/post/202201656-back-propagation-%E6%95%B8%E5%AD%B8%E6%8E%A8%E5%B0%8E">數學推導</a><br />
+<li><a id="orge533b91"></a><a href="https://honglung.pixnet.net/blog/post/202201656-back-propagation-%E6%95%B8%E5%AD%B8%E6%8E%A8%E5%B0%8E">數學推導</a><br />
 <div class="outline-text-5" id="text-1-4-2-1">
 <ol class="org-ol">
 <li>背景: 以下 a,b,c 為輸入值.並且激勵函數(activity function) 採用 sigmoid 進行說明:<br /></li>
@@ -504,13 +525,12 @@ y_2 = w_3^1x_1 + w_4^1x_2 \\
 </li>
 </ol>
 </div>
-
-<div id="outline-container-orgfbd4759" class="outline-3">
-<h3 id="orgfbd4759"><span class="section-number-3">1.5.</span> Activation Function</h3>
+<div id="outline-container-org821ae9a" class="outline-3">
+<h3 id="org821ae9a"><span class="section-number-3">1.5.</span> Activation Function</h3>
 <div class="outline-text-3" id="text-1-5">
 <p>
 Activation function是神經網絡中極其重要的概念。它們決定了某個神經元是否被activate，這個神經元接受到的信息是否是有用的，是否該留下或者是該拋棄。<br />
-Activation function的形式如下<sup><a id="fnr.1.100" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>：<br />
+Activation) function的形式如下<sup><a id="fnr.1.100" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>：<br />
 </p>
 <ul class="org-ul">
 <li>在神經元裡定義一些權重(weight)，經過計算之後，判斷結果是否超過一個閾值(threshold)，如果超過，神經元輸出為 1；反之，則輸出 0。<br /></li>
@@ -518,15 +538,14 @@ Activation function的形式如下<sup><a id="fnr.1.100" class="footref" href="#
 <li>加入非線性的function就能改變線性問題<br /></li>
 </ul>
 </div>
-
 <ol class="org-ol">
-<li><a id="org965dd5f"></a>Step function<br />
+<li><a id="org05ba0aa"></a>Step function<br />
 <div class="outline-text-4" id="text-1-5-1">
 <p>
-Step function，若輸入超過 0，則輸出 1；若輪入小於等於 0，則輸出 0，如公式\eqref{orge96115a}所示，其函數圖形則如圖<a href="#org26c1079">10</a>所示。<br />
+Step function，若輸入超過 0，則輸出 1；若輪入小於等於 0，則輸出 0，如公式\eqref{orgab1baa7}所示，其函數圖形則如圖<a href="#orgf0c979d">11</a>所示。<br />
 </p>
 \begin{equation}
-\label{orge96115a}
+\label{orgab1baa7}
 h(x) = \begin{cases}
 1 & \text{if } x > 0 \\
 0 & \text{if } x\leq 0
@@ -549,10 +568,10 @@ h(x) = \begin{cases}
 </pre>
 </div>
 
-<div id="org26c1079" class="figure">
+<div id="orgf0c979d" class="figure">
 <p><img src="images/stepFuncPlot.png" alt="stepFuncPlot.png" width="500" /><br />
 </p>
-<p><span class="figure-number">Figure 10: </span>階梯函數圖</p>
+<p><span class="figure-number">Figure 11: </span>階梯函數圖</p>
 </div>
 <ul class="org-ul">
 <li>為什麼第<a href="#coderef-why" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-why');" onmouseout="CodeHighlightOff(this, 'coderef-why');">5</a>行(np.array(x&gt;0, dtype=np.int))這樣寫會變成0/1<br /></li>
@@ -560,19 +579,18 @@ h(x) = \begin{cases}
 </ul>
 </div>
 </li>
-
-<li><a id="org0d93359"></a>Sigmoid 函數<br />
+<li><a id="orgbf84c29"></a>Sigmoid 函數<br />
 <div class="outline-text-4" id="text-1-5-2">
 <p>
-公式\eqref{org1372656}即為 sigmoid 函數(sigmoid function)，其中的\(exp(-x)\)代表\(e^{-x}\)，\(e\)為納皮爾常數(Napier&rsquo;s constant)2.71828&#x2026;的實數。<br />
+公式\eqref{org9b8fffe}即為 sigmoid 函數(sigmoid function)，其中的\(exp(-x)\)代表\(e^{-x}\)，\(e\)為納皮爾常數(Napier&rsquo;s constant)2.71828&#x2026;的實數。<br />
 </p>
 \begin{equation}
-\label{org1372656}
+\label{org9b8fffe}
 h(x) = \frac{1}{1+exp(-x)} = \frac{1}{1+e^{-x}}
 \end{equation}
 
 <p>
-sigmoid 函數的 python 實作如下所述，而其圖形結果為平滑曲線(圖<a href="#org8336796">11</a>)，針對輸入產生連續性的輸出，但仍與階梯函數相同，以 0 為界線，這種平滑度對於神經網路有相當重要的意義。此外，step function只能回傳 0 或 1，而 sigmoid 函數可以回傳實數。<br />
+sigmoid 函數的 python 實作如下所述，而其圖形結果為平滑曲線(圖<a href="#orge1ab407">12</a>)，針對輸入產生連續性的輸出，但仍與階梯函數相同，以 0 為界線，這種平滑度對於神經網路有相當重要的意義。此外，step function只能回傳 0 或 1，而 sigmoid 函數可以回傳實數。<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
@@ -590,10 +608,10 @@ sigmoid 函數的 python 實作如下所述，而其圖形結果為平滑曲線(
 </pre>
 </div>
 
-<div id="org8336796" class="figure">
+<div id="orge1ab407" class="figure">
 <p><img src="images/sigmoidplot2.png" alt="sigmoidplot2.png" width="500" /><br />
 </p>
-<p><span class="figure-number">Figure 11: </span>sigmoid 函數圖</p>
+<p><span class="figure-number">Figure 12: </span>sigmoid 函數圖</p>
 </div>
 <ul class="org-ul">
 <li>非線性功能<br /></li>
@@ -605,18 +623,17 @@ sigmoid 函數的 python 實作如下所述，而其圖形結果為平滑曲線(
 </ul>
 </div>
 </li>
-
-<li><a id="orgc9cfb4e"></a>ReLU 函數<br />
+<li><a id="org1aacb57"></a>ReLU 函數<br />
 <div class="outline-text-4" id="text-1-5-3">
 <p>
 神經網路感知器使用的活化函數多為非線性函數，如階梯函數與 sigmoid 函數，其主要原因在於，若在神經網路中使用線性函數，則不論加深多少層，這些函數都能合併為一個單一函數。例如，一個以\(h(x)=cx\)為活化函數的三層網路，其執行結果便相當於\(y(x)=h(h(h(x)))\)，亦即，其執行網果就如同一個以\(y(h)=ax\)為活化函數的一層網路，其中\(a=c^{3}\)。<br />
 </p>
 
 <p>
-雖然 sigmoid 函數很早就應用於神經網路中，但最近較常使用的為 ReLU (Rectified Linear Unit)函數，若輸入超過 0，則直接輸出；若輪入小於 0，則輸出 0，如公式\eqref{orgff6b2d7}所示，其函數圖形則如圖<a href="#org7ba035c">12</a>所示。<br />
+雖然 sigmoid 函數很早就應用於神經網路中，但最近較常使用的為 ReLU (Rectified Linear Unit)函數，若輸入超過 0，則直接輸出；若輪入小於 0，則輸出 0，如公式\eqref{org53ea318}所示，其函數圖形則如圖<a href="#orge7c1296">13</a>所示。<br />
 </p>
 \begin{equation}
-\label{orgff6b2d7}
+\label{org53ea318}
 h(x) = \begin{cases} x & \text{if } x > 0
 \\ 0 & \text{if } x\leq 0 \end{cases}
 \end{equation}
@@ -641,10 +658,10 @@ or<br />
 </pre>
 </div>
 
-<div id="org7ba035c" class="figure">
+<div id="orge7c1296" class="figure">
 <p><img src="images/ReLUPlot.png" alt="ReLUPlot.png" width="500" /><br />
 </p>
-<p><span class="figure-number">Figure 12: </span>ReLU 函數圖</p>
+<p><span class="figure-number">Figure 13: </span>ReLU 函數圖</p>
 </div>
 <ul class="org-ul">
 <li>非線性功能<br /></li>
@@ -658,48 +675,45 @@ or<br />
 </ol>
 </div>
 </div>
-
-<div id="outline-container-orgd416e02" class="outline-2">
-<h2 id="orgd416e02"><span class="section-number-2">2.</span> 神經網路的學習</h2>
+<div id="outline-container-orgcf86080" class="outline-2">
+<h2 id="orgcf86080"><span class="section-number-2">2.</span> 神經網路的學習</h2>
 <div class="outline-text-2" id="text-2">
 </div>
-<div id="outline-container-org11aaeb4" class="outline-3">
-<h3 id="org11aaeb4"><span class="section-number-3">2.1.</span> 從資料中學習</h3>
+<div id="outline-container-org886ad44" class="outline-3">
+<h3 id="org886ad44"><span class="section-number-3">2.1.</span> 從資料中學習</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
-神經網路的特色是可以從資料中學習，此處的學習指「自動決定權重參數」，以人工來指定權重參數值這個工作太過鉅大以至於可行性不高，因為有些神經網路的權重參數可能高達數千億個。機器學習與神經網路最大的差異也在於此。以辨識手寫字（如圖<a href="#orgeccc89c">47</a>）為例，機器學習的作法是先以人工找出該字圖形的特徵量（可以透過 SIFT、SURF、HOG 等視覺領域方法），將該特徵量轉換為向量，再利用機器學習的辨識器（如 SVM、KNN）來學習這些轉換過的特徵向量；而神經網路的作法則是直接將原始圖形當成輸入，至於特徵量本身也是透過神經網路自行學習取得，再透過這些行習得的特徵量進行學習辨識。<br />
+神經網路的特色是可以從資料中學習，此處的學習指「自動決定權重參數」，以人工來指定權重參數值這個工作太過鉅大以至於可行性不高，因為有些神經網路的權重參數可能高達數千億個。機器學習與神經網路最大的差異也在於此。以辨識手寫字（如圖<a href="#orged79968">48</a>）為例，機器學習的作法是先以人工找出該字圖形的特徵量（可以透過 SIFT、SURF、HOG 等視覺領域方法），將該特徵量轉換為向量，再利用機器學習的辨識器（如 SVM、KNN）來學習這些轉換過的特徵向量；而神經網路的作法則是直接將原始圖形當成輸入，至於特徵量本身也是透過神經網路自行學習取得，再透過這些行習得的特徵量進行學習辨識。<br />
 </p>
 
 <p>
 在機器學習的過程中，一般會把資料分成訓練資料與測試資料兩類，其中訓練資料用來進行學習、尋找最佳參數；而測試資料則是用來評估訓練後的模型成效。若只使用同一種資料集（如同一個人的字跡）來進行訓練與評估，則可能導致模型只對此人的字跡有辨識成效，這㮔問題稱為過度擬合（overfitting）。<br />
 </p>
 
-<div id="orgc56e76b" class="figure">
+<div id="org200d579" class="figure">
 <p><img src="images/MNIST-Image.png" alt="MNIST-Image.png" width="500" /><br />
 </p>
-<p><span class="figure-number">Figure 13: </span>手寫字體辨識</p>
+<p><span class="figure-number">Figure 14: </span>手寫字體辨識</p>
 </div>
 </div>
 </div>
-
-<div id="outline-container-org7a13087" class="outline-3">
-<h3 id="org7a13087"><span class="section-number-3">2.2.</span> Overfitting v.s. underfitting</h3>
+<div id="outline-container-org2020634" class="outline-3">
+<h3 id="org2020634"><span class="section-number-3">2.2.</span> Overfitting v.s. underfitting</h3>
 <div class="outline-text-3" id="text-2-2">
 <p>
-機器學習的本質即在於最佳化與普遍性之間的拉扯，最佳化(optimization)是指調整模型使得模型能在訓練資料上獲得最佳表現的過程；而普遍性(generalization)是指已訓練過的模型對從未見過的資料的預測能力。在訓練之初，最佳化和普遍性是高度相關的，訓練資料的損失越低、測試資料的損失也越低。此時，模型仍處於低度擬合狀態，仍有進步空間；在訓練資料經過一定回合(epoch)的訓練後，普遍程度的改善幅逐漸停止，驗證指標隨之停滯然後開始變差，於是模型開始 overfitting。也就是說，模型已經學習了一些訓練集特有的模式，但這些特有模式根本和新資料不相關、甚或會誤導對新資料的預測。<br />
+機器學習的本質即在於 <b>最佳化</b> 與 <b>普遍性</b> 之間的拉扯，最佳化(optimization)是指調整模型使得模型能在訓練資料上獲得最佳表現的過程；而普遍性(generalization)是指已訓練過的模型對從未見過的資料的預測能力。在訓練之初，最佳化和普遍性是高度相關的，訓練資料的損失越低、測試資料的損失也越低。此時，模型仍處於低度擬合狀態，仍有進步空間；在訓練資料經過一定回合(epoch)的訓練後，普遍程度的改善幅逐漸停止，驗證指標隨之停滯然後開始變差，於是模型開始 overfitting。也就是說，模型已經學習了一些訓練集特有的模式，但這些特有模式根本和新資料不相關、甚或會誤導對新資料的預測。<br />
 </p>
 
 <p>
-為了防止模型在訓練資料中學到錯誤或不相關的模式，最好的解決方案是取得更多訓練資料，如果無法做到這一點，次佳的解決方案是調配模型儲存的訊訊量或者限制儲存資訊的類型或數值，如果一個神經網路只能記住少量的模式，那麼優化過程將迫使它專注於最顯著的那些模式，而不會去記住那些不相關的資訊，如此才能適應從未見過的新資料。<br />
+為了防止模型在訓練資料中學到錯誤或不相關的模式，最好的解決方案是取得更多訓練資料，如果無法做到這一點，次佳的解決方案是調配模型儲存的訊息量或者限制儲存資訊的類型或數值，如果一個神經網路只能記住少量的模式，那麼優化過程將迫使它專注於最顯著的那些模式，而不會去記住那些不相關的資訊，如此才能適應從未見過的新資料。<br />
 </p>
 
 <p>
 這種週配或限制模型資訊(即參數)以對抗 overfitting 的方式稱為常規化(regularization)，幾個常見的常規化技術如下：<br />
 </p>
 </div>
-
 <ol class="org-ol">
-<li><a id="orgd3e1325"></a>縮減神經網路的大小<br />
+<li><a id="org2c54ff2"></a>縮減神經網路的大小<br />
 <div class="outline-text-4" id="text-2-2-1">
 <p>
 即減少模型可用來學習的參數數量(包含網路的層數和每層的神經元個數)，在深度學習中，模型中可學習參數的數量(權重數量)通常被稱為容量(capacity)。直覺上，有更多參數的模型具有更多的記憶能力(memorization capacity)，因此可以很容易在訓練樣本與其目標之間做出完美的對應，但卻沒有任何適應學習的能力。例如，我們可以建立具有 500000 個參數的模型來輕鬆學習(記憶)MNIST 訓練集中的每個數字所屬類別，但這種模型對於預測新的數字圖案毫無用處。<br />
@@ -742,14 +756,14 @@ or<br />
 </p>
 
 
-<div id="org21f1a73" class="figure">
-<p><img src="images/img-191120103824.jpg" alt="img-191120103824.jpg" /><br />
+<div id="org889888e" class="figure">
+<p><img src="images/img-191120103824.jpg" alt="img-191120103824.jpg" width="500" /><br />
 </p>
-<p><span class="figure-number">Figure 14: </span>模型容量對驗證損失分數的影響-較小的模型</p>
+<p><span class="figure-number">Figure 15: </span>模型容量對驗證損失分數的影響-較小的模型</p>
 </div>
 
 <p>
-相反的，如果我們刻意將神經網路的 capacity 擴大，如下，每一層的神經元數量由原來的 16 增加到 512，則結果如圖<a href="#org796ec93">15</a>，擴大版的神經網路幾乎在訓練之初就開始 overfitting，而且越來越嚴重，其驗證損失的表現也較原始版本差。<br />
+相反的，如果我們刻意將神經網路的 capacity 擴大，如下，每一層的神經元數量由原來的 16 增加到 512，則結果如圖<a href="#org0fda035">16</a>，擴大版的神經網路幾乎在訓練之初就開始 overfitting，而且越來越嚴重，其驗證損失的表現也較原始版本差。<br />
 </p>
 
 <div class="org-src-container">
@@ -761,26 +775,25 @@ or<br />
 </div>
 
 
-<div id="org796ec93" class="figure">
-<p><img src="images/img-191120103825.jpg" alt="img-191120103825.jpg" /><br />
+<div id="org0fda035" class="figure">
+<p><img src="images/img-191120103825.jpg" alt="img-191120103825.jpg" width="500" /><br />
 </p>
-<p><span class="figure-number">Figure 15: </span>模型容量對驗證損失分數的影響-較大的容量</p>
+<p><span class="figure-number">Figure 16: </span>模型容量對驗證損失分數的影響-較大的容量</p>
 </div>
 
 <p>
-較大模型的神經網路雖然導致驗證損失的效能下降，但在訓練損失上的表現則否，由圖<a href="#org530caf6">16</a>的黑點可明顯看出大網路模型在訓練期間的損失極低，然而這種效能在面對新資料（驗證資烞十）時確無法表現出來。<br />
+較大模型的神經網路雖然導致驗證損失的效能下降，但在訓練損失上的表現則否，由圖<a href="#org5667a7a">17</a>的黑點可明顯看出大網路模型在訓練期間的損失極低，然而這種效能在面對新資料（驗證資集）時確無法表現出來。<br />
 </p>
 
 
-<div id="org530caf6" class="figure">
-<p><img src="images/img-191120103826.jpg" alt="img-191120103826.jpg" /><br />
+<div id="org5667a7a" class="figure">
+<p><img src="images/img-191120103826.jpg" alt="img-191120103826.jpg" width="500" /><br />
 </p>
-<p><span class="figure-number">Figure 16: </span>模型容量對訓練損失分數的影響-較大的容量</p>
+<p><span class="figure-number">Figure 17: </span>模型容量對訓練損失分數的影響-較大的容量</p>
 </div>
 </div>
 </li>
-
-<li><a id="orgc36b792"></a>加入權重常規化 (weight regularization)<br />
+<li><a id="org0ec4a4e"></a>加入權重常規化 (weight regularization)<br />
 <div class="outline-text-4" id="text-2-2-2">
 <p>
 在設計網路模型時，一個原則為：如果兩種模型有同樣的效能表現，則較簡單的模型通常是更好的設計，也更不容易導致 overfitting。這裡所謂的簡單指的是參數值分佈的熵比較小(entropy of distribution of parameter values las less entropy)的模型，或是使用較少參數的模型。因此，降低 overfitting 就是想辦法採用較小的權重值以限制神經網路的複雜性，這會讓權重的分佈更為常規化(regularized)。權重值常規化(weight regularization)在作法上就是對損失函數中較大的權重加上代價(cost)項目，通常有兩種方式：<br />
@@ -808,19 +821,18 @@ or<br />
 </div>
 
 <p>
-上述程式中 l2(0.001)的意思是表示該層權重矩陣中的每個係數都會加上(0.001*權重係數值)到神經網路的總損失函數上，由圖<a href="#org8a4b86a">17</a>的結果可看，加入 L2 regularization 的模組，其驗證損失的表現較佳。<br />
+上述程式中 l2(0.001)的意思是表示該層權重矩陣中的每個係數都會加上(0.001*權重係數值)到神經網路的總損失函數上，由圖<a href="#orgd627404">18</a>的結果可看，加入 L2 regularization 的模組，其驗證損失的表現較佳。<br />
 </p>
 
 
-<div id="org8a4b86a" class="figure">
-<p><img src="images/img-19112010382A.jpg" alt="img-19112010382A.jpg" /><br />
+<div id="orgd627404" class="figure">
+<p><img src="images/img-19112010382A.jpg" alt="img-19112010382A.jpg" width="500" /><br />
 </p>
-<p><span class="figure-number">Figure 17: </span>權重正規化對訓練損失分數的影響</p>
+<p><span class="figure-number">Figure 18: </span>權重正規化對訓練損失分數的影響</p>
 </div>
 </div>
 </li>
-
-<li><a id="org3df14fb"></a>丟棄法 (dropout)<br />
+<li><a id="org327663e"></a>丟棄法 (dropout)<br />
 <div class="outline-text-4" id="text-2-2-3">
 <p>
 由 Ceoff Hinton 教授和他在多倫多大學的學生所開發出來的常規化技術之一，主要是在訓練期間隨機丟棄(dropping out，即把 feature 值歸零)layer 的一些輸出特徵，假設某層在訓練期間的某一狀態下其正常輸出向量為[0.2, 0.5, 1.3, 0.8, 1.1]，在 dropout 後，某幾個輸輸向量的值會被歸零，如[0, 0.5, 1.3, 0, 1.1]。丟棄率則是指被歸零的特徵值個數佔特徵值總數的比例，以此例而言丟棄率為 2/5=0.4。<br />
@@ -845,32 +857,31 @@ or<br />
 </div>
 
 <p>
-在加入兩個 Dropout 層後對於降低 overfitting 的效果如圖<a href="#org8670ce9">18</a>所示。<br />
+在加入兩個 Dropout 層後對於降低 overfitting 的效果如圖<a href="#org2550187">19</a>所示。<br />
 </p>
 
 
-<div id="org8670ce9" class="figure">
-<p><img src="images/img-19112010382B.jpg" alt="img-19112010382B.jpg" /><br />
+<div id="org2550187" class="figure">
+<p><img src="images/img-19112010382B.jpg" alt="img-19112010382B.jpg" width="500" /><br />
 </p>
-<p><span class="figure-number">Figure 18: </span>權重正規化對訓練損失分數的影響</p>
+<p><span class="figure-number">Figure 19: </span>權重正規化對訓練損失分數的影響</p>
 </div>
 </div>
 </li>
 </ol>
 </div>
-
-<div id="outline-container-org1012fdd" class="outline-3">
-<h3 id="org1012fdd"><span class="section-number-3">2.3.</span> 三層神經網路</h3>
+<div id="outline-container-orgcf573f8" class="outline-3">
+<h3 id="orgcf573f8"><span class="section-number-3">2.3.</span> 三層神經網路</h3>
 <div class="outline-text-3" id="text-2-3">
 <p>
-圖<a href="#org43b33a0">19</a>為典型的三層神經網路，輸入層(layer 0)有 2 個神經元，兩個隱藏層(layer 1, 2)各有 3 個及 2 個神經元，輸出層(layer 3)則有兩個神經元。神經網路中各層的神經元的訊息傳遞則是透過矩陣相乘來進行。<br />
+圖<a href="#orgc2a5867">20</a>為典型的三層神經網路，輸入層(layer 0)有 2 個神經元，兩個隱藏層(layer 1, 2)各有 3 個及 2 個神經元，輸出層(layer 3)則有兩個神經元。神經網路中各層的神經元的訊息傳遞則是透過矩陣相乘來進行。<br />
 </p>
 
 
-<div id="org43b33a0" class="figure">
+<div id="orgc2a5867" class="figure">
 <p><img src="images/3LayerNetwork.png" alt="3LayerNetwork.png" width="500" /><br />
 </p>
-<p><span class="figure-number">Figure 19: </span>三層神經網路</p>
+<p><span class="figure-number">Figure 20: </span>三層神經網路</p>
 </div>
 
 <p>
@@ -882,27 +893,25 @@ or<br />
 </ul>
 </div>
 </div>
-
-<div id="outline-container-org7fbaef3" class="outline-3">
-<h3 id="org7fbaef3"><span class="section-number-3">2.4.</span> 損失函數</h3>
+<div id="outline-container-org39d607b" class="outline-3">
+<h3 id="org39d607b"><span class="section-number-3">2.4.</span> 損失函數</h3>
 <div class="outline-text-3" id="text-2-4">
 <p>
 至於神經網路模型的成效則可由損失函數（loss function）來判斷，常見的損失函數有均方誤差與交叉熵誤差兩種。<br />
 </p>
 </div>
-
 <ol class="org-ol">
-<li><a id="org90c5c30"></a>均方誤差<br />
+<li><a id="orgdd770b1"></a>均方誤差<br />
 <div class="outline-text-4" id="text-2-4-1">
 <p>
-均方誤差（mean squared error）可以公式\eqref{org5b59596}表示：<br />
+均方誤差（mean squared error）可以公式\eqref{org9ba8145}表示：<br />
 </p>
 \begin{equation}
-\label{org5b59596}
+\label{org9ba8145}
 E = \frac{1}{2} \sum_{k}(y_k-t_k)^2
 \end{equation}
 <p>
-公式\eqref{org5b59596}中的\(y_k\)為神經網路的輸出，\(t_k\)為訓練資料，\(k\)為資料的維度，其實際運算的資料內容與結果可由如下程式碼，當 y 的預測機率越接近正確答案時，均方誤差的值越小。<br />
+公式\eqref{org9ba8145}中的\(y_k\)為神經網路的輸出，\(t_k\)為訓練資料，\(k\)為資料的維度，其實際運算的資料內容與結果可由如下程式碼，當 y 的預測機率越接近正確答案時，均方誤差的值越小。<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
@@ -925,18 +934,17 @@ E = \frac{1}{2} \sum_{k}(y_k-t_k)^2
 </pre>
 </div>
 </li>
-
-<li><a id="org6d79741"></a>交叉熵誤差<br />
+<li><a id="org14ebd2d"></a>交叉熵誤差<br />
 <div class="outline-text-4" id="text-2-4-2">
 <p>
-交叉熵誤差（cross entropy error）可以公式\eqref{orgf244f12}表示：<br />
+交叉熵誤差（cross entropy error）可以公式\eqref{org4618109}表示：<br />
 </p>
 \begin{equation}
-\label{orgf244f12}
+\label{org4618109}
 E = -\sum_{k}t_k\log y_k
 \end{equation}
 <p>
-公式\eqref{orgf244f12}中的\(y_k\)為神經網路的輸出，\(t_k\)為訓練資料（即正確答案標籤，為 one-hot 形式，只有正確案為 1，其餘為 0），\(log\)為以\(e\)為底的自然對數，其輸出圖形如圖<a href="#orgabafbaf">20</a>所示。<br />
+公式\eqref{org4618109}中的\(y_k\)為神經網路的輸出，\(t_k\)為訓練資料（即正確答案標籤，為 one-hot 形式，只有正確案為 1，其餘為 0），\(log\)為以\(e\)為底的自然對數，其輸出圖形如圖<a href="#orgb6a8196">21</a>所示。<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span>  <span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
@@ -951,10 +959,10 @@ E = -\sum_{k}t_k\log y_k
 </pre>
 </div>
 
-<div id="orgabafbaf" class="figure">
+<div id="orgb6a8196" class="figure">
 <p><img src="images/log.png" alt="log.png" /><br />
 </p>
-<p><span class="figure-number">Figure 20: </span>自然對數\(y=\log x\)曲線圖</p>
+<p><span class="figure-number">Figure 21: </span>自然對數\(y=\log x\)曲線圖</p>
 </div>
 
 <p>
@@ -983,19 +991,18 @@ E = -\sum_{k}t_k\log y_k
 </pre>
 </div>
 </li>
-
-<li><a id="orgeea9b3e"></a>批次學習<br />
+<li><a id="orga50d1bb"></a>批次學習<br />
 <div class="outline-text-4" id="text-2-4-3">
 <p>
 機器學習的目的在於使用訓練資料找能能儘量縮小損失函數的參數，因此，計算損失函數自然不是逐一計算，而是以縮小所有訓練資料的損失函數總和為最終目標。<br />
-因此，前節中的交叉熵誤差（公式\eqref{orgf244f12}）就要修改為以下算式（\eqref{org85a701a}）：<br />
+因此，前節中的交叉熵誤差（公式\eqref{org4618109}）就要修改為以下算式（\eqref{org0e00713}）：<br />
 </p>
 \begin{equation}
-\label{org85a701a}
+\label{org0e00713}
 E = -\frac{1}{N}\sum_{n}\sum_{k}t_{nk}\log y_{nk}
 \end{equation}
 <p>
-公式\eqref{org85a701a}的 N 為資料筆數，\(y_{nk}\)代表神經網路第 n 筆資料的第 k 個輸出、\(t){nk}\)則為第 n 筆訓練資料的第 k 個值，最後除以 N、進行正規化，所得即為這 N 筆資料的「平均損失函數」。然而，實際執行時並無法取出所有訓練資料來運算，以 MNIST 資料集為例，訓練資料就有 60000 筆，若是其他大數劇則資料筆數可能達數千萬，較務實的作法，是隨機自資料集中抽取 N 筆資料（稱之為 mini batch）來計算平均損失函數，以代表整體。<br />
+公式\eqref{org0e00713}的 N 為資料筆數，\(y_{nk}\)代表神經網路第 n 筆資料的第 k 個輸出、\(t){nk}\)則為第 n 筆訓練資料的第 k 個值，最後除以 N、進行正規化，所得即為這 N 筆資料的「平均損失函數」。然而，實際執行時並無法取出所有訓練資料來運算，以 MNIST 資料集為例，訓練資料就有 60000 筆，若是其他大數劇則資料筆數可能達數千萬，較務實的作法，是隨機自資料集中抽取 N 筆資料（稱之為 mini batch）來計算平均損失函數，以代表整體。<br />
 那麼，這個隨機抽取的資料筆數要設定為多少才適合？可以從以下兩個觀點來看：<br />
 </p>
 <ul class="org-ul">
@@ -1014,8 +1021,7 @@ E = -\frac{1}{N}\sum_{n}\sum_{k}t_{nk}\log y_{nk}
 </ul>
 </div>
 </li>
-
-<li><a id="org1d04267"></a>設定損失函數做為效能指標的原因<br />
+<li><a id="orgfd5ba39"></a>設定損失函數做為效能指標的原因<br />
 <div class="outline-text-4" id="text-2-4-4">
 <p>
 進行神經網路的學習，目的在於找出辨識準確度高的參數，那麼，為什麼不以「辨識準確率」做為指標，而是要導入損失函數？<br />
@@ -1028,20 +1034,19 @@ E = -\frac{1}{N}\sum_{n}\sum_{k}t_{nk}\log y_{nk}
 </li>
 </ol>
 </div>
-
-<div id="outline-container-orgf16eb39" class="outline-3">
-<h3 id="orgf16eb39"><span class="section-number-3">2.5.</span> 數值微分</h3>
+<div id="outline-container-org58a89e1" class="outline-3">
+<h3 id="org58a89e1"><span class="section-number-3">2.5.</span> 數值微分</h3>
 <div class="outline-text-3" id="text-2-5">
 <p>
-梯度法使用梯度的資料來決定學習（或找出最佳參數）的方向，此處會應用到數學的微分。微分指的是某個瞬間的變化量（如行進中的車輛瞬間速度的變化量），可以公式\eqref{orgceb8002}來定義：<br />
+梯度法使用梯度的資料來決定學習（或找出最佳參數）的方向，此處會應用到數學的微分。微分指的是某個瞬間的變化量（如行進中的車輛瞬間速度的變化量），可以公式\eqref{org78ae88c}來定義：<br />
 </p>
 \begin{equation}
-\label{orgceb8002}
+\label{org78ae88c}
 \frac{df(x)}{dx}=\lim_{h\to0}\frac{f(x+h)-f(x)}{h}
 \end{equation}
 <p>
 上述公式中，等號左側\(\frac{df(x)}{dx}\)代表\(f(x)\)中對\(x\)微分，亦即，找出相對 x 之 f(x)的變化，也就是希望能找出：「隨著\(x\)的細微改變，函數\(f(x)\)會出現何種變化？」的答案，此處的\(h\)趨近於 0。<br />
-以公式\eqref{orgceb8002}實際進行 python 運算會因為 h 值太小而導致四捨五入無法計算出真實結果，如下列程式碼，若\(x=10e-50\)，其計算結果為 0。<br />
+以公式\eqref{org78ae88c}實際進行 python 運算會因為 h 值太小而導致四捨五入無法計算出真實結果，如下列程式碼，若\(x=10e-50\)，其計算結果為 0。<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">numerical_diff</span>(f, x):
@@ -1099,10 +1104,10 @@ E = -\frac{1}{N}\sum_{n}\sum_{k}t_{nk}\log y_{nk}
 
 
 
-<div id="org3d2db24" class="figure">
+<div id="org7f45355" class="figure">
 <p><img src="images/function_1.png" alt="function_1.png" /><br />
 </p>
-<p><span class="figure-number">Figure 21: </span>\(f(x)=0.01x^2+0.1x\)圖表</p>
+<p><span class="figure-number">Figure 22: </span>\(f(x)=0.01x^2+0.1x\)圖表</p>
 </div>
 
 <p>
@@ -1110,10 +1115,10 @@ E = -\frac{1}{N}\sum_{n}\sum_{k}t_{nk}\log y_{nk}
 </p>
 
 <p>
-若再進一步考慮兩個變數時的微分，如算式\eqref{org6986c67}，這種由多個變數形成的微分，稱作偏微分，，該公式對應的 python 程式碼如下：<br />
+若再進一步考慮兩個變數時的微分，如算式\eqref{org6b5ef35}，這種由多個變數形成的微分，稱作偏微分，，該公式對應的 python 程式碼如下：<br />
 </p>
 \begin{equation}
-\label{org6986c67}
+\label{org6b5ef35}
 \(f(x_0,x_1)=x_0^2+x_1^2\)
 \end{equation}
 
@@ -1124,7 +1129,7 @@ E = -\frac{1}{N}\sum_{n}\sum_{k}t_{nk}\log y_{nk}
 </pre>
 </div>
 <p>
-公式\(fx_0,x_1)=x_0^2+x_1^2\)的圖表如圖<a href="#org2c12361">22</a>所示。<br />
+公式\(fx_0,x_1)=x_0^2+x_1^2\)的圖表如圖<a href="#orga595b35">23</a>所示。<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">function_2</span>(x):
@@ -1154,10 +1159,10 @@ E = -\frac{1}{N}\sum_{n}\sum_{k}t_{nk}\log y_{nk}
 </div>
 
 
-<div id="org2c12361" class="figure">
+<div id="orga595b35" class="figure">
 <p><img src="images/multivariate_func.png" alt="multivariate_func.png" /><br />
 </p>
-<p><span class="figure-number">Figure 22: </span>\(f(x_0,x_1)=x_0^2+x_1^2\)圖表</p>
+<p><span class="figure-number">Figure 23: </span>\(f(x_0,x_1)=x_0^2+x_1^2\)圖表</p>
 </div>
 
 
@@ -1172,19 +1177,18 @@ E = -\frac{1}{N}\sum_{n}\sum_{k}t_{nk}\log y_{nk}
 </p>
 </div>
 </div>
-
-<div id="outline-container-orgdd6c6e4" class="outline-3">
-<h3 id="orgdd6c6e4"><span class="section-number-3">2.6.</span> Forward propagation</h3>
+<div id="outline-container-orgaf99eea" class="outline-3">
+<h3 id="orgaf99eea"><span class="section-number-3">2.6.</span> Forward propagation</h3>
 <div class="outline-text-3" id="text-2-6">
 </div>
 <ol class="org-ol">
-<li><a id="org197eb74"></a>各層間的訊息傳遞<br />
+<li><a id="org7239574"></a>各層間的訊息傳遞<br />
 <div class="outline-text-4" id="text-2-6-1">
 <p>
-以輸入層傳遞訊息至 layer 1 的神經元 a1 為例，a1 的訊息可由公式\eqref{org50e97f3}計算出來。<br />
+以輸入層傳遞訊息至 layer 1 的神經元 a1 為例，a1 的訊息可由公式\eqref{org018948b}計算出來。<br />
 </p>
 \begin{equation}
-\label{org50e97f3}
+\label{org018948b}
 a_1^{(1)}=w_{11}^{(1)}x_1+w_{12}^{(1)}x_2+b_1^{(1)}
 \end{equation}
 <p>
@@ -1197,10 +1201,10 @@ a_1^{(1)}=w_{11}^{(1)}x_1+w_{12}^{(1)}x_2+b_1^{(1)}
 </ul>
 
 <p>
-而透過矩陣乘積，可由公式\eqref{org528ca42}顯示 layer 1 的「加權總和」。<br />
+而透過矩陣乘積，可由公式\eqref{org8e6825e}顯示 layer 1 的「加權總和」。<br />
 </p>
 \begin{equation}
-\label{org528ca42}
+\label{org8e6825e}
 A_1^{(1)}=XW^{(1)}+B^{(1)}
 \end{equation}
 
@@ -1222,13 +1226,13 @@ W^{(1)} = \begin{pmatrix}
 </p>
 
 <p>
-圖<a href="#orgc94cac7">23</a>以\(a_i\)代表隱藏層 layer 1 中各節點的加權總和，以\(z\)代表以活化函數轉換後的訊號，至於\(h()\)則表示活化函數 sigmoid。<br />
+圖<a href="#orgf324fab">24</a>以\(a_i\)代表隱藏層 layer 1 中各節點的加權總和，以\(z\)代表以活化函數轉換後的訊號，至於\(h()\)則表示活化函數 sigmoid。<br />
 </p>
 
-<div id="orgc94cac7" class="figure">
+<div id="orgf324fab" class="figure">
 <p><img src="images/3LayerNetworkv1.png" alt="3LayerNetworkv1.png" width="500" /><br />
 </p>
-<p><span class="figure-number">Figure 23: </span>三層神經網路中 layer 0 至 layer 1 間的訊息傳遞</p>
+<p><span class="figure-number">Figure 24: </span>三層神經網路中 layer 0 至 layer 1 間的訊息傳遞</p>
 </div>
 
 
@@ -1279,7 +1283,7 @@ W^{(1)} = \begin{pmatrix}
 </pre>
 </div>
 </li>
-<li><a id="org52d24d0"></a>Python 實作: 多層神經網路的訊息傳遞<br />
+<li><a id="orgecc5f48"></a>Python 實作: 多層神經網路的訊息傳遞<br />
 <div class="outline-text-4" id="text-2-6-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #5B6268;">#</span><span style="color: #5B6268;">python code for complete multi-layer network message trasmission</span>
@@ -1323,13 +1327,12 @@ W^{(1)} = \begin{pmatrix}
 </li>
 </ol>
 </div>
-
-<div id="outline-container-orgb11fa36" class="outline-3">
-<h3 id="orgb11fa36"><span class="section-number-3">2.7.</span> Backward propagation</h3>
+<div id="outline-container-orgef341c1" class="outline-3">
+<h3 id="orgef341c1"><span class="section-number-3">2.7.</span> Backward propagation</h3>
 <div class="outline-text-3" id="text-2-7">
 <p>
 反向傳遞的目的就是利用最後的目標函數(loss/cost function)來進行參數的更新，一般來說都是用誤差均方和(mean square error)當作目標函數。如果誤差值越大，代表參數學得不好，所以需要繼續學習，直到參數或是誤差值收斂<sup><a id="fnr.5" class="footref" href="#fn.5" role="doc-backlink">5</a></sup>。<br />
-回到圖<a href="#org43b33a0">19</a><br />
+回到圖<a href="#orgc2a5867">20</a><br />
 \(x^{(i)}\)為第i筆輸入，其輸出值為<br />
 \[ y^{(i)}=\begin{bmatrix}
 y_1^{(1)} \\
@@ -1347,34 +1350,33 @@ E=\sum_{i=0}^nE^{(i)}
 </p>
 </div>
 </div>
-
-<div id="outline-container-orgbca7180" class="outline-3">
-<h3 id="orgbca7180"><span class="section-number-3">2.8.</span> 輸出層的設計：恆等函數與 softmax 函數</h3>
+<div id="outline-container-org268a218" class="outline-3">
+<h3 id="org268a218"><span class="section-number-3">2.8.</span> 輸出層的設計：恆等函數與 softmax 函數</h3>
 <div class="outline-text-3" id="text-2-8">
 <p>
-神經網路可以用來解決分類問題與迴歸問題，端視輸出層所使用的活化函數，解決迴歸問題時使用恆等函數，而分類問題則使用 <i>softmax 函數</i> 。恆等函數對於輸入的內容完全不做任何處理，直接輸出，其神經網路的結構如圖<a href="#orge5cda5f">24</a>所示。<br />
+神經網路可以用來解決分類問題與迴歸問題，端視輸出層所使用的活化函數，解決迴歸問題時使用恆等函數，而分類問題則使用 <i>softmax 函數</i> 。恆等函數對於輸入的內容完全不做任何處理，直接輸出，其神經網路的結構如圖<a href="#org14e5ce0">25</a>所示。<br />
 </p>
 
-<div id="orge5cda5f" class="figure">
+<div id="org14e5ce0" class="figure">
 <p><img src="images/identity-network.png" alt="identity-network.png" width="300" /><br />
 </p>
-<p><span class="figure-number">Figure 24: </span>恆等函數神經網路圖</p>
+<p><span class="figure-number">Figure 25: </span>恆等函數神經網路圖</p>
 </div>
 
 <p>
-而分類問題使用的 softmax 函數則如公式\eqref{orga6a03ea}所示，\(exp(x)\)為代表\(e^x\)的指標函數，輸出層有 n 個節點，而每個節點收到的訊息\(y_k\)來自前一層以箭頭連接的所有訊號輸入，由公式\eqref{orga6a03ea}的分母也可以看出，輸出的各個神經元會依以「依各節點訊號量比例」的模式影響下一層的輸入。<br />
+而分類問題使用的 softmax 函數則如公式\eqref{org083f8d1}所示，\(exp(x)\)為代表\(e^x\)的指標函數，輸出層有 n 個節點，而每個節點收到的訊息\(y_k\)來自前一層以箭頭連接的所有訊號輸入，由公式\eqref{org083f8d1}的分母也可以看出，輸出的各個神經元會依以「依各節點訊號量比例」的模式影響下一層的輸入。<br />
 </p>
 
 \begin{equation}
-\label{orga6a03ea}
+\label{org083f8d1}
 y_k = \frac{exp(a_k)}{\sum_{i=1}^{n}exp(a_i)}
 \end{equation}
 
 
-<div id="org43d3a48" class="figure">
+<div id="orge380ba1" class="figure">
 <p><img src="images/softmax-network.png" alt="softmax-network.png" width="500" /><br />
 </p>
-<p><span class="figure-number">Figure 25: </span>softmax 函數神經網路圖</p>
+<p><span class="figure-number">Figure 26: </span>softmax 函數神經網路圖</p>
 </div>
 
 <p>
@@ -1398,9 +1400,8 @@ y_k = \frac{exp(a_k)}{\sum_{i=1}^{n}exp(a_i)}
 </pre>
 </div>
 </div>
-
-<div id="outline-container-org1bbffb6" class="outline-3">
-<h3 id="org1bbffb6"><span class="section-number-3">2.9.</span> softmax 函數的特色</h3>
+<div id="outline-container-org544582d" class="outline-3">
+<h3 id="org544582d"><span class="section-number-3">2.9.</span> softmax 函數的特色</h3>
 <div class="outline-text-3" id="text-2-9">
 <p>
 softmaxe 的輸出為介於 0 到 1 間的實數，此外，其輸出總和為 1，這個性質使的 softmax 函數的輸出也可解釋為「機率」。例如，前節程式碼的輸出結果為[0.01821127 0.24519181 0.73659691]，從以機率的角度我們可以說：分類的結果有 1.8%的機率為第 0 類；有 24.52%的機率為第 1 類；有 73.66%的機率為第 2 類。換言之，使用 softmax 函數可以針對問題提出對應的機率。<br />
@@ -1412,9 +1413,8 @@ softmax 函數的另一個特色是其輸出結果仍保持與輸入訊息一致
 </p>
 </div>
 </div>
-
-<div id="outline-container-orgacbbe82" class="outline-3">
-<h3 id="orgacbbe82"><span class="section-number-3">2.10.</span> 梯度</h3>
+<div id="outline-container-orgad7ea51" class="outline-3">
+<h3 id="orgad7ea51"><span class="section-number-3">2.10.</span> 梯度</h3>
 <div class="outline-text-3" id="text-2-10">
 <p>
 若要一次計算出\(x_0\)與\(x_1\)的偏微分，可以計算\((\frac{\partial{f}}{\partial{x_0}},\frac{\partial{f}}{\partial{x_1}})\)，這種方式也叫梯度（gradient），對應之計算程式碼如下：<br />
@@ -1437,22 +1437,22 @@ softmax 函數的另一個特色是其輸出結果仍保持與輸入訊息一致
 <span class="linenr">15: </span>      <span style="color: #51afef;">for</span> idx <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(x.size):
 <span class="linenr">16: </span>          <span style="color: #dcaeea;">tmp_val</span> = x[idx]
 <span class="linenr">17: </span>          <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35336;&#31639;f(x+h)</span>
-<span class="linenr">18: </span>          <span style="color: #dcaeea;">x</span>[<span style="color: #dcaeea;">idx</span>] = <span style="color: #c678dd;">float</span>(tmp_val) + h
+<span class="linenr">18: </span>          <span style="color: #dcaeea;">x</span>[idx] = <span style="color: #c678dd;">float</span>(tmp_val) + h
 <span class="linenr">19: </span>          <span style="color: #dcaeea;">fxh1</span> = f(x) <span style="color: #5B6268;"># </span><span style="color: #5B6268;">f(x+h)</span>
-<span class="linenr">20: </span>          <span style="color: #dcaeea;">x</span>[<span style="color: #dcaeea;">idx</span>] = tmp_val - h
+<span class="linenr">20: </span>          <span style="color: #dcaeea;">x</span>[idx] = tmp_val - h
 <span class="linenr">21: </span>          <span style="color: #dcaeea;">fxh2</span> = f(x) <span style="color: #5B6268;"># </span><span style="color: #5B6268;">f(x-h)</span>
-<span class="linenr">22: </span>          <span style="color: #dcaeea;">grad</span>[<span style="color: #dcaeea;">idx</span>] = (fxh1 - fxh2) / (<span style="color: #da8548; font-weight: bold;">2</span>*h)
+<span class="linenr">22: </span>          <span style="color: #dcaeea;">grad</span>[idx] = (fxh1 - fxh2) / (<span style="color: #da8548; font-weight: bold;">2</span>*h)
 <span class="linenr">23: </span>
-<span class="linenr">24: </span>          <span style="color: #dcaeea;">x</span>[<span style="color: #dcaeea;">idx</span>] = tmp_val <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24674;&#24489;&#21407;&#20540;</span>
+<span class="linenr">24: </span>          <span style="color: #dcaeea;">x</span>[idx] = tmp_val <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24674;&#24489;&#21407;&#20540;</span>
 <span class="linenr">25: </span>      <span style="color: #51afef;">return</span> grad
 <span class="linenr">26: </span>
 <span id="coderef-NumerGrad" class="coderef-off"><span class="linenr">27: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">numerical_gradient</span>(f, X):</span>
 <span class="linenr">28: </span>      <span style="color: #51afef;">if</span> X.ndim == <span style="color: #da8548; font-weight: bold;">1</span>:
 <span class="linenr">29: </span>          <span style="color: #51afef;">return</span> _numerical_gradient_no_batch(f, X)
 <span class="linenr">30: </span>      <span style="color: #51afef;">else</span>:
-<span class="linenr">31: </span>          grad = np.zeros_like(X)
+<span class="linenr">31: </span>          <span style="color: #dcaeea;">grad</span> = np.zeros_like(X)
 <span class="linenr">32: </span>          <span style="color: #51afef;">for</span> idx, x <span style="color: #51afef;">in</span> <span style="color: #c678dd;">enumerate</span>(X):
-<span class="linenr">33: </span>              <span style="color: #dcaeea;">grad</span>[<span style="color: #dcaeea;">idx</span>] = _numerical_gradient_no_batch(f, x)
+<span class="linenr">33: </span>              <span style="color: #dcaeea;">grad</span>[idx] = _numerical_gradient_no_batch(f, x)
 <span class="linenr">34: </span>          <span style="color: #51afef;">return</span> grad
 <span class="linenr">35: </span>
 <span class="linenr">36: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">function_2</span>(x):
@@ -1501,33 +1501,32 @@ softmax 函數的另一個特色是其輸出結果仍保持與輸入訊息一致
 </pre>
 
 <p>
-如圖<a href="#orga40d650">26</a>所示，所謂梯度，指的是函數\(f(x0,x1)\)的「最低位置（最小值）」，這裡的箭頭就如同羅盤，離「最低位置」越遠，箭頭越大。雖然圖<a href="#orga40d650">26</a>中箭頭所指為最低位置，但實際上不一定如此，梯度所指其實為各點之最低方向，其數學意義為：函數值減少最多的方向。<br />
+如圖<a href="#orgda5a3f3">27</a>所示，所謂梯度，指的是函數\(f(x0,x1)\)的「最低位置（最小值）」，這裡的箭頭就如同羅盤，離「最低位置」越遠，箭頭越大。雖然圖<a href="#orgda5a3f3">27</a>中箭頭所指為最低位置，但實際上不一定如此，梯度所指其實為各點之最低方向，其數學意義為：函數值減少最多的方向。<br />
 </p>
 
-<div id="orga40d650" class="figure">
+<div id="orgda5a3f3" class="figure">
 <p><img src="images/gradient_2d.png" alt="gradient_2d.png" /><br />
 </p>
-<p><span class="figure-number">Figure 26: </span>\(f(x_0,x_1)=x_0^2+x_1^2\)之梯度圖形</p>
+<p><span class="figure-number">Figure 27: </span>\(f(x_0,x_1)=x_0^2+x_1^2\)之梯度圖形</p>
 </div>
 </div>
-
 <ol class="org-ol">
-<li><a id="org4e54653"></a>梯度法<br />
+<li><a id="orge760168"></a>梯度法<br />
 <div class="outline-text-4" id="text-2-10-1">
 <p>
 神經網路的學習過程在於尋找最佳參數，這裡的意義也可說成：尋找可以讓損失函數為最小值的參數，以梯度來達成此目的的方法即為梯度法（gradient method），而最小值稱為鞍點（saddle point），鞍點是相對意義的存在，即，由某些方向看來是極大，但由其他方向看來為極小值，梯度法目的在找出梯度為 0 的位置，但不見的是極小值，當函數形成複雜扭曲形狀時，可能進入幾乎平坦而無法繼繼續學習的狀態，稱為「停滯期」。<br />
 由此觀之，梯度法的精神即在於「朝著正確的方向前進一段距離、重新計算出正確方向、再前進一段距離&#x2026;.」。同樣的方法可以用來找出極小值（此時為梯度下降法，gradient descent method)，也能用來找出極大值（梯度上升法，gradient ascent method）。<br />
-若以公式來顯示梯度法，其結果如公式\eqref{org0819310}所示：<br />
+若以公式來顯示梯度法，其結果如公式\eqref{org17c4965}所示：<br />
 </p>
 \begin{equation}
-\label{org0819310}
+\label{org17c4965}
 \begin{split}
 &x_0=x_0-\eta\frac{\partial{f}}{\partial{x_0}}\\
 &x_1=x_1-\eta\frac{\partial{f}}{\partial{x_1}}
 \end{split}
 \end{equation}
 <p>
-公式\eqref{org0819310}中的\(\eta\)代表更新的量，在神經網路中稱為學習率（learning rate），即，在一次學習中，要學習多少，要更新多少參數。公式\eqref{org0819310}為一次更新的內容，或者，我們也可以看成「每次朝著正確方向前進的距離」。以 Python 實作的梯度下降法如下：<br />
+公式\eqref{org17c4965}中的\(\eta\)代表更新的量，在神經網路中稱為學習率（learning rate），即，在一次學習中，要學習多少，要更新多少參數。公式\eqref{org17c4965}為一次更新的內容，或者，我們也可以看成「每次朝著正確方向前進的距離」。以 Python 實作的梯度下降法如下：<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
@@ -1536,12 +1535,12 @@ softmax 函數的另一個特色是其輸出結果仍保持與輸入訊息一致
 <span class="linenr"> 4: </span>      <span style="color: #dcaeea;">grad</span> = np.zeros_like(x)
 <span class="linenr"> 5: </span>      <span style="color: #51afef;">for</span> idx <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(x.size):
 <span class="linenr"> 6: </span>          <span style="color: #dcaeea;">tmp_val</span> = x[idx]
-<span class="linenr"> 7: </span>          <span style="color: #dcaeea;">x</span>[<span style="color: #dcaeea;">idx</span>] = tmp_val + h <span style="color: #5B6268;">#  </span><span style="color: #5B6268;">&#35336;&#31639;f(x+h)</span>
+<span class="linenr"> 7: </span>          <span style="color: #dcaeea;">x</span>[idx] = tmp_val + h <span style="color: #5B6268;">#  </span><span style="color: #5B6268;">&#35336;&#31639;f(x+h)</span>
 <span class="linenr"> 8: </span>          <span style="color: #dcaeea;">fxh1</span> = f(x)
-<span class="linenr"> 9: </span>          <span style="color: #dcaeea;">x</span>[<span style="color: #dcaeea;">idx</span>] = tmp_val - h <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35336;&#31639;(x-h)</span>
+<span class="linenr"> 9: </span>          <span style="color: #dcaeea;">x</span>[idx] = tmp_val - h <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35336;&#31639;(x-h)</span>
 <span class="linenr">10: </span>          <span style="color: #dcaeea;">fxh2</span> = f(x)
-<span class="linenr">11: </span>          <span style="color: #dcaeea;">grad</span>[<span style="color: #dcaeea;">idx</span>] = (fxh1 - fxh2) / (<span style="color: #da8548; font-weight: bold;">2</span>*h)
-<span class="linenr">12: </span>          <span style="color: #dcaeea;">x</span>[<span style="color: #dcaeea;">idx</span>] = tmp_val <span style="color: #5B6268;"># </span><span style="color: #5B6268;">restore original value</span>
+<span class="linenr">11: </span>          <span style="color: #dcaeea;">grad</span>[idx] = (fxh1 - fxh2) / (<span style="color: #da8548; font-weight: bold;">2</span>*h)
+<span class="linenr">12: </span>          <span style="color: #dcaeea;">x</span>[idx] = tmp_val <span style="color: #5B6268;"># </span><span style="color: #5B6268;">restore original value</span>
 <span class="linenr">13: </span>      <span style="color: #51afef;">return</span> grad
 <span class="linenr">14: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">gradient_descent</span>(f, init_x, lr=<span style="color: #da8548; font-weight: bold;">0.01</span>, step_num=<span style="color: #da8548; font-weight: bold;">100</span>):
 <span class="linenr">15: </span>      <span style="color: #dcaeea;">x</span> = init_x
@@ -1578,7 +1577,7 @@ softmax 函數的另一個特色是其輸出結果仍保持與輸入訊息一致
 
 
 <p>
-上述程式中，init_x 為預設值、lr 代表 learning rate、step_num 為重複次數，梯度由 numerical_gradient(f,x)計算，程式執行結果為函數\(f(x_0,x_1)=x_0^2+x_1^2\)的最小值，預設值為\(x_0=-3,x_1=4\)，以梯度法求最小值，最後結果為(-6.1e-10,-8.1-10)，趨近於真實答案(0,0)，即使以其他預設值做為起點，所找到的最小值仍趨近正確答案, 而學習率太大或太小均無法得到良好的結果（學習率太大則會往大數值擴散；學習率太小則幾乎不更新就結束）。至於學習率這種依靠人工進行設定的值稱為超參數（hyperparameter），其最佳設定有賴以各種測試取得。至於梯度法的學習流程則如圖<a href="#org115be25">27</a>所示。<br />
+上述程式中，init_x 為預設值、lr 代表 learning rate、step_num 為重複次數，梯度由 numerical_gradient(f,x)計算，程式執行結果為函數\(f(x_0,x_1)=x_0^2+x_1^2\)的最小值，預設值為\(x_0=-3,x_1=4\)，以梯度法求最小值，最後結果為(-6.1e-10,-8.1-10)，趨近於真實答案(0,0)，即使以其他預設值做為起點，所找到的最小值仍趨近正確答案, 而學習率太大或太小均無法得到良好的結果（學習率太大則會往大數值擴散；學習率太小則幾乎不更新就結束）。至於學習率這種依靠人工進行設定的值稱為超參數（hyperparameter），其最佳設定有賴以各種測試取得。至於梯度法的學習流程則如圖<a href="#orgf6acb18">28</a>所示。<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">cat gradient_method_save.py</span>
@@ -1591,12 +1590,12 @@ softmax 函數的另一個特色是其輸出結果仍保持與輸入訊息一致
 <span class="linenr"> 8: </span>      <span style="color: #dcaeea;">grad</span> = np.zeros_like(x)
 <span class="linenr"> 9: </span>      <span style="color: #51afef;">for</span> idx <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(x.size):
 <span class="linenr">10: </span>          <span style="color: #dcaeea;">tmp_val</span> = x[idx]
-<span class="linenr">11: </span>          <span style="color: #dcaeea;">x</span>[<span style="color: #dcaeea;">idx</span>] = tmp_val + h <span style="color: #5B6268;">#  </span><span style="color: #5B6268;">&#35336;&#31639;f(x+h)</span>
+<span class="linenr">11: </span>          <span style="color: #dcaeea;">x</span>[idx] = tmp_val + h <span style="color: #5B6268;">#  </span><span style="color: #5B6268;">&#35336;&#31639;f(x+h)</span>
 <span class="linenr">12: </span>          <span style="color: #dcaeea;">fxh1</span> = f(x)
-<span class="linenr">13: </span>          <span style="color: #dcaeea;">x</span>[<span style="color: #dcaeea;">idx</span>] = tmp_val - h <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35336;&#31639;(x-h)</span>
+<span class="linenr">13: </span>          <span style="color: #dcaeea;">x</span>[idx] = tmp_val - h <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35336;&#31639;(x-h)</span>
 <span class="linenr">14: </span>          <span style="color: #dcaeea;">fxh2</span> = f(x)
-<span class="linenr">15: </span>          <span style="color: #dcaeea;">grad</span>[<span style="color: #dcaeea;">idx</span>] = (fxh1 - fxh2) / (<span style="color: #da8548; font-weight: bold;">2</span>*h)
-<span class="linenr">16: </span>          <span style="color: #dcaeea;">x</span>[<span style="color: #dcaeea;">idx</span>] = tmp_val <span style="color: #5B6268;"># </span><span style="color: #5B6268;">restore original value</span>
+<span class="linenr">15: </span>          <span style="color: #dcaeea;">grad</span>[idx] = (fxh1 - fxh2) / (<span style="color: #da8548; font-weight: bold;">2</span>*h)
+<span class="linenr">16: </span>          <span style="color: #dcaeea;">x</span>[idx] = tmp_val <span style="color: #5B6268;"># </span><span style="color: #5B6268;">restore original value</span>
 <span class="linenr">17: </span>      <span style="color: #51afef;">return</span> grad
 <span class="linenr">18: </span>
 <span class="linenr">19: </span>
@@ -1636,21 +1635,20 @@ softmax 函數的另一個特色是其輸出結果仍保持與輸入訊息一致
 </pre>
 </div>
 
-<div id="org115be25" class="figure">
+<div id="orgf6acb18" class="figure">
 <p><img src="images/gradient_process_method.png" alt="gradient_process_method.png" /><br />
 </p>
-<p><span class="figure-number">Figure 27: </span>\(f(x_0,x_1)=x_0^2+x_1^2\)的梯度法更新過程</p>
+<p><span class="figure-number">Figure 28: </span>\(f(x_0,x_1)=x_0^2+x_1^2\)的梯度法更新過程</p>
 </div>
 </div>
 </li>
-
-<li><a id="org09366bf"></a>神經網路的梯度<br />
+<li><a id="org4c41c42"></a>神經網路的梯度<br />
 <div class="outline-text-4" id="text-2-10-2">
 <p>
 神經網路的梯度指與權重參數有關的損失函數梯度，若有個形狀為\(2*3\)、權重為\(W\)的神經網路，以\(L\)代表損失函數，則可以用\(\frac{\partial{L}}{\partial{W}}\)來表示梯度，其公式如下：<br />
 </p>
 \begin{equation}
-\label{org94f5ea8}
+\label{orgc62c05c}
 \begin{split}
 W=
  \begin{pmatrix}
@@ -1685,8 +1683,8 @@ W=
 <span class="linenr">15: </span>          <span style="color: #dcaeea;">y</span> = y.reshape(<span style="color: #da8548; font-weight: bold;">1</span>, y.size)
 <span class="linenr">16: </span>
 <span class="linenr">17: </span>      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#30417;&#30563;&#25968;&#25454;&#26159;one-hot-vector&#30340;&#24773;&#20917;&#19979;&#65292;&#36716;&#25442;&#20026;&#27491;&#30830;&#35299;&#26631;&#31614;&#30340;&#32034;&#24341;</span>
-<span class="linenr">18: </span>      <span style="color: #51afef;">if</span> t.size == y.<span style="color: #dcaeea;">size</span>:
-<span class="linenr">19: </span>          t = t.argmax(axis=<span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr">18: </span>      <span style="color: #51afef;">if</span> t.size == y.size:
+<span class="linenr">19: </span>          <span style="color: #dcaeea;">t</span> = t.argmax(axis=<span style="color: #da8548; font-weight: bold;">1</span>)
 <span class="linenr">20: </span>
 <span class="linenr">21: </span>      <span style="color: #dcaeea;">batch_size</span> = y.shape[<span style="color: #da8548; font-weight: bold;">0</span>]
 <span class="linenr">22: </span>      <span style="color: #51afef;">return</span> -np.<span style="color: #c678dd;">sum</span>(np.log(y[np.arange(batch_size), t] + 1e-<span style="color: #da8548; font-weight: bold;">7</span>)) / batch_size
@@ -1698,27 +1696,27 @@ W=
 <span class="linenr">28: </span>      <span style="color: #51afef;">for</span> idx <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(x.size):
 <span class="linenr">29: </span>          <span style="color: #dcaeea;">tmp_val</span> = x[idx]
 <span class="linenr">30: </span>          <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35336;&#31639;f(x+h)</span>
-<span class="linenr">31: </span>          <span style="color: #dcaeea;">x</span>[<span style="color: #dcaeea;">idx</span>] = <span style="color: #c678dd;">float</span>(tmp_val) + h
+<span class="linenr">31: </span>          <span style="color: #dcaeea;">x</span>[idx] = <span style="color: #c678dd;">float</span>(tmp_val) + h
 <span class="linenr">32: </span>          <span style="color: #dcaeea;">fxh1</span> = f(x) <span style="color: #5B6268;"># </span><span style="color: #5B6268;">f(x+h)</span>
-<span class="linenr">33: </span>          <span style="color: #dcaeea;">x</span>[<span style="color: #dcaeea;">idx</span>] = tmp_val - h
+<span class="linenr">33: </span>          <span style="color: #dcaeea;">x</span>[idx] = tmp_val - h
 <span class="linenr">34: </span>          <span style="color: #dcaeea;">fxh2</span> = f(x) <span style="color: #5B6268;"># </span><span style="color: #5B6268;">f(x-h)</span>
-<span class="linenr">35: </span>          <span style="color: #dcaeea;">grad</span>[<span style="color: #dcaeea;">idx</span>] = (fxh1 - fxh2) / (<span style="color: #da8548; font-weight: bold;">2</span>*h)
+<span class="linenr">35: </span>          <span style="color: #dcaeea;">grad</span>[idx] = (fxh1 - fxh2) / (<span style="color: #da8548; font-weight: bold;">2</span>*h)
 <span class="linenr">36: </span>
-<span class="linenr">37: </span>          <span style="color: #dcaeea;">x</span>[<span style="color: #dcaeea;">idx</span>] = tmp_val <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24674;&#24489;&#21407;&#20540;</span>
+<span class="linenr">37: </span>          <span style="color: #dcaeea;">x</span>[idx] = tmp_val <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24674;&#24489;&#21407;&#20540;</span>
 <span class="linenr">38: </span>      <span style="color: #51afef;">return</span> grad
 <span class="linenr">39: </span>
 <span id="coderef-NumerGrad" class="coderef-off"><span class="linenr">40: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">numerical_gradient</span>(f, X):</span>
 <span class="linenr">41: </span>      <span style="color: #51afef;">if</span> X.ndim == <span style="color: #da8548; font-weight: bold;">1</span>:
 <span class="linenr">42: </span>          <span style="color: #51afef;">return</span> _numerical_gradient_no_batch(f, X)
 <span class="linenr">43: </span>      <span style="color: #51afef;">else</span>:
-<span class="linenr">44: </span>          grad = np.zeros_like(X)
+<span class="linenr">44: </span>          <span style="color: #dcaeea;">grad</span> = np.zeros_like(X)
 <span class="linenr">45: </span>          <span style="color: #51afef;">for</span> idx, x <span style="color: #51afef;">in</span> <span style="color: #c678dd;">enumerate</span>(X):
-<span class="linenr">46: </span>              <span style="color: #dcaeea;">grad</span>[<span style="color: #dcaeea;">idx</span>] = _numerical_gradient_no_batch(f, x)
+<span class="linenr">46: </span>              <span style="color: #dcaeea;">grad</span>[idx] = _numerical_gradient_no_batch(f, x)
 <span class="linenr">47: </span>          <span style="color: #51afef;">return</span> grad
 <span class="linenr">48: </span>
 <span class="linenr">49: </span>  <span style="color: #51afef;">class</span> <span style="color: #ECBE7B;">simpleNet</span>:
 <span class="linenr">50: </span>      <span style="color: #51afef;">def</span> <span style="color: #c678dd;">__init__</span>(<span style="color: #51afef;">self</span>):
-<span class="linenr">51: </span>          <span style="color: #51afef;">self</span>.W = np.random.randn(<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">3</span>)  <span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#20197;&#24120;&#24907;&#20998;&#20296;&#21021;&#22987;&#21270;&#27402;&#37325;&#20998;&#37197;</span>
+<span class="linenr">51: </span>          <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">W</span> = np.random.randn(<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">3</span>)  <span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#20197;&#24120;&#24907;&#20998;&#20296;&#21021;&#22987;&#21270;&#27402;&#37325;&#20998;&#37197;</span>
 <span class="linenr">52: </span>
 <span class="linenr">53: </span>      <span style="color: #51afef;">def</span> <span style="color: #c678dd;">predict</span>(<span style="color: #51afef;">self</span>, x):
 <span class="linenr">54: </span>          <span style="color: #51afef;">return</span> np.dot(x, <span style="color: #51afef;">self</span>.W)
@@ -1737,8 +1735,8 @@ W=
 <span class="linenr">67: </span>  <span style="color: #dcaeea;">t</span> = np.array([<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">1</span>])
 <span class="linenr">68: </span>  <span style="color: #c678dd;">print</span>(net.loss(x, t))
 <span class="linenr">69: </span>  <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"========================="</span>)
-<span class="linenr">70: </span>  <span style="color: #dcaeea;">f</span> = <span style="color: #51afef;">lambda</span> <span style="color: #dcaeea;">w</span>: net.loss(x,t)
-<span class="linenr">71: </span>  dW = numerical_gradient(f, net.W)
+<span class="linenr">70: </span>  <span style="color: #dcaeea;">f</span> = <span style="color: #51afef;">lambda</span> w: net.loss(x,t)
+<span class="linenr">71: </span>  <span style="color: #dcaeea;">dW</span> = numerical_gradient(f, net.W)
 <span class="linenr">72: </span>  <span style="color: #c678dd;">print</span>(dW)
 </pre>
 </div>
@@ -1759,8 +1757,7 @@ simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t�
 </p>
 </div>
 </li>
-
-<li><a id="org90faa5a"></a>進階閱讀<br />
+<li><a id="org9cb7f5e"></a>進階閱讀<br />
 <div class="outline-text-4" id="text-2-10-3">
 <ul class="org-ul">
 <li><a href="https://www.youtube.com/watch?v=reOgXrNxwV8">https://www.youtube.com/watch?v=reOgXrNxwV8</a><br /></li>
@@ -1772,9 +1769,8 @@ simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t�
 </li>
 </ol>
 </div>
-
-<div id="outline-container-org42c5656" class="outline-3">
-<h3 id="org42c5656"><span class="section-number-3">2.11.</span> 梯度下降法</h3>
+<div id="outline-container-orgbdcc52d" class="outline-3">
+<h3 id="orgbdcc52d"><span class="section-number-3">2.11.</span> 梯度下降法</h3>
 <div class="outline-text-3" id="text-2-11">
 <p>
 <a href="https://www.youtube.com/watch?v=reOgXrNxwV8">https://www.youtube.com/watch?v=reOgXrNxwV8</a><br />
@@ -1784,9 +1780,8 @@ simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t�
 </p>
 </div>
 </div>
-
-<div id="outline-container-org1f39f50" class="outline-3">
-<h3 id="org1f39f50"><span class="section-number-3">2.12.</span> 學習演算法</h3>
+<div id="outline-container-orgdbdced5" class="outline-3">
+<h3 id="orgdbdced5"><span class="section-number-3">2.12.</span> 學習演算法</h3>
 <div class="outline-text-3" id="text-2-12">
 <p>
 至此，神經網路的學習步驟大致如下：<br />
@@ -1802,15 +1797,14 @@ simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t�
 上述作法稱之為「準確率梯度下降法(<i>stochastic gradient descent</i>)」，意味著「針對所選出的資料進行梯度下降」，一般以 SGD 為名。<br />
 </p>
 </div>
-
 <ol class="org-ol">
-<li><a id="org9b8df49"></a>Gradient Descent<br />
+<li><a id="org575b3f4"></a>Gradient Descent<br />
 <ol class="org-ol">
-<li><a id="org154feee"></a>Watch: <a href="https://www.youtube.com/watch?v=yKKNr-QKz2Q">https://www.youtube.com/watch?v=yKKNr-QKz2Q</a><br /></li>
-<li><a id="org70b83ad"></a>Gradient Descent (GD)<br /></li>
-<li><a id="org9b29d31"></a>Batch Gradient Descent (BGD)<br /></li>
-<li><a id="org18c171d"></a>Mini-Batch Gradient Descent (MBGD)<br /></li>
-<li><a id="orgf814b72"></a>Stochastic Gradient Descent (SGD): 亂數選一個<br />
+<li><a id="org6ee760e"></a>Watch: <a href="https://www.youtube.com/watch?v=yKKNr-QKz2Q">https://www.youtube.com/watch?v=yKKNr-QKz2Q</a><br /></li>
+<li><a id="org56af5ac"></a>Gradient Descent (GD)<br /></li>
+<li><a id="org343a634"></a>Batch Gradient Descent (BGD)<br /></li>
+<li><a id="orge71244c"></a>Mini-Batch Gradient Descent (MBGD)<br /></li>
+<li><a id="org80dde7b"></a>Stochastic Gradient Descent (SGD): 亂數選一個<br />
 <div class="outline-text-5" id="text-2-12-1-5">
 <ul class="org-ul">
 <li>\( L=\sum_n{(\hat y ^n - (b+\sum {w_ix_i^n)})}^2\)<br /></li>
@@ -1821,20 +1815,18 @@ simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t�
 </li>
 </ol>
 </li>
-
-<li><a id="orgdaf051e"></a>優化器演算法 Optimizer<br />
+<li><a id="orge5c01ae"></a>優化器演算法 Optimizer<br />
 <ol class="org-ol">
-<li><a id="org0ed6386"></a>Momentum<br />
+<li><a id="org2735157"></a>Momentum<br />
 <div class="outline-text-5" id="text-2-12-2-1">
 <p>
 主要是用在計算參數更新方向前會考慮前一次參數更新的方向(<br />
 </p>
 </div>
 </li>
-
-<li><a id="org9bb9228"></a>Adaptive Learning Rates<br />
+<li><a id="org88dfe23"></a>Adaptive Learning Rates<br />
 <ol class="org-ol">
-<li><a id="org9438540"></a>Reduce the learning rate by some factor every few epochs.<br />
+<li><a id="org4c6dce1"></a>Reduce the learning rate by some factor every few epochs.<br />
 <div class="outline-text-6" id="text-2-12-2-2-1">
 <ul class="org-ul">
 <li>At the beginning, we are far from the destination, so we use larger learning rate<br /></li>
@@ -1843,7 +1835,7 @@ simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t�
 </ul>
 </div>
 </li>
-<li><a id="org37fabc0"></a>Learning cannot be on-size-fits-all<br />
+<li><a id="org1a55784"></a>Learning cannot be on-size-fits-all<br />
 <div class="outline-text-6" id="text-2-12-2-2-2">
 <ul class="org-ul">
 <li>Given different parameters different learning rate<br /></li>
@@ -1852,9 +1844,9 @@ simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t�
 </li>
 </ol>
 </li>
-<li><a id="org0b3b85d"></a>Adaptive Learning Rates 範例<br />
+<li><a id="org9ac962b"></a>Adaptive Learning Rates 範例<br />
 <ol class="org-ol">
-<li><a id="orgff03e9c"></a>Adagrad (John Duchi, JMLR&rsquo;11)<br />
+<li><a id="orgfbc7730"></a>Adagrad (John Duchi, JMLR&rsquo;11)<br />
 <div class="outline-text-6" id="text-2-12-2-3-1">
 <ul class="org-ul">
 <li>Original: \( w \leftarrow w - \frac{\eta\partial L}{\partial w} \)<br /></li>
@@ -1862,17 +1854,17 @@ simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t�
 </ul>
 </div>
 </li>
-<li><a id="org72d82a8"></a>RMSprop<br />
+<li><a id="org46f0b00"></a>RMSprop<br />
 <div class="outline-text-6" id="text-2-12-2-3-2">
 <ul class="org-ul">
 <li><a href="https://www.youtube.com/watch?v=O3sxAc4hxZU">https://www.youtube.com/watch?v=O3sxAc4hxZU</a><br /></li>
 </ul>
 </div>
 </li>
-<li><a id="orgedc6e0c"></a>Adadelta (Metthew D. Zeiler, arXiv&rsquo;12)<br /></li>
-<li><a id="org9a154a8"></a>&ldquo;No more pesky learning rates&rdquo; (Tom Schaul, arXiv&rsquo;12)<br /></li>
-<li><a id="org4ba4088"></a>AdaSecant (Caglar Gulcehre, arXiv&rsquo;14)<br /></li>
-<li><a id="orgf99c03c"></a>Adam (Diederik P. Kingma, ICLR&rsquo;15)<br />
+<li><a id="org7ecb2a0"></a>Adadelta (Metthew D. Zeiler, arXiv&rsquo;12)<br /></li>
+<li><a id="org963a375"></a>&ldquo;No more pesky learning rates&rdquo; (Tom Schaul, arXiv&rsquo;12)<br /></li>
+<li><a id="orgf4a2931"></a>AdaSecant (Caglar Gulcehre, arXiv&rsquo;14)<br /></li>
+<li><a id="orgc017d63"></a>Adam (Diederik P. Kingma, ICLR&rsquo;15)<br />
 <div class="outline-text-6" id="text-2-12-2-3-6">
 <ul class="org-ul">
 <li>Momentum: 計算參數更新方向前會考慮前一次參數更新的方向<br /></li>
@@ -1882,7 +1874,7 @@ simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t�
 </ul>
 </div>
 </li>
-<li><a id="org3af7289"></a>Nadam<br />
+<li><a id="orgf445ccc"></a>Nadam<br />
 <div class="outline-text-6" id="text-2-12-2-3-7">
 <ul class="org-ul">
 <li><a href="http://cs229.standford.edu/proj2015/054_report.pdf">http://cs229.standford.edu/proj2015/054_report.pdf</a><br /></li>
@@ -1893,8 +1885,7 @@ simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t�
 </li>
 </ol>
 </li>
-
-<li><a id="orgf722b36"></a>雙層神經網路的類別<br />
+<li><a id="orgdf72654"></a>雙層神經網路的類別<br />
 <div class="outline-text-4" id="text-2-12-3">
 <p>
 以下以一個雙層神經網路的實作來進行說明：<br />
@@ -1926,17 +1917,17 @@ simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t�
 <span class="linenr">24: </span>      <span style="color: #dcaeea;">grad</span> = np.zeros_like(x)
 <span class="linenr">25: </span>      <span style="color: #dcaeea;">it</span> = np.nditer(x, flags=[<span style="color: #98be65;">'multi_index'</span>], op_flags=[<span style="color: #98be65;">'readwrite'</span>])
 <span class="linenr">26: </span>      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25976;&#20540;&#24494;&#20998;&#35336;&#31639;&#21443;&#25976;&#26799;&#24230;</span>
-<span class="linenr">27: </span>      <span style="color: #51afef;">while</span> <span style="color: #51afef;">not</span> it.<span style="color: #dcaeea;">finished</span>:
-<span class="linenr">28: </span>          idx = it.multi_index
+<span class="linenr">27: </span>      <span style="color: #51afef;">while</span> <span style="color: #51afef;">not</span> it.finished:
+<span class="linenr">28: </span>          <span style="color: #dcaeea;">idx</span> = it.multi_index
 <span class="linenr">29: </span>          <span style="color: #dcaeea;">tmp_val</span> = x[idx]
-<span class="linenr">30: </span>          <span style="color: #dcaeea;">x</span>[<span style="color: #dcaeea;">idx</span>] = <span style="color: #c678dd;">float</span>(tmp_val) + h
+<span class="linenr">30: </span>          <span style="color: #dcaeea;">x</span>[idx] = <span style="color: #c678dd;">float</span>(tmp_val) + h
 <span class="linenr">31: </span>          <span style="color: #dcaeea;">fxh1</span> = f(x)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">f(x+h)</span>
 <span class="linenr">32: </span>
-<span class="linenr">33: </span>          <span style="color: #dcaeea;">x</span>[<span style="color: #dcaeea;">idx</span>] = tmp_val - h
+<span class="linenr">33: </span>          <span style="color: #dcaeea;">x</span>[idx] = tmp_val - h
 <span class="linenr">34: </span>          <span style="color: #dcaeea;">fxh2</span> = f(x)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">f(x-h)</span>
-<span class="linenr">35: </span>          <span style="color: #dcaeea;">grad</span>[<span style="color: #dcaeea;">idx</span>] = (fxh1 - fxh2) / (<span style="color: #da8548; font-weight: bold;">2</span>*h)
+<span class="linenr">35: </span>          <span style="color: #dcaeea;">grad</span>[idx] = (fxh1 - fxh2) / (<span style="color: #da8548; font-weight: bold;">2</span>*h)
 <span class="linenr">36: </span>
-<span class="linenr">37: </span>          <span style="color: #dcaeea;">x</span>[<span style="color: #dcaeea;">idx</span>] = tmp_val  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20516;&#12434;&#20803;&#12395;&#25147;&#12377;</span>
+<span class="linenr">37: </span>          <span style="color: #dcaeea;">x</span>[idx] = tmp_val  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20516;&#12434;&#20803;&#12395;&#25147;&#12377;</span>
 <span class="linenr">38: </span>          it.iternext()
 <span class="linenr">39: </span>      <span style="color: #51afef;">return</span> grad
 <span class="linenr">40: </span>
@@ -1961,7 +1952,7 @@ simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t�
 <span class="linenr">59: </span>
 <span class="linenr">60: </span>      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">x : &#36664;&#20837;&#36039;&#26009;, t : &#35347;&#32244;&#36039;&#26009;</span>
 <span id="coderef-TLN-loss" class="coderef-off"><span class="linenr">61: </span>      <span style="color: #51afef;">def</span> <span style="color: #c678dd;">loss</span>(<span style="color: #51afef;">self</span>, x, t):</span>
-<span class="linenr">62: </span>          y = <span style="color: #51afef;">self</span>.predict(x)
+<span class="linenr">62: </span>          <span style="color: #dcaeea;">y</span> = <span style="color: #51afef;">self</span>.predict(x)
 <span class="linenr">63: </span>          <span style="color: #51afef;">return</span> cross_entropy_error(y, t)
 <span class="linenr">64: </span>
 <span id="coderef-TLN-accu" class="coderef-off"><span class="linenr">65: </span>      <span style="color: #51afef;">def</span> <span style="color: #c678dd;">accuracy</span>(<span style="color: #51afef;">self</span>, x, t):</span>
@@ -1973,8 +1964,8 @@ simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t�
 <span class="linenr">71: </span>
 <span class="linenr">72: </span>      <span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#35336;&#31639;&#21508;&#21443;&#25976;&#30340;&#26799;&#24230;</span>
 <span id="coderef-TLN-numgrad" class="coderef-off"><span class="linenr">73: </span>      <span style="color: #51afef;">def</span> <span style="color: #c678dd;">numerical_gradient</span>(<span style="color: #51afef;">self</span>, x, t):</span>
-<span class="linenr">74: </span>          <span style="color: #dcaeea;">loss_W</span> = <span style="color: #51afef;">lambda</span> <span style="color: #dcaeea;">W</span>: <span style="color: #51afef;">self</span>.loss(x, t)
-<span id="coderef-TLN-grads" class="coderef-off"><span class="linenr">75: </span>          grads = {}</span>
+<span class="linenr">74: </span>          <span style="color: #dcaeea;">loss_W</span> = <span style="color: #51afef;">lambda</span> W: <span style="color: #51afef;">self</span>.loss(x, t)
+<span id="coderef-TLN-grads" class="coderef-off"><span class="linenr">75: </span>          <span style="color: #dcaeea;">grads</span> = {}</span>
 <span class="linenr">76: </span>          <span style="color: #dcaeea;">grads</span>[<span style="color: #98be65;">'W1'</span>] = numerical_gradient(loss_W, <span style="color: #51afef;">self</span>.params[<span style="color: #98be65;">'W1'</span>])
 <span class="linenr">77: </span>          <span style="color: #dcaeea;">grads</span>[<span style="color: #98be65;">'b1'</span>] = numerical_gradient(loss_W, <span style="color: #51afef;">self</span>.params[<span style="color: #98be65;">'b1'</span>])
 <span class="linenr">78: </span>          <span style="color: #dcaeea;">grads</span>[<span style="color: #98be65;">'W2'</span>] = numerical_gradient(loss_W, <span style="color: #51afef;">self</span>.params[<span style="color: #98be65;">'W2'</span>])
@@ -1994,7 +1985,7 @@ simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t�
 </pre>
 </div>
 
-<pre class="example" id="org5bad187">
+<pre class="example" id="org50d37c3">
 [[ 0.0226828   0.02099976  0.0072832  ... -0.01241413  0.01743683
    0.00993156]
  [ 0.01682113  0.02138894  0.00436742 ... -0.01206379  0.01297583
@@ -2030,9 +2021,9 @@ simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t�
 </pre>
 
 <p>
-上述程式變數補充說明如表<a href="#org4e02a9f">1</a>，<br />
+上述程式變數補充說明如表<a href="#orgbb01b93">1</a>，<br />
 </p>
-<table id="org4e02a9f" border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<table id="orgbb01b93" border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 <caption class="t-above"><span class="table-number">Table 1:</span> TwoLayerNet 變數說明</caption>
 
 <colgroup>
@@ -2131,18 +2122,17 @@ simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t�
 </tbody>
 </table>
 <p>
-雙層神經網路則如圖<a href="#orgffca006">28</a>所示<br />
+雙層神經網路則如圖<a href="#org82426db">29</a>所示<br />
 </p>
 
-<div id="orgffca006" class="figure">
+<div id="org82426db" class="figure">
 <p><img src="images/tln.png" alt="tln.png" /><br />
 </p>
-<p><span class="figure-number">Figure 28: </span>雙層神經網路</p>
+<p><span class="figure-number">Figure 29: </span>雙層神經網路</p>
 </div>
 </div>
 </li>
-
-<li><a id="org967aa42"></a>小批次學習<br />
+<li><a id="orge217112"></a>小批次學習<br />
 <div class="outline-text-4" id="text-2-12-4">
 <p>
 以下以前節之 TwoLayerNet 類別、以小批次學習來解決 MNIST 手寫字母辨識問題。<br />
@@ -2185,17 +2175,17 @@ simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t�
 <span class="linenr"> 35: </span>      <span style="color: #dcaeea;">grad</span> = np.zeros_like(x)
 <span class="linenr"> 36: </span>      <span style="color: #dcaeea;">it</span> = np.nditer(x, flags=[<span style="color: #98be65;">'multi_index'</span>], op_flags=[<span style="color: #98be65;">'readwrite'</span>])
 <span class="linenr"> 37: </span>      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25976;&#20540;&#24494;&#20998;&#35336;&#31639;&#21443;&#25976;&#26799;&#24230;</span>
-<span class="linenr"> 38: </span>      <span style="color: #51afef;">while</span> <span style="color: #51afef;">not</span> it.<span style="color: #dcaeea;">finished</span>:
-<span class="linenr"> 39: </span>          idx = it.multi_index
+<span class="linenr"> 38: </span>      <span style="color: #51afef;">while</span> <span style="color: #51afef;">not</span> it.finished:
+<span class="linenr"> 39: </span>          <span style="color: #dcaeea;">idx</span> = it.multi_index
 <span class="linenr"> 40: </span>          <span style="color: #dcaeea;">tmp_val</span> = x[idx]
-<span class="linenr"> 41: </span>          <span style="color: #dcaeea;">x</span>[<span style="color: #dcaeea;">idx</span>] = <span style="color: #c678dd;">float</span>(tmp_val) + h
+<span class="linenr"> 41: </span>          <span style="color: #dcaeea;">x</span>[idx] = <span style="color: #c678dd;">float</span>(tmp_val) + h
 <span class="linenr"> 42: </span>          <span style="color: #dcaeea;">fxh1</span> = f(x)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">f(x+h)</span>
 <span class="linenr"> 43: </span>
-<span class="linenr"> 44: </span>          <span style="color: #dcaeea;">x</span>[<span style="color: #dcaeea;">idx</span>] = tmp_val - h
+<span class="linenr"> 44: </span>          <span style="color: #dcaeea;">x</span>[idx] = tmp_val - h
 <span class="linenr"> 45: </span>          <span style="color: #dcaeea;">fxh2</span> = f(x)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">f(x-h)</span>
-<span class="linenr"> 46: </span>          <span style="color: #dcaeea;">grad</span>[<span style="color: #dcaeea;">idx</span>] = (fxh1 - fxh2) / (<span style="color: #da8548; font-weight: bold;">2</span>*h)
+<span class="linenr"> 46: </span>          <span style="color: #dcaeea;">grad</span>[idx] = (fxh1 - fxh2) / (<span style="color: #da8548; font-weight: bold;">2</span>*h)
 <span class="linenr"> 47: </span>
-<span class="linenr"> 48: </span>          <span style="color: #dcaeea;">x</span>[<span style="color: #dcaeea;">idx</span>] = tmp_val  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20516;&#12434;&#20803;&#12395;&#25147;&#12377;</span>
+<span class="linenr"> 48: </span>          <span style="color: #dcaeea;">x</span>[idx] = tmp_val  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20516;&#12434;&#20803;&#12395;&#25147;&#12377;</span>
 <span class="linenr"> 49: </span>          it.iternext()
 <span class="linenr"> 50: </span>      <span style="color: #51afef;">return</span> grad
 <span class="linenr"> 51: </span>
@@ -2220,7 +2210,7 @@ simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t�
 <span class="linenr"> 70: </span>
 <span class="linenr"> 71: </span>      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">x : &#36664;&#20837;&#36039;&#26009;, t : &#35347;&#32244;&#36039;&#26009;</span>
 <span id="coderef-TLN-loss" class="coderef-off"><span class="linenr"> 72: </span>      <span style="color: #51afef;">def</span> <span style="color: #c678dd;">loss</span>(<span style="color: #51afef;">self</span>, x, t):</span>
-<span class="linenr"> 73: </span>          y = <span style="color: #51afef;">self</span>.predict(x)
+<span class="linenr"> 73: </span>          <span style="color: #dcaeea;">y</span> = <span style="color: #51afef;">self</span>.predict(x)
 <span class="linenr"> 74: </span>          <span style="color: #51afef;">return</span> cross_entropy_error(y, t)
 <span class="linenr"> 75: </span>
 <span id="coderef-TLN-accu" class="coderef-off"><span class="linenr"> 76: </span>      <span style="color: #51afef;">def</span> <span style="color: #c678dd;">accuracy</span>(<span style="color: #51afef;">self</span>, x, t):</span>
@@ -2232,8 +2222,8 @@ simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t�
 <span class="linenr"> 82: </span>
 <span class="linenr"> 83: </span>      <span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#35336;&#31639;&#21508;&#21443;&#25976;&#30340;&#26799;&#24230;</span>
 <span id="coderef-TLN-numgrad" class="coderef-off"><span class="linenr"> 84: </span>      <span style="color: #51afef;">def</span> <span style="color: #c678dd;">numerical_gradient</span>(<span style="color: #51afef;">self</span>, x, t):</span>
-<span class="linenr"> 85: </span>          <span style="color: #dcaeea;">loss_W</span> = <span style="color: #51afef;">lambda</span> <span style="color: #dcaeea;">W</span>: <span style="color: #51afef;">self</span>.loss(x, t)
-<span id="coderef-TLN-grads" class="coderef-off"><span class="linenr"> 86: </span>          grads = {}</span>
+<span class="linenr"> 85: </span>          <span style="color: #dcaeea;">loss_W</span> = <span style="color: #51afef;">lambda</span> W: <span style="color: #51afef;">self</span>.loss(x, t)
+<span id="coderef-TLN-grads" class="coderef-off"><span class="linenr"> 86: </span>          <span style="color: #dcaeea;">grads</span> = {}</span>
 <span class="linenr"> 87: </span>          <span style="color: #dcaeea;">grads</span>[<span style="color: #98be65;">'W1'</span>] = numerical_gradient(loss_W, <span style="color: #51afef;">self</span>.params[<span style="color: #98be65;">'W1'</span>])
 <span class="linenr"> 88: </span>          <span style="color: #dcaeea;">grads</span>[<span style="color: #98be65;">'b1'</span>] = numerical_gradient(loss_W, <span style="color: #51afef;">self</span>.params[<span style="color: #98be65;">'b1'</span>])
 <span class="linenr"> 89: </span>          <span style="color: #dcaeea;">grads</span>[<span style="color: #98be65;">'W2'</span>] = numerical_gradient(loss_W, <span style="color: #51afef;">self</span>.params[<span style="color: #98be65;">'W2'</span>])
@@ -2259,7 +2249,7 @@ simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t�
 <span id="coderef-batchGrad" class="coderef-off"><span class="linenr">109: </span>      <span style="color: #dcaeea;">grad</span> = network.numerical_gradient(x_batch, t_batch)</span>
 <span class="linenr">110: </span>      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#26356;&#26032;&#21443;&#25976;</span>
 <span id="coderef-updateParams" class="coderef-off"><span class="linenr">111: </span>      <span style="color: #51afef;">for</span> key <span style="color: #51afef;">in</span> (<span style="color: #98be65;">'W1'</span>, <span style="color: #98be65;">'b1'</span>, <span style="color: #98be65;">'W2'</span>, <span style="color: #98be65;">'b2'</span>):</span>
-<span class="linenr">112: </span>          network.<span style="color: #dcaeea;">params</span>[<span style="color: #dcaeea;">key</span>] -= learning_rate + grad[key]
+<span class="linenr">112: </span>          network.<span style="color: #dcaeea;">params</span>[key] -= learning_rate + grad[key]
 <span class="linenr">113: </span>      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35352;&#37636;&#23416;&#32722;&#36942;&#31243;</span>
 <span class="linenr">114: </span>      <span style="color: #dcaeea;">loss</span> = network.loss(x_batch, t_batch)
 <span class="linenr">115: </span>      train_loss_list.append(loss)
@@ -2280,8 +2270,7 @@ simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t�
 </p>
 </div>
 </li>
-
-<li><a id="org1551d89"></a>模型成效評估<br />
+<li><a id="orgbbc1d55"></a>模型成效評估<br />
 <div class="outline-text-4" id="text-2-12-5">
 <p>
 如何評估<br />
@@ -2291,22 +2280,21 @@ simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t�
 </ol>
 </div>
 </div>
-
-<div id="outline-container-orgacadd26" class="outline-2">
-<h2 id="orgacadd26"><span class="section-number-2">3.</span> 深度神經網路 DNN (Deep Neural Network)</h2>
+<div id="outline-container-org0f4536e" class="outline-2">
+<h2 id="org0f4536e"><span class="section-number-2">3.</span> 深度神經網路 DNN (Deep Neural Network)</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-orgdd7c4bf" class="outline-3">
-<h3 id="orgdd7c4bf"><span class="section-number-3">3.1.</span> 學習與參數:以迴歸問題為例</h3>
+<div id="outline-container-orga44420b" class="outline-3">
+<h3 id="orga44420b"><span class="section-number-3">3.1.</span> 學習與參數:以迴歸問題為例</h3>
 <div class="outline-text-3" id="text-3-1">
 <p>
-想像一個國中的數學問題：在平面上畫出\(y=2x+3\)的直線，如圖<a href="#org3b1d04f">29</a>左的直線(\(y=ax+b\))，決定這條直線的因素有二：斜率\(a\)與截距\(b\)，這兩項因素即可視為該直線的參數，像這種由已知參數去畫出對映直線的問題稱之為順向問題；反之，如果目前只知道平面上有幾個點，希望能畫出最符合的這些點的線，這種問題就稱為逆向問題。像圖<a href="#org3b1d04f">29</a>右圖的紅線明顯就不是一條最符合的線，而解決這個問題就變成透過「尋找最佳參數」來畫出最理想的迴歸線，神經網路便是希望能藉由網路模型的不斷學習來找出最佳參數。<br />
+想像一個國中的數學問題：在平面上畫出\(y=2x+3\)的直線，如圖<a href="#org558bb62">30</a>左的直線(\(y=ax+b\))，決定這條直線的因素有二：斜率\(a\)與截距\(b\)，這兩項因素即可視為該直線的參數，像這種由已知參數去畫出對映直線的問題稱之為順向問題；反之，如果目前只知道平面上有幾個點，希望能畫出最符合的這些點的線，這種問題就稱為逆向問題。像圖<a href="#org558bb62">30</a>右圖的紅線明顯就不是一條最符合的線，而解決這個問題就變成透過「尋找最佳參數」來畫出最理想的迴歸線，神經網路便是希望能藉由網路模型的不斷學習來找出最佳參數。<br />
 </p>
 
-<div id="org3b1d04f" class="figure">
+<div id="org558bb62" class="figure">
 <p><img src="images/simplefx-1.png" alt="simplefx-1.png" width="600" /><br />
 </p>
-<p><span class="figure-number">Figure 29: </span>由已知函數畫出直線與由已知點找未知函數</p>
+<p><span class="figure-number">Figure 30: </span>由已知函數畫出直線與由已知點找未知函數</p>
 </div>
 
 <p>
@@ -2323,13 +2311,13 @@ simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t�
 </ol>
 
 <p>
-此時，我們的預測模型就如圖<a href="#orgef881fa">30</a>所示<br />
+此時，我們的預測模型就如圖<a href="#org9a6dbe4">31</a>所示<br />
 </p>
 
-<div id="orgef881fa" class="figure">
+<div id="org9a6dbe4" class="figure">
 <p><img src="images/exam-Network1.png" alt="exam-Network1.png" width="600" /><br />
 </p>
-<p><span class="figure-number">Figure 30: </span>學測成績預測模型#1</p>
+<p><span class="figure-number">Figure 31: </span>學測成績預測模型#1</p>
 </div>
 
 <p>
@@ -2418,19 +2406,19 @@ simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t�
 </table>
 
 <p>
-此時，我們的預測模型就如圖<a href="#org1150259">31</a>所示，換言之，是在解一個\(f(x)=x_1*w_1+x_2*w_2+x_3*w_3+...+x_7*w_7\)的函式問題。我們可以先針對這些特徵值對學生進行問卷調查，並追踪學生的學測成績，最後將取得的大量的特徵值輸入到到我們的函數模型（圖<a href="#org1150259">31</a>）中，觀察計算結果與實際資料的吻合程度，藉由不斷的調整參數（權重）來控制函數，讓輸出的計算結果與實際答案完全吻合，以便求得最準確的函數。<br />
+此時，我們的預測模型就如圖<a href="#org752ecb4">32</a>所示，換言之，是在解一個\(f(x)=x_1*w_1+x_2*w_2+x_3*w_3+...+x_7*w_7\)的函式問題。我們可以先針對這些特徵值對學生進行問卷調查，並追踪學生的學測成績，最後將取得的大量的特徵值輸入到到我們的函數模型（圖<a href="#org752ecb4">32</a>）中，觀察計算結果與實際資料的吻合程度，藉由不斷的調整參數（權重）來控制函數，讓輸出的計算結果與實際答案完全吻合，以便求得最準確的函數。<br />
 </p>
 
-<div id="org1150259" class="figure">
+<div id="org752ecb4" class="figure">
 <p><img src="images/exam-network2.png" alt="exam-network2.png" width="600" /><br />
 </p>
-<p><span class="figure-number">Figure 31: </span>學測成績預測模型#2</p>
+<p><span class="figure-number">Figure 32: </span>學測成績預測模型#2</p>
 </div>
 
 <p>
-然而，無論我們事前研究分析調查的再如何嚴謹，實際的計算結果與真實分數總會存在誤差，如表<a href="#orgaa02cc3">3</a>，分別觀察這些誤差值並不容易看出吻合程度，但如果將個別的誤差平方後加總，則可以得到一個明確的誤差函數=\(3^2+(-3)^2+(-2)^2+(-2)^2...\)，至此，解題的任務便轉為：找出能讓誤差函數最小化的一組參數。<br />
+然而，無論我們事前研究分析調查的再如何嚴謹，實際的計算結果與真實分數總會存在誤差，如表<a href="#org0f0cc12">3</a>，分別觀察這些誤差值並不容易看出吻合程度，但如果將個別的誤差平方後加總，則可以得到一個明確的誤差函數=\(3^2+(-3)^2+(-2)^2+(-2)^2...\)，至此，解題的任務便轉為：找出能讓誤差函數最小化的一組參數。<br />
 </p>
-<table id="orgaa02cc3" border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<table id="org0f0cc12" border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 <caption class="t-above"><span class="table-number">Table 3:</span> 誤差的計算</caption>
 
 <colgroup>
@@ -2492,24 +2480,22 @@ simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t�
 </p>
 </div>
 </div>
-
-<div id="outline-container-org93b8710" class="outline-3">
-<h3 id="org93b8710"><span class="section-number-3">3.2.</span> 如何調整參數</h3>
+<div id="outline-container-org5472a72" class="outline-3">
+<h3 id="org5472a72"><span class="section-number-3">3.2.</span> 如何調整參數</h3>
 <div class="outline-text-3" id="text-3-2">
 <p>
-前節提及，為了能找到最理想的預測函數，我們可以不斷調整權重來把誤差函數降到最低。實務上，我們可以每次以最細微的調幅逐一調整（增加或減少）權重值來試圖減小損失函數，直到其無法再減少為止，此種方式稱為「坡度法」，而這種每次稍微調整一點點再觀察結果變化的手段稱為微分；若是同時微幅調整所有權重以將損失函數降到最低，這種方式則稱為「梯度下降法」。然而類似梯度法並不保證能找到將損失函數降到最小的權重組合，如圖<a href="#org5489ebf">32</a>所示，以梯度法可能只會找到 A 點這個局部最小值，然而全體的最小值其實發生在 B 點。<br />
+前節提及，為了能找到最理想的預測函數，我們可以不斷調整權重來把誤差函數降到最低。實務上，我們可以每次以最細微的調幅逐一調整（增加或減少）權重值來試圖減小損失函數，直到其無法再減少為止，此種方式稱為「坡度法」，而這種每次稍微調整一點點再觀察結果變化的手段稱為微分；若是同時微幅調整所有權重以將損失函數降到最低，這種方式則稱為「梯度下降法」。然而類似梯度法並不保證能找到將損失函數降到最小的權重組合，如圖<a href="#org132072c">33</a>所示，以梯度法可能只會找到 A 點這個局部最小值，然而全體的最小值其實發生在 B 點。<br />
 </p>
 
-<div id="org5489ebf" class="figure">
+<div id="org132072c" class="figure">
 <p><img src="images/dotAB.png" alt="dotAB.png" width="500" /><br />
 </p>
-<p><span class="figure-number">Figure 32: </span>極小值與最小值的差異</p>
+<p><span class="figure-number">Figure 33: </span>極小值與最小值的差異</p>
 </div>
 </div>
 </div>
-
-<div id="outline-container-orgda48958" class="outline-3">
-<h3 id="orgda48958"><span class="section-number-3">3.3.</span> 模型的極限</h3>
+<div id="outline-container-org0bab142" class="outline-3">
+<h3 id="org0bab142"><span class="section-number-3">3.3.</span> 模型的極限</h3>
 <div class="outline-text-3" id="text-3-3">
 <p>
 在我們透過問卷取得大量的數據後，想像一下我們以這些數據來做為調整模型參數的依據，最後，我們如何評估這個模型的效能呢？一般來說，我們會把數據分成兩部份：一部份做為調整或學習參數的依據，稱做訓練資料；另一部份用來測試或檢驗模型的效能。之所以用不同的數據進行訓練與測試，是為了避免「過擬合」的狀況，即，因為測試資料與訓練資料一致，導致測試結果十分完美，然而，一旦把模型拿來應用到新的數據上（或是實際應用模型到真實世界中）時，反而效果會不如預期。<br />
@@ -2524,12 +2510,11 @@ simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t�
 </p>
 </div>
 </div>
-
-<div id="outline-container-org917a9de" class="outline-3">
-<h3 id="org917a9de"><span class="section-number-3">3.4.</span> 神經網路為什麼要有那麼多層</h3>
+<div id="outline-container-org0e0585c" class="outline-3">
+<h3 id="org0e0585c"><span class="section-number-3">3.4.</span> 神經網路為什麼要有那麼多層</h3>
 <div class="outline-text-3" id="text-3-4">
 <p>
-前節提及，我們的預測模型就如圖<a href="#org1150259">31</a>所示，換言之，是在解一個\(f(x)=x_1*w_1+x_2*w_2+x_3*w_3+...+x_7*w_7\)的函式問題，那麼，為了能找到最理想的預測函數，可否把函數變的更加複雜，例如，將函數變為二次函數或更複雜的函數以提升預測的精準度？實則，這種社會科學的問題並不如自然科學的物理現象可以用明確的公式來解決，神經網路採用的是以組合的方式來將函數複雜化，例如，把圖<a href="#org1150259">31</a>變為下圖的樣式，如此藉由改變各因素以及權值的組合，等於建立了許多新的特徵值，也增加了模型的複雜度。<br />
+前節提及，我們的預測模型就如圖<a href="#org752ecb4">32</a>所示，換言之，是在解一個\(f(x)=x_1*w_1+x_2*w_2+x_3*w_3+...+x_7*w_7\)的函式問題，那麼，為了能找到最理想的預測函數，可否把函數變的更加複雜，例如，將函數變為二次函數或更複雜的函數以提升預測的精準度？實則，這種社會科學的問題並不如自然科學的物理現象可以用明確的公式來解決，神經網路採用的是以組合的方式來將函數複雜化，例如，把圖<a href="#org752ecb4">32</a>變為下圖的樣式，如此藉由改變各因素以及權值的組合，等於建立了許多新的特徵值，也增加了模型的複雜度。<br />
 </p>
 
 <div class="org-src-container">
@@ -2553,28 +2538,27 @@ simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t�
 </pre>
 </div>
 <p>
-然而，如果只是以這種「新增特徵值組合與權重」進而產生新特徵值的方式來改變模型，那麼，再多的層數也能合併為一層，因為這些運算方式均屬於線性轉換，為了有效讓模型更加複雜，此處可以在模型中加入非線性轉換，如圖<a href="#orgcf96faf">49</a>中的 ReLU 函數。在將類似圖<a href="#org7ba035c">12</a>這類非線性轉換函數加入模型後，其結果如圖<a href="#orgd5ef13d">34</a>所示。<br />
+然而，如果只是以這種「新增特徵值組合與權重」進而產生新特徵值的方式來改變模型，那麼，再多的層數也能合併為一層，因為這些運算方式均屬於線性轉換，為了有效讓模型更加複雜，此處可以在模型中加入非線性轉換，如圖<a href="#orgbfe182b">50</a>中的 ReLU 函數。在將類似圖<a href="#orge7c1296">13</a>這類非線性轉換函數加入模型後，其結果如圖<a href="#org7f58adb">35</a>所示。<br />
 </p>
 
 
-<div id="org377f299" class="figure">
+<div id="org971eeba" class="figure">
 <p><img src="images/MNIST-CNN.png" alt="MNIST-CNN.png" /><br />
 </p>
-<p><span class="figure-number">Figure 33: </span>MNIST-NeuralNet</p>
+<p><span class="figure-number">Figure 34: </span>MNIST-NeuralNet</p>
 </div>
 
 
-<div id="orgd5ef13d" class="figure">
+<div id="org7f58adb" class="figure">
 <p><img src="./images/exam-Network4.png" alt="exam-Network4.png" width="700" /><br />
 </p>
-<p><span class="figure-number">Figure 34: </span>學測成績預測模型#4</p>
+<p><span class="figure-number">Figure 35: </span>學測成績預測模型#4</p>
 </div>
 </div>
 </div>
 </div>
-
-<div id="outline-container-orgd6a8ff4" class="outline-2">
-<h2 id="orgd6a8ff4"><span class="section-number-2">4.</span> CNN 卷積神經網路:&#xa0;&#xa0;&#xa0;<span class="tag"><span class="CNN">CNN</span>&#xa0;<span class=""></span>&#xa0;<span class="Keeras">Keeras</span></span></h2>
+<div id="outline-container-org27af94a" class="outline-2">
+<h2 id="org27af94a"><span class="section-number-2">4.</span> CNN 卷積神經網路:&#xa0;&#xa0;&#xa0;<span class="tag"><span class="CNN">CNN</span>&#xa0;<span class=""></span>&#xa0;<span class="Keeras">Keeras</span></span></h2>
 <div class="outline-text-2" id="text-4">
 <p>
 卷積神經網路(CNN)由Yann LeCun(法國電腦科學家，2018年圖靈獎得主)所提出，此人在機器學習、計算機視覺、計算機神經科學等領域都有很多貢獻。<br />
@@ -2589,9 +2573,8 @@ CNN 也是模仿人類大腦的認知方式，譬如我們辨識一個圖像，�
 資料來源：<sup><a id="fnr.7" class="footref" href="#fn.7" role="doc-backlink">7</a></sup><br />
 </p>
 </div>
-
-<div id="outline-container-org94957dc" class="outline-3">
-<h3 id="org94957dc"><span class="section-number-3">4.1.</span> CNN v.s. MLP</h3>
+<div id="outline-container-orga062b35" class="outline-3">
+<h3 id="orga062b35"><span class="section-number-3">4.1.</span> CNN v.s. MLP</h3>
 <div class="outline-text-3" id="text-4-1">
 <p>
 CNN 與前章所述之 MLP 的主要差異可由下圖看出，即，CNN 在輪入層中多了卷積層與池化層，MLP 有兩個缺點<sup><a id="fnr.8" class="footref" href="#fn.8" role="doc-backlink">8</a></sup>：<br />
@@ -2602,31 +2585,29 @@ CNN 與前章所述之 MLP 的主要差異可由下圖看出，即，CNN 在輪�
 </ol>
 
 <p>
-與 MLP 相比，CNN 多了卷積層與池化層，卷積層用來強調圖案(資料)特徵，池化層則可以縮減取樣，減少 overfitting 問題。二者架構差異如圖<a href="#orgb565e46">35</a>所示。<br />
+與 MLP 相比，CNN 多了卷積層與池化層，卷積層用來強調圖案(資料)特徵，池化層則可以縮減取樣，減少 overfitting 問題。二者架構差異如圖<a href="#org2b8a84e">36</a>所示。<br />
 </p>
 
-<div id="orgb565e46" class="figure">
+<div id="org2b8a84e" class="figure">
 <p><img src="images/CNN-MLP.jpg" alt="CNN-MLP.jpg" /><br />
 </p>
-<p><span class="figure-number">Figure 35: </span>CNN 與 MLP 之差異</p>
+<p><span class="figure-number">Figure 36: </span>CNN 與 MLP 之差異</p>
 </div>
 
-<div id="orgdbfd04d" class="figure">
+<div id="org87bf128" class="figure">
 <p><img src="images/CNN-arch-1.jpg" alt="CNN-arch-1.jpg" /><br />
 </p>
 </div>
 </div>
-
 <ol class="org-ol">
-<li><a id="org3165f3e"></a>影像特徵擷取<br />
+<li><a id="org2cce22f"></a>影像特徵擷取<br />
 <div class="outline-text-4" id="text-4-1-1">
 <p>
 透過卷積層及池化層擷取影像特徵，每個 Conv2D 和 MAsxPooling2D 層的輸出都是 shape 為(height, width, channels)的 3D 張量，隨著神經網路進入更深的層、寬度和高度也隨之縮小。<br />
 </p>
 </div>
 </li>
-
-<li><a id="orgc528878"></a>完全連結神經網路<br />
+<li><a id="org005f3b6"></a>完全連結神經網路<br />
 <div class="outline-text-4" id="text-4-1-2">
 <p>
 包含平坦層、隠藏層、輸出層所組成的神經網路，由於最後一個 Conv2D 層輸出的 36 個 7*7 必須送到接續的分類器神經網路(也就是 Dense 層)，分類器神經網路能處理的是 1D 向量，但前一層的輸出是 3D 張量，所以要把 3D 張量展平為 1D。<br />
@@ -2635,9 +2616,8 @@ CNN 與前章所述之 MLP 的主要差異可由下圖看出，即，CNN 在輪�
 </li>
 </ol>
 </div>
-
-<div id="outline-container-orgf9416a4" class="outline-3">
-<h3 id="orgf9416a4"><span class="section-number-3">4.2.</span> 卷積運算</h3>
+<div id="outline-container-org3440e6c" class="outline-3">
+<h3 id="org3440e6c"><span class="section-number-3">4.2.</span> 卷積運算</h3>
 <div class="outline-text-3" id="text-4-2">
 <p>
 <a href="https://setosa.io/ev/image-kernels/">Kernel在做什麼?</a><br />
@@ -2649,31 +2629,31 @@ CNN 與前章所述之 MLP 的主要差異可由下圖看出，即，CNN 在輪�
 </p>
 
 <p>
-典型的卷積運算如圖<a href="#org20bfc4a">36</a>，此處特徵圖為(4,4)，濾鏡為(3,3)，輸出為(2,2)，這裡的濾鏡又稱為「核(kernel)」，其初始值由隨機方式產生。此外，在全連接網路層中，除了權重參數（核）之外，還有偏權值，其結果如圖<a href="#org0a54872">37</a>。<br />
+典型的卷積運算如圖<a href="#org7d4e129">37</a>，此處特徵圖為(4,4)，濾鏡為(3,3)，輸出為(2,2)，這裡的濾鏡又稱為「核(kernel)」，其初始值由隨機方式產生。此外，在全連接網路層中，除了權重參數（核）之外，還有偏權值，其結果如圖<a href="#orgc587122">38</a>。<br />
 </p>
 
-<div id="org20bfc4a" class="figure">
+<div id="org7d4e129" class="figure">
 <p><img src="images/CNN-struc1.png" alt="CNN-struc1.png" /><br />
 </p>
-<p><span class="figure-number">Figure 36: </span>卷積運算</p>
+<p><span class="figure-number">Figure 37: </span>卷積運算</p>
 </div>
 
 
-<div id="org0a54872" class="figure">
+<div id="orgc587122" class="figure">
 <p><img src="images/CNN-struc2.png" alt="CNN-struc2.png" /><br />
 </p>
-<p><span class="figure-number">Figure 37: </span>卷積運算 2</p>
+<p><span class="figure-number">Figure 38: </span>卷積運算 2</p>
 </div>
 
 <p>
-由圖<a href="#org20bfc4a">36</a>、<a href="#org0a54872">37</a>的卷積運算可以看出，輸入特徵值在經過運算後，其大小會縮小，可以預見的結果是，在經過多層神經網路反複進行卷積運算後，輸出特徵值大小很快就會縮小為 1，而無法再進行卷積運算。為了避免這種情況發生，在進行卷積運算前，可以針對輸入資料周圍補上一圈固定的資料（例如 0），這個動作稱為填補(padding)，如果我們對在卷積運算前對於圖<a href="#org20bfc4a">36</a>中的輸入特徵值進行寬度 1 的填補，則其結果如圖<a href="#org95d2a62">38</a>所示。<br />
+由圖<a href="#org7d4e129">37</a>、<a href="#orgc587122">38</a>的卷積運算可以看出，輸入特徵值在經過運算後，其大小會縮小，可以預見的結果是，在經過多層神經網路反複進行卷積運算後，輸出特徵值大小很快就會縮小為 1，而無法再進行卷積運算。為了避免這種情況發生，在進行卷積運算前，可以針對輸入資料周圍補上一圈固定的資料（例如 0），這個動作稱為填補(padding)，如果我們對在卷積運算前對於圖<a href="#org7d4e129">37</a>中的輸入特徵值進行寬度 1 的填補，則其結果如圖<a href="#org9386f91">39</a>所示。<br />
 </p>
 
 
-<div id="org95d2a62" class="figure">
+<div id="org9386f91" class="figure">
 <p><img src="images/CNN-struc3.png" alt="CNN-struc3.png" /><br />
 </p>
-<p><span class="figure-number">Figure 38: </span>卷積運算 3</p>
+<p><span class="figure-number">Figure 39: </span>卷積運算 3</p>
 </div>
 
 <p>
@@ -2681,23 +2661,23 @@ CNN 與前章所述之 MLP 的主要差異可由下圖看出，即，CNN 在輪�
 </p>
 
 <p>
-上述範例中的特徵值均為二維矩陣，亦即，僅能表示水平與垂直方向的單色點陣圖，若輸入中包含色彩資料(RGB)，則輸入特徵圖將升及為三維矩陣（三層二維矩陣，每層表示一種 RGB 值），核的結構也是三維矩陣，但輸出特徵值則為二維矩陣。 以 MNist 資料集為例，將數字 7 的 28*28 影像以隨機產生的 5*5 濾鏡(或稱 filter weight、kernel)對其進行卷積，其結果如圖<a href="#orgc5e2c0b">39</a>所示，這種效果有助於提取輸入影像的不同特徵，例如邊緣、線條&#x2026;等。<br />
+上述範例中的特徵值均為二維矩陣，亦即，僅能表示水平與垂直方向的單色點陣圖，若輸入中包含色彩資料(RGB)，則輸入特徵圖將升及為三維矩陣（三層二維矩陣，每層表示一種 RGB 值），核的結構也是三維矩陣，但輸出特徵值則為二維矩陣。 以 MNist 資料集為例，將數字 7 的 28*28 影像以隨機產生的 5*5 濾鏡(或稱 filter weight、kernel)對其進行卷積，其結果如圖<a href="#org4387217">40</a>所示，這種效果有助於提取輸入影像的不同特徵，例如邊緣、線條&#x2026;等。<br />
 </p>
 
-<div id="orgc5e2c0b" class="figure">
+<div id="org4387217" class="figure">
 <p><img src="images/CNN-FW-1.jpg" alt="CNN-FW-1.jpg" /><br />
 </p>
-<p><span class="figure-number">Figure 39: </span>卷積運算 4</p>
+<p><span class="figure-number">Figure 40: </span>卷積運算 4</p>
 </div>
 
 <p>
-實際建構模型時，不會只進行單一 kenrel 的卷積，圖<a href="#orgab4025c">40</a>即是隨機產生 16 個 kernel 對輸入影像提取不同特徵。<br />
+實際建構模型時，不會只進行單一 kenrel 的卷積，圖<a href="#orgd2b31eb">41</a>即是隨機產生 16 個 kernel 對輸入影像提取不同特徵。<br />
 </p>
 
-<div id="orgab4025c" class="figure">
+<div id="orgd2b31eb" class="figure">
 <p><img src="images/CNN-FW-2.jpg" alt="CNN-FW-2.jpg" /><br />
 </p>
-<p><span class="figure-number">Figure 40: </span>卷積運算 5</p>
+<p><span class="figure-number">Figure 41: </span>卷積運算 5</p>
 </div>
 
 <p>
@@ -2714,18 +2694,17 @@ CNN 所運算的 3D 張量稱為特徵映射圖(feature maps，簡稱特徵圖)�
 </p>
 </div>
 </div>
-
-<div id="outline-container-orgef20826" class="outline-3">
-<h3 id="orgef20826"><span class="section-number-3">4.3.</span> 池化層(Pooling Layer)</h3>
+<div id="outline-container-org6277905" class="outline-3">
+<h3 id="org6277905"><span class="section-number-3">4.3.</span> 池化層(Pooling Layer)</h3>
 <div class="outline-text-3" id="text-4-3">
 <p>
-卷積層之間通常會加一個池化層(Pooling Layer)，它是一個壓縮圖片並保留重要資訊的方法，取樣的方法一樣是採滑動視窗，但是通常取最大值(Max-Pooling)，而非加權總和，若滑動視窗大小設為 2，『滑動步長』(Stride) 也為 2，則資料量就降為原本的四分之一，但因為取最大值，它還是保留局部範圍比對的最大可能性。也就是說，池化後的資訊更專注於圖片中是否存在相符的特徵，而非圖片中『哪裡』存在這些特徵，幫助 CNN 判斷圖片中是否包含某項特徵，而不必關心特徵所在的位置，這樣圖像偏移，一樣可以辨識出來。其架構如圖<a href="#orgc3c640d">41</a>所示。<sup><a id="fnr.7.100" class="footref" href="#fn.7" role="doc-backlink">7</a></sup><br />
+卷積層之間通常會加一個池化層(Pooling Layer)，它是一個壓縮圖片並保留重要資訊的方法，取樣的方法一樣是採滑動視窗，但是通常取最大值(Max-Pooling)，而非加權總和，若滑動視窗大小設為 2，『滑動步長』(Stride) 也為 2，則資料量就降為原本的四分之一，但因為取最大值，它還是保留局部範圍比對的最大可能性。也就是說，池化後的資訊更專注於圖片中是否存在相符的特徵，而非圖片中『哪裡』存在這些特徵，幫助 CNN 判斷圖片中是否包含某項特徵，而不必關心特徵所在的位置，這樣圖像偏移，一樣可以辨識出來。其架構如圖<a href="#orga026a0d">42</a>所示。<sup><a id="fnr.7.100" class="footref" href="#fn.7" role="doc-backlink">7</a></sup><br />
 </p>
 
-<div id="orgc3c640d" class="figure">
+<div id="orga026a0d" class="figure">
 <p><img src="images/CNN-Pooling.png" alt="CNN-Pooling.png" /><br />
 </p>
-<p><span class="figure-number">Figure 41: </span>CNN 之池化層</p>
+<p><span class="figure-number">Figure 42: </span>CNN 之池化層</p>
 </div>
 
 <p>
@@ -2739,14 +2718,14 @@ CNN 所運算的 3D 張量稱為特徵映射圖(feature maps，簡稱特徵圖)�
 </ol>
 
 <p>
-圖<a href="#org7596e5d">42</a>即為使用 Max-Pool 對 16 個卷積影像進行縮減取樣(downsampling)的效果，將 16 個 28*28 個影像縮小為 16 個 14*14 的影像，但仍保持其特徵。MaxPooling 主要是由輸入特徵圖中做採樣並輸出樣本的最大值，它在概念上類似於卷積層操作，但並不是用卷積核(convolution kernel)張量積的方式來轉換局部區塊，而是經由手動編碼的 max 張量操作進行轉換。與卷積層操作的很大區別是 MaxPooling 通常用 2&times;2 窗格和步長(strides)2 來完成，以便將特徵圖每一軸的採樣減少到原來的 1/2，而卷積層操作通常使用 3&times;3 窗格且不指定步長(即使用預設步長 1)。<br />
+圖<a href="#org621488e">43</a>即為使用 Max-Pool 對 16 個卷積影像進行縮減取樣(downsampling)的效果，將 16 個 28*28 個影像縮小為 16 個 14*14 的影像，但仍保持其特徵。MaxPooling 主要是由輸入特徵圖中做採樣並輸出樣本的最大值，它在概念上類似於卷積層操作，但並不是用卷積核(convolution kernel)張量積的方式來轉換局部區塊，而是經由手動編碼的 max 張量操作進行轉換。與卷積層操作的很大區別是 MaxPooling 通常用 2&times;2 窗格和步長(strides)2 來完成，以便將特徵圖每一軸的採樣減少到原來的 1/2，而卷積層操作通常使用 3&times;3 窗格且不指定步長(即使用預設步長 1)。<br />
 </p>
 
 
-<div id="org7596e5d" class="figure">
+<div id="org621488e" class="figure">
 <p><img src="images/CNN-PL-1.jpg" alt="CNN-PL-1.jpg" /><br />
 </p>
-<p><span class="figure-number">Figure 42: </span>池化效果</p>
+<p><span class="figure-number">Figure 43: </span>池化效果</p>
 </div>
 
 <p>
@@ -2776,13 +2755,12 @@ CNN 所運算的 3D 張量稱為特徵映射圖(feature maps，簡稱特徵圖)�
 </p>
 </div>
 </div>
-
-<div id="outline-container-org8a5baa9" class="outline-3">
-<h3 id="org8a5baa9"><span class="section-number-3">4.4.</span> 以 CNN 實作 MNIST</h3>
+<div id="outline-container-org8ee7308" class="outline-3">
+<h3 id="org8ee7308"><span class="section-number-3">4.4.</span> 以 CNN 實作 MNIST</h3>
 <div class="outline-text-3" id="text-4-4">
 </div>
 <ol class="org-ol">
-<li><a id="org2727011"></a>資料預處理(preprocess)<br />
+<li><a id="orge7e59a1"></a>資料預處理(preprocess)<br />
 <div class="outline-text-4" id="text-4-4-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #5B6268;">### </span><span style="color: #5B6268;">1. &#21295;&#20837;&#25152;&#38656;&#27169;&#32068;</span>
@@ -2810,8 +2788,7 @@ CNN 所運算的 3D 張量稱為特徵映射圖(feature maps，簡稱特徵圖)�
 </div>
 </div>
 </li>
-
-<li><a id="orge1bb98e"></a>建立模型<br />
+<li><a id="orgc669ac6"></a>建立模型<br />
 <div class="outline-text-4" id="text-4-4-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #5B6268;">### </span><span style="color: #5B6268;">1. &#21295;&#20837;&#25152;&#38656;&#27169;&#32068;</span>
@@ -2855,8 +2832,7 @@ CNN 所運算的 3D 張量稱為特徵映射圖(feature maps，簡稱特徵圖)�
 </div>
 </div>
 </li>
-
-<li><a id="org062b1a3"></a>訓練模型<br />
+<li><a id="org761e78d"></a>訓練模型<br />
 <div class="outline-text-4" id="text-4-4-3">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #5B6268;">### </span><span style="color: #5B6268;">1. &#23450;&#32681;&#35347;&#32244;&#26041;&#24335;</span>
@@ -2878,8 +2854,7 @@ CNN 所運算的 3D 張量稱為特徵映射圖(feature maps，簡稱特徵圖)�
 </div>
 </div>
 </li>
-
-<li><a id="orgb671a60"></a>評估模型準確率<br />
+<li><a id="org3f7b984"></a>評估模型準確率<br />
 <div class="outline-text-4" id="text-4-4-4">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span>  <span style="color: #dcaeea;">scores</span> = model.evaluate(x_Test4D_normalize, y_TestOneHot)
@@ -2888,8 +2863,7 @@ CNN 所運算的 3D 張量稱為特徵映射圖(feature maps，簡稱特徵圖)�
 </div>
 </div>
 </li>
-
-<li><a id="orgbfdee56"></a>進行預測<br />
+<li><a id="org9a4f8da"></a>進行預測<br />
 <div class="outline-text-4" id="text-4-4-5">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span>  <span style="color: #dcaeea;">prediction</span> = model.predict_classes(x_Test4D_normalize)
@@ -2903,8 +2877,7 @@ CNN 所運算的 3D 張量稱為特徵映射圖(feature maps，簡稱特徵圖)�
 </div>
 </div>
 </li>
-
-<li><a id="org33965c2"></a>執行結果<br />
+<li><a id="org9cc2637"></a>執行結果<br />
 <div class="outline-text-4" id="text-4-4-6">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #5B6268;">### </span><span style="color: #5B6268;">define function</span>
@@ -2914,7 +2887,7 @@ CNN 所運算的 3D 張量稱為特徵映射圖(feature maps，簡稱特徵圖)�
 <span class="linenr"> 5: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">plot_images_labels_prediction</span>(imgname, images, labels, prediction, idx, num = <span style="color: #da8548; font-weight: bold;">10</span>):
 <span class="linenr"> 6: </span>      <span style="color: #dcaeea;">fig</span> = plt.gcf()
 <span class="linenr"> 7: </span>      fig.set_size_inches(<span style="color: #da8548; font-weight: bold;">8</span>,<span style="color: #da8548; font-weight: bold;">4</span>) <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35373;&#23450;&#39023;&#31034;&#22294;&#24418;&#22823;&#23567;</span>
-<span class="linenr"> 8: </span>      <span style="color: #51afef;">if</span> num&gt;<span style="color: #da8548; font-weight: bold;">25</span>: <span style="color: #dcaeea;">num</span>=<span style="color: #da8548; font-weight: bold;">25</span> <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39023;&#31034;&#36039;&#26009;&#31558;&#25976;&#19978;&#38480;</span>
+<span class="linenr"> 8: </span>      <span style="color: #51afef;">if</span> num&gt;<span style="color: #da8548; font-weight: bold;">25</span>: num=<span style="color: #da8548; font-weight: bold;">25</span> <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39023;&#31034;&#36039;&#26009;&#31558;&#25976;&#19978;&#38480;</span>
 <span class="linenr"> 9: </span>      <span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #da8548; font-weight: bold;">0</span>, num):
 <span class="linenr">10: </span>          <span style="color: #dcaeea;">ax</span>=plt.subplot(<span style="color: #da8548; font-weight: bold;">2</span>,<span style="color: #da8548; font-weight: bold;">5</span>,<span style="color: #da8548; font-weight: bold;">1</span>+i) <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27492;&#34389;&#39023;&#31034;10&#31558;&#22294;&#24418;&#65292;2*5&#20491;</span>
 <span class="linenr">11: </span>          ax.imshow(images[idx], cmap=<span style="color: #98be65;">'binary'</span>) <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#30059;&#22294;</span>
@@ -3004,7 +2977,7 @@ CNN 所運算的 3D 張量稱為特徵映射圖(feature maps，簡稱特徵圖)�
 </pre>
 </div>
 
-<pre class="example" id="org06227c3">
+<pre class="example" id="org8b42194">
 Model: "sequential_1"
 _________________________________________________________________
 Layer (type)                 Output Shape              Param #
@@ -3050,24 +3023,24 @@ label
 </pre>
 
 
-<div id="org9469fc9" class="figure">
+<div id="orga7fa860" class="figure">
 <p><img src="images/CNN-MNist-acc.png" alt="CNN-MNist-acc.png" /><br />
 </p>
-<p><span class="figure-number">Figure 43: </span>訓練精確度</p>
+<p><span class="figure-number">Figure 44: </span>訓練精確度</p>
 </div>
 
 
-<div id="org7647c60" class="figure">
+<div id="org6844931" class="figure">
 <p><img src="images/CNN-MNist-loss.png" alt="CNN-MNist-loss.png" /><br />
 </p>
-<p><span class="figure-number">Figure 44: </span>訓練 loss 誤差</p>
+<p><span class="figure-number">Figure 45: </span>訓練 loss 誤差</p>
 </div>
 
 
-<div id="orgdddc489" class="figure">
+<div id="org9db2fd0" class="figure">
 <p><img src="images/CNN_MNist.png" alt="CNN_MNist.png" /><br />
 </p>
-<p><span class="figure-number">Figure 45: </span>前 10 筆預測結果</p>
+<p><span class="figure-number">Figure 46: </span>前 10 筆預測結果</p>
 </div>
 
 <p>
@@ -3095,9 +3068,8 @@ label
 </li>
 </ol>
 </div>
-
-<div id="outline-container-org9adb58d" class="outline-3">
-<h3 id="org9adb58d"><span class="section-number-3">4.5.</span> 以 Keras 實作 Cifar-10</h3>
+<div id="outline-container-orgd14baca" class="outline-3">
+<h3 id="orgd14baca"><span class="section-number-3">4.5.</span> 以 Keras 實作 Cifar-10</h3>
 <div class="outline-text-3" id="text-4-5">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">  1: </span>  <span style="color: #5B6268;">### </span><span style="color: #5B6268;">1.  Import Library</span>
@@ -3197,7 +3169,7 @@ label
 <span class="linenr"> 95: </span>                                    idx,num=<span style="color: #da8548; font-weight: bold;">10</span>):
 <span class="linenr"> 96: </span>      <span style="color: #dcaeea;">fig</span> = plt.gcf()
 <span class="linenr"> 97: </span>      fig.set_size_inches(<span style="color: #da8548; font-weight: bold;">12</span>, <span style="color: #da8548; font-weight: bold;">14</span>)
-<span class="linenr"> 98: </span>      <span style="color: #51afef;">if</span> num&gt;<span style="color: #da8548; font-weight: bold;">25</span>: <span style="color: #dcaeea;">num</span>=<span style="color: #da8548; font-weight: bold;">25</span>
+<span class="linenr"> 98: </span>      <span style="color: #51afef;">if</span> num&gt;<span style="color: #da8548; font-weight: bold;">25</span>: num=<span style="color: #da8548; font-weight: bold;">25</span>
 <span class="linenr"> 99: </span>      <span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #da8548; font-weight: bold;">0</span>, num):
 <span class="linenr">100: </span>          <span style="color: #dcaeea;">ax</span>=plt.subplot(<span style="color: #da8548; font-weight: bold;">5</span>,<span style="color: #da8548; font-weight: bold;">5</span>, <span style="color: #da8548; font-weight: bold;">1</span>+i)
 <span class="linenr">101: </span>          ax.imshow(images[idx],cmap=<span style="color: #98be65;">'binary'</span>)
@@ -3239,11 +3211,11 @@ label
 <span class="linenr">137: </span>              rownames=[<span style="color: #98be65;">'label'</span>],colnames=[<span style="color: #98be65;">'predict'</span>])
 <span class="linenr">138: </span>  <span style="color: #5B6268;">### </span><span style="color: #5B6268;">11. Save model to JSON</span>
 <span class="linenr">139: </span>  <span style="color: #dcaeea;">model_json</span> = model.to_json()
-<span class="linenr">140: </span>  <span style="color: #51afef;">with</span> <span style="color: #c678dd;">open</span>(<span style="color: #98be65;">"SaveModel/cifarCnnModelnew.json"</span>, <span style="color: #98be65;">"w"</span>) <span style="color: #51afef;">as</span> <span style="color: #dcaeea;">json_file</span>:
+<span class="linenr">140: </span>  <span style="color: #51afef;">with</span> <span style="color: #c678dd;">open</span>(<span style="color: #98be65;">"SaveModel/cifarCnnModelnew.json"</span>, <span style="color: #98be65;">"w"</span>) <span style="color: #51afef;">as</span> json_file:
 <span class="linenr">141: </span>      json_file.write(model_json)
 <span class="linenr">142: </span>
 <span class="linenr">143: </span>  <span style="color: #5B6268;">### </span><span style="color: #5B6268;">12. Save Model to YAML</span>
-<span class="linenr">144: </span>  model_yaml = model.to_yaml()
+<span class="linenr">144: </span>  <span style="color: #dcaeea;">model_yaml</span> = model.to_yaml()
 <span class="linenr">145: </span>  <span style="color: #51afef;">with</span> <span style="color: #c678dd;">open</span>(<span style="color: #98be65;">"SaveModel/cifarCnnModelnew.yaml"</span>, <span style="color: #98be65;">"w"</span>) <span style="color: #51afef;">as</span> yaml_file:
 <span class="linenr">146: </span>      yaml_file.write(model_yaml)
 <span class="linenr">147: </span>
@@ -3255,35 +3227,32 @@ label
 </div>
 </div>
 </div>
-
-<div id="outline-container-org4f179eb" class="outline-2">
-<h2 id="org4f179eb"><span class="section-number-2">5.</span> 辨識手寫數字: MNIST 資料集</h2>
+<div id="outline-container-orgca5d138" class="outline-2">
+<h2 id="orgca5d138"><span class="section-number-2">5.</span> 辨識手寫數字: MNIST 資料集</h2>
 <div class="outline-text-2" id="text-5">
 <p>
 使用神經網路解決問題分為兩個步驟：「學習」與「推論」，學習指使用訓練資料進行權重參數的學習；而推論指使用學習過的參數進行資料分類。<br />
 </p>
 </div>
-
-<div id="outline-container-orgde8a301" class="outline-3">
-<h3 id="orgde8a301"><span class="section-number-3">5.1.</span> MNIST 資料集</h3>
+<div id="outline-container-org651ab69" class="outline-3">
+<h3 id="org651ab69"><span class="section-number-3">5.1.</span> MNIST 資料集</h3>
 <div class="outline-text-3" id="text-5-1">
 <p>
-MNIST 是機器學習領域中相當著名的資料集，號稱機器學習領域的「Hello world.」，其重要性不言可喻。MNIST 資料集由 0~9 的數字影像構成(如圖<a href="#orgaf7d18c">46</a>)，共計 60000 張訓練影像、10000 張測試影像。一般的 MMIST 資料集的用法為：使用訓練影像進行學習，再利用學習後的模型預測能否正確分類測試影像。<br />
+MNIST 是機器學習領域中相當著名的資料集，號稱機器學習領域的「Hello world.」，其重要性不言可喻。MNIST 資料集由 0~9 的數字影像構成(如圖<a href="#orgcc78610">47</a>)，共計 60000 張訓練影像、10000 張測試影像。一般的 MMIST 資料集的用法為：使用訓練影像進行學習，再利用學習後的模型預測能否正確分類測試影像。<br />
 </p>
 
-<div id="orgaf7d18c" class="figure">
+<div id="orgcc78610" class="figure">
 <p><img src="images/MNIST.jpg" alt="MNIST.jpg" /><br />
 </p>
-<p><span class="figure-number">Figure 46: </span>MNIST 資料集內容範例</p>
+<p><span class="figure-number">Figure 47: </span>MNIST 資料集內容範例</p>
 </div>
 
 <p>
 準備資料是訓練模型的第一步，基礎資料可以是網上公開的資料集，也可以是自己的資料集。視覺、語音、語言等各種型別的資料在網上都能找到相應的資料集。<br />
 </p>
 </div>
-
 <ol class="org-ol">
-<li><a id="orgeacd9a5"></a>準備 MNIST 資料<br />
+<li><a id="org9e6e418"></a>準備 MNIST 資料<br />
 <div class="outline-text-4" id="text-5-1-1">
 <p>
 MNIST 數據集來自美國國家標準與技術研究所, National Institute of Standards and Technology (NIST). 訓練集 (training set) 由來自 250 個不同人手寫的數字構成, 其中 50% 是高中學生, 50% 來自人口普查局 (the Census Bureau) 的工作人員. 測試集(test set) 也是同樣比例的手寫數字數據。MNIST 數據集可在 <a href="http://yann.lecun.com/exdb/mnist/">http://yann.lecun.com/exdb/mnist/</a> 獲取, 它包含了四個部分:<br />
@@ -3332,23 +3301,23 @@ MNIST 資料集是一個適合拿來當作 TensotFlow 的練習素材，在 Tens
 
 
 <p>
-由上述程式輸出結果可以看到載入的 x 為大小為 28*28 的圖片共 60000 張，每一筆 MNIST 資料的照片(x)由 784 個 pixels 組成（28*28），照片內容如圖<a href="#orgeccc89c">47</a>，訓練集的標籤(y)則為其對應的數字(0～9)，此例為 5。<br />
+由上述程式輸出結果可以看到載入的 x 為大小為 28*28 的圖片共 60000 張，每一筆 MNIST 資料的照片(x)由 784 個 pixels 組成（28*28），照片內容如圖<a href="#orged79968">48</a>，訓練集的標籤(y)則為其對應的數字(0～9)，此例為 5。<br />
 </p>
 
-<div id="orgeccc89c" class="figure">
+<div id="orged79968" class="figure">
 <p><img src="images/MNIST-Image.png" alt="MNIST-Image.png" /><br />
 </p>
-<p><span class="figure-number">Figure 47: </span>MNIST 影像示例</p>
+<p><span class="figure-number">Figure 48: </span>MNIST 影像示例</p>
 </div>
 
 <p>
-x 的影像資料為灰階影像，每個像素的數值介於 0~255 之間，矩陣裡每一項的資料則是代表每個 pixel 顏色深淺的數值，如下圖<a href="#orged26c01">48</a>所示：<br />
+x 的影像資料為灰階影像，每個像素的數值介於 0~255 之間，矩陣裡每一項的資料則是代表每個 pixel 顏色深淺的數值，如下圖<a href="#orgc74893c">49</a>所示：<br />
 </p>
 
-<div id="orged26c01" class="figure">
+<div id="orgc74893c" class="figure">
 <p><img src="images/MNIST-Matrix.png" alt="MNIST-Matrix.png" /><br />
 </p>
-<p><span class="figure-number">Figure 48: </span>MNIST 資料矩陣</p>
+<p><span class="figure-number">Figure 49: </span>MNIST 資料矩陣</p>
 </div>
 
 <p>
@@ -3385,17 +3354,16 @@ x 的影像資料為灰階影像，每個像素的數值介於 0~255 之間，�
 </pre>
 </div>
 </li>
-
-<li><a id="org988f5d1"></a>MNIST 的推論處理<br />
+<li><a id="orgf57b798"></a>MNIST 的推論處理<br />
 <div class="outline-text-4" id="text-5-1-2">
 <p>
-如圖<a href="#orgcf96faf">49</a>所示，MNIST 的推論神經網路最前端的輸入層有 784 (\(28*28=784\))個神經元，最後的輸出端有 10 個神經元(\(0~9\)個數字)，至於中間的隠藏層有兩個，第 1 個隱藏層有 50 個神經元，第 2 層有 100 個。此處的 50、100 可以設定為任意數（如，也可以是 128、64）。<br />
+如圖<a href="#orgbfe182b">50</a>所示，MNIST 的推論神經網路最前端的輸入層有 784 (\(28*28=784\))個神經元，最後的輸出端有 10 個神經元(\(0~9\)個數字)，至於中間的隠藏層有兩個，第 1 個隱藏層有 50 個神經元，第 2 層有 100 個。此處的 50、100 可以設定為任意數（如，也可以是 128、64）。<br />
 </p>
 
-<div id="orgcf96faf" class="figure">
+<div id="orgbfe182b" class="figure">
 <p><img src="images/MNIST-CNN.png" alt="MNIST-CNN.png" /><br />
 </p>
-<p><span class="figure-number">Figure 49: </span>MNIST-NeuralNet</p>
+<p><span class="figure-number">Figure 50: </span>MNIST-NeuralNet</p>
 </div>
 
 <p>
@@ -3418,8 +3386,8 @@ x 的影像資料為灰階影像，每個像素的數值介於 0~255 之間，�
 <span class="linenr">14: </span>    <span style="color: #51afef;">return</span> X_test.reshape(<span style="color: #da8548; font-weight: bold;">10000</span>, <span style="color: #da8548; font-weight: bold;">784</span>), y_test
 <span class="linenr">15: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">init_network</span>():
 <span class="linenr">16: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">https://github.com/Bingyy/deep-learning-from-scratch/blob/master/ch03/sample_weight.pkl</span>
-<span class="linenr">17: </span>    <span style="color: #51afef;">with</span> <span style="color: #c678dd;">open</span>(<span style="color: #98be65;">'/Volumes/Vanessa/MNIST/data/mnist/sample_weight.pkl'</span>, <span style="color: #98be65;">'rb'</span>) <span style="color: #51afef;">as</span> <span style="color: #dcaeea;">f</span>:
-<span class="linenr">18: </span>      network = pickle.load(f)
+<span class="linenr">17: </span>    <span style="color: #51afef;">with</span> <span style="color: #c678dd;">open</span>(<span style="color: #98be65;">'/Volumes/Vanessa/MNIST/data/mnist/sample_weight.pkl'</span>, <span style="color: #98be65;">'rb'</span>) <span style="color: #51afef;">as</span> f:
+<span class="linenr">18: </span>      <span style="color: #dcaeea;">network</span> = pickle.load(f)
 <span class="linenr">19: </span>      <span style="color: #51afef;">return</span> network
 <span class="linenr">20: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23384;&#20786;&#30340;&#26159;&#32178;&#32097;&#21443;&#25976;&#23383;&#20856;</span>
 <span class="linenr">21: </span>  <span style="color: #dcaeea;">network</span> = init_network()
@@ -3444,8 +3412,8 @@ x 的影像資料為灰階影像，每個像素的數值介於 0~255 之間，�
 <span id="coderef-y-predict" class="coderef-off"><span class="linenr">40: </span>    <span style="color: #dcaeea;">y</span> = predict(network, X_test[i])</span>
 <span id="coderef-np-argmax" class="coderef-off"><span class="linenr">41: </span>    <span style="color: #dcaeea;">p</span> = np.argmax(y)</span>
 <span class="linenr">42: </span>    np.set_printoptions(precision=<span style="color: #da8548; font-weight: bold;">4</span>, suppress=<span style="color: #a9a1e1;">True</span>)
-<span class="linenr">43: </span>    <span style="color: #51afef;">if</span> p == <span style="color: #dcaeea;">y_test</span>[i]:
-<span class="linenr">44: </span>      accuracy_cnt += <span style="color: #da8548; font-weight: bold;">1</span>
+<span class="linenr">43: </span>    <span style="color: #51afef;">if</span> p == y_test[i]:
+<span class="linenr">44: </span>      <span style="color: #dcaeea;">accuracy_cnt</span> += <span style="color: #da8548; font-weight: bold;">1</span>
 <span class="linenr">45: </span>  <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'&#28310;&#30906;&#29575;&#65306;'</span>, <span style="color: #c678dd;">str</span>(<span style="color: #c678dd;">float</span>(accuracy_cnt) / <span style="color: #c678dd;">len</span>(X_test)))
 </pre>
 </div>
@@ -3460,27 +3428,26 @@ x 的影像資料為灰階影像，每個像素的數值介於 0~255 之間，�
 </p>
 </div>
 </li>
-
-<li><a id="orgdb70d9b"></a>Python 與神經網路運算的批次處理<br />
+<li><a id="org0e091ce"></a>Python 與神經網路運算的批次處理<br />
 <div class="outline-text-4" id="text-5-1-3">
 <p>
-前節程式碼中最後以 for 迴圈來逐一處理預測結果與比較，輸入(X)為單一圖片，其處理程序如圖<a href="#org054110f">50</a>所示：<br />
+前節程式碼中最後以 for 迴圈來逐一處理預測結果與比較，輸入(X)為單一圖片，其處理程序如圖<a href="#orgb1016c8">51</a>所示：<br />
 </p>
 
-<div id="org054110f" class="figure">
+<div id="orgb1016c8" class="figure">
 <p><img src="images/MNIST-single.png" alt="MNIST-single.png" /><br />
 </p>
-<p><span class="figure-number">Figure 50: </span>MNIST-單一處理架構</p>
+<p><span class="figure-number">Figure 51: </span>MNIST-單一處理架構</p>
 </div>
 
 <p>
-事實上，在使用批次處理（如一次處理 100 張圖）反而能大幅縮短每張圖片的處理時間，因為多數處理數值運算的函式庫都會針對大型陣列運算進行最佳化，尤其是透過 GPU 來處理時更是如此，這時，傳送單張圖片反而成為效能瓶頸，以批次處理則可減輕匯流排頻寛負擔。若以每次處理 100 張為例，其處理程序則如圖<a href="#orga34f0ae">51</a>所示。<br />
+事實上，在使用批次處理（如一次處理 100 張圖）反而能大幅縮短每張圖片的處理時間，因為多數處理數值運算的函式庫都會針對大型陣列運算進行最佳化，尤其是透過 GPU 來處理時更是如此，這時，傳送單張圖片反而成為效能瓶頸，以批次處理則可減輕匯流排頻寛負擔。若以每次處理 100 張為例，其處理程序則如圖<a href="#org2ca073c">52</a>所示。<br />
 </p>
 
-<div id="orga34f0ae" class="figure">
+<div id="org2ca073c" class="figure">
 <p><img src="images/MNIST-batch.png" alt="MNIST-batch.png" /><br />
 </p>
-<p><span class="figure-number">Figure 51: </span>MNIST-批次處理架構</p>
+<p><span class="figure-number">Figure 52: </span>MNIST-批次處理架構</p>
 </div>
 
 <p>
@@ -3503,8 +3470,8 @@ x 的影像資料為灰階影像，每個像素的數值介於 0~255 之間，�
 <span class="linenr">14: </span>    <span style="color: #51afef;">return</span> X_test.reshape(<span style="color: #da8548; font-weight: bold;">10000</span>, <span style="color: #da8548; font-weight: bold;">784</span>), y_test
 <span class="linenr">15: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">init_network</span>():
 <span class="linenr">16: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">https://github.com/Bingyy/deep-learning-from-scratch/blob/master/ch03/sample_weight.pkl</span>
-<span class="linenr">17: </span>    <span style="color: #51afef;">with</span> <span style="color: #c678dd;">open</span>(<span style="color: #98be65;">'/Volumes/Vanessa/MNIST/sample_weight.pkl'</span>, <span style="color: #98be65;">'rb'</span>) <span style="color: #51afef;">as</span> <span style="color: #dcaeea;">f</span>:
-<span class="linenr">18: </span>      network = pickle.load(f)
+<span class="linenr">17: </span>    <span style="color: #51afef;">with</span> <span style="color: #c678dd;">open</span>(<span style="color: #98be65;">'/Volumes/Vanessa/MNIST/sample_weight.pkl'</span>, <span style="color: #98be65;">'rb'</span>) <span style="color: #51afef;">as</span> f:
+<span class="linenr">18: </span>      <span style="color: #dcaeea;">network</span> = pickle.load(f)
 <span class="linenr">19: </span>      <span style="color: #51afef;">return</span> network
 <span class="linenr">20: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23384;&#20786;&#30340;&#26159;&#32178;&#32097;&#21443;&#25976;&#23383;&#20856;</span>
 <span class="linenr">21: </span>  <span style="color: #dcaeea;">network</span> = init_network()
@@ -3548,9 +3515,8 @@ x 的影像資料為灰階影像，每個像素的數值介於 0~255 之間，�
 </li>
 </ol>
 </div>
-
-<div id="outline-container-org926e9db" class="outline-3">
-<h3 id="org926e9db"><span class="section-number-3">5.2.</span> MNIST 資料集:以 DNN Sequential 模型為例</h3>
+<div id="outline-container-org5f931aa" class="outline-3">
+<h3 id="org5f931aa"><span class="section-number-3">5.2.</span> MNIST 資料集:以 DNN Sequential 模型為例</h3>
 <div class="outline-text-3" id="text-5-2">
 <p>
 此處以最簡單的 DNN (deep neural network) 作為範例。以 Keras 的核心為模型，應用最常使用 Sequential 模型。藉由.add()我們可以一層一層的將神經網路疊起。在每一層之中我們只需要簡單的設定每層的大小(units)與激活函數(activation function)。需要特別記得的是：第一層要記得寫輸入的向量大小、最後一層的 units 要等於輸出的向量大小。在這邊我們最後一層使用的激活函數(activation function)為 softmax。<br />
@@ -3600,13 +3566,13 @@ x 的影像資料為灰階影像，每個像素的數值介於 0~255 之間，�
 <span class="linenr">41: </span>  model.fit(x_train,y_train,batch_size=<span style="color: #da8548; font-weight: bold;">100</span>,epochs=<span style="color: #da8548; font-weight: bold;">20</span>)
 <span class="linenr">42: </span>  <span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#39023;&#31034;&#35347;&#32244;&#32080;&#26524;</span>
 <span class="linenr">43: </span>  <span style="color: #dcaeea;">score</span> = model.evaluate(x_train,y_train)
-<span class="linenr">44: </span>  <span style="color: #c678dd;">print</span> (<span style="color: #98be65;">'\nTrain Acc:'</span>, score[<span style="color: #da8548; font-weight: bold;">1</span>])
-<span class="linenr">45: </span>  score = model.evaluate(x_test,y_test)
-<span class="linenr">46: </span>  <span style="color: #c678dd;">print</span> (<span style="color: #98be65;">'\nTest Acc:'</span>, score[<span style="color: #da8548; font-weight: bold;">1</span>])
+<span class="linenr">44: </span>  <span style="color: #c678dd;">print</span> (<span style="color: #98be65;">'</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">Train Acc:'</span>, score[<span style="color: #da8548; font-weight: bold;">1</span>])
+<span class="linenr">45: </span>  <span style="color: #dcaeea;">score</span> = model.evaluate(x_test,y_test)
+<span class="linenr">46: </span>  <span style="color: #c678dd;">print</span> (<span style="color: #98be65;">'</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">Test Acc:'</span>, score[<span style="color: #da8548; font-weight: bold;">1</span>])
 </pre>
 </div>
 
-<pre class="example" id="org0bae236">
+<pre class="example" id="org9375845">
 _________________________________________________________________
 Layer (type)                 Output Shape              Param #
 =================================================================
@@ -3666,9 +3632,8 @@ Test Acc: 0.9823
 </div>
 </div>
 </div>
-
-<div id="outline-container-org8eddfec" class="outline-2">
-<h2 id="org8eddfec"><span class="section-number-2">6.</span> 名詞解釋</h2>
+<div id="outline-container-org314bbef" class="outline-2">
+<h2 id="org314bbef"><span class="section-number-2">6.</span> 名詞解釋</h2>
 <div class="outline-text-2" id="text-6">
 <p>
 本節資料來源: <a href="https://kknews.cc/zh-tw/tech/b4zkbom.html">主流的深度學習模型有哪些？</a><br />
@@ -3682,13 +3647,12 @@ Test Acc: 0.9823
 <li>在機器學習領域的約定俗成是，名字中有深度(Deep)的網絡僅代表其有超過5-7層的隱藏層。<br /></li>
 </ul>
 </div>
-
-<div id="outline-container-org43ccc17" class="outline-3">
-<h3 id="org43ccc17"><span class="section-number-3">6.1.</span> Supervised neural networks</h3>
+<div id="outline-container-org6f0fec7" class="outline-3">
+<h3 id="org6f0fec7"><span class="section-number-3">6.1.</span> Supervised neural networks</h3>
 <div class="outline-text-3" id="text-6-1">
 </div>
 <ol class="org-ol">
-<li><a id="org771cd87"></a>ANN (Artificial Neural Network) / DNN (Deep Neural Networks)<br />
+<li><a id="orgeb1c8b2"></a>ANN (Artificial Neural Network) / DNN (Deep Neural Networks)<br />
 <div class="outline-text-4" id="text-6-1-1">
 <p>
 神經網絡的基礎模型是<a href="20221023103538-感知器.html#ID-20221023T103538.640537">感知器</a>(Perceptron)，因此神經網絡也可以叫做多層感知機(Multi-layer Perceptron)，簡稱MLP。單層感知機叫做感知機，多層感知機(MLP)≈人工神經網絡(ANN)。<br />
@@ -3703,30 +3667,28 @@ Test Acc: 0.9823
 </p>
 </div>
 </li>
-
-<li><a id="org9362622"></a>RNN: Recurrent Neural Network，Recursive neural networks。<br />
+<li><a id="org259373b"></a>RNN: Recurrent Neural Network，Recursive neural networks。<br />
 <div class="outline-text-4" id="text-6-1-2">
 <p>
 雖然很多時候我們把這兩種網絡都叫做RNN，但事實上這兩種網路的結構事實上是不同的。而我們常常把兩個網絡放在一起的原因是：它們都可以處理有序列的問題，比如時間序列等。<br />
   舉個最簡單的例子，我們預測股票走勢用RNN就比普通的DNN效果要好，原因是股票走勢和時間相關，今天的價格和昨天、上周、上個月都有關係。而RNN有「記憶」能力，可以「模擬」數據間的依賴關係(Dependency)。<br />
 </p>
 </div>
-
 <ol class="org-ol">
-<li><a id="org0a8e26a"></a>LSTM:<br />
+<li><a id="orgc954373"></a>LSTM:<br />
 <div class="outline-text-5" id="text-6-1-2-1">
 <p>
 為了加強這種RNN的「記憶能力」，人們開發各種各樣的變形體，如非常著名的Long Short-term Memory(LSTM)，用於解決「長期及遠距離的依賴關係」。如下圖所示，左邊的小圖是最簡單版本的循環網絡，而右邊是人們為了增強記憶能力而開發的LSTM。<br />
 </p>
 
-<div id="orgef519fe" class="figure">
+<div id="org9a442cc" class="figure">
 <p><img src="images/3r5o0000r126proo7o8q.jpg" alt="3r5o0000r126proo7o8q.jpg" width="500" /><br />
 </p>
-<p><span class="figure-number">Figure 52: </span>LSTM</p>
+<p><span class="figure-number">Figure 53: </span>LSTM</p>
 </div>
 </div>
 </li>
-<li><a id="org4f3e4dd"></a>Bi-directional RNN:<br />
+<li><a id="orgb340104"></a>Bi-directional RNN:<br />
 <div class="outline-text-5" id="text-6-1-2-2">
 <p>
 另一個循環網絡的變種 - 雙向循環網絡(Bi-directional RNN)也是現階段自然語言處理和語音分析中的重要模型。開發雙向循環網絡的原因是語言/語音的構成取決於上下文，即「現在」依託於「過去」和「未來」。單向的循環網絡僅著重於從「過去」推出「現在」，而無法對「未來」的依賴性有效的建模。<br />
@@ -3735,8 +3697,7 @@ Test Acc: 0.9823
 </li>
 </ol>
 </li>
-
-<li><a id="orgaf25167"></a>卷積網絡(Convolutional Neural Networks)<br />
+<li><a id="org3c28d47"></a>卷積網絡(Convolutional Neural Networks)<br />
 <div class="outline-text-4" id="text-6-1-3">
 <p>
 卷積運算是一種數學計算，和矩陣相乘不同，卷積運算可以實現稀疏相乘和參數共享，可以壓縮輸入端的維度。和普通DNN不同，CNN並不需要為每一個神經元所對應的每一個輸入數據提供單獨的權重。<br />
@@ -3753,17 +3714,16 @@ Test Acc: 0.9823
 </li>
 </ol>
 </div>
-
-<div id="outline-container-org978e7e1" class="outline-3">
-<h3 id="org978e7e1"><span class="section-number-3">6.2.</span> Unsupervised Pre-trained Neural Networks</h3>
+<div id="outline-container-org44374fd" class="outline-3">
+<h3 id="org44374fd"><span class="section-number-3">6.2.</span> Unsupervised Pre-trained Neural Networks</h3>
 <div class="outline-text-3" id="text-6-2">
 </div>
 <ol class="org-ol">
-<li><a id="org92b6731"></a>Deep Generative Models<br />
+<li><a id="orgda2a231"></a>Deep Generative Models<br />
 <ol class="org-ol">
-<li><a id="org862309c"></a>Boltzmann Machines, Restricted Boltzmann Machines<br /></li>
-<li><a id="orgc4bcab1"></a>Deep Belief Neural Networks<br /></li>
-<li><a id="org0ae6bda"></a>Generative Adversarial Networks<br />
+<li><a id="orgbbad7b3"></a>Boltzmann Machines, Restricted Boltzmann Machines<br /></li>
+<li><a id="org3560e02"></a>Deep Belief Neural Networks<br /></li>
+<li><a id="org7cd081c"></a>Generative Adversarial Networks<br />
 <div class="outline-text-5" id="text-6-2-1-3">
 <p>
 簡單的說，GAN訓練兩個網絡：1. 生成網絡用於生成圖片使其與訓練數據相似 2. 判別式網絡用於判斷生成網絡中得到的圖片是否是真的是訓練數據還是偽裝的數據。生成網絡一般有逆卷積層(deconvolutional layer)而判別網絡一般就是上文介紹的CNN。下圖左邊是生成網絡，右邊是判別網絡，相愛相殺。<br />
@@ -3819,8 +3779,8 @@ Test Acc: 0.9823
 </div>
 </div></div>
 <div id="postamble" class="status">
-<p class="author">Author: Yung Chin, Yen</p>
-<p class="date">Created: 2022-12-19 Mon 20:45</p>
+<p class="author">Author: Yung-Chin Yen</p>
+<p class="date">Created: 2024-01-19 Fri 08:16</p>
 </div>
 </body>
 </html>
