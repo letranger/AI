@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-02-04 Sun 22:18 -->
+<!-- 2024-02-05 Mon 11:46 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>資料預處理</title>
@@ -234,43 +234,43 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org6a91d18">1. 驗證集、測試集</a>
+<li><a href="#orgc3d064a">1. 驗證集、測試集</a>
 <ul>
-<li><a href="#org73ed16d">1.1. 為什麼要分割資料</a></li>
-<li><a href="#org4b7d7ab">1.2. 訓練集與測試集的資料分割</a></li>
+<li><a href="#orge46a7f8">1.1. 為什麼要分割資料</a></li>
+<li><a href="#org2f84c6d">1.2. 訓練集與測試集的資料分割</a></li>
 </ul>
 </li>
-<li><a href="#org6b5e341">2. 資料預處理</a>
+<li><a href="#orge19202a">2. 資料預處理</a>
 <ul>
-<li><a href="#orgeb51ebf">2.1. 填補遺遺漏值</a></li>
-<li><a href="#orgb2a1b68">2.2. Eronneous and Missing Data</a></li>
-<li><a href="#org664773e">2.3. 正規化(normalization)</a></li>
-<li><a href="#orgd8ae324">2.4. 資料預處理作業&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></a></li>
+<li><a href="#orgfd517bb">2.1. 填補遺遺漏值</a></li>
+<li><a href="#org691cbb2">2.2. Eronneous and Missing Data</a></li>
+<li><a href="#orgd0670df">2.3. 正規化(normalization)</a></li>
+<li><a href="#org990e26a">2.4. [作業]資料預處理&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></a></li>
 </ul>
 </li>
-<li><a href="#orgc4d52f4">3. 處理數據中的分類特徵編碼問題</a>
+<li><a href="#org6c5eab7">3. 處理數據中的分類特徵編碼問題</a>
 <ul>
-<li><a href="#orgb704ade">3.1. categorical feature</a></li>
-<li><a href="#orgf9f2edf">3.2. 對應 ordinal feature</a></li>
-<li><a href="#orga065de1">3.3. 對應 nominal feature</a></li>
-<li><a href="#orgd72a604">3.4. 對 nominal feature 執行 one-hot encoding</a></li>
+<li><a href="#orgfeba606">3.1. categorical feature</a></li>
+<li><a href="#orgd069735">3.2. 對應 ordinal feature</a></li>
+<li><a href="#org388eb8c">3.3. 對應 nominal feature</a></li>
+<li><a href="#org4d8b74e">3.4. 對 nominal feature 執行 one-hot encoding</a></li>
 </ul>
 </li>
-<li><a href="#orga44b4de">4. 資料間的關係</a>
+<li><a href="#org97c1b9c">4. 資料間的關係</a>
 <ul>
-<li><a href="#orgf4a105b">4.1. 兩點間的距離</a></li>
-<li><a href="#org5e58389">4.2. 進一步的考慮&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></a></li>
-<li><a href="#orga2c4041">4.3. 兩個向量間的距離</a></li>
-<li><a href="#org4bc36c4">4.4. 其他應用</a></li>
-<li><a href="#org4926fc0">4.5. 進階閱讀</a></li>
+<li><a href="#org2befeb2">4.1. 兩點間的距離</a></li>
+<li><a href="#orgd55f5f7">4.2. [作業進]一步的考慮&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></a></li>
+<li><a href="#org380a2da">4.3. 兩個向量間的距離</a></li>
+<li><a href="#orgb7ac031">4.4. 其他應用</a></li>
+<li><a href="#org6ab0c1f">4.5. 進階閱讀</a></li>
 </ul>
 </li>
-<li><a href="#org2396a81">5. 選取有意義的特徵</a>
+<li><a href="#orge0bfbbe">5. 選取有意義的特徵</a>
 <ul>
-<li><a href="#org6417672">5.1. L1L2 regularzation</a></li>
+<li><a href="#org8e52d10">5.1. L1L2 regularzation</a></li>
 </ul>
 </li>
-<li><a href="#org24d3da9">6. 資料擴增/資料增強(Data Augmentation)</a></li>
+<li><a href="#orga566b94">6. 資料擴增/資料增強(Data Augmentation)</a></li>
 </ul>
 </div>
 </div>
@@ -285,12 +285,12 @@
 <li>數據訓練集與測試集之分割<br /></li>
 <li>數據特徵選取<br /></li>
 </ol>
-<div id="outline-container-org6a91d18" class="outline-2">
-<h2 id="org6a91d18"><span class="section-number-2">1.</span> 驗證集、測試集</h2>
+<div id="outline-container-orgc3d064a" class="outline-2">
+<h2 id="orgc3d064a"><span class="section-number-2">1.</span> 驗證集、測試集</h2>
 <div class="outline-text-2" id="text-1">
 </div>
-<div id="outline-container-org73ed16d" class="outline-3">
-<h3 id="org73ed16d"><span class="section-number-3">1.1.</span> 為什麼要分割資料</h3>
+<div id="outline-container-orge46a7f8" class="outline-3">
+<h3 id="orge46a7f8"><span class="section-number-3">1.1.</span> 為什麼要分割資料</h3>
 <div class="outline-text-3" id="text-1-1">
 <ul class="org-ul">
 <li>訓練集（training): 舉例來說就是上課學習。主要用在訓練階段，用於模型擬合，直接參與了模型參數調整的過程<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。<br /></li>
@@ -302,15 +302,15 @@
 </p>
 </div>
 </div>
-<div id="outline-container-org4b7d7ab" class="outline-3">
-<h3 id="org4b7d7ab"><span class="section-number-3">1.2.</span> 訓練集與測試集的資料分割</h3>
+<div id="outline-container-org2f84c6d" class="outline-3">
+<h3 id="org2f84c6d"><span class="section-number-3">1.2.</span> 訓練集與測試集的資料分割</h3>
 <div class="outline-text-3" id="text-1-2">
 <p>
 訓練集與測試集的分割可以自行以Python進行分割，也可以直接呼叫函式進行分割<br />
 </p>
 </div>
 <ol class="org-ol">
-<li><a id="orga4a9c79"></a>手動分割<br />
+<li><a id="orgcdcd278"></a>手動分割<br />
 <div class="outline-text-4" id="text-1-2-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
@@ -350,7 +350,7 @@
 </pre>
 </div>
 
-<pre class="example" id="org23f4811">
+<pre class="example" id="org6291e83">
 124
 54
 ==========訓練集==========
@@ -368,7 +368,7 @@
 </pre>
 </div>
 </li>
-<li><a id="orgf2cccd3"></a>呼叫scikit learn的function<br />
+<li><a id="org70ec027"></a>呼叫scikit learn的function<br />
 <div class="outline-text-4" id="text-1-2-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
@@ -403,7 +403,7 @@
 </pre>
 </div>
 
-<pre class="example" id="orgd0a983d">
+<pre class="example" id="orgd2888f1">
 Class labels [1 2 3]
 124
 54
@@ -425,15 +425,15 @@ Class labels [1 2 3]
 </ol>
 </div>
 </div>
-<div id="outline-container-org6b5e341" class="outline-2">
-<h2 id="org6b5e341"><span class="section-number-2">2.</span> 資料預處理</h2>
+<div id="outline-container-orge19202a" class="outline-2">
+<h2 id="orge19202a"><span class="section-number-2">2.</span> 資料預處理</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 在收集到所需的資料後，常會遇到各種資料不全、缺失的情況，因此需要對資料進行整理，以便後續的分析。<br />
 </p>
 </div>
-<div id="outline-container-orgeb51ebf" class="outline-3">
-<h3 id="orgeb51ebf"><span class="section-number-3">2.1.</span> 填補遺遺漏值</h3>
+<div id="outline-container-orgfd517bb" class="outline-3">
+<h3 id="orgfd517bb"><span class="section-number-3">2.1.</span> 填補遺遺漏值</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
 最常見的「插補技術」之一為「平均插補」(mean imputation)，即，以整個特徵行的平均值來代替遺漏值。<br />
@@ -486,15 +486,15 @@ Imputer 類別在 scikit-learn 中屬於 transformer 類別，主要的工作是
 </p>
 </div>
 </div>
-<div id="outline-container-orgb2a1b68" class="outline-3">
-<h3 id="orgb2a1b68"><span class="section-number-3">2.2.</span> Eronneous and Missing Data</h3>
+<div id="outline-container-org691cbb2" class="outline-3">
+<h3 id="org691cbb2"><span class="section-number-3">2.2.</span> Eronneous and Missing Data</h3>
 <div class="outline-text-3" id="text-2-2">
 <p>
 現實世界中可能會因各種原因導致數據缺失或遺漏(如問卷被刻意留白)，這些部份通常會以「空白」、「NaN」或「NULL」來取代。<br />
 </p>
 </div>
 <ol class="org-ol">
-<li><a id="orgfbd4d8f"></a>Erroneous data<br />
+<li><a id="org2242b3c"></a>Erroneous data<br />
 <div class="outline-text-4" id="text-2-2-1">
 <ul class="org-ul">
 <li>何謂Erroneous data? 例Boston房價:房間坪數為負，或影像大小不一、影像色彩不一<br /></li>
@@ -502,7 +502,7 @@ Imputer 類別在 scikit-learn 中屬於 transformer 類別，主要的工作是
 </ul>
 </div>
 </li>
-<li><a id="orgaeaea3a"></a>Missing data<br />
+<li><a id="orgc68f955"></a>Missing data<br />
 <div class="outline-text-4" id="text-2-2-2">
 <ul class="org-ul">
 <li>為何會出現Missing data? 溫度記錄(data sensor固障)、遺忘、斷電<br /></li>
@@ -510,7 +510,7 @@ Imputer 類別在 scikit-learn 中屬於 transformer 類別，主要的工作是
 </ul>
 </div>
 </li>
-<li><a id="orgcf8cfbf"></a>遺漏值的識別<br />
+<li><a id="org3e8810f"></a>遺漏值的識別<br />
 <div class="outline-text-4" id="text-2-2-3">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #dcaeea;">csv_data</span> = <span style="color: #98be65;">'''A,X,B,C,D</span>
@@ -551,7 +551,7 @@ Imputer 類別在 scikit-learn 中屬於 transformer 類別，主要的工作是
 </pre>
 </div>
 
-<pre class="example" id="org0eccd9b">
+<pre class="example" id="org45167cd">
       A   X     B     C    D
 0   1.0 NaN   2.0   3.0  4.0
 1   5.0 NaN   6.0   NaN  8.0
@@ -592,8 +592,8 @@ Index: [0, 1, 2, 3]
 </li>
 </ol>
 </div>
-<div id="outline-container-org664773e" class="outline-3">
-<h3 id="org664773e"><span class="section-number-3">2.3.</span> 正規化(normalization)</h3>
+<div id="outline-container-orgd0670df" class="outline-3">
+<h3 id="orgd0670df"><span class="section-number-3">2.3.</span> 正規化(normalization)</h3>
 <div class="outline-text-3" id="text-2-3">
 <p>
 當我們在比較分析兩組數據資料時，可能會遭遇因單位的不同(例如：身高與體重)，或數字大小的代表性不同(例如：粉專1萬人與滿足感0.8)，造成各自變化的程度不一，進而影響統計分析的結果；為解決此類的問題，我們可利用資料的正規化(Normalization<br />
@@ -601,51 +601,51 @@ Index: [0, 1, 2, 3]
 </p>
 </div>
 <ol class="org-ol">
-<li><a id="org9cfb9b4"></a>Normalization<br />
+<li><a id="org98c8fcc"></a>Normalization<br />
 <div class="outline-text-4" id="text-2-3-1">
 <p>
 資料的正規化(Normalization)是將原始資料的數據按比例縮放於 [0, 1] 區間中，且不改變其原本分佈。舉例來說，若我們現有兩組數據資料，分別表示 500 項商品的銷售量 Sample 1 及銷售額 Sample 2，如下圖所示，很明顯地，此兩組資料的單位不同，且數字上有著懸殊的差異，分別透過資料正規化後，兩組資料將同時轉換成純量縮放於 [0,1] 區間中，如下右圖所示；這樣的資料轉換，能排除資料單位的限制，提供我們一個相同的基準來進行後續比較分析。<br />
 </p>
 
-<div id="org2a906a9" class="figure">
+<div id="org7bd4182" class="figure">
 <p><img src="images/Normalization01.png" alt="Normalization01.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 1: </span>原始資料v.s.正規化資料</p>
 </div>
 </div>
 </li>
-<li><a id="org6008b02"></a>Standardization<br />
+<li><a id="orga70d3bb"></a>Standardization<br />
 <div class="outline-text-4" id="text-2-3-2">
 <p>
 資料的標準化(Standardization)可運用在機器學習演算法中，它能帶給模型下面兩個好處：<br />
 </p>
 </div>
 <ul class="org-ul">
-<li><a id="org2a534ef"></a>提升模型的收斂速度<br />
-<div class="outline-text-5" id="text-org2a534ef">
+<li><a id="org4ff34de"></a>提升模型的收斂速度<br />
+<div class="outline-text-5" id="text-org4ff34de">
 <p>
 在建構機器學習模型時，我們會利用梯度下降法(Gradient Descent)來計算成本函數(Cost Function)的最佳解；假設我們現有兩個特徵值 x1 in [0,1] 與 x2 in [0,10000]，則在 x1-x2 平面上成本函數的等高線會呈窄長型，導致需較多的迭代步驟，另外也可能導致無法收斂的情況發生。因此，若將資料標準化，則能減少梯度下降法的收斂時間。<br />
 </p>
 </div>
 </li>
-<li><a id="org5203827"></a>提高模型的精準度<br />
-<div class="outline-text-5" id="text-org5203827">
+<li><a id="orga585a08"></a>提高模型的精準度<br />
+<div class="outline-text-5" id="text-orga585a08">
 <p>
 將特徵值 x1 及 x2 餵入一些需計算樣本彼此的距離(例如:歐氏距離)分類器演算法中，則 x2 的影響很可能將遠大於 x1，若實際上 x1 的指標意義及重要性高於 x2，這將導致我們分析的結果失真。因此，資料的標準化是有必要的，可讓每個特徵值對結果做出相近程度的貢獻。<br />
 </p>
 </div>
 </li>
-<li><a id="org4a5133b"></a>常見的標準化及正規化方法<br />
+<li><a id="org264a4f5"></a>常見的標準化及正規化方法<br />
 <ul class="org-ul">
-<li><a id="org78947b8"></a>Z分數標準化(Z-Score Standardization)<br />
-<div class="outline-text-6" id="text-org78947b8">
+<li><a id="org5420292"></a>Z分數標準化(Z-Score Standardization)<br />
+<div class="outline-text-6" id="text-org5420292">
 <p>
 \[ Z=\frac{X-\mu}{\delta}\sim N(0,1)\]<br />
 </p>
 </div>
 </li>
-<li><a id="org06e7027"></a>最小值最大值正規化(Min-Max Normalization)<br />
-<div class="outline-text-6" id="text-org06e7027">
+<li><a id="orgff6354f"></a>最小值最大值正規化(Min-Max Normalization)<br />
+<div class="outline-text-6" id="text-orgff6354f">
 <p>
 \[ X_{nom} = \frac{X-X_{min}}{X_{max}-X_{min}} \in [0,1] \]<br />
 「特徵縮放」(Feature scaling)是資料預處理的一個關鍵，「決策樹」和「隨機森林」是極少數無需進行 feature scaling 的分類技術；對多數機器學習演算法而言，若特徵值經過適當的縮放，都能有更佳成效。<br />
@@ -664,7 +664,7 @@ Feature scaling 的重要性可以以下例子看出，假設有兩個特徵值(
 </li>
 </ul>
 </li>
-<li><a id="orgbdf31eb"></a>常態化<br />
+<li><a id="org8af3eac"></a>常態化<br />
 <div class="outline-text-4" id="text-2-3-3">
 <p>
 將特徵值縮化為 0~1 間，這是「最小最大縮放」(min-max scaling)的一個特例，某一特徵值的常態化做法如下：<br />
@@ -680,7 +680,7 @@ Feature scaling 的重要性可以以下例子看出，假設有兩個特徵值(
 </div>
 </div>
 </li>
-<li><a id="org24acd1f"></a>標準化<br />
+<li><a id="orga10a42f"></a>標準化<br />
 <div class="outline-text-4" id="text-2-3-4">
 <p>
 雖說常態化簡單實用，但對許多機器學習演算法來說(特別是梯度下降法的最佳化)，標準化則更為實際，我們可令標準化後的特徵值其平均數為 0、標準差為 1，這樣一來，特徵值會滿足常態分佈，進而使演算法對於離群值不那麼敏感。標準化的公式如下：<br />
@@ -698,12 +698,12 @@ Feature scaling 的重要性可以以下例子看出，假設有兩個特徵值(
 </li>
 </ol>
 </div>
-<div id="outline-container-orgd8ae324" class="outline-3">
-<h3 id="orgd8ae324"><span class="section-number-3">2.4.</span> 資料預處理作業&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></h3>
+<div id="outline-container-org990e26a" class="outline-3">
+<h3 id="org990e26a"><span class="section-number-3">2.4.</span> [作業]資料預處理&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></h3>
 <div class="outline-text-3" id="text-2-4">
 </div>
 <ol class="org-ol">
-<li><a id="org74c62e3"></a>題目<br />
+<li><a id="org38f4e12"></a>題目<br />
 <div class="outline-text-4" id="text-2-4-1">
 <p>
 南一中網路書店即將開張，為了處理龐大的書單資料，資訊科教師們很無恥的把書籍資料登錄工作當成作業分派給一年級的修課學生，所謂團結力量大，一份不太可靠的<a href="Downloads/403books.csv">書目資料</a>就這麼完成了。<br />
@@ -734,22 +734,22 @@ Feature scaling 的重要性可以以下例子看出，假設有兩個特徵值(
 </ol>
 </div>
 </li>
-<li><a id="orgc26cb17"></a>要求<br />
+<li><a id="orgeff999b"></a>要求<br />
 <div class="outline-text-4" id="text-2-4-2">
 <p>
 請你透過colab來完成以下的任務：<br />
 </p>
 </div>
 <ul class="org-ul">
-<li><a id="org5d5c5d4"></a>讀檔<br />
-<div class="outline-text-5" id="text-org5d5c5d4">
+<li><a id="orgfa447e4"></a>讀檔<br />
+<div class="outline-text-5" id="text-orgfa447e4">
 <p>
 你可以選擇用Pandas直接讀線上的檔案，也可以選擇將檔案上傳到Google的雲端硬碟後再利用Colab來讀取。<br />
 </p>
 </div>
 </li>
-<li><a id="org127500d"></a>預處理<br />
-<div class="outline-text-5" id="text-org127500d">
+<li><a id="orgd3a744a"></a>預處理<br />
+<div class="outline-text-5" id="text-orgd3a744a">
 <p>
 要請你進行以下的資料預處理<br />
 </p>
@@ -762,8 +762,8 @@ Feature scaling 的重要性可以以下例子看出，假設有兩個特徵值(
 </ol>
 </div>
 </li>
-<li><a id="org8a19cd0"></a>輸出<br />
-<div class="outline-text-5" id="text-org8a19cd0">
+<li><a id="org53798fe"></a>輸出<br />
+<div class="outline-text-5" id="text-org53798fe">
 <p>
 最後輸出以下內容<br />
 </p>
@@ -779,12 +779,12 @@ Feature scaling 的重要性可以以下例子看出，假設有兩個特徵值(
 </li>
 </ul>
 </li>
-<li><a id="orgda931cc"></a>參考答案<br />
+<li><a id="org056e380"></a>參考答案<br />
 <div class="outline-text-4" id="text-2-4-3">
 <p>
 整份colab的程式碼要能一次執行並輸出以下結果(不能直接print我給的答案&#x2026;)<br />
 </p>
-<pre class="example" id="org8e8e589">
+<pre class="example" id="orgc01a8a3">
 原始資料筆數 271350
 可用資料數: 259397
 2000年出版: 16438
@@ -794,7 +794,7 @@ Feature scaling 的重要性可以以下例子看出，假設有兩個特徵值(
 </pre>
 </div>
 </li>
-<li><a id="orgf353d5d"></a>友情提醒<br />
+<li><a id="org0e50269"></a>友情提醒<br />
 <div class="outline-text-4" id="text-2-4-4">
 <ul class="org-ul">
 <li>資料量很大，相信我，你不會想用Excel或Numbers或Google試算表來打開它然後逐一處理&#x2026;，我試過在一台8G的Macbook Air上用Numbers打開這個csv檔，大概花了 <b>八分鐘</b> 就開起來了&#x2026;<br /></li>
@@ -805,12 +805,12 @@ Feature scaling 的重要性可以以下例子看出，假設有兩個特徵值(
 </ol>
 </div>
 </div>
-<div id="outline-container-orgc4d52f4" class="outline-2">
-<h2 id="orgc4d52f4"><span class="section-number-2">3.</span> 處理數據中的分類特徵編碼問題</h2>
+<div id="outline-container-org6c5eab7" class="outline-2">
+<h2 id="org6c5eab7"><span class="section-number-2">3.</span> 處理數據中的分類特徵編碼問題</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-orgb704ade" class="outline-3">
-<h3 id="orgb704ade"><span class="section-number-3">3.1.</span> categorical feature</h3>
+<div id="outline-container-orgfeba606" class="outline-3">
+<h3 id="orgfeba606"><span class="section-number-3">3.1.</span> categorical feature</h3>
 <div class="outline-text-3" id="text-3-1">
 <p>
 真實世界的數據集往往包含各種「類別特徵」(categorical feature)，類別特徵可再分為<br />
@@ -839,8 +839,8 @@ Feature scaling 的重要性可以以下例子看出，假設有兩個特徵值(
 </pre>
 </div>
 </div>
-<div id="outline-container-orgf9f2edf" class="outline-3">
-<h3 id="orgf9f2edf"><span class="section-number-3">3.2.</span> 對應 ordinal feature</h3>
+<div id="outline-container-orgd069735" class="outline-3">
+<h3 id="orgd069735"><span class="section-number-3">3.2.</span> 對應 ordinal feature</h3>
 <div class="outline-text-3" id="text-3-2">
 <p>
 自定一個 mapping dictionary，即 size_mapping，然後將 classlabel 對應到 size_mapping 中的鍵值(程式第<a href="#coderef-sizeMapping" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-sizeMapping');" onmouseout="CodeHighlightOff(this, 'coderef-sizeMapping');">11</a>行)。<br />
@@ -870,8 +870,8 @@ Feature scaling 的重要性可以以下例子看出，假設有兩個特徵值(
 </pre>
 </div>
 </div>
-<div id="outline-container-orga065de1" class="outline-3">
-<h3 id="orga065de1"><span class="section-number-3">3.3.</span> 對應 nominal feature</h3>
+<div id="outline-container-org388eb8c" class="outline-3">
+<h3 id="org388eb8c"><span class="section-number-3">3.3.</span> 對應 nominal feature</h3>
 <div class="outline-text-3" id="text-3-3">
 <p>
 許多機器學習的函式庫需要將「類別標籤」編碼為整數值。方法之一是以列舉方式為這些 nominal features 自 0 開始編號，先以 enumerate 方式建立一個 mapping dictionary: class_mapping(程式第<a href="#coderef-classMapping" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-classMapping');" onmouseout="CodeHighlightOff(this, 'coderef-classMapping');">10</a>行)，然後利用這個字典將類別特徵轉換為整數值。<br />
@@ -918,7 +918,7 @@ scikit-learn 中有一個更為方便的 LabelEncoder 類別則可以直接完�
 </pre>
 </div>
 
-<pre class="example" id="org7561716">
+<pre class="example" id="org8d7f928">
 {'class2': 0, 'class1': 1}
    color size  price  classlabel
 0  green    M   10.1           0
@@ -936,8 +936,8 @@ scikit-learn 中有一個更為方便的 LabelEncoder 類別則可以直接完�
 </pre>
 </div>
 </div>
-<div id="outline-container-orgd72a604" class="outline-3">
-<h3 id="orgd72a604"><span class="section-number-3">3.4.</span> 對 nominal feature 執行 one-hot encoding</h3>
+<div id="outline-container-org4d8b74e" class="outline-3">
+<h3 id="org4d8b74e"><span class="section-number-3">3.4.</span> 對 nominal feature 執行 one-hot encoding</h3>
 <div class="outline-text-3" id="text-3-4">
 <p>
 將類別 (categorical)或是文字(text)的資料轉換成數字，而讓程式能夠更好的去理解及運算。理由:<br />
@@ -948,7 +948,7 @@ scikit-learn 中有一個更為方便的 LabelEncoder 類別則可以直接完�
 </ol>
 </div>
 <ol class="org-ol">
-<li><a id="org70629ce"></a>pd.get_dummies<br />
+<li><a id="org2a67d82"></a>pd.get_dummies<br />
 <div class="outline-text-4" id="text-3-4-1">
 <p>
 get_dummies 是利用pandas实现one hot encode的方式<sup><a id="fnr.3" class="footref" href="#fn.3" role="doc-backlink">3</a></sup>。<br />
@@ -983,7 +983,7 @@ get_dummies 是利用pandas实现one hot encode的方式<sup><a id="fnr.3" class
 </pre>
 </div>
 </li>
-<li><a id="org35b4bc6"></a>scikit<br />
+<li><a id="org3186992"></a>scikit<br />
 <div class="outline-text-4" id="text-3-4-2">
 <p>
 scikit-learn 的 LabelENcoder 類別可以用來將「類別特徵」編碼為整數值，但這樣會引發另一個問題，如果我們將上述資料中的 color 特徵轉換為整數值，如下：<br />
@@ -1055,7 +1055,7 @@ scikit-learn 的 LabelENcoder 類別可以用來將「類別特徵」編碼為�
 </pre>
 </div>
 
-<pre class="example" id="org460558e">
+<pre class="example" id="orgde081ad">
    color size  price classlabel
 0  green    M   10.1     class2
 1    red    L   13.5     class1
@@ -1077,55 +1077,55 @@ scikit-learn 的 LabelENcoder 類別可以用來將「類別特徵」編碼為�
 </ol>
 </div>
 </div>
-<div id="outline-container-orga44b4de" class="outline-2">
-<h2 id="orga44b4de"><span class="section-number-2">4.</span> 資料間的關係</h2>
+<div id="outline-container-org97c1b9c" class="outline-2">
+<h2 id="org97c1b9c"><span class="section-number-2">4.</span> 資料間的關係</h2>
 <div class="outline-text-2" id="text-4">
 <p>
 找出特徵值間的差異與相似性是機器學習中非常重要的工作。<br />
 </p>
 </div>
-<div id="outline-container-orgf4a105b" class="outline-3">
-<h3 id="orgf4a105b"><span class="section-number-3">4.1.</span> 兩點間的距離</h3>
+<div id="outline-container-org2befeb2" class="outline-3">
+<h3 id="org2befeb2"><span class="section-number-3">4.1.</span> 兩點間的距離</h3>
 <div class="outline-text-3" id="text-4-1">
 <p>
-兩種常見的特徵距離計算方式:曼哈頓距離及歐幾里得距離，以一個城市中的兩個地標為例(如圖<a href="#org835df9f">2</a>中的兩個黑點)。<br />
+兩種常見的特徵距離計算方式:曼哈頓距離及歐幾里得距離，以一個城市中的兩個地標為例(如圖<a href="#org45c9f3b">2</a>中的兩個黑點)。<br />
 </p>
 
 
-<div id="org835df9f" class="figure">
+<div id="org45c9f3b" class="figure">
 <p><img src="images/資料間的關係/2024-02-02_13-46-36_2024-02-02_13-20-54.png" alt="2024-02-02_13-46-36_2024-02-02_13-20-54.png" width="300" /><br />
 </p>
 <p><span class="figure-number">Figure 2: </span>城市中的兩個地標</p>
 </div>
 </div>
 <ol class="org-ol">
-<li><a id="org8e789a4"></a>曼哈頓距離（Manhattan distance）<br />
+<li><a id="org1bc7697"></a>曼哈頓距離（Manhattan distance）<br />
 <div class="outline-text-4" id="text-4-1-1">
 <p>
-在如圖<a href="#org835df9f">2</a>這樣的棋盤式街道的城式中，要由點(1,1)走到(7,7)的最簡單方式是先往上直走到(1,7)，再右轉直走到(7,7)，這便是曼哈頓距離，這段距離為 \(|1-7|+|1-7| \)，公式為<br />
+在如圖<a href="#org45c9f3b">2</a>這樣的棋盤式街道的城式中，要由點(1,1)走到(7,7)的最簡單方式是先往上直走到(1,7)，再右轉直走到(7,7)，這便是曼哈頓距離，這段距離為 \(|1-7|+|1-7| \)，公式為<br />
 \[ \sum_{i=1}^n|x_i-y_i| \]<br />
 </p>
 </div>
 </li>
-<li><a id="org0db216b"></a>歐幾里得距離（Euclidian distance）<br />
+<li><a id="orgcd87710"></a>歐幾里得距離（Euclidian distance）<br />
 <div class="outline-text-4" id="text-4-1-2">
 
-<div id="org00cbe49" class="figure">
+<div id="org0e16fd9" class="figure">
 <p><img src="images/資料間的關係/2024-02-02_14-05-00_2024-02-02_14-03-31.png" alt="2024-02-02_14-05-00_2024-02-02_14-03-31.png" width="400" /><br />
 </p>
 <p><span class="figure-number">Figure 3: </span>Numbus 2000</p>
 </div>
 
 <p>
-如果我們肯花美金499<sup><a id="fnr.4" class="footref" href="#fn.4" role="doc-backlink">4</a></sup>買到<a href="https://cinereplicas.com/products/harry-potter-nimbus-2000-broom-2019-edition">Nimbus 2000</a>，那我們就能實踐「直線是兩點間最短距離」這個法則，此時圖<a href="#org835df9f">2</a>中由點(1,1)到點(7,7)的矩離就變成\( \sqrt{(1-7)^2+(1-7)^2} \)，公式為<br />
+如果我們肯花美金499<sup><a id="fnr.4" class="footref" href="#fn.4" role="doc-backlink">4</a></sup>買到<a href="https://cinereplicas.com/products/harry-potter-nimbus-2000-broom-2019-edition">Nimbus 2000</a>，那我們就能實踐「直線是兩點間最短距離」這個法則，此時圖<a href="#org45c9f3b">2</a>中由點(1,1)到點(7,7)的矩離就變成\( \sqrt{(1-7)^2+(1-7)^2} \)，公式為<br />
 \[ \sqrt{\sum_{i=1}^n(x_i-y_i)^2 } \]<br />
 </p>
 </div>
 </li>
 </ol>
 </div>
-<div id="outline-container-org5e58389" class="outline-3">
-<h3 id="org5e58389"><span class="section-number-3">4.2.</span> 進一步的考慮&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></h3>
+<div id="outline-container-orgd55f5f7" class="outline-3">
+<h3 id="orgd55f5f7"><span class="section-number-3">4.2.</span> [作業進]一步的考慮&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></h3>
 <div class="outline-text-3" id="text-4-2">
 <p>
 上述計算方式貌似沒什麼問題，但如果今天的問題不是二維地圖中的兩個點，而是：<br />
@@ -1147,8 +1147,8 @@ scikit-learn 的 LabelENcoder 類別可以用來將「類別特徵」編碼為�
 </ul>
 </div>
 </div>
-<div id="outline-container-orga2c4041" class="outline-3">
-<h3 id="orga2c4041"><span class="section-number-3">4.3.</span> 兩個向量間的距離</h3>
+<div id="outline-container-org380a2da" class="outline-3">
+<h3 id="org380a2da"><span class="section-number-3">4.3.</span> 兩個向量間的距離</h3>
 <div class="outline-text-3" id="text-4-3">
 <p>
 以下為三個學生的國文、數學、英文三科成績，哪兩個學生的學業能力較為接近?<br />
@@ -1160,30 +1160,30 @@ scikit-learn 的 LabelENcoder 類別可以用來將「類別特徵」編碼為�
 </ul>
 
 <p>
-為了回答上述問題，我們可以將學生的各科成績當成vector(如圖<a href="#org2527642">4</a>)，我們的問題就變成：哪兩個vector更為相似? 三個學生的成績向量分佈如下：<br />
+為了回答上述問題，我們可以將學生的各科成績當成vector(如圖<a href="#orgcadd948">4</a>)，我們的問題就變成：哪兩個vector更為相似? 三個學生的成績向量分佈如下：<br />
 </p>
 
-<div id="org2527642" class="figure">
+<div id="orgcadd948" class="figure">
 <p><img src="images/healthCondition.png" alt="healthCondition.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 4: </span>三個學生的成績向量</p>
 </div>
 
 <p>
-如何計算? 有以下三種方式：歐幾里得距離、餘弦相似度、向量內積(如圖<a href="#org7bc9d07">5</a>)<sup><a id="fnr.7" class="footref" href="#fn.7" role="doc-backlink">7</a></sup>。<br />
+如何計算? 有以下三種方式：歐幾里得距離、餘弦相似度、向量內積(如圖<a href="#org4e85c1d">5</a>)<sup><a id="fnr.7" class="footref" href="#fn.7" role="doc-backlink">7</a></sup>。<br />
 </p>
 
-<div id="org7bc9d07" class="figure">
+<div id="org4e85c1d" class="figure">
 <p><img src="images/資料間的關係/2024-02-03_17-40-18_2024-02-03_17-39-29.png" alt="2024-02-03_17-40-18_2024-02-03_17-39-29.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 5: </span>Vector Similarity</p>
 </div>
 </div>
 <ol class="org-ol">
-<li><a id="org313ef35"></a>歐幾里得距離<br />
+<li><a id="org6f119a0"></a>歐幾里得距離<br />
 <div class="outline-text-4" id="text-4-3-1">
 
-<div id="orge3cb0c4" class="figure">
+<div id="org0623e11" class="figure">
 <p><img src="images/資料間的關係/2024-02-03_17-48-03_2024-02-03_17-47-50.png" alt="2024-02-03_17-48-03_2024-02-03_17-47-50.png" width="300" /><br />
 </p>
 <p><span class="figure-number">Figure 6: </span>歐幾里得距離</p>
@@ -1202,10 +1202,10 @@ scikit-learn 的 LabelENcoder 類別可以用來將「類別特徵」編碼為�
 </p>
 </div>
 </li>
-<li><a id="orgee0f71a"></a>Cosine Similarity<br />
+<li><a id="orga8ba554"></a>Cosine Similarity<br />
 <div class="outline-text-4" id="text-4-3-2">
 
-<div id="orgdce7288" class="figure">
+<div id="orgf46a0de" class="figure">
 <p><img src="images/資料間的關係/2024-02-03_17-50-17_2024-02-03_17-50-07.png" alt="2024-02-03_17-50-17_2024-02-03_17-50-07.png" width="300" /><br />
 </p>
 <p><span class="figure-number">Figure 7: </span>餘弦相似度</p>
@@ -1228,8 +1228,8 @@ scikit-learn 的 LabelENcoder 類別可以用來將「類別特徵」編碼為�
 </p>
 </div>
 <ul class="org-ul">
-<li><a id="org64a757d"></a>Python手刻<br />
-<div class="outline-text-5" id="text-org64a757d">
+<li><a id="org487870d"></a>Python手刻<br />
+<div class="outline-text-5" id="text-org487870d">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> math
 <span class="linenr"> 2: </span>
@@ -1263,8 +1263,8 @@ James v.s. Vanessa: 0.978640304032486
 </pre>
 </div>
 </li>
-<li><a id="org6d98e6c"></a>Numpy<br />
-<div class="outline-text-5" id="text-org6d98e6c">
+<li><a id="orge4d71f6"></a>Numpy<br />
+<div class="outline-text-5" id="text-orge4d71f6">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">from</span> numpy <span style="color: #51afef;">import</span> dot
 <span class="linenr"> 2: </span><span style="color: #51afef;">from</span> numpy.linalg <span style="color: #51afef;">import</span> norm
@@ -1289,8 +1289,8 @@ James v.s. Vanessa: 0.9786403040324858
 </pre>
 </div>
 </li>
-<li><a id="org6d1ec43"></a>Scipy<br />
-<div class="outline-text-5" id="text-org6d1ec43">
+<li><a id="org82640de"></a>Scipy<br />
+<div class="outline-text-5" id="text-org82640de">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">from</span> scipy <span style="color: #51afef;">import</span> spatial
 <span class="linenr"> 2: </span>
@@ -1316,10 +1316,10 @@ James v.s. Vanessa: 0.978640304032486
 </li>
 </ul>
 </li>
-<li><a id="orgb10813b"></a>Dot Product<br />
+<li><a id="org5135583"></a>Dot Product<br />
 <div class="outline-text-4" id="text-4-3-3">
 
-<div id="org53d60b6" class="figure">
+<div id="org433567b" class="figure">
 <p><img src="images/資料間的關係/2024-02-03_17-49-28_2024-02-03_17-49-09.png" alt="2024-02-03_17-49-28_2024-02-03_17-49-09.png" width="300" /><br />
 </p>
 <p><span class="figure-number">Figure 8: </span>向量內積</p>
@@ -1342,27 +1342,27 @@ James v.s. Vanessa: 0.978640304032486
 </li>
 </ol>
 </div>
-<div id="outline-container-org4bc36c4" class="outline-3">
-<h3 id="org4bc36c4"><span class="section-number-3">4.4.</span> 其他應用</h3>
+<div id="outline-container-orgb7ac031" class="outline-3">
+<h3 id="orgb7ac031"><span class="section-number-3">4.4.</span> 其他應用</h3>
 <div class="outline-text-3" id="text-4-4">
 <p>
 計算向量間的距離不僅可以比較上述以數值呈現的特徵，也能比較看起來並不是數值的特徵，例如：文字。例如，如何比較這幾個單字間的相似性：lion, dog, cat, love, apple, NYC<sup><a id="fnr.9" class="footref" href="#fn.9" role="doc-backlink">9</a></sup>。<br />
 </p>
 
 <p>
-如圖<a href="#org5ad56a0">9</a><sup><a id="fnr.9.100" class="footref" href="#fn.9" role="doc-backlink">9</a></sup>，我們可以由三個角度(animalness, petness, cityness)來賦予每個單字一個數值，那麼就可以利用同樣的方式來比較不同單字間的相似性，這就是自然語言處理的基本原理。<br />
+如圖<a href="#orgbb66fa1">9</a><sup><a id="fnr.9.100" class="footref" href="#fn.9" role="doc-backlink">9</a></sup>，我們可以由三個角度(animalness, petness, cityness)來賦予每個單字一個數值，那麼就可以利用同樣的方式來比較不同單字間的相似性，這就是自然語言處理的基本原理。<br />
 </p>
 
 
-<div id="org5ad56a0" class="figure">
+<div id="orgbb66fa1" class="figure">
 <p><img src="images/資料間的關係/2024-02-03_19-07-07_2024-02-03_19-07-00.png" alt="2024-02-03_19-07-07_2024-02-03_19-07-00.png" width="400" /><br />
 </p>
 <p><span class="figure-number">Figure 9: </span>不同單字間的相似性</p>
 </div>
 </div>
 </div>
-<div id="outline-container-org4926fc0" class="outline-3">
-<h3 id="org4926fc0"><span class="section-number-3">4.5.</span> 進階閱讀</h3>
+<div id="outline-container-org6ab0c1f" class="outline-3">
+<h3 id="org6ab0c1f"><span class="section-number-3">4.5.</span> 進階閱讀</h3>
 <div class="outline-text-3" id="text-4-5">
 <ul class="org-ul">
 <li><a href="https://kknews.cc/zh-tw/code/v3laxal.html">python 各類距離公式實現</a><br /></li>
@@ -1371,8 +1371,8 @@ James v.s. Vanessa: 0.978640304032486
 </div>
 </div>
 </div>
-<div id="outline-container-org2396a81" class="outline-2">
-<h2 id="org2396a81"><span class="section-number-2">5.</span> 選取有意義的特徵</h2>
+<div id="outline-container-orge0bfbbe" class="outline-2">
+<h2 id="orge0bfbbe"><span class="section-number-2">5.</span> 選取有意義的特徵</h2>
 <div class="outline-text-2" id="text-5">
 <p>
 overfitting 的產生原因是模型過度遷就於訓練數據，導致面對新數據(測試集)時成效不彰，我們稱這種模型具有較高變異性(high variance)，一般的解決策略有：<br />
@@ -1384,43 +1384,43 @@ overfitting 的產生原因是模型過度遷就於訓練數據，導致面對�
 <li>減少數據維度<br /></li>
 </ul>
 </div>
-<div id="outline-container-org6417672" class="outline-3">
-<h3 id="org6417672"><span class="section-number-3">5.1.</span> L1L2 regularzation</h3>
+<div id="outline-container-org8e52d10" class="outline-3">
+<h3 id="org8e52d10"><span class="section-number-3">5.1.</span> L1L2 regularzation</h3>
 <div class="outline-text-3" id="text-5-1">
 <p>
-一個典型的解釋<sup><a id="fnr.10" class="footref" href="#fn.10" role="doc-backlink">10</a></sup>如圖<a href="#org6a1d779">10</a>，&ldquo;我們知道, 過擬合就是所謂的模型對可見的數據過度自信, 非常完美的擬合上了這些數據, 如果具備過擬合的能力, 那麼這個方程就可能是一個比較複雜的非線性方程 , 正是因為這裡的 \(x^3\) 和 \(x^2\) 使得這條虛線能夠被彎來彎去, 所以整個模型就會特別努力地去學習作用在 \(x^3\) 和 \(x^2\) 上的 \(c\), \(d\) 參數. 但是我們期望模型要學到的卻是 <b>這條藍色的曲線</b>. 因為它能更有效地概括數據.而且只需要一個 \(y=a+bx\) 就能表達出數據的規律. 或者是說, 藍色的線最開始時, 和紅色線同樣也有 \(c,d\) 兩個參數, 可是最終學出來時, \(c\) 和 \(d\) 都學成了 0, 雖然藍色方程的誤差要比紅色大, 但是概括起數據來還是藍色好. 那我們如何保證能學出來這樣的參數呢? 這就是 l1 l2 正規化出現的原因。&rdquo;<br />
+一個典型的解釋<sup><a id="fnr.10" class="footref" href="#fn.10" role="doc-backlink">10</a></sup>如圖<a href="#org403df88">10</a>，&ldquo;我們知道, 過擬合就是所謂的模型對可見的數據過度自信, 非常完美的擬合上了這些數據, 如果具備過擬合的能力, 那麼這個方程就可能是一個比較複雜的非線性方程 , 正是因為這裡的 \(x^3\) 和 \(x^2\) 使得這條虛線能夠被彎來彎去, 所以整個模型就會特別努力地去學習作用在 \(x^3\) 和 \(x^2\) 上的 \(c\), \(d\) 參數. 但是我們期望模型要學到的卻是 <b>這條藍色的曲線</b>. 因為它能更有效地概括數據.而且只需要一個 \(y=a+bx\) 就能表達出數據的規律. 或者是說, 藍色的線最開始時, 和紅色線同樣也有 \(c,d\) 兩個參數, 可是最終學出來時, \(c\) 和 \(d\) 都學成了 0, 雖然藍色方程的誤差要比紅色大, 但是概括起數據來還是藍色好. 那我們如何保證能學出來這樣的參數呢? 這就是 l1 l2 正規化出現的原因。&rdquo;<br />
 </p>
 
 
-<div id="org6a1d779" class="figure">
+<div id="org403df88" class="figure">
 <p><img src="images/L1l2regularization2.png" alt="L1l2regularization2.png" /><br />
 </p>
 <p><span class="figure-number">Figure 10: </span>過擬合問題</p>
 </div>
 
 <p>
-對於上述訓練出的兩個方程式，我們可以用\((y_{\theta}(x)-y)^2\)來計算模型預測值\(y(x)\)和真實數據\(y\)的誤差，而 L1, L2 就只是在這個誤差公式後加上一些式子來修正這個公式(如圖<a href="#orge91db4d">11</a>)，其目的在於讓誤差的最佳化不僅取決於訓練數據擬合的優劣，同時也取決於參數值(如 \(c,d\))的大小；L2 正規化以參數平方來做為計算方式，L1 正規化則是計算每個參數的絕對值。<br />
+對於上述訓練出的兩個方程式，我們可以用\((y_{\theta}(x)-y)^2\)來計算模型預測值\(y(x)\)和真實數據\(y\)的誤差，而 L1, L2 就只是在這個誤差公式後加上一些式子來修正這個公式(如圖<a href="#org5c6d2d3">11</a>)，其目的在於讓誤差的最佳化不僅取決於訓練數據擬合的優劣，同時也取決於參數值(如 \(c,d\))的大小；L2 正規化以參數平方來做為計算方式，L1 正規化則是計算每個參數的絕對值。<br />
 </p>
 
-<div id="orge91db4d" class="figure">
+<div id="org5c6d2d3" class="figure">
 <p><img src="images/L1l2regularization3.png" alt="L1l2regularization3.png" /><br />
 </p>
 <p><span class="figure-number">Figure 11: </span>L1,L2 正規化公式</p>
 </div>
 
 <p>
-進一步以 Tensorflow Playground 的圖示來觀察 L1,L2 正規化的差異<sup><a id="fnr.11" class="footref" href="#fn.11" role="doc-backlink">11</a></sup>，如果把正規化(Regularization)設定為 L1，再執行訓練。可以看到很多權重都被設定為 0，特徵輸入與隱藏層的神經元被大大的減少，如圖<a href="#org30fde30">12</a>，整個模型的複雜度簡化很多。L1 正規化確實有助於將我們的複雜模型縮減為更小的泛化模型。添加正規化後，我們看到無用的功能全部變為零，並且連接線變得稀疏並顯示為灰色。倖存下來的唯一特徵是 \(x_1\) 平方和 \(x_2\) 平方，這是有道理的，因為這 2 個特徵加在一起就構成了一個圓的方程式。<br />
+進一步以 Tensorflow Playground 的圖示來觀察 L1,L2 正規化的差異<sup><a id="fnr.11" class="footref" href="#fn.11" role="doc-backlink">11</a></sup>，如果把正規化(Regularization)設定為 L1，再執行訓練。可以看到很多權重都被設定為 0，特徵輸入與隱藏層的神經元被大大的減少，如圖<a href="#org1c35e45">12</a>，整個模型的複雜度簡化很多。L1 正規化確實有助於將我們的複雜模型縮減為更小的泛化模型。添加正規化後，我們看到無用的功能全部變為零，並且連接線變得稀疏並顯示為灰色。倖存下來的唯一特徵是 \(x_1\) 平方和 \(x_2\) 平方，這是有道理的，因為這 2 個特徵加在一起就構成了一個圓的方程式。<br />
 </p>
 
 
-<div id="org30fde30" class="figure">
+<div id="org1c35e45" class="figure">
 <p><img src="images/L1l2regularization4.png" alt="L1l2regularization4.png" /><br />
 </p>
 <p><span class="figure-number">Figure 12: </span>L1 正規化</p>
 </div>
 
 <p>
-反觀 L2 正規化，當我們訓練它時，每個權重與神經元都還是處於活動狀態，但是非常虛弱，如圖<a href="#org87a8b8f">13</a>，L1 正規化使用其中一個特徵而將某些拋棄，而 L2 正規化將同時保留特徵並使權重值保持較小。因此，使用 L1，您可以得到一個較小的模型，但預測性可能較低。所以：<br />
+反觀 L2 正規化，當我們訓練它時，每個權重與神經元都還是處於活動狀態，但是非常虛弱，如圖<a href="#orgc632eb7">13</a>，L1 正規化使用其中一個特徵而將某些拋棄，而 L2 正規化將同時保留特徵並使權重值保持較小。因此，使用 L1，您可以得到一個較小的模型，但預測性可能較低。所以：<br />
 </p>
 
 <ul class="org-ul">
@@ -1429,7 +1429,7 @@ overfitting 的產生原因是模型過度遷就於訓練數據，導致面對�
 </ul>
 
 
-<div id="org87a8b8f" class="figure">
+<div id="orgc632eb7" class="figure">
 <p><img src="images/L1l2regularization5.png" alt="L1l2regularization5.png" /><br />
 </p>
 <p><span class="figure-number">Figure 13: </span>L2 正規化</p>
@@ -1437,8 +1437,8 @@ overfitting 的產生原因是模型過度遷就於訓練數據，導致面對�
 </div>
 </div>
 </div>
-<div id="outline-container-org24d3da9" class="outline-2">
-<h2 id="org24d3da9"><span class="section-number-2">6.</span> 資料擴增/資料增強(Data Augmentation)</h2>
+<div id="outline-container-orga566b94" class="outline-2">
+<h2 id="orga566b94"><span class="section-number-2">6.</span> 資料擴增/資料增強(Data Augmentation)</h2>
 <div class="outline-text-2" id="text-6">
 <ul class="org-ul">
 <li><a href="https://cynthiachuang.github.io/Augmentor-Image-Augmentation-Library-in-Python/">Augmentor：影像資料增強工具庫</a><br /></li>
@@ -1499,7 +1499,7 @@ overfitting 的產生原因是模型過度遷就於訓練數據，導致面對�
 </div></div>
 <div id="postamble" class="status">
 <p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2024-02-04 Sun 22:18</p>
+<p class="date">Created: 2024-02-05 Mon 11:46</p>
 </div>
 </body>
 </html>
