@@ -55,6 +55,7 @@
 #+ATTR_HTML: :width 700
 #+RESULTS:
 [[file:images/MLTypes.png]]
+
 - 機器學習就是從一組function中找出一個最合適的function的過程[李宏毅]。
 #+latex:\newpage
 
@@ -286,7 +287,7 @@ print("模型的兩個參數w,b: {}".format(l0.get_weights())) (ref:modelWeights
 5. 偷偷看一下這個模型給出答案的關鍵、也就是模型的兩個參數(Weight)(第[[(modelWeights)]]行)
 #+latex:\newpage
 
-* 機器學習概念釐清
+* 機器學習概念釐清 :noexport:
 ** Machine Learning v.s. Statistics
 - 統計: 目的在由樣本(sample)找出真相(universe)，如，由台灣 2350 萬人口中，只選出 1000 人，得知全台生活型態、政治傾向。
 - Machine learning: 目的在讓電腦由歷史資料中學習處理新的資料以解決問題。如，由醫生判讀 X 光片的資料學習判讀新的 X 光片；由一個人的刷卡及繳費行為預測他的信貸是否能準時還款？
@@ -349,25 +350,13 @@ Inference Phase
 [[file:images/TPIP.png]]
 #+latex:\newpage
 
-* 機器學習如何解決問題
-** 使用機器學習處理問題的幾個步驟：
-- 數據收集(Data Collection): 在監督式學習下還要蒐集正確的標記
-- 數據處理(Data Processing): 包含「數據清理」，例如：刪除「冗餘」或「高度相關的特徵」，或補滿「遺漏值」。
-- 建立測試案例(Creation of the test case): 通常包括：「訓練數據集」(training dataset)用來訓練演算法、「測試數據集」(test dataset)用來測試訓練完成的演算法、以及「驗證數據集」(validation dataset)用來進行最終測試(在不斷的訓練-測試之後)。
-** 現實生活中的應用
-近年來的機器學習範例：
-- AlphaGo: 基於深度學習所製作的「[[file:AI-Introduction.org][人工智慧]]機」，在 2016 年擊敗世界圍棋冠軍 Lee Sedol。AlphaGo 的優勢在於這個程式並不是專門開發來下圍棋的，而是運用「強化學習」與「深度學習」，透過下了數以千計次的圍棋，學習到如何下圍棋。
-- 澳大利亞：2015 年舉辦一場「預測西澳大利亞租屋價錢」的比賽
-- 2009 年 Netflix 推出一項總奬金 100 萬美元的競賽，用來改進預測使用者喜愛影片的正確性
-- AlhpaGo Zero: 2017 年 10 月 19 日，AlphaGo 團隊在《自然》上發表文章介紹了 AlphaGo Zero，文中指出此版本不採用人類玩家的棋譜，且比之前的所有版本都要強大。透過自我對弈，AlphaGo Zero 在三天內以 100 比 0 的戰績戰勝了 AlphaGo Lee，花了 21 天達到 AlphaGo Master 的水平，用 40 天超越了所有舊版本。DeepMind 聯合創始人兼 CEO 傑米斯·哈薩比斯說，AlphaGo Zero「不再受限於人類認知」，很強大。由於專家數據「經常很貴、不可靠或是無法取得」，不藉助人類專家的數據集訓練[[file:AI-Introduction.org][人工智慧]]，對於[[file:AI-Introduction.org][人工智慧]]開發超人技能具有重大意義[4]，因為這樣的 AI 不是學習人，是透過對自我的反思和獨有的創造力直接超越人類[fn:3]。
-- 繼 AlphaGo 後，同一團隊(DeepMind)繼續打造出 AlphaZero，不再依賴人類棋士的知識與棋譜，只給遊戲規則。在 34 小時的訓練後（約自我訓練 2100 萬局[1]:Table S3），AlphaZero 以 60 勝 40 敗的成績打敗 AlphaGo Zero[fn:4]。
-#+latex:\newpage
+*
 
 * 機器學習的類型
 :PROPERTIES:
 :ID:       20221023T110646.714031
 :END:
-#+CAPTION: Caption
+#+CAPTION: 機器學習的類型
 #+LABEL:fig:Labl
 #+name: fig:Name
 #+ATTR_LATEX: :width 300
@@ -375,10 +364,15 @@ Inference Phase
 #+ATTR_HTML: :width 500
 [[file:images/2022-10-03_09-26-40.png]]
 
+#+CAPTION: 監督、非監督、半監督
+#+LABEL:fig:Labl
+#+name: fig:semi
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/機器學習的類型/2024-02-01_19-39-09_2024-02-01_17-23-24.png]]
+
 ** [[id:20221023T101626.420918][監督式學習]](Supervised learning)
-- [[id:20221023T101626.420918][監督式學習]]指在訓練過程中直接告訴機器答案，也就是將資料進行標註(label:人力標註)，例如，在 1000 張訓練集照片中標註「貓/狗」。目前九成以上的機器學習應用均屬此類。
-- 監督學習的訓練集要求是包括輸入和輸出， 也可以說是特徵和目標。做法是從給定的訓練資料集中學習出一個函式，當新的資料到來時，可以根據這個函式預測結果。
-- 為迄今為止最常見的機器學習，泛指一群的機器學習演算法，是從一組「已標記」的「訓練數據集」(training dataset)來學習(訓練)，並導出模型。然後，以此一模型對「未標記」的類似數據進行預測分類，其運作流程如圖[[fig:FlowChartOfSupervisedLearning]][fn:1]所示。典型的例子為早期電子郵件的垃圾信件是讓使用者先去標記某些信為垃圾郵件，然後藉由這些被標記的郵件來推論找出其他可能的垃圾郵件；由此看來，我們以為 Gmail 很好心的提供給我們為信件加註「垃圾」、「廣告」的功能，其實是 Google 利用我們當免費勞工為他們提供信件加註標籤的工作。
 #+CAPTION: 監督式學習流程圖
 #+name: fig:FlowChartOfSupervisedLearning
 #+ATTR_LATEX: :width 300
@@ -386,7 +380,11 @@ Inference Phase
 #+ATTR_HTML: :width 500
 #+Results:
 [[file:images/FlowChartOfSupervisedLearning.png]]
+- [[id:20221023T101626.420918][監督式學習]]指在訓練過程中直接告訴機器答案，也就是將資料進行標註(label:人力標註)，例如，在 1000 張訓練集照片中標註「貓/狗」。目前九成以上的機器學習應用均屬此類。
+- 監督學習的訓練集要求是包括輸入和輸出， 也可以說是特徵和目標。做法是從給定的訓練資料集中學習出一個函式，當新的資料到來時，可以根據這個函式預測結果。
+- 為迄今為止最常見的機器學習，泛指一群的機器學習演算法，是從一組「已標記」的「訓練數據集」(training dataset)來學習(訓練)，並導出模型。然後，以此一模型對「未標記」的類似數據進行預測分類，其運作流程如圖[[fig:FlowChartOfSupervisedLearning]][fn:1]所示。典型的例子為早期電子郵件的垃圾信件是讓使用者先去標記某些信為垃圾郵件，然後藉由這些被標記的郵件來推論找出其他可能的垃圾郵件；由此看來，我們以為 Gmail 很好心的提供給我們為信件加註「垃圾」、「廣告」的功能，其實是 Google 利用我們當免費勞工為他們提供信件加註標籤的工作。
 *** 方法
+- 分類: 最短距離分類器、KNN分類器、決策樹
 - 類神經網路
 - 單純貝氏分類器(Naive Bayes Classifier)
 - 邏輯迴歸(Logisitc Regression)
@@ -399,88 +397,99 @@ Inference Phase
 - 垃圾郵件(SPAM)或正常郵件
 - Web page categorization 網站分類: which category it is
 - 資安應用: 取得有漏洞程式碼資料集(label)，評估其他程式是否有漏洞
-*** 範例：
-- 分類：基於從訓練集資料觀測到的分類類別來標籤、預測新數據的類別，如上述的垃圾郵件即為典型的二元分類工作(如圖[[fig:01_03]])，類別分類工作也可以進行「多類別分類」(multi-class classification)，如典型的 MNist 手寫數字辨識，即是將手寫的 0-9 數字進行預測辨識，並給出一個 0-9 的類別標籤。
+*** 類型：
+**** 分類
+基於從訓練集資料觀測到的分類類別來標籤、預測新數據的類別，如上述的垃圾郵件即為典型的二元分類工作(如圖[[fig:01_03]])，類別分類工作也可以進行「多類別分類」(multi-class classification)，如典型的 MNist 手寫數字辨識，即是將手寫的 0-9 數字進行預測辨識，並給出一個 0-9 的類別標籤。
 #+CAPTION: 典型的分類
 #+name: fig:01_03
 #+ATTR_LATEX: :width 200
 #+ATTR_ORG: :width 200
-#+ATTR_HTML: :width 500
+#+ATTR_HTML: :width 300
 #+RESULTS:
 [[file:images/01_03.png]]
-- 線性迴歸: 利用輸入數據的「特徵」來預測出一個「值」，例如，根據房屋的地點、坪數、樓層、房間數等變數, 發掘出這些變數之間的關係，進而預測房價，如圖[[fig:01_04]]。
+**** 迴歸
+利用輸入數據的「特徵」來預測出一個「值」，例如，根據房屋的地點、坪數、樓層、房間數等變數, 發掘出這些變數之間的關係，進而預測房價，如圖[[fig:01_04]]。
 #+CAPTION: 典型的迴歸
 #+name: fig:01_04
 #+ATTR_LATEX: :width 200一火
 #+ATTR_ORG: :width 200
-#+ATTR_HTML: :width 500
+#+ATTR_HTML: :width 300
 #+RESULTS:
 [[file:images/01_04.png]]
-- 決策樹: 精典例子為「鳶尾花數據集」(http://archive.ics.uci.deu/ml/datasets/Iris)。
-- 支援向量機: 主要用來處理分類問題，它不僅能將數據分門別類，甚至還可以找到最大化的「分離超平面」（類似於三維以上空間中的一個平面），會最大化每個樣本點與該「超平面」的差。此外，當數據是「不可線性分離」時，支援向量機還可以透過「軟邊界」(soft margin)和「核技巧」(kernel trick)來處理。
+*** 決策樹
+#+CAPTION: Decision Tree
+#+LABEL:fig:Labl
+#+name: fig:iris-dt
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/DecisionTree.png]]
+
+圖[[fig:iris-dt]]為「鳶尾花數據集」(http://archive.ics.uci.deu/ml/datasets/Iris)的分類結果，依鳶尾花的四個特徵：花萼(sepal)長度、寬度、花瓣(petal)長度、寬度，對其進行鳶尾花種類判斷。
+*** 支援向量機(Support Vector Machine, SVM)
+#+CAPTION: SVM
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 400
+[[file:images/機器學習的類型/2024-01-31_13-03-24_2024-01-31_13-03-07.png]]
+
+支援向量機是一種基於統計學習理論基礎的機器學習模型，針對小樣本、非線性、高維度與局部最小點等問題具有相對的優勢，主要用來處理分類問題。除了在文字分類、圖像分類及醫學中分類蛋白質等領域有不錯的成效外，因具有計算速度快且空間成本低等優勢，在工業界也有廣泛的應用[fn:4]。
+
+#+CAPTION: SVM超平面
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 400
+[[file:images/機器學習的類型/2024-01-31_13-05-33_2024-01-31_13-05-24.png]]
+
+#+CAPTION: 將超平面最大化
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 400
+[[file:images/機器學習的類型/2024-01-31_13-07-55_2024-01-31_13-07-31.png]]
+
+SVM不僅能將數據分門別類，甚至還可以找到最大化的「分離超平面」（類似於三維以上空間中的一個平面）[fn:4]，會最大化每個樣本點與該「超平面」的差。此外，當數據是「不可線性分離」時，支援向量機還可以透過「軟邊界」(soft margin)和「核技巧」(kernel trick)來處理。
 
 ** [[id:20221023T101716.467694][非監督式學習]](Unsupervised learning)
-- 非監督式學習只有觀測值，單純給電腦大量觀測資料，然後從這些資料找出潛在規則。例如：將 10 萬張照片依據電腦自己歸納的規則分為數個不同的群組。
+#+CAPTION: 資料分群
+#+LABEL:fig:Labl
+#+name: fig:knn-10
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 400
+[[file:images/機器學習的類型/2024-01-31_21-19-35_2024-01-31_21-18-52.png]]
+
+- 非監督式學習只有觀測值，單純給電腦大量觀測資料，然後從這些資料找出潛在規則。例如：將 10 萬張照片依據電腦自己歸納的規則分為數個不同的群組(如圖[[fig:knn-10]]左[fn:5])或是分成5群(如圖[[fig:knn-10]]右)。
 - 在[[id:20221023T101626.420918][監督式學習]]中，我們事先會知道訓練集數據的正確答案(label)，並依此訓練我們的模型；在[[id:0a5c37c0-741a-4a1a-bec7-f98074830132][強化學習]]的環境中，我們會為代理人定義如何度量特定行動的奬勵；然而，在「非監督式學習」的環境中，我們面對的是未標記類別的數據或未知結構的數據，目的是讓演算法導出結論。最典型的例子就是「集群」(clustering)，即，讓演算法自己根據數據的特性把它們依某種特質分類為不同子集合，這裡的子集合不一定要是有限集合，也可能是無界子集(unbounded subsets)。「受限玻爾茲曼機」以及「深度信念網路」(deep belief networks, DBN)都屬此類。
 - 非監督式學習經常被運用於資料分析的前置階段，用來先將資料分群或降低維度(減少變數量)，以利後續的分析或監督式學習的進行。
 *** 方法：
-- K平均法(K-means): Clustering
+- 群集(Clustering): K平均法(K-means)、階層式分群
+  cluster analysis 是一種精簡資料的方法，主要目的是將一大筆資料依據樣本之間的共同屬性精簡成少數幾個同質性次群體 homogeneous subgroups ，即以相似性 similarity 衡量，形成集群(cluster)，以便從雜亂無章的一大堆原始資料中，做到分類、分群的目標。而所謂的相似性通常是以「距離」作為衡量，相對距離愈近，相似程度愈高，分群之後可以使得群內差異小、群間差異大[fn:7]。
+- 階層式分群​​(Hierarchical Clustering​​)
+  將資料在一個階層式的樹狀上，反覆的利用拆分以及聚合的方式建立出一個分類系統。階層式分群的優勢在於它使用上的簡單性以及能夠在小數據上操作，然而卻非常難處理大型的資料[fn:6]。
+  各群組間的距離計算方式有以下三種：Single linkage、Maximum linkage、Average Linkage
 - 自動編碼器(Autoencoder)
+  由編碼器(encoder)與解碼器(decoder)構成，
 *** 範例：
 - 集群(cluster): 是一種「探索式數據分析」(exploratory data analysis)技術，它允許我們先組織一堆資訊到一個有意義的「子集群」(clusters)中，而無需任何先驗知識。
-- Cluster analysis (or clustering, data segmentation, ...): Finding similarities between data according to the characteristics found in the data and grouping similar data objects into clusters
-- K-means: 將數據集中的每個樣本分類到 k 個不同的子集合中，它隨機選擇 k 個點，這些點稱為「質心」(centroid)，代表這 k 個不同子集合的中心點，然後對於每個「質心」，我們選擇最接近它的一點，群組起來.....。
-- 生成對抗網路(GAN)
-- 資料沒有答案(如解讀古文)
-- Principal Component Analysis 主成份分析
-*** 非監督式學習分群的原理
-**** Linear projection
-- PCA: Principal component analysis，用來識別整個feature set中哪些特徵最為重要，且最能解釋資料實例間的可變性。
-  + standard PCA
-  + incremental PCA
-  + sparse PCA
-  + kernel PCA
-- SVD: Singular value decomposition，降低原來features matrix的rank，使原來的matrix可以分解成數個較小rank的matrix。
-- Random projection
-- PCA
-#+CAPTION: PCA
-#+name: fig:DimensionalityReduction-1
+- K-means: 將數據集中的每個樣本分類到 k 個不同的子集合中，它隨機選擇 k 個點，這些點稱為「質心」(centroid)，代表這 k 個不同子集合的中心點，然後對於每個「質心」，我們選擇最接近它的一點，群組起來。
+
+** 半監督式學習
+
+#+CAPTION: 半監督式學習
+#+LABEL:fig:Labl
+#+name: fig:semi-1
 #+ATTR_LATEX: :width 200
 #+ATTR_ORG: :width 200
-#+ATTR_HTML: :width 500
-#+RESULTS:
-[[file:images/PCA.jpg]]
-**** Nonlinear dimensionality reduction
-- Isomap
-- t-SNE: t-distributed stochastic neighbor embedding
-- Dictionary learning
-- ICA: Independent component analysis
-- LDA: Latent Dirichlet allocation
-- MDS: Multidimensional scaling
-- LLE: Locally linear embedding
-**** Dimensionality reduction
-- 找出原始資料裡最主要的方面來代替原始資料，使得在損失少部分原始資訊的基礎上，最大程度的降低原始資料的維度。
-- 維度縮減讓非監督式學習能更正確地辨識patterns，並更有效率地解決大規模資料所導致的昂貴運算問題
-- 降維原理
-#+CAPTION: 基本的降維#1
-#+name: fig:DimensionalityReduction-1
-#+ATTR_LATEX: :width 200
-#+ATTR_ORG: :width 200
-#+ATTR_HTML: :width 500
-#+RESULTS:
-[[file:images/DimensionalityReduction-1.jpg]]
-- 降維的選擇
-#+CAPTION: 基本的降維#2
-#+name: fig:DimensionalityReduction-1
-#+ATTR_LATEX: :width 200
-#+ATTR_ORG: :width 200
-#+ATTR_HTML: :width 500
-#+RESULTS:
-[[file:images/DimensionalityReduction-2.jpg]]
-*** face recognition 做法
-1. 2D 圖形 轉 1 維向量
-2. 經由 PCA 計算，取得主要 factor，進行降維度(projection)
-3. 取得合理的維度，進行特徵描述
+#+ATTR_HTML: :width 300
+[[file:images/機器學習的類型/2024-02-01_19-46-27_2024-02-01_19-45-17.png]]
+
+Semi-Supervised Learning如圖[[fig:semi-1]]所示，只有部分的data有label，而其他的data則是未標註的(unlabeled)。半監督學習的目標與監督學習完全相同，差別在資料集中存在部分的標注缺失[fn:8]。
 
 ** [[id:0a5c37c0-741a-4a1a-bec7-f98074830132][增強式學習]]
 - 機器為了達成目標，隨著環境的變動，而逐步調整其行為，並評估每一個行動之後所到 的回饋是正向的或負向的，即，在 try-and-error 的過程中一步步從失敗中找出成功的路徑。
@@ -528,15 +537,24 @@ Inference Phase
 #+RESULTS:
 [[file:images/ReinforceLearningGame.jpg]]
 
-** 依據AI模型是否能由即時資料流進行增量學習來區分: Offline (Batch)) and Online Learning[fn:5]
-*** Offline (Batch) learning: In /batch learning/, the system is incapable of learning incrementally; it must be trained using all the available data.
+** 依據AI模型是否能由即時資料流進行增量學習來區分[fn:2]
+*** Offline (Batch) learning:
+In /batch learning/, the system is incapable of learning incrementally; it must be trained using all the available data.
 *** Online learning:
 - In /online learning/, you train the system incrementally by feeding it data instances sequentially, either individually or in small groups called /mini-batches/.
 - Online learning is great for systems that receive data as a continuous flow (e.g., stock prices) and need to adapt to change rapidly or autonomously.
 - Online learning algorithms can also be used to train systems on huge datasets that cannot fit in one machine's main memory (this is called /out-of-core/ learning).
 
-* AI模型中的資料呈現方式
-How can we represent data (images, text, user preferences, etc.) in a way that computers can understand? -> Organize information into a vector[fn:2].
+* 機器學習的程序與資料呈現方式
+** 機器學習如何解決問題
+- 數據收集(Data Collection): 在監督式學習下還要蒐集正確的標記
+- 數據處理(Data Processing): 包含「數據清理」，例如：刪除「冗餘」或「高度相關的特徵」，或補滿「遺漏值」。
+- 建立測試案例(Creation of the test case): 通常包括：「訓練數據集」(training dataset)用來訓練演算法、「測試數據集」(test dataset)用來測試訓練完成的演算法、以及「驗證數據集」(validation dataset)用來進行最終測試(在不斷的訓練-測試之後)。
+- 建立模型
+- 訓練模型
+- 評估、 修正模型
+** 機器學習的資料呈現方式
+How can we represent data (images, text, user preferences, etc.) in a way that computers can understand? -> Organize information into a vector[fn:3].
 - A vector is a 1-dimensional array of numbers. It has both a magnitude(length) and a direction.
 - A feature vector is a vector whose entries represent the "features" of some object.
   #+CAPTION: Feature Vector
@@ -556,14 +574,15 @@ In black and white images, *black and white pixels* correspond to 0s and 1s. Gra
 #+ATTR_HTML: :width 500
 [[file:images/image-data-rep.jpg]]
 ** Words and Documents
-Given a collection of doucments (e.g. Wikipedia articles), assign to every word a vector whose $i^{th}$ entry is the number of times the word appears in the $i^{th}$ document.
+Given a collection of documents (e.g. Wikipedia articles), assign to every word a vector whose $i^{th}$ entry is the number of times the word appears in the $i^{th}$ document.
 #+CAPTION: Words and documents representations
 #+LABEL:fig:word-representation
 #+name: fig:word-representation
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
+#+ATTR_LATEX: :width 200
+#+ATTR_ORG: :width 200
+#+ATTR_HTML: :width 400
 [[file:images/word-rep.jpg]]
+
 These vectors can assemble into a large matrix, useful for *latent semantic analysis*.
 ** Yes/No or Ratings
 Given users and items (e.g. movies), vectors can indicate if a user has interacted with the item (1=yes, 0=no) or the user's ratings, say a number between 0 and 5.
@@ -587,11 +606,11 @@ Assign to each word a vector with one 1 and 0s elsewhere. This is called a one-h
 **** These vectors can be very sparse
 - A "sparse" vector is one with lots of zeros
 - 500,000 users and 1,000,000 movies
-**** Possible lack lf *meaningful relationships between* vectors
+**** Possible lack of *meaningful relationships between* vectors
 - One-hot encodings are never "similar."
 - Similarity is measured by the *dot product.*
 
-* 機器學習的主要挑戰[fn:5]
+* 機器學習的主要挑戰[fn:2]
 ** Insufficient quantity of training data
 Even for very simple problems you typically need thousands of examples, and for complex problems such as image or speech recognition you may need millions of examples. The idea that data matters more than algorithms for complex problems was further popularized by Peter norvig et al. in a paper titled "The Unreasonable Effectiveness of Data", published in 2009.
 
@@ -611,6 +630,7 @@ Even for very simple problems you typically need thousands of examples, and for 
 Obviously, if your training data is full of errors, outliers, and noise (e.g., due to poor-quality measurements), it will make it harder for the system to detect the underlying patterns, so your system is less likely to perform well.
 
 ** Irrelevant features
+As the saying goes: garbage in, garbage out. Your system will only be capable of learning if the training data contains enough relevant features and not too many irrelevant ones.
 
 ** Overfitting the training data
 - Overfitting happens when the model is too complex relative to the amount and noisiness of the training data. Here are possible solutions:
@@ -624,14 +644,14 @@ Obviously, if your training data is full of errors, outliers, and noise (e.g., d
 Underfitting occurs when your model is too simple to learn the underlying structure of the data.
 
 * 典型的機器學習MODEL Training[實作]
-以"rock, paper, and scissors"辨識為例[fn:2]:
+以"rock, paper, and scissors"辨識為例[fn:3]:
 1. 將三種圖案的image讀入model中
 2. 於model中建立神經元(可視為function)，學習不同image的特徵
 3. 根據上述神經元讀取的特徵值(features)，配合該image之答案(label)，進行學習
 #+begin_src python -r -n :results output :exports both
 model = tf.keras.models.Sequence([
     tf.keras.layers.Flatten(input_shape=(150, 150, 3)),
-    tf.keras.layers.Dense(512, activation='relu),
+    tf.keras.layers.Dense(512, activation='relu'),
     tf.keras.layers.Dense(3, activatio='softmax')
 ])
 
@@ -643,7 +663,7 @@ model.fit(...., epochs=100)
 可先將512個神經元視為512個function，每個function裡有許多變數，這些變數的初始值為random assign，接下來每個function陸續讀取image的所有feature(即圖的每個pixel，這裡可以將之視為傳入該function的parameters)，然後根據function中的變數值，開始學習要如何調整function裡的變數值才能輸出這個image的正確答案(label)，每個神經元同時進行學習與變數值調校。
 *** function 示意圖
 #+BEGIN_SRC ditaa :file images/function-dg.png  :cmdline -r
-Neuron
+Function
 -=------------
                    +------------------------+
      parameter 1   |                        |
@@ -746,16 +766,16 @@ Neuron
 [[file:images/compile_phase.jpg]]
 
 * Footnotes
+[fn:8] [[https://u9534056.medium.com/%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92%E4%BB%BB%E5%8B%99-%E7%9B%A3%E7%9D%A3%E5%AD%B8%E7%BF%92-%E5%8D%8A%E7%9B%A3%E7%9D%A3%E5%AD%B8%E7%BF%92-%E7%84%A1%E7%9B%A3%E7%9D%A3%E5%AD%B8%E7%BF%92-9b75972f91d6][機器學習任務：監督學習/半監督學習/無監督學習]]
+
+[fn:7] [[https://ithelp.ithome.com.tw/articles/10291318][Day 19 聚類（集群）分析 Cluster Analysis]]
+[fn:6] [[https://zh.oosga.com/docs/unsupervised-learning/][非監督式學習（Unsupervised Learning）的定義為何？
+]]
+[fn:5] [[https://alankrantas.medium.com/kmeans-%E8%83%BD%E5%BE%9E%E8%B3%87%E6%96%99%E4%B8%AD%E6%89%BE%E5%87%BA-k-%E5%80%8B%E5%88%86%E9%A1%9E%E7%9A%84%E9%9D%9E%E7%9B%A3%E7%9D%A3%E5%BC%8F%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92%E6%BC%94%E7%AE%97%E6%B3%95-%E6%89%80%E4%BB%A5%E5%AE%83%E5%88%B0%E5%BA%95%E6%9C%89%E5%95%A5%E7%94%A8-%E4%BD%BF%E7%94%A8-scikit-learn-%E8%88%87-python-5dd8c0c8b167][KMeans：能從資料中找出 K 個分類的非監督式機器學習演算法 — — 所以它到底有啥用？]]
+[fn:4] [[https://pyecontech.com/2020/03/24/svm/][[機器學習首部曲] 支援向量機 SVM]]
+
 [fn:1] [[https://github.com/rasbt/python-machine-learning-book-2nd-edition][python-machine-learning-book-2nd-edition]]
 
-[fn:2] [[https://youtu.be/LlKAna21fLE][A friendly introduction to linear algebra for ML (ML Tech Talks)]]
+[fn:2] [[https://www.books.com.tw/products/F014278520][Hands-On Machine Learning with Scikit-Learn, Keras, and Tensorflow: Concepts, Tools, and Techniques to Build Intelligent Systems]]
 
-[fn:3] [[https://zh.wikipedia.org/zh-tw/AlphaGo_Zero][AlphaGo Zero]]
-
-[fn:4] [[https://zh.wikipedia.org/wiki/AlphaZero][AlphaZero]]
-
-[fn:5] [[https://www.books.com.tw/products/F014278520][Hands-On Machine Learning with Scikit-Learn, Keras, and Tensorflow: Concepts, Tools, and Techniques to Build Intelligent Systems]]
-
-[fn:7] [[https://www.books.com.tw/products/0010821934?sloc=main][[[file:AI-Introduction.org][人工智慧]]在台灣：產業轉型的契機與挑戰]]
-
-[fn:6] [[https://www.hindawi.com/journals/mpe/2019/2053156/][A Multi-GPU Parallel Algorithm in Hypersonic Flow Computations]]
+[fn:3] [[https://youtu.be/LlKAna21fLE][A friendly introduction to linear algebra for ML (ML Tech Talks)]]
