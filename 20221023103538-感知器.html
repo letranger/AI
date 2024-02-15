@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-01-25 Thu 13:55 -->
+<!-- 2024-02-15 Thu 14:36 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>感知器</title>
@@ -234,61 +234,182 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#FromPerceptrionToMLP">1. Story of gate: From perceptron to MLP</a>
+<li><a href="#orga0953d1">1. 感知器(Perception)</a>
 <ul>
-<li><a href="#org57eb362">1.1. Example #1</a></li>
-<li><a href="#orgebda113">1.2. Example #2</a></li>
-<li><a href="#orga3a1aac">1.3. XOR Problem</a></li>
-<li><a href="#org8552c09">1.4. MLP (Multilayer perceptron)</a></li>
+<li><a href="#orgf56a7fe">1.1. 何謂感知器</a></li>
+<li><a href="#org0635b44">1.2. 感知器工作原理</a></li>
 </ul>
 </li>
-<li><a href="#orgee3d324">2. 感知器(Perception)</a>
+<li><a href="#FromPerceptrionToMLP">2. Story of gate: From perceptron to MLP</a>
 <ul>
-<li><a href="#org43d49b3">2.1. 何謂感知器</a></li>
-<li><a href="#org67f148c">2.2. 感知器工作原理</a></li>
-<li><a href="#org506eab6">2.3. 執行感知器: 邏輯閘實作</a></li>
+<li><a href="#orgb552e82">2.1. OR gate實作</a></li>
+<li><a href="#orga4c5204">2.2. [課堂作業]AND、NAND Gate實作&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></a></li>
+<li><a href="#org077102c">2.3. XOR Problem</a></li>
+<li><a href="#org2259338">2.4. MLP (Multilayer perceptron)</a></li>
 </ul>
 </li>
-<li><a href="#PerceptronDemo">3. 以感知器解決分類問題(監督式學習範例)</a></li>
-<li><a href="#org152e4c5">4. 單層感知器的極限與多層感知器: XOR gate</a>
+<li><a href="#orgcfe09b6">3. 單層感知器的極限與多層感知器: XOR gate</a>
 <ul>
-<li><a href="#orgf09a0f0">4.1. 多層感知器(Multilayer perceptron, MLP): XOR gate 實作</a></li>
+<li><a href="#org34f8348">3.1. 想法</a></li>
+<li><a href="#org04849a8">3.2. 多層感知器(MLP): XOR gate 實作</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 <a href="https://hits.sh/letranger.github.io/PythonCourse/20221023103538-感知器.html/"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/PythonCourse/20221023103538-感知器.html.svg?style=plastic"/></a>
+<div id="outline-container-orga0953d1" class="outline-2">
+<h2 id="orga0953d1"><span class="section-number-2">1.</span> 感知器(Perception)</h2>
+<div class="outline-text-2" id="text-1">
+</div>
+<div id="outline-container-orgf56a7fe" class="outline-3">
+<h3 id="orgf56a7fe"><span class="section-number-3">1.1.</span> 何謂感知器</h3>
+<div class="outline-text-3" id="text-1-1">
+<p class="verse">
+Perceptron is a single layer neural network and a multi-layer perceptron is called Neural Networks(<a href="20221025104603-神經網路.html#ID-d6daa102-05bb-475d-b619-db8b61e86030">神經網路</a>).<br />
+</p>
+<p>
+收到多個輸入訊號之後，再當作一個訊號輸出，如圖<a href="#orgaf5c7e6">1</a>所示，\(x_1, x_2\)為輸入訊號，\(y\)為輸出訊號，\(w_1, w_2\)代表權重(weight)，圖中的圓圈稱為「神經元」或稱作「節點」。神經元\(x_1, x_2\)的訊號是否會觸發神經元\(y\)使其輸出訊號則取決於\(w_1x_1+w_2x_2\)是否會超過某個臨界值\(\theta\)。
+</p>
+
+<div id="orgaf5c7e6" class="figure">
+<p><img src="images/sensor1.png" alt="sensor1.png" width="200" />
+</p>
+<p><span class="figure-number">Figure 1: </span>收到兩組輸入訊號的感知器</p>
+</div>
+
+<p>
+若以算式表示此一觸發條件則如公式\eqref{orgb807a2c}所示。
+</p>
+\begin{equation}
+\label{orgb807a2c}
+y =
+\begin{cases}
+0, & \text w_1x_1+w_2x_2 \leq 0 \\
+1, & \text w_1x_1 + w_2x_2 > 0
+\end{cases}
+\end{equation}
+</div>
+</div>
+<div id="outline-container-org0635b44" class="outline-3">
+<h3 id="org0635b44"><span class="section-number-3">1.2.</span> 感知器工作原理</h3>
+<div class="outline-text-3" id="text-1-2">
+</div>
+<div id="outline-container-orgf13b10c" class="outline-4">
+<h4 id="orgf13b10c"><span class="section-number-4">1.2.1.</span> Version #1: 使用weight</h4>
+<div class="outline-text-4" id="text-1-2-1">
+<p>
+感知器(perceptron)是人造神經元(artificial neuron)的一種，也是最基本的一種。它接受一些輸入，產生一個輸出。
+</p>
+
+<div id="org1ec07bf" class="figure">
+<p><img src="./images/perceptron-1.png" alt="perceptron-1.png" width="400" />
+</p>
+<p><span class="figure-number">Figure 2: </span>Perceptron version 1</p>
+</div>
+<ul class="org-ul">
+<li>這種架構的輸入/輸出關係為線性</li>
+<li>神經網路中再多的線性perceptron叠加，仍為線性</li>
+<li>無法解決 <b>線性不可分</b> 的問題</li>
+</ul>
+</div>
+<div id="outline-container-org50efd6d" class="outline-5">
+<h5 id="org50efd6d">線性可分 v.s. 線性不可分</h5>
+<div class="outline-text-5" id="text-org50efd6d">
+
+<div id="orgd964f15" class="figure">
+<p><img src="images/2021-05-23_14-10-30.jpg" alt="2021-05-23_14-10-30.jpg" width="400" />
+</p>
+<p><span class="figure-number">Figure 3: </span>線性和非線性分類</p>
+</div>
+
+<p>
+在圖<a href="#orgd964f15">3</a>中，A為線性分類問題，可以用線性分類器將之成功分類；B則為非線性分類問題，必須使用使用非線性的核函數和其他非線性的分類算法和技術才能成功分類<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。
+</p>
+</div>
+</div>
+<div id="outline-container-org7e1b8d2" class="outline-5">
+<h5 id="org7e1b8d2">低維映射至高維</h5>
+<div class="outline-text-5" id="text-org7e1b8d2">
+<p>
+可以透過一個非線性的映射將低維空間線性不可分的樣本轉換至高維空間，使其成為線性可分<sup><a id="fnr.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup>，例如:
+</p>
+
+<div id="orgeaf4fb3" class="figure">
+<p><img src="images/2021-05-23_14-14-31.jpg" alt="2021-05-23_14-14-31.jpg" width="500" />
+</p>
+<p><span class="figure-number">Figure 4: </span>Kernal function mapping</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org28b1dfe" class="outline-4">
+<h4 id="org28b1dfe"><span class="section-number-4">1.2.2.</span> Version #2: 加入bias</h4>
+<div class="outline-text-4" id="text-1-2-2">
+
+<div id="org062a145" class="figure">
+<p><img src="./images/perceptron-2.png" alt="perceptron-2.png" width="400" />
+</p>
+<p><span class="figure-number">Figure 5: </span>Perceptron version 2</p>
+</div>
+<ul class="org-ul">
+<li>不加 bias 你的分類線(面)就必須過原點，這顯然是不靈活的</li>
+<li>透過bias，可以將NN進行左右調整，以適應(fit)更多情況</li>
+<li>可以將bias視為一個activate perceptron的threshold</li>
+<li>bias也可以視為當輸入均為0時的輸出值</li>
+<li>從仿生學的角度，刺激生物神經元使它興奮需要刺激強度超過一定的閾值，同樣神經元模型也仿照這點設置了bias</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org351456f" class="outline-4">
+<h4 id="org351456f"><span class="section-number-4">1.2.3.</span> Version #3: 加入activation function</h4>
+<div class="outline-text-4" id="text-1-2-3">
+<p>
+加入activation function，至為什麼要加這個，請直接看下一節的Story of gate。
+</p>
+
+<div id="orgad92151" class="figure">
+<p><img src="./images/perceptron-3.png" alt="perceptron-3.png" width="500" />
+</p>
+<p><span class="figure-number">Figure 6: </span>Perceptron version 3</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb0dc4b0" class="outline-4">
+<h4 id="orgb0dc4b0"><span class="section-number-4">1.2.4.</span> 結論: 什麼是perceptron</h4>
+<div class="outline-text-4" id="text-1-2-4">
+<p>
+其實Perceptron就只是一個兩層的神經網路，輸入層和輸出層
+</p>
+</div>
+</div>
+</div>
+</div>
 <div id="outline-container-FromPerceptrionToMLP" class="outline-2">
-<h2 id="FromPerceptrionToMLP"><span class="section-number-2">1.</span> Story of gate: From perceptron to MLP</h2>
+<h2 id="FromPerceptrionToMLP"><span class="section-number-2">2.</span> Story of gate: From perceptron to MLP</h2>
 <div class="outline-text-2" id="text-FromPerceptrionToMLP">
 </div>
-<div id="outline-container-org57eb362" class="outline-3">
-<h3 id="org57eb362"><span class="section-number-3">1.1.</span> Example #1</h3>
-<div class="outline-text-3" id="text-1-1">
-</div>
-<div id="outline-container-org2012bf3" class="outline-4">
-<h4 id="org2012bf3"><span class="section-number-4">1.1.1.</span> Question</h4>
-<div class="outline-text-4" id="text-1-1-1">
+<div id="outline-container-orgb552e82" class="outline-3">
+<h3 id="orgb552e82"><span class="section-number-3">2.1.</span> OR gate實作</h3>
+<div class="outline-text-3" id="text-2-1">
 <p>
 有三個A、一個B，如何進行分類?
 </p>
 
-<div id="org5d1dd1f" class="figure">
-<p><img src="images/2021-05-24_00-48-56.jpg" alt="2021-05-24_00-48-56.jpg" width="500" />
+<div id="org19cc1da" class="figure">
+<p><img src="images/2021-05-24_00-48-56.jpg" alt="2021-05-24_00-48-56.jpg" width="300" />
 </p>
-<p><span class="figure-number">Figure 1: </span>分類任務:問題</p>
+<p><span class="figure-number">Figure 7: </span>分類任務:問題</p>
 </div>
 </div>
-</div>
-<div id="outline-container-org2ec1b56" class="outline-4">
-<h4 id="org2ec1b56"><span class="section-number-4">1.1.2.</span> Idea</h4>
-<div class="outline-text-4" id="text-1-1-2">
+<div id="outline-container-org0eb34d0" class="outline-4">
+<h4 id="org0eb34d0"><span class="section-number-4">2.1.1.</span> 想法</h4>
+<div class="outline-text-4" id="text-2-1-1">
 <p>
 最簡單的分類方式是在A和B中間直接找條直線(\(w_1x_1+w_2x_2+b=0\))就可以將A和B完整切出兩個區塊，然後再搭配階梯函數(step function)將&gt;0與&lt;=0分別設為1與0，用來代表類別0與1。該直線方程式如下：
 </p>
 \begin{equation}
-\label{org9d234c0}
+\label{org5b02fe4}
 y = \begin{cases}
 1, & w_1x_1 + w_2x_2-b>0 \\
 0, & w_1x_1 + w_2x_2-b\leq0 \\
@@ -296,31 +417,31 @@ y = \begin{cases}
 \end{equation}
 </div>
 </div>
-<div id="outline-container-org3683fdd" class="outline-4">
-<h4 id="org3683fdd"><span class="section-number-4">1.1.3.</span> Solution</h4>
-<div class="outline-text-4" id="text-1-1-3">
+<div id="outline-container-org9faaa8a" class="outline-4">
+<h4 id="org9faaa8a"><span class="section-number-4">2.1.2.</span> Solution</h4>
+<div class="outline-text-4" id="text-2-1-2">
 <p>
 經過無數的嚐試錯誤，也許我們可以矇到一個如下的方程式
 </p>
 
-<div id="orgd2df757" class="figure">
-<p><img src="images/2021-05-24_00-50-07.jpg" alt="2021-05-24_00-50-07.jpg" width="500" />
+<div id="org43262df" class="figure">
+<p><img src="images/2021-05-24_00-50-07.jpg" alt="2021-05-24_00-50-07.jpg" width="300" />
 </p>
-<p><span class="figure-number">Figure 2: </span>分類任務:Solution</p>
+<p><span class="figure-number">Figure 8: </span>分類任務:Solution</p>
 </div>
 
 <p>
-如果畫成Perceptron的圖:
+如果畫成Perceptron(version 3)的圖:
 </p>
 
-<div id="orgae92c85" class="figure">
-<p><img src="./images/orGatePerceptron.png" alt="orGatePerceptron.png" width="500" />
+<div id="org7fe47aa" class="figure">
+<p><img src="./images/orGatePerceptron.png" alt="orGatePerceptron.png" width="400" />
 </p>
-<p><span class="figure-number">Figure 3: </span>Perceptron presentation</p>
+<p><span class="figure-number">Figure 9: </span>Perceptron presentation</p>
 </div>
 
 <p>
-如果將圖<a href="#orgd2df757">2</a>的四點點代入y(方程式\eqref{org9d234c0}):
+如果將圖<a href="#org43262df">8</a>的四點點代入y(方程式\eqref{org5b02fe4}):
 </p>
 \begin{align*}
 A(0,1) \rightarrow y &= f(0,1) = f(1\times0+1\times1-0.5) = f(0.5) = 1 \\
@@ -330,81 +451,81 @@ B(0,0) \rightarrow y &= f(0,0) = f(1\times0+1\times0–0.5) = f(-0.5) = 0\\
 \end{align*}
 </div>
 </div>
-<div id="outline-container-org7e27246" class="outline-4">
-<h4 id="org7e27246"><span class="section-number-4">1.1.4.</span> OR gate</h4>
-<div class="outline-text-4" id="text-1-1-4">
+<div id="outline-container-org05404ee" class="outline-4">
+<h4 id="org05404ee"><span class="section-number-4">2.1.3.</span> OR gate</h4>
+<div class="outline-text-4" id="text-2-1-3">
 <p>
-有點計概基礎的同學，應該可以發現圖<a href="#org5d1dd1f">1</a>與OR邏輯閘一致，其真值表如下
+有點計概基礎的同學，應該可以發現圖<a href="#org19cc1da">7</a>與OR邏輯閘一致，其真值表如下
 </p>
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
 <colgroup>
-<col  class="org-right" />
+<col  class="org-center" />
 
-<col  class="org-right" />
+<col  class="org-center" />
 
-<col  class="org-right" />
+<col  class="org-center" />
 </colgroup>
 <thead>
 <tr>
-<th scope="col" class="org-right">A</th>
-<th scope="col" class="org-right">B</th>
-<th scope="col" class="org-right">A OR B</th>
+<th scope="col" class="org-center">A</th>
+<th scope="col" class="org-center">B</th>
+<th scope="col" class="org-center">A OR B</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="org-right">0</td>
-<td class="org-right">0</td>
-<td class="org-right">0</td>
+<td class="org-center">0</td>
+<td class="org-center">0</td>
+<td class="org-center">0</td>
 </tr>
 
 <tr>
-<td class="org-right">0</td>
-<td class="org-right">1</td>
-<td class="org-right">1</td>
+<td class="org-center">0</td>
+<td class="org-center">1</td>
+<td class="org-center">1</td>
 </tr>
 
 <tr>
-<td class="org-right">1</td>
-<td class="org-right">0</td>
-<td class="org-right">1</td>
+<td class="org-center">1</td>
+<td class="org-center">0</td>
+<td class="org-center">1</td>
 </tr>
 
 <tr>
-<td class="org-right">1</td>
-<td class="org-right">1</td>
-<td class="org-right">1</td>
+<td class="org-center">1</td>
+<td class="org-center">1</td>
+<td class="org-center">1</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<div id="outline-container-org02010b5" class="outline-4">
-<h4 id="org02010b5"><span class="section-number-4">1.1.5.</span> Python實作</h4>
-<div class="outline-text-4" id="text-1-1-5">
+<div id="outline-container-org733e7e0" class="outline-4">
+<h4 id="org733e7e0"><span class="section-number-4">2.1.4.</span> Python實作</h4>
+<div class="outline-text-4" id="text-2-1-4">
 <p>
 上述 OR gate的python實作如下
 </p>
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
-<span class="linenr"> 2: </span>
-<span class="linenr"> 3: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">step_function</span>(x):
-<span class="linenr"> 4: </span>    <span style="color: #51afef;">return</span> np.array(x&gt;<span style="color: #da8548; font-weight: bold;">0</span>, dtype=np.<span style="color: #c678dd;">int</span>)
-<span class="linenr"> 5: </span>
-<span class="linenr"> 6: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">OR</span>(x1, x2):
-<span class="linenr"> 7: </span>    <span style="color: #dcaeea;">x</span> = np.array([x1, x2])
-<span class="linenr"> 8: </span>    <span style="color: #dcaeea;">w</span> = np.array([<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">1</span>])
-<span class="linenr"> 9: </span>    <span style="color: #dcaeea;">b</span> = -<span style="color: #da8548; font-weight: bold;">0.5</span>
-<span class="linenr">10: </span>    <span style="color: #dcaeea;">theta</span> = <span style="color: #da8548; font-weight: bold;">0</span>
-<span class="linenr">11: </span>    <span style="color: #dcaeea;">y</span> = np.<span style="color: #c678dd;">sum</span>(w*x) + b
-<span class="linenr">12: </span>    <span style="color: #51afef;">return</span> step_function(y)
-<span class="linenr">13: </span>
-<span class="linenr">14: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"0 OR 0 -&gt; "</span>, OR(<span style="color: #da8548; font-weight: bold;">0</span>,<span style="color: #da8548; font-weight: bold;">0</span>))
-<span class="linenr">15: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"0 OR 1 -&gt; "</span>, OR(<span style="color: #da8548; font-weight: bold;">0</span>,<span style="color: #da8548; font-weight: bold;">1</span>))
-<span class="linenr">16: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"1 OR 0 -&gt; "</span>, OR(<span style="color: #da8548; font-weight: bold;">1</span>,<span style="color: #da8548; font-weight: bold;">0</span>))
-<span class="linenr">17: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"1 OR 1 -&gt; "</span>, OR(<span style="color: #da8548; font-weight: bold;">1</span>,<span style="color: #da8548; font-weight: bold;">1</span>))
+<pre class="src src-python"><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+
+<span style="color: #51afef;">def</span> <span style="color: #c678dd;">step_function</span>(x):
+    <span style="color: #51afef;">return</span> np.array(x&gt;<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #c678dd;">int</span>)
+
+<span style="color: #51afef;">def</span> <span style="color: #c678dd;">OR</span>(x1, x2):
+    <span style="color: #dcaeea;">x</span> = np.array([x1, x2])
+    <span style="color: #dcaeea;">w</span> = np.array([<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">1</span>])
+    <span style="color: #dcaeea;">b</span> = -<span style="color: #da8548; font-weight: bold;">0.5</span>
+    <span style="color: #dcaeea;">theta</span> = <span style="color: #da8548; font-weight: bold;">0</span>
+    <span style="color: #dcaeea;">y</span> = np.<span style="color: #c678dd;">sum</span>(w*x) + b
+    <span style="color: #51afef;">return</span> step_function(y)
+
+<span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"0 OR 0 -&gt; "</span>, OR(<span style="color: #da8548; font-weight: bold;">0</span>,<span style="color: #da8548; font-weight: bold;">0</span>))
+<span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"0 OR 1 -&gt; "</span>, OR(<span style="color: #da8548; font-weight: bold;">0</span>,<span style="color: #da8548; font-weight: bold;">1</span>))
+<span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"1 OR 0 -&gt; "</span>, OR(<span style="color: #da8548; font-weight: bold;">1</span>,<span style="color: #da8548; font-weight: bold;">0</span>))
+<span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"1 OR 1 -&gt; "</span>, OR(<span style="color: #da8548; font-weight: bold;">1</span>,<span style="color: #da8548; font-weight: bold;">1</span>))
 </pre>
 </div>
 
@@ -417,335 +538,131 @@ B(0,0) \rightarrow y &= f(0,0) = f(1\times0+1\times0–0.5) = f(-0.5) = 0\\
 </div>
 </div>
 </div>
-<div id="outline-container-orgebda113" class="outline-3">
-<h3 id="orgebda113"><span class="section-number-3">1.2.</span> Example #2</h3>
-<div class="outline-text-3" id="text-1-2">
+<div id="outline-container-orga4c5204" class="outline-3">
+<h3 id="orga4c5204"><span class="section-number-3">2.2.</span> [課堂作業]AND、NAND Gate實作&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></h3>
+<div class="outline-text-3" id="text-2-2">
 <p>
-上述範例中，我們以瞎貓精神找出了一組solution解決了OR gate的分類問題，請比照辦理，解決AND gate，建構出perceptro，實作出python code.
+上述範例中，我們以瞎貓精神找出了一組solution解決了OR gate的分類問題，請比照辦理，以Python實作出以下兩個gate: AND, NAND。
+</p>
+</div>
+<div id="outline-container-org3c55897" class="outline-4">
+<h4 id="org3c55897"><span class="section-number-4">2.2.1.</span> AND</h4>
+<div class="outline-text-4" id="text-2-2-1">
+<p>
 已知AND gate真值表如下
 </p>
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
 <colgroup>
-<col  class="org-right" />
+<col  class="org-center" />
 
-<col  class="org-right" />
+<col  class="org-center" />
 
-<col  class="org-right" />
+<col  class="org-center" />
 </colgroup>
 <thead>
 <tr>
-<th scope="col" class="org-right">A</th>
-<th scope="col" class="org-right">B</th>
-<th scope="col" class="org-right">A AND B</th>
+<th scope="col" class="org-center">A</th>
+<th scope="col" class="org-center">B</th>
+<th scope="col" class="org-center">A AND B</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="org-right">0</td>
-<td class="org-right">0</td>
-<td class="org-right">0</td>
+<td class="org-center">0</td>
+<td class="org-center">0</td>
+<td class="org-center">0</td>
 </tr>
 
 <tr>
-<td class="org-right">0</td>
-<td class="org-right">1</td>
-<td class="org-right">0</td>
+<td class="org-center">0</td>
+<td class="org-center">1</td>
+<td class="org-center">0</td>
 </tr>
 
 <tr>
-<td class="org-right">1</td>
-<td class="org-right">0</td>
-<td class="org-right">0</td>
+<td class="org-center">1</td>
+<td class="org-center">0</td>
+<td class="org-center">0</td>
 </tr>
 
 <tr>
-<td class="org-right">1</td>
-<td class="org-right">1</td>
-<td class="org-right">1</td>
+<td class="org-center">1</td>
+<td class="org-center">1</td>
+<td class="org-center">1</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<div id="outline-container-orga3a1aac" class="outline-3">
-<h3 id="orga3a1aac"><span class="section-number-3">1.3.</span> XOR Problem</h3>
-<div class="outline-text-3" id="text-1-3">
-</div>
-<div id="outline-container-org2e3d3cf" class="outline-4">
-<h4 id="org2e3d3cf"><span class="section-number-4">1.3.1.</span> Question</h4>
-<div class="outline-text-4" id="text-1-3-1">
+<div id="outline-container-org3dd09ab" class="outline-4">
+<h4 id="org3dd09ab"><span class="section-number-4">2.2.2.</span> NAND</h4>
+<div class="outline-text-4" id="text-2-2-2">
 <p>
-XOR(互斥或)真值表如下:
+已知NAND gate真值表如下
 </p>
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
 <colgroup>
-<col  class="org-right" />
+<col  class="org-center" />
 
-<col  class="org-right" />
+<col  class="org-center" />
 
-<col  class="org-right" />
+<col  class="org-center" />
 </colgroup>
 <thead>
 <tr>
-<th scope="col" class="org-right">A</th>
-<th scope="col" class="org-right">B</th>
-<th scope="col" class="org-right">A XOR B</th>
+<th scope="col" class="org-center">A</th>
+<th scope="col" class="org-center">B</th>
+<th scope="col" class="org-center">A NAND B</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="org-right">0</td>
-<td class="org-right">0</td>
-<td class="org-right">0</td>
+<td class="org-center">0</td>
+<td class="org-center">0</td>
+<td class="org-center">1</td>
 </tr>
 
 <tr>
-<td class="org-right">0</td>
-<td class="org-right">1</td>
-<td class="org-right">1</td>
+<td class="org-center">0</td>
+<td class="org-center">1</td>
+<td class="org-center">1</td>
 </tr>
 
 <tr>
-<td class="org-right">1</td>
-<td class="org-right">0</td>
-<td class="org-right">1</td>
+<td class="org-center">1</td>
+<td class="org-center">0</td>
+<td class="org-center">1</td>
 </tr>
 
 <tr>
-<td class="org-right">1</td>
-<td class="org-right">1</td>
-<td class="org-right">1</td>
+<td class="org-center">1</td>
+<td class="org-center">1</td>
+<td class="org-center">0</td>
 </tr>
 </tbody>
 </table>
-<p>
-其輸入/輸出分佈圖為
-</p>
-
-<div id="org4d6d57e" class="figure">
-<p><img src="images/2021-05-24_14-15-53.jpg" alt="2021-05-24_14-15-53.jpg" width="500" />
-</p>
-<p><span class="figure-number">Figure 4: </span>XOR Gate</p>
 </div>
 </div>
 </div>
-<div id="outline-container-org6c9cf01" class="outline-4">
-<h4 id="org6c9cf01"><span class="section-number-4">1.3.2.</span> Idea</h4>
-<div class="outline-text-4" id="text-1-3-2">
-<blockquote>
-<p>
-一個便當吃不飽那就吃兩個阿
-&#x2013;馬惠帝
-</p>
-</blockquote>
-<p>
-這個時候一般線性的分類就沒有辦法很完美分割(如下圖)，所以就需要一些變形的方法來達到目的。
-</p>
-
-<div id="orgcd55e85" class="figure">
-<p><img src="images/2021-05-24_14-18-51.jpg" alt="2021-05-24_14-18-51.jpg" width="500" />
-</p>
-<p><span class="figure-number">Figure 5: </span>XOR Gate Solution ideas</p>
+<div id="outline-container-org077102c" class="outline-3">
+<h3 id="org077102c"><span class="section-number-3">2.3.</span> XOR Problem</h3>
 </div>
 
-<p>
-即便一個人再如何bumbler，仍有可能提出一些明智的話語，就如同星爺告訴我們的
-</p>
+<div id="outline-container-org2259338" class="outline-3">
+<h3 id="org2259338"><span class="section-number-3">2.4.</span> MLP (Multilayer perceptron)</h3>
+<div class="outline-text-3" id="text-2-4">
 
-<div id="org8d2d7cd" class="figure">
-<p><img src="images/2021-05-24_14-25-08.jpg" alt="2021-05-24_14-25-08.jpg" width="500" />
-</p>
-<p><span class="figure-number">Figure 6: </span>就算是一張衛生紙也有它的用途，更何況是一個bumbler</p>
-</div>
-
-<p>
-所以，一條線無法分割，那就用兩條啊啊啊~~~
-</p>
-</div>
-</div>
-<div id="outline-container-org9c2a19f" class="outline-4">
-<h4 id="org9c2a19f"><span class="section-number-4">1.3.3.</span> Solution #1</h4>
-<div class="outline-text-4" id="text-1-3-3">
-
-<div id="orgb3b58f0" class="figure">
-<p><img src="images/2021-05-24_14-28-04.jpg" alt="2021-05-24_14-28-04.jpg" width="500" />
-</p>
-<p><span class="figure-number">Figure 7: </span>XOR Gate Solution</p>
-</div>
-
-<p>
-如前所述，一條線為一個perceptron，這裡會用到兩個
-</p>
-<ul class="org-ul">
-<li>\(h_1(x) = x_1 + x_2 - 0.5\)</li>
-<li>\(h_2(x) = x_1 + x_2 - 1.5\)</li>
-</ul>
-
-<div id="org693068e" class="figure">
-<p><img src="images/2021-05-24_14-36-07.jpg" alt="2021-05-24_14-36-07.jpg" width="500" />
-</p>
-<p><span class="figure-number">Figure 8: </span>XOR Gate Solution 2</p>
-</div>
-
-<p>
-將圖<a href="#orgcd55e85">5</a>的4個點代入\(h_1\):
-</p>
-\begin{align*}
-h_1(0,0) &= f(1\times0+1\times0–0.5) = f(-0.5) = 0\\
-h_1(0,1) &= f(1\times0+1\times1-0.5) = f(0.5) = 1\\
-h_1(1,0) &= f(1\times1+1\times0–0.5) = f(0.5) = 1\\
-h_1(1,1) &= f(1\times1+1\times1–0.5) = f(1.5) = 1\\
-\end{align*}
-
-<p>
-將圖<a href="#orgcd55e85">5</a>的4個點代入\(h_2\):
-</p>
-\begin{align*}
-h_2(0,0) &= f(1\times0+1\times0–1.5) = f(-1.5) = 0\\
-h_2(0,1) &= f(1\times0+1\times1-1.5) = f(-0.5) = 0\\
-h_2(1,0) &= f(1\times1+1\times0–1.5) = f(-0.5) = 0\\
-h_2(1,1) &= f(1\times1+1\times1–1.5) = f(0.5) = 1\\
-\end{align*}
-
-<p>
-由上可知:
-</p>
-<ul class="org-ul">
-<li>(0, 0)帶入第1個perceptron \(h_1(0,0)\)輸出-0.5、帶入第2個perceptron \(h_2(0,0)\)輸出-1.5；(-0.5, -1.5)再經由step function轉換輸出(0,0)</li>
-<li>(0, 1)帶入第1個perceptron \(h_1(0,1)\)輸出0.5、帶入第2個perceptron \(h_2(0,1)\)輸出-0.5；(0.5, -0.5)再經由step function轉換輸出(1,0)</li>
-<li>(1, 0)帶入第1個perceptron \(h_1(1,0)\)輸出0.5、帶入第2個perceptron \(h_2(1,0)\)輸出-0.5；(0.5, -0.5)再經由step function轉換輸出(1,0)</li>
-<li>(1, 1)帶入第1個perceptron \(h_1(1,1)\)輸出1.5、帶入第2個perceptron \(h_2(1,1)\)輸出0.5；(1.5, 0.5)再經由step function轉換輸出(1,1)</li>
-</ul>
-
-<p>
-即
-</p>
-\begin{align*}
-data(0,0) &= f(h_1,h_2) = (0,0) \\
-data(0,1) &= f(h_1,h_2) = (1,0) \\
-data(1,0) &= f(h_1,h_2) = (1,0) \\
-data(1,1) &= f(h_1,h_2) = (1,1) \\
-\end{align*}
-
-<p>
-這相當於透過兩個perceptron將原本的輸入做特徵空間轉換，如圖<a href="#org18ac53f">9</a>:
-</p>
-
-<div id="org18ac53f" class="figure">
-<p><img src="images/2021-05-24_16-12-36.jpg" alt="2021-05-24_16-12-36.jpg" width="500" />
-</p>
-<p><span class="figure-number">Figure 9: </span>XOR Gate Solution 3</p>
-</div>
-
-<p>
-這個時候只要設計一個線性分類器就可以完美分割兩類的資料了阿，如圖<a href="#orgd44f5b0">10</a>:
-</p>
-
-<div id="orgd44f5b0" class="figure">
-<p><img src="images/2021-05-24_16-13-44.jpg" alt="2021-05-24_16-13-44.jpg" width="500" />
-</p>
-<p><span class="figure-number">Figure 10: </span>XOR Gate Solution 4</p>
-</div>
-
-<p>
-XOR問題的神經網路結構如下圖:
-</p>
-
-<div id="org53bce91" class="figure">
+<div id="org85472e7" class="figure">
 <p><img src="images/2021-05-24_16-15-02.jpg" alt="2021-05-24_16-15-02.jpg" width="500" />
 </p>
-<p><span class="figure-number">Figure 11: </span>XOR Gate Solution 5</p>
-</div>
-</div>
-</div>
-<div id="outline-container-orgb7fe6a0" class="outline-4">
-<h4 id="orgb7fe6a0"><span class="section-number-4">1.3.4.</span> Solution #2</h4>
-<div class="outline-text-4" id="text-1-3-4">
-<p>
-當資料分布如同開頭的XOR(線性不可分的案例)，仍是不可解的，即使找個絕頂聰明的人仍無法以一條直線分割非線性的資料分布。因此我們會藉由多層感知器處理這個問題，也就是利用feature transform的概念，將原本線性不可分的輸入資料映射到線性可分的特徵平面上，特徵轉換的效果也就是造就深層網路效果能優異的原因<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。如下圖是原本不可分的XOR例子：
-</p>
-
-<div id="orgfa0c9ff" class="figure">
-<p><img src="images/b01.PNG" alt="b01.PNG" width="500" />
-</p>
 </div>
 
 <p>
-為了處理這個問題，我們只需要使用介紹激活函數時使用的兩層感知器就可以做出XOR的效果，下圖是經過feature transform後四個點在y1-y2平面上的位置，我們可以輕易地使用圖中的綠色直線將兩個類別切開。所使用的感知器為(當然這組解只是個例子而已，答案非唯一解)：
-</p>
-
-<p>
-\[w_1 = [0.2, -0.3], b_1 = 0.2\]
-\[w_2 = [-0.8, 1.1], b_2 = 1\]
-</p>
-
-
-<div id="org328d34a" class="figure">
-<p><img src="images/b02.png" alt="b02.png" width="500" />
-</p>
-</div>
-
-<div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">-*- coding: utf-8 -*-</span>
-<span class="linenr"> 2: </span>
-<span class="linenr"> 3: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
-<span class="linenr"> 4: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
-<span class="linenr"> 5: </span>
-<span class="linenr"> 6: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">Perceptron</span>(w, x, b):
-<span class="linenr"> 7: </span>    <span style="color: #51afef;">return</span> Sigmoid(np.dot(w, x) + b)
-<span class="linenr"> 8: </span>
-<span class="linenr"> 9: </span>
-<span class="linenr">10: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">Sigmoid</span>(x):
-<span class="linenr">11: </span>    <span style="color: #51afef;">return</span> <span style="color: #da8548; font-weight: bold;">1</span>/(<span style="color: #da8548; font-weight: bold;">1</span>+np.exp(-x))
-<span class="linenr">12: </span>
-<span class="linenr">13: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#30059;&#20986;&#21407;&#22987;XOR</span>
-<span class="linenr">14: </span>plt.figure()
-<span class="linenr">15: </span><span style="color: #dcaeea;">pts</span> = np.array([[<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>], [<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">1</span>], [<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">1</span>], [<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">0</span>]])
-<span class="linenr">16: </span>plt.title(<span style="color: #98be65;">"Original XOR"</span>)
-<span class="linenr">17: </span>plt.xlabel(<span style="color: #98be65;">"x1"</span>)
-<span class="linenr">18: </span>plt.ylabel(<span style="color: #98be65;">"x2"</span>)
-<span class="linenr">19: </span>plt.plot(pts[<span style="color: #da8548; font-weight: bold;">0</span>:<span style="color: #da8548; font-weight: bold;">2</span>,<span style="color: #da8548; font-weight: bold;">0</span>], pts[<span style="color: #da8548; font-weight: bold;">0</span>:<span style="color: #da8548; font-weight: bold;">2</span>,<span style="color: #da8548; font-weight: bold;">1</span>], <span style="color: #98be65;">'bx'</span>, pts[<span style="color: #da8548; font-weight: bold;">2</span>:<span style="color: #da8548; font-weight: bold;">4</span>,<span style="color: #da8548; font-weight: bold;">0</span>], pts[<span style="color: #da8548; font-weight: bold;">2</span>:<span style="color: #da8548; font-weight: bold;">4</span>,<span style="color: #da8548; font-weight: bold;">1</span>], <span style="color: #98be65;">'ro'</span>);
-<span class="linenr">20: </span>plt.show()
-<span class="linenr">21: </span>
-<span class="linenr">22: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20154;&#28858;&#32102;&#23450;w&#33287;b</span>
-<span class="linenr">23: </span><span style="color: #dcaeea;">w1</span> = [<span style="color: #da8548; font-weight: bold;">0.2</span>, -<span style="color: #da8548; font-weight: bold;">0.3</span>]
-<span class="linenr">24: </span><span style="color: #dcaeea;">b1</span> = <span style="color: #da8548; font-weight: bold;">0.2</span>
-<span class="linenr">25: </span><span style="color: #dcaeea;">w2</span> = [-<span style="color: #da8548; font-weight: bold;">0.8</span>, <span style="color: #da8548; font-weight: bold;">1.1</span>]
-<span class="linenr">26: </span><span style="color: #dcaeea;">b2</span> = <span style="color: #da8548; font-weight: bold;">1</span>
-<span class="linenr">27: </span>
-<span class="linenr">28: </span><span style="color: #51afef;">for</span> pt <span style="color: #51afef;">in</span> pts:
-<span class="linenr">29: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35336;&#31639;feature transform&#24460;&#30340;&#36664;&#20986; (y1 and y2)</span>
-<span class="linenr">30: </span>    <span style="color: #51afef;">if</span> <span style="color: #98be65;">"y"</span> <span style="color: #51afef;">not</span> <span style="color: #51afef;">in</span> <span style="color: #c678dd;">dir</span>():
-<span class="linenr">31: </span>        <span style="color: #dcaeea;">y</span> = np.array([Perceptron(w1, pt, b1), Perceptron(w2, pt, b2)])
-<span class="linenr">32: </span>    <span style="color: #51afef;">else</span>:
-<span class="linenr">33: </span>        <span style="color: #dcaeea;">y</span> = np.row_stack((y, np.array([Perceptron(w1, pt, b1), Perceptron(w2, pt, b2)])))
-<span class="linenr">34: </span>
-<span class="linenr">35: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#30059;&#20986;&#36681;&#25563;&#21040;y1-y2&#24179;&#38754;&#19978;&#30340;&#22235;&#20491;&#40670;</span>
-<span class="linenr">36: </span>plt.figure()
-<span class="linenr">37: </span>plt.title(<span style="color: #98be65;">"Transfomed XOR"</span>)
-<span class="linenr">38: </span>plt.xlabel(<span style="color: #98be65;">"y1"</span>)
-<span class="linenr">39: </span>plt.ylabel(<span style="color: #98be65;">"y2"</span>)
-<span class="linenr">40: </span>plt.plot(y[<span style="color: #da8548; font-weight: bold;">0</span>:<span style="color: #da8548; font-weight: bold;">2</span>,<span style="color: #da8548; font-weight: bold;">0</span>], y[<span style="color: #da8548; font-weight: bold;">0</span>:<span style="color: #da8548; font-weight: bold;">2</span>,<span style="color: #da8548; font-weight: bold;">1</span>], <span style="color: #98be65;">'bx'</span>, y[<span style="color: #da8548; font-weight: bold;">2</span>:<span style="color: #da8548; font-weight: bold;">4</span>,<span style="color: #da8548; font-weight: bold;">0</span>], y[<span style="color: #da8548; font-weight: bold;">2</span>:<span style="color: #da8548; font-weight: bold;">4</span>,<span style="color: #da8548; font-weight: bold;">1</span>], <span style="color: #98be65;">'ro'</span>);
-<span class="linenr">41: </span>
-<span class="linenr">42: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#33289;&#20491;&#33021;&#20999;&#21106;&#38283;&#20841;&#39006;&#21029;&#30340;&#30452;&#32218;&#20363;&#23376;</span>
-<span class="linenr">43: </span>plt.plot([<span style="color: #da8548; font-weight: bold;">0.48</span>, <span style="color: #da8548; font-weight: bold;">0.6</span>], [<span style="color: #da8548; font-weight: bold;">0.9</span>, <span style="color: #da8548; font-weight: bold;">0.57</span>], <span style="color: #98be65;">'g-'</span>, linewidth=<span style="color: #da8548; font-weight: bold;">1.5</span>)
-<span class="linenr">44: </span>plt.show()
-<span class="linenr">45: </span>
-<span class="linenr">46: </span><span style="color: #51afef;">del</span> y
-</pre>
-</div>
-</div>
-</div>
-</div>
-<div id="outline-container-org8552c09" class="outline-3">
-<h3 id="org8552c09"><span class="section-number-3">1.4.</span> MLP (Multilayer perceptron)</h3>
-<div class="outline-text-3" id="text-1-4">
-<p>
-由XOR問題的例子可以知道，第一層兩個Perceptron在做的事情其實是將資料投影到另一個特徵空間去,最後再把h1和h2的結果當作另一個Perceptron的輸入，再做一個下一層的Perceptron就可以完美分類XOR問題。
+由XOR問題的例子可以知道，第一層兩個Perceptron在做的事情其實是將資料投影到另一個特徵空間去,最後再把\(h_1\)和\(h_2\)的結果當作另一個Perceptron的輸入，再做一個下一層的Perceptron就可以完美分類XOR問題。
 </p>
 
 <p>
@@ -761,7 +678,7 @@ XOR問題的神經網路結構如下圖:
 </p>
 
 <p>
-多層感知機是一種前向傳遞類神經網路，至少包含三層結構(輸入層、隱藏層和輸出層)，並且利用到「倒傳遞」的技術達到學習(model learning)的監督式學習，以上是傳統的定義。現在深度學習的發展，其實MLP是深度神經網路(deep neural network, DNN)的一種special case，概念基本上一樣，DNN只是在學習過程中多了一些手法和層數會更多更深<sup><a id="fnr.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup>。
+多層感知機是一種前向傳遞類神經網路，至少包含三層結構(輸入層、隱藏層和輸出層)，並且利用到「倒傳遞」的技術達到學習(model learning)的監督式學習，以上是傳統的定義。現在深度學習的發展，其實MLP是深度神經網路(deep neural network, DNN)的一種special case，概念基本上一樣，DNN只是在學習過程中多了一些手法和層數會更多更深<sup><a id="fnr.3" class="footref" href="#fn.3" role="doc-backlink">3</a></sup>。
 </p>
 
 <p>
@@ -770,496 +687,232 @@ XOR問題的神經網路結構如下圖:
 </div>
 </div>
 </div>
-<div id="outline-container-orgee3d324" class="outline-2">
-<h2 id="orgee3d324"><span class="section-number-2">2.</span> 感知器(Perception)</h2>
-<div class="outline-text-2" id="text-2">
-</div>
-<div id="outline-container-org43d49b3" class="outline-3">
-<h3 id="org43d49b3"><span class="section-number-3">2.1.</span> 何謂感知器</h3>
-<div class="outline-text-3" id="text-2-1">
-<p class="verse">
-Perceptron is a single layer neural network and a multi-layer perceptron is called Neural Networks(<a href="20221025104603-神經網路.html#ID-d6daa102-05bb-475d-b619-db8b61e86030">神經網路</a>).<br />
-</p>
+<div id="outline-container-orgcfe09b6" class="outline-2">
+<h2 id="orgcfe09b6"><span class="section-number-2">3.</span> 單層感知器的極限與多層感知器: XOR gate</h2>
+<div class="outline-text-2" id="text-3">
 <p>
-收到多個輸入訊號之後，再當作一個訊號輸出，如圖<a href="#org995a21e">12</a>所示，\(x_1, x_2\)為輸入訊號，\(y\)為輸出訊號，\(w_1, w_2\)代表權重(weight)，圖中的圓圈稱為「神經元」或稱作「節點」。神經元\(x_1, x_2\)的訊號是否會觸發神經元\(y\)使其輸出訊號則取決於\(w_1x_1+w_2x_2\)是否會超過某個臨界值\(\theta\)。
+XOR(互斥或)真值表如下:
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-center" />
+
+<col  class="org-center" />
+
+<col  class="org-center" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-center">A</th>
+<th scope="col" class="org-center">B</th>
+<th scope="col" class="org-center">A XOR B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-center">0</td>
+<td class="org-center">0</td>
+<td class="org-center">0</td>
+</tr>
+
+<tr>
+<td class="org-center">0</td>
+<td class="org-center">1</td>
+<td class="org-center">1</td>
+</tr>
+
+<tr>
+<td class="org-center">1</td>
+<td class="org-center">0</td>
+<td class="org-center">1</td>
+</tr>
+
+<tr>
+<td class="org-center">1</td>
+<td class="org-center">1</td>
+<td class="org-center">1</td>
+</tr>
+</tbody>
+</table>
+<p>
+其輸入/輸出分佈圖為
 </p>
 
-<div id="org995a21e" class="figure">
-<p><img src="images/sensor1.png" alt="sensor1.png" width="300" />
+<div id="orgb30d832" class="figure">
+<p><img src="images/2021-05-24_14-15-53.jpg" alt="2021-05-24_14-15-53.jpg" width="300" />
 </p>
-<p><span class="figure-number">Figure 12: </span>收到兩組輸入訊號的感知器</p>
-</div>
-
-<p>
-若以算式表示此一觸發條件則如公式\eqref{orged7de36}所示。
-</p>
-\begin{equation}
-\label{orged7de36}
-y = \begin{cases} 0 & \text (w_1x_1+w_2x_2 \leq 0)
-\\ 1 & \text (w_1x_1 + w_2x_2 > 0) \end{cases}
-\end{equation}
-</div>
-</div>
-<div id="outline-container-org67f148c" class="outline-3">
-<h3 id="org67f148c"><span class="section-number-3">2.2.</span> 感知器工作原理</h3>
-<div class="outline-text-3" id="text-2-2">
-</div>
-<div id="outline-container-orgef87225" class="outline-4">
-<h4 id="orgef87225"><span class="section-number-4">2.2.1.</span> Version #1: 使用weight</h4>
-<div class="outline-text-4" id="text-2-2-1">
-<p>
-感知器（perceptron）是 人造神經元（artificial neuron）的一種，也是最基本的一種。它接受一些輸入，產生一個輸出。
-</p>
-
-<div id="org37f5503" class="figure">
-<p><img src="./images/perceptron-1.png" alt="perceptron-1.png" width="400" />
-</p>
-<p><span class="figure-number">Figure 13: </span>Perceptron version 1</p>
-</div>
-<ul class="org-ul">
-<li>這種架構的輸入/輸出關係為線性</li>
-<li>神經網路中再多的線性perceptron叠加，仍為線性</li>
-<li>無法解決 <b>線性不可分</b> 的問題</li>
-</ul>
-</div>
-<ul class="org-ul">
-<li><a id="org9170342"></a>線性可分 v.s. 線性不可分<br />
-<div class="outline-text-5" id="text-org9170342">
-<p>
-簡而言之，如果存在一個超平面完全分離H元素和M元素，那麼上面的表達式表示H和M是線性可分的<sup><a id="fnr.3" class="footref" href="#fn.3" role="doc-backlink">3</a></sup>。
-</p>
-
-<div id="org5755d8d" class="figure">
-<p><img src="images/2021-05-23_14-10-30.jpg" alt="2021-05-23_14-10-30.jpg" width="500" />
-</p>
-<p><span class="figure-number">Figure 14: </span>線性和非線性分類</p>
+<p><span class="figure-number">Figure 10: </span>XOR Gate</p>
 </div>
 
 <p>
-在圖<a href="#org5755d8d">14</a>中，A顯示了一個線性分類問題，B顯示了一個非線性的分類問題。在A中，我們的決策邊界是一個線性的，它將藍色的點和綠色的點完全分開。在這個場景中，可以實現幾個線性分類器。
+到目前為止，透過權重及偏權值可以設計 AND、NAND、OR, 但無法完成 XOR。顯然，若要再以感知器來模擬其運作原理，單層感知器已不敷使用。
 </p>
 </div>
-</li>
-<li><a id="orgc2ff7f2"></a>低維映射至高維<br />
-<div class="outline-text-5" id="text-orgc2ff7f2">
+<div id="outline-container-org34f8348" class="outline-3">
+<h3 id="org34f8348"><span class="section-number-3">3.1.</span> 想法</h3>
+<div class="outline-text-3" id="text-3-1">
 <p>
-在SVM的解決方案中，可以透過一個非線性的映射將低維空間線性不可分的樣本轉換至高維空間，使其成為線性可分   <sup><a id="fnr.4" class="footref" href="#fn.4" role="doc-backlink">4</a></sup>，例如:
+這個時候一般線性的分類就沒有辦法很完美分割(如下圖)，所以就需要一些變形的方法來達到目的。
 </p>
 
-<div id="orgdd1ce7a" class="figure">
-<p><img src="images/2021-05-23_14-14-31.jpg" alt="2021-05-23_14-14-31.jpg" width="500" />
+<div id="org0dfaa26" class="figure">
+<p><img src="images/2021-05-24_14-18-51.jpg" alt="2021-05-24_14-18-51.jpg" width="400" />
 </p>
-<p><span class="figure-number">Figure 15: </span>Kernal function mapping</p>
-</div>
-</div>
-</li>
-</ul>
-</div>
-<div id="outline-container-org53587c3" class="outline-4">
-<h4 id="org53587c3"><span class="section-number-4">2.2.2.</span> Version #2: 加入bias</h4>
-<div class="outline-text-4" id="text-2-2-2">
-
-<div id="org9347b8a" class="figure">
-<p><img src="./images/perceptron-2.png" alt="perceptron-2.png" width="500" />
-</p>
-<p><span class="figure-number">Figure 16: </span>Perceptron version 2</p>
-</div>
-<ul class="org-ul">
-<li>不加 bias 你的分類線(面)就必須過原點，這顯然是不靈活的</li>
-<li>透過bias，可以將NN進行左右調整，以適應(fit)更多情況</li>
-<li>可以將bias視為一個activate perceptron的threshold</li>
-<li>bias也可以視為當輸入均為0時的輸出值</li>
-<li>從仿生學的角度，刺激生物神經元使它興奮需要刺激強度超過一定的閾值，同樣神經元模型也仿照這點設置了bias</li>
-</ul>
-</div>
-</div>
-<div id="outline-container-org967b686" class="outline-4">
-<h4 id="org967b686"><span class="section-number-4">2.2.3.</span> Version #3: 加入activation function</h4>
-<div class="outline-text-4" id="text-2-2-3">
-<p>
-加入activation function
-</p>
-
-<div id="org2ca75ed" class="figure">
-<p><img src="./images/perceptron-3.png" alt="perceptron-3.png" width="600" />
-</p>
-<p><span class="figure-number">Figure 17: </span>Perceptron version 2</p>
-</div>
-</div>
-</div>
-<div id="outline-container-orge11c837" class="outline-4">
-<h4 id="orge11c837"><span class="section-number-4">2.2.4.</span> 結論: 什麼是perceptron</h4>
-<div class="outline-text-4" id="text-2-2-4">
-<p>
-其實Perceptron就只是一個兩層的神經網路，輸入層和輸出層
-</p>
-</div>
-</div>
-</div>
-<div id="outline-container-org506eab6" class="outline-3">
-<h3 id="org506eab6"><span class="section-number-3">2.3.</span> 執行感知器: 邏輯閘實作</h3>
-<div class="outline-text-3" id="text-2-3">
-</div>
-<div id="outline-container-org1cab93c" class="outline-4">
-<h4 id="org1cab93c"><span class="section-number-4">2.3.1.</span> AND gate(版本#1：只設定權重)</h4>
-<div class="outline-text-4" id="text-2-3-1">
-<p>
-以上述感知器的運作方式來模擬 AND 邏輯閘的功能，可由以下程式碼實現出來。
-</p>
-<div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">AND</span>(x1, x2):
-<span class="linenr"> 2: </span>    <span style="color: #dcaeea;">w1</span>, <span style="color: #dcaeea;">w2</span>, <span style="color: #dcaeea;">theta</span> = <span style="color: #da8548; font-weight: bold;">0.5</span>, <span style="color: #da8548; font-weight: bold;">0.5</span>, <span style="color: #da8548; font-weight: bold;">0.7</span>
-<span class="linenr"> 3: </span>    <span style="color: #dcaeea;">tmp</span> = x1*w1 + x2*w2
-<span class="linenr"> 4: </span>    <span style="color: #51afef;">if</span> tmp &lt;= theta:
-<span class="linenr"> 5: </span>        <span style="color: #51afef;">return</span> <span style="color: #da8548; font-weight: bold;">0</span>
-<span class="linenr"> 6: </span>    <span style="color: #51afef;">else</span>:
-<span class="linenr"> 7: </span>        <span style="color: #51afef;">return</span> <span style="color: #da8548; font-weight: bold;">1</span>
-<span class="linenr"> 8: </span>
-<span id="coderef-run-and" class="coderef-off"><span class="linenr"> 9: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"AND(1, 0): "</span>, AND(<span style="color: #da8548; font-weight: bold;">1</span>,<span style="color: #da8548; font-weight: bold;">0</span>))</span>
-<span class="linenr">10: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"AND(1, 0): "</span>, AND(<span style="color: #da8548; font-weight: bold;">1</span>,<span style="color: #da8548; font-weight: bold;">1</span>))
-</pre>
-</div>
-
-<pre class="example">
-AND(1, 0):  0
-AND(1, 0):  1
-</pre>
-
-
-<p>
-如程式碼第<a href="#coderef-run-and" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-run-and');" onmouseout="CodeHighlightOff(this, 'coderef-run-and');">9</a>行所示，傳入\(1, 0\)為輸入訊號，而根據計算結果是否達到臨界值(\(\theta=0.7\))來決定最終的輸出訊號\(0\)。
-</p>
-</div>
-</div>
-<div id="outline-container-org0689ec7" class="outline-4">
-<h4 id="org0689ec7"><span class="section-number-4">2.3.2.</span> AND gate(版本#2: 導入權重及偏權值)</h4>
-<div class="outline-text-4" id="text-2-3-2">
-<p>
-在版本#1 的實作中，我們只透過輸入訊號與權重的計算來實現感知器的運作，事實上，這個感知器也可以用公式\eqref{org4a1e530}來表示，這裡利用\(b\)這個被稱作「偏移值」或「偏權值」的參數來控制神經元的觸發難度，此時的感知器如圖<a href="#orgb8d82e8">19</a>所示。
-</p>
-\begin{equation}
-\label{org4a1e530}
-y = \begin{cases} 0 & \text (b+w_1x_1+w_2x_2 \leq 0)
-\\ 1 & \text (b+w_1x_1 + w_2x_2 > 0) \end{cases}
-\end{equation}
-
-
-<div id="orgcad4349" class="figure">
-<p><img src="images/biassensor2.png" alt="biassensor2.png" width="300" />
-</p>
-<p><span class="figure-number">Figure 18: </span>加入偏移值\(b\)的感知器</p>
+<p><span class="figure-number">Figure 11: </span>XOR Gate Solution ideas</p>
 </div>
 
 <p>
-在圖<a href="#orgb8d82e8">19</a>中，增加了一個權重為\(b\)、輸入值為 1 的訊號，偏權值的作用與權重\(w_1\)及\(w_2\)不同，\(w_1\)與\(w_2\)的功能是控制輸入訊號重要程度的參數，但是\(b\)的功能是調整輸出訊號 1 的參數，偏權值也包含了「偏移」的意思。這是指在沒有輸入時，輸出究竟會產生多少偏移量。此外，由於偏移值的輸入訊號固定為 1，以圖形表示時，會用灰色填滿神經元，藉此區隔其他神經元。
+即便一個人再如何bumbler，仍有可能提出一些明智的話語：
 </p>
 
-<p>
-以下為針對上述版本#1 的 AND 邏輯閘模擬程式碼進行的修正，將偏移值的機制加入感知器的運作流程中。
+<div id="org3be44b0" class="figure">
+<p><img src="images/Story_of_gate:_From_perceptron_to_MLP/2024-02-14_19-20-16_2024-02-14_19-05-00.png" alt="2024-02-14_19-20-16_2024-02-14_19-05-00.png" width="400" />
 </p>
-
-<div id="orgb8d82e8" class="figure">
-<p><img src="images/AndGate.jpg" alt="AndGate.jpg" width="500" />
-</p>
-<p><span class="figure-number">Figure 19: </span>And Gate perceptron</p>
-</div>
-<div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
-<span class="linenr"> 2: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">AND</span>(x1, x2):
-<span class="linenr"> 3: </span>      <span style="color: #dcaeea;">x</span> = np.array([x1, x2])
-<span class="linenr"> 4: </span>      <span style="color: #dcaeea;">w</span> = np.array([<span style="color: #da8548; font-weight: bold;">0.5</span>, <span style="color: #da8548; font-weight: bold;">0.5</span>])
-<span class="linenr"> 5: </span>      <span style="color: #dcaeea;">b</span> = -<span style="color: #da8548; font-weight: bold;">0.7</span>
-<span class="linenr"> 6: </span>      <span style="color: #dcaeea;">theta</span> = <span style="color: #da8548; font-weight: bold;">0</span>
-<span class="linenr"> 7: </span>      <span style="color: #dcaeea;">tmp</span> = np.<span style="color: #c678dd;">sum</span>(w*x) + b
-<span class="linenr"> 8: </span>      <span style="color: #51afef;">if</span> tmp &lt;= theta:
-<span class="linenr"> 9: </span>          <span style="color: #51afef;">return</span> <span style="color: #da8548; font-weight: bold;">0</span>
-<span class="linenr">10: </span>      <span style="color: #51afef;">else</span>:
-<span class="linenr">11: </span>          <span style="color: #51afef;">return</span> <span style="color: #da8548; font-weight: bold;">1</span>
-<span class="linenr">12: </span>
-<span class="linenr">13: </span>  <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"1 AND 0 -&gt; "</span>,AND(<span style="color: #da8548; font-weight: bold;">1</span>,<span style="color: #da8548; font-weight: bold;">0</span>))
-<span class="linenr">14: </span>  <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"1 AND 1 -&gt; "</span>,AND(<span style="color: #da8548; font-weight: bold;">1</span>,<span style="color: #da8548; font-weight: bold;">1</span>))
-<span class="linenr">15: </span>
-<span class="linenr">16: </span>  <span style="color: #5B6268;">#</span><span style="color: #5B6268;">draw corresponding dots</span>
-<span class="linenr">17: </span>  <span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
-<span class="linenr">18: </span>  <span style="color: #dcaeea;">xs</span> = np.array([<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">1</span>])
-<span class="linenr">19: </span>  <span style="color: #dcaeea;">ys</span> = np.array([<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">1</span>])
-<span class="linenr">20: </span>  <span style="color: #51afef;">for</span> xi, yi <span style="color: #51afef;">in</span> <span style="color: #c678dd;">zip</span>(xs, ys):
-<span class="linenr">21: </span>      <span style="color: #c678dd;">print</span>(AND(x, y))
-<span class="linenr">22: </span>
-</pre>
-</div>
-
-<pre class="example">
-1 AND 0 -&gt;  0
-1 AND 1 -&gt;  1
-</pre>
-</div>
-</div>
-<div id="outline-container-org96a1ab8" class="outline-4">
-<h4 id="org96a1ab8"><span class="section-number-4">2.3.3.</span> OR, NAND gates</h4>
-<div class="outline-text-4" id="text-2-3-3">
-<p>
-同樣的感知器架構亦可實作出 OR 邏輯閘的功能：
-</p>
-<div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
-<span class="linenr"> 2: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">OR</span>(x1, x2):
-<span class="linenr"> 3: </span>      <span style="color: #dcaeea;">x</span> = np.array([x1, x2])
-<span class="linenr"> 4: </span>      <span style="color: #dcaeea;">w</span> = np.array([<span style="color: #da8548; font-weight: bold;">0.5</span>, <span style="color: #da8548; font-weight: bold;">0.5</span>])
-<span class="linenr"> 5: </span>      <span style="color: #dcaeea;">b</span> = -<span style="color: #da8548; font-weight: bold;">0.2</span>
-<span class="linenr"> 6: </span>      <span style="color: #dcaeea;">theta</span> = <span style="color: #da8548; font-weight: bold;">0</span>
-<span class="linenr"> 7: </span>      <span style="color: #dcaeea;">tmp</span> = np.<span style="color: #c678dd;">sum</span>(w*x) + b
-<span class="linenr"> 8: </span>      <span style="color: #51afef;">if</span> tmp &lt;= theta:
-<span class="linenr"> 9: </span>          <span style="color: #51afef;">return</span> <span style="color: #da8548; font-weight: bold;">0</span>
-<span class="linenr">10: </span>      <span style="color: #51afef;">else</span>:
-<span class="linenr">11: </span>          <span style="color: #51afef;">return</span> <span style="color: #da8548; font-weight: bold;">1</span>
-<span class="linenr">12: </span>  <span style="color: #c678dd;">print</span>(OR(<span style="color: #da8548; font-weight: bold;">0</span>,<span style="color: #da8548; font-weight: bold;">0</span>))
-</pre>
+<p><span class="figure-number">Figure 12: </span>一佪便當吃不夠可以吃兩個</p>
 </div>
 
 <p>
-也可實作出 NAND 邏輯閘的原理。
+所以，一條線無法分割，那就用兩條啊啊啊~~~
 </p>
-<div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
-<span class="linenr"> 2: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">NAND</span>(x1, x2):
-<span class="linenr"> 3: </span>      <span style="color: #dcaeea;">x</span> = np.array([x1, x2])
-<span class="linenr"> 4: </span>      <span style="color: #dcaeea;">w</span> = np.array([-<span style="color: #da8548; font-weight: bold;">0.5</span>, -<span style="color: #da8548; font-weight: bold;">0.5</span>])
-<span class="linenr"> 5: </span>      <span style="color: #dcaeea;">b</span> = <span style="color: #da8548; font-weight: bold;">0.7</span>
-<span class="linenr"> 6: </span>      <span style="color: #dcaeea;">tmp</span> = np.<span style="color: #c678dd;">sum</span>(w*x) + b
-<span class="linenr"> 7: </span>      <span style="color: #51afef;">if</span> tmp &lt;= <span style="color: #da8548; font-weight: bold;">0</span>:
-<span class="linenr"> 8: </span>          <span style="color: #51afef;">return</span> <span style="color: #da8548; font-weight: bold;">0</span>
-<span class="linenr"> 9: </span>      <span style="color: #51afef;">else</span>:
-<span class="linenr">10: </span>          <span style="color: #51afef;">return</span> <span style="color: #da8548; font-weight: bold;">1</span>
-<span class="linenr">11: </span>  <span style="color: #c678dd;">print</span>(NAND(<span style="color: #da8548; font-weight: bold;">0</span>,<span style="color: #da8548; font-weight: bold;">0</span>))
-</pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div id="outline-container-PerceptronDemo" class="outline-2">
-<h2 id="PerceptronDemo"><span class="section-number-2">3.</span> 以感知器解決分類問題(監督式學習範例)</h2>
-<div class="outline-text-2" id="text-PerceptronDemo">
+
 <p>
-從「鳶尾花資料集」取出兩類花(Setosa, Versicolor)，藉由不同的兩個屬性（花萼長、花瓣長）對其行分類，如圖<a href="#orgd73c9bc">20</a>。
-</p>
-<div class="org-src-container">
-<pre class="src src-python"><span class="linenr">  1: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">coding: utf-8</span>
-<span class="linenr">  2: </span>  <span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
-<span class="linenr">  3: </span>  <span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
-<span class="linenr">  4: </span>  <span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
-<span class="linenr">  5: </span>  <span style="color: #51afef;">from</span> matplotlib.colors <span style="color: #51afef;">import</span> ListedColormap
-<span class="linenr">  6: </span>  <span style="color: #5B6268;">### </span><span style="color: #5B6268;">&#24863;&#30693;&#22120;&#27169;&#22411;</span>
-<span class="linenr">  7: </span>  <span style="color: #51afef;">class</span> <span style="color: #ECBE7B;">Perceptron</span>(<span style="color: #c678dd;">object</span>):
-<span class="linenr">  8: </span>      <span style="color: #83898d;">"""Perceptron classifier.</span>
-<span class="linenr">  9: </span><span style="color: #83898d;">      &#21443;&#25976;&#65306;</span>
-<span class="linenr"> 10: </span><span style="color: #83898d;">      ------------</span>
-<span class="linenr"> 11: </span><span style="color: #83898d;">      eta : float: &#23416;&#32722;&#29575; (0.0 ~ 1.0)</span>
-<span class="linenr"> 12: </span><span style="color: #83898d;">      n_iter : int: &#35347;&#32244;&#27425;&#25976;</span>
-<span class="linenr"> 13: </span><span style="color: #83898d;">        Passes over the training dataset.</span>
-<span class="linenr"> 14: </span><span style="color: #83898d;">      random_state : int</span>
-<span class="linenr"> 15: </span><span style="color: #83898d;">      &#23660;&#24615;</span>
-<span class="linenr"> 16: </span><span style="color: #83898d;">      -----------</span>
-<span class="linenr"> 17: </span><span style="color: #83898d;">      w_ : 1d-array: &#35347;&#32244;&#24460;&#30340;&#27402;&#37325;</span>
-<span class="linenr"> 18: </span><span style="color: #83898d;">        Weights after fitting.</span>
-<span class="linenr"> 19: </span><span style="color: #83898d;">      errors_ : list: &#27599;&#27425;&#35347;&#32244;&#30340;&#37679;&#35492;&#27425;&#25976;</span>
-<span class="linenr"> 20: </span>
-<span class="linenr"> 21: </span><span style="color: #83898d;">      """</span>
-<span class="linenr"> 22: </span>      <span style="color: #51afef;">def</span> <span style="color: #c678dd;">__init__</span>(<span style="color: #51afef;">self</span>, eta=<span style="color: #da8548; font-weight: bold;">0.01</span>, n_iter=<span style="color: #da8548; font-weight: bold;">50</span>, random_state=<span style="color: #da8548; font-weight: bold;">1</span>):
-<span class="linenr"> 23: </span>          <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">eta</span> = eta
-<span class="linenr"> 24: </span>          <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">n_iter</span> = n_iter
-<span class="linenr"> 25: </span>          <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">random_state</span> = random_state
-<span class="linenr"> 26: </span>
-<span class="linenr"> 27: </span>      <span style="color: #51afef;">def</span> <span style="color: #c678dd;">fit</span>(<span style="color: #51afef;">self</span>, X, y):
-<span class="linenr"> 28: </span>          <span style="color: #83898d;">"""Fit training data.</span>
-<span class="linenr"> 29: </span><span style="color: #83898d;">          Parameters</span>
-<span class="linenr"> 30: </span><span style="color: #83898d;">          ----------</span>
-<span class="linenr"> 31: </span><span style="color: #83898d;">          X : {array-like}, shape = [n_samples, n_features]</span>
-<span class="linenr"> 32: </span><span style="color: #83898d;">            Training vectors, where n_samples is the number of samples and</span>
-<span class="linenr"> 33: </span><span style="color: #83898d;">            n_features is the number of features.</span>
-<span class="linenr"> 34: </span><span style="color: #83898d;">          y : array-like, shape = [n_samples]</span>
-<span class="linenr"> 35: </span><span style="color: #83898d;">            Target values.</span>
-<span class="linenr"> 36: </span>
-<span class="linenr"> 37: </span><span style="color: #83898d;">          Returns</span>
-<span class="linenr"> 38: </span><span style="color: #83898d;">          -------</span>
-<span class="linenr"> 39: </span><span style="color: #83898d;">          self : object</span>
-<span class="linenr"> 40: </span>
-<span class="linenr"> 41: </span><span style="color: #83898d;">          """</span>
-<span class="linenr"> 42: </span>          <span style="color: #dcaeea;">rgen</span> = np.random.RandomState(<span style="color: #51afef;">self</span>.random_state)
-<span class="linenr"> 43: </span>          <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">w_</span> = rgen.normal(loc=<span style="color: #da8548; font-weight: bold;">0.0</span>, scale=<span style="color: #da8548; font-weight: bold;">0.01</span>, size=<span style="color: #da8548; font-weight: bold;">1</span> + X.shape[<span style="color: #da8548; font-weight: bold;">1</span>])
-<span class="linenr"> 44: </span>          <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">errors_</span> = []
-<span class="linenr"> 45: </span>
-<span class="linenr"> 46: </span>          <span style="color: #51afef;">for</span> _ <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #51afef;">self</span>.n_iter):
-<span class="linenr"> 47: </span>              <span style="color: #dcaeea;">errors</span> = <span style="color: #da8548; font-weight: bold;">0</span>
-<span class="linenr"> 48: </span>              <span style="color: #51afef;">for</span> xi, target <span style="color: #51afef;">in</span> <span style="color: #c678dd;">zip</span>(X, y):
-<span class="linenr"> 49: </span>                  <span style="color: #dcaeea;">update</span> = <span style="color: #51afef;">self</span>.eta * (target - <span style="color: #51afef;">self</span>.predict(xi))
-<span class="linenr"> 50: </span>                  <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">w_</span>[<span style="color: #da8548; font-weight: bold;">1</span>:] += update * xi
-<span class="linenr"> 51: </span>                  <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">w_</span>[<span style="color: #da8548; font-weight: bold;">0</span>] += update
-<span class="linenr"> 52: </span>                  <span style="color: #dcaeea;">errors</span> += <span style="color: #c678dd;">int</span>(update != <span style="color: #da8548; font-weight: bold;">0.0</span>)
-<span class="linenr"> 53: </span>              <span style="color: #51afef;">self</span>.errors_.append(errors)
-<span class="linenr"> 54: </span>          <span style="color: #51afef;">return</span> <span style="color: #51afef;">self</span>
-<span class="linenr"> 55: </span>
-<span class="linenr"> 56: </span>      <span style="color: #51afef;">def</span> <span style="color: #c678dd;">net_input</span>(<span style="color: #51afef;">self</span>, X):
-<span class="linenr"> 57: </span>          <span style="color: #83898d;">"""Calculate net input"""</span>
-<span class="linenr"> 58: </span>          <span style="color: #51afef;">return</span> np.dot(X, <span style="color: #51afef;">self</span>.w_[<span style="color: #da8548; font-weight: bold;">1</span>:]) + <span style="color: #51afef;">self</span>.w_[<span style="color: #da8548; font-weight: bold;">0</span>]
-<span class="linenr"> 59: </span>
-<span class="linenr"> 60: </span>      <span style="color: #51afef;">def</span> <span style="color: #c678dd;">predict</span>(<span style="color: #51afef;">self</span>, X):
-<span class="linenr"> 61: </span>          <span style="color: #83898d;">"""Return class label after unit step"""</span>
-<span class="linenr"> 62: </span>          <span style="color: #51afef;">return</span> np.where(<span style="color: #51afef;">self</span>.net_input(X) &gt;= <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">1</span>, -<span style="color: #da8548; font-weight: bold;">1</span>)
-<span class="linenr"> 63: </span>
-<span class="linenr"> 64: </span>  <span style="color: #dcaeea;">v1</span> = np.array([<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">3</span>])
-<span class="linenr"> 65: </span>  <span style="color: #dcaeea;">v2</span> = <span style="color: #da8548; font-weight: bold;">0.5</span> * v1
-<span class="linenr"> 66: </span>  np.arccos(v1.dot(v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)))
-<span class="linenr"> 67: </span>
-<span class="linenr"> 68: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35712;&#20837;&#35347;&#32244;&#38598;&#36039;&#26009;</span>
-<span class="linenr"> 69: </span>  <span style="color: #dcaeea;">df</span> = pd.read_csv(<span style="color: #98be65;">'https://archive.ics.uci.edu/ml/'</span>
-<span class="linenr"> 70: </span>          <span style="color: #98be65;">'machine-learning-databases/iris/iris.data'</span>, header=<span style="color: #a9a1e1;">None</span>)
-<span class="linenr"> 71: </span>  <span style="color: #c678dd;">print</span>(df.tail())
-<span class="linenr"> 72: </span>
-<span class="linenr"> 73: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">select setosa and versicolor</span>
-<span class="linenr"> 74: </span>  <span style="color: #dcaeea;">y</span> = df.iloc[<span style="color: #da8548; font-weight: bold;">0</span>:<span style="color: #da8548; font-weight: bold;">100</span>, <span style="color: #da8548; font-weight: bold;">4</span>].values
-<span class="linenr"> 75: </span>  <span style="color: #dcaeea;">y</span> = np.where(y == <span style="color: #98be65;">'Iris-setosa'</span>, -<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">1</span>)
-<span class="linenr"> 76: </span>
-<span class="linenr"> 77: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">extract sepal length and petal length</span>
-<span class="linenr"> 78: </span>  <span style="color: #dcaeea;">X</span> = df.iloc[<span style="color: #da8548; font-weight: bold;">0</span>:<span style="color: #da8548; font-weight: bold;">100</span>, [<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">2</span>]].values
-<span class="linenr"> 79: </span>
-<span class="linenr"> 80: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">plot data</span>
-<span class="linenr"> 81: </span>  plt.clf()
-<span class="linenr"> 82: </span>  plt.scatter(X[:<span style="color: #da8548; font-weight: bold;">50</span>, <span style="color: #da8548; font-weight: bold;">0</span>], X[:<span style="color: #da8548; font-weight: bold;">50</span>, <span style="color: #da8548; font-weight: bold;">1</span>],
-<span class="linenr"> 83: </span>              color=<span style="color: #98be65;">'red'</span>, marker=<span style="color: #98be65;">'o'</span>, label=<span style="color: #98be65;">'setosa'</span>)
-<span class="linenr"> 84: </span>  plt.scatter(X[<span style="color: #da8548; font-weight: bold;">50</span>:<span style="color: #da8548; font-weight: bold;">100</span>, <span style="color: #da8548; font-weight: bold;">0</span>], X[<span style="color: #da8548; font-weight: bold;">50</span>:<span style="color: #da8548; font-weight: bold;">100</span>, <span style="color: #da8548; font-weight: bold;">1</span>],
-<span class="linenr"> 85: </span>              color=<span style="color: #98be65;">'blue'</span>, marker=<span style="color: #98be65;">'x'</span>, label=<span style="color: #98be65;">'versicolor'</span>)
-<span class="linenr"> 86: </span>
-<span class="linenr"> 87: </span>  plt.xlabel(<span style="color: #98be65;">'sepal length [cm]'</span>)
-<span class="linenr"> 88: </span>  plt.ylabel(<span style="color: #98be65;">'petal length [cm]'</span>)
-<span class="linenr"> 89: </span>  plt.legend(loc=<span style="color: #98be65;">'upper left'</span>)
-<span class="linenr"> 90: </span>
-<span class="linenr"> 91: </span>  plt.savefig(<span style="color: #98be65;">'02_06.png'</span>, dpi=<span style="color: #da8548; font-weight: bold;">300</span>)
-<span class="linenr"> 92: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">plt.show()</span>
-<span class="linenr"> 93: </span>
-<span class="linenr"> 94: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35347;&#32244;&#24863;&#30693;&#22120;&#27169;&#22411;</span>
-<span class="linenr"> 95: </span>  <span style="color: #dcaeea;">ppn</span> = Perceptron(eta=<span style="color: #da8548; font-weight: bold;">0.1</span>, n_iter=<span style="color: #da8548; font-weight: bold;">10</span>)
-<span class="linenr"> 96: </span>  ppn.fit(X, y)
-<span class="linenr"> 97: </span>  plt.clf()
-<span class="linenr"> 98: </span>  plt.plot(<span style="color: #c678dd;">range</span>(<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #c678dd;">len</span>(ppn.errors_) + <span style="color: #da8548; font-weight: bold;">1</span>), ppn.errors_, marker=<span style="color: #98be65;">'o'</span>)
-<span class="linenr"> 99: </span>  plt.xlabel(<span style="color: #98be65;">'Epochs'</span>)
-<span class="linenr">100: </span>  plt.ylabel(<span style="color: #98be65;">'Number of updates'</span>)
-<span class="linenr">101: </span>
-<span class="linenr">102: </span>  plt.savefig(<span style="color: #98be65;">'02_07.png'</span>, dpi=<span style="color: #da8548; font-weight: bold;">300</span>)
-<span class="linenr">103: </span>  <span style="color: #5B6268;">#</span><span style="color: #5B6268;">plt.show()</span>
-<span class="linenr">104: </span>
-<span class="linenr">105: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">### A function for plotting decision regions</span>
-<span class="linenr">106: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">plot_decision_regions</span>(X, y, classifier, resolution=<span style="color: #da8548; font-weight: bold;">0.02</span>):
-<span class="linenr">107: </span>
-<span class="linenr">108: </span>      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">setup marker generator and color map</span>
-<span class="linenr">109: </span>      <span style="color: #dcaeea;">markers</span> = (<span style="color: #98be65;">'s'</span>, <span style="color: #98be65;">'x'</span>, <span style="color: #98be65;">'o'</span>, <span style="color: #98be65;">'^'</span>, <span style="color: #98be65;">'v'</span>)
-<span class="linenr">110: </span>      <span style="color: #dcaeea;">colors</span> = (<span style="color: #98be65;">'red'</span>, <span style="color: #98be65;">'blue'</span>, <span style="color: #98be65;">'lightgreen'</span>, <span style="color: #98be65;">'gray'</span>, <span style="color: #98be65;">'cyan'</span>)
-<span class="linenr">111: </span>      <span style="color: #dcaeea;">cmap</span> = ListedColormap(colors[:<span style="color: #c678dd;">len</span>(np.unique(y))])
-<span class="linenr">112: </span>
-<span class="linenr">113: </span>      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">plot the decision surface</span>
-<span class="linenr">114: </span>      <span style="color: #dcaeea;">x1_min</span>, <span style="color: #dcaeea;">x1_max</span> = X[:, <span style="color: #da8548; font-weight: bold;">0</span>].<span style="color: #c678dd;">min</span>() - <span style="color: #da8548; font-weight: bold;">1</span>, X[:, <span style="color: #da8548; font-weight: bold;">0</span>].<span style="color: #c678dd;">max</span>() + <span style="color: #da8548; font-weight: bold;">1</span>
-<span class="linenr">115: </span>      <span style="color: #dcaeea;">x2_min</span>, <span style="color: #dcaeea;">x2_max</span> = X[:, <span style="color: #da8548; font-weight: bold;">1</span>].<span style="color: #c678dd;">min</span>() - <span style="color: #da8548; font-weight: bold;">1</span>, X[:, <span style="color: #da8548; font-weight: bold;">1</span>].<span style="color: #c678dd;">max</span>() + <span style="color: #da8548; font-weight: bold;">1</span>
-<span class="linenr">116: </span>      <span style="color: #dcaeea;">xx1</span>, <span style="color: #dcaeea;">xx2</span> = np.meshgrid(np.arange(x1_min, x1_max, resolution),
-<span class="linenr">117: </span>                             np.arange(x2_min, x2_max, resolution))
-<span class="linenr">118: </span>      <span style="color: #dcaeea;">Z</span> = classifier.predict(np.array([xx1.ravel(), xx2.ravel()]).T)
-<span class="linenr">119: </span>      <span style="color: #dcaeea;">Z</span> = Z.reshape(xx1.shape)
-<span class="linenr">120: </span>      plt.contourf(xx1, xx2, Z, alpha=<span style="color: #da8548; font-weight: bold;">0.3</span>, cmap=cmap)
-<span class="linenr">121: </span>      plt.xlim(xx1.<span style="color: #c678dd;">min</span>(), xx1.<span style="color: #c678dd;">max</span>())
-<span class="linenr">122: </span>      plt.ylim(xx2.<span style="color: #c678dd;">min</span>(), xx2.<span style="color: #c678dd;">max</span>())
-<span class="linenr">123: </span>
-<span class="linenr">124: </span>      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">plot class samples</span>
-<span class="linenr">125: </span>      <span style="color: #51afef;">for</span> idx, cl <span style="color: #51afef;">in</span> <span style="color: #c678dd;">enumerate</span>(np.unique(y)):
-<span class="linenr">126: </span>          plt.scatter(x=X[y == cl, <span style="color: #da8548; font-weight: bold;">0</span>],
-<span class="linenr">127: </span>                      y=X[y == cl, <span style="color: #da8548; font-weight: bold;">1</span>],
-<span class="linenr">128: </span>                      alpha=<span style="color: #da8548; font-weight: bold;">0.8</span>,
-<span class="linenr">129: </span>                      c=colors[idx],
-<span class="linenr">130: </span>                      marker=markers[idx],
-<span class="linenr">131: </span>                      label=cl,
-<span class="linenr">132: </span>                      edgecolor=<span style="color: #98be65;">'black'</span>)
-<span class="linenr">133: </span>  plt.clf()
-<span class="linenr">134: </span>  plot_decision_regions(X, y, classifier=ppn)
-<span class="linenr">135: </span>  plt.xlabel(<span style="color: #98be65;">'sepal length [cm]'</span>)
-<span class="linenr">136: </span>  plt.ylabel(<span style="color: #98be65;">'petal length [cm]'</span>)
-<span class="linenr">137: </span>  plt.legend(loc=<span style="color: #98be65;">'upper left'</span>)
-<span class="linenr">138: </span>
-<span class="linenr">139: </span>
-<span class="linenr">140: </span>  plt.savefig(<span style="color: #98be65;">'02_08.png'</span>, dpi=<span style="color: #da8548; font-weight: bold;">300</span>)
-<span class="linenr">141: </span>  <span style="color: #5B6268;">#</span><span style="color: #5B6268;">plt.show()</span>
-<span class="linenr">142: </span>
-</pre>
-</div>
-
-<pre class="example">
-       0    1    2    3               4
-145  6.7  3.0  5.2  2.3  Iris-virginica
-146  6.3  2.5  5.0  1.9  Iris-virginica
-147  6.5  3.0  5.2  2.0  Iris-virginica
-148  6.2  3.4  5.4  2.3  Iris-virginica
-149  5.9  3.0  5.1  1.8  Iris-virginica
-</pre>
-
-
-
-<div id="orgd73c9bc" class="figure">
-<p><img src="images/02_06.png" alt="02_06.png" width="500" />
-</p>
-<p><span class="figure-number">Figure 20: </span>待分類的兩種花依其不同屬性之分佈狀況</p>
-</div>
-
-
-<div id="org8c398e8" class="figure">
-<p><img src="images/02_07.png" alt="02_07.png" width="500" />
-</p>
-<p><span class="figure-number">Figure 21: </span>感知器訓練過程</p>
-</div>
-
-
-<div id="org9faf4cb" class="figure">
-<p><img src="images/02_08.png" alt="02_08.png" width="500" />
-</p>
-<p><span class="figure-number">Figure 22: </span>訓練後的分類結果</p>
-</div>
-</div>
-</div>
-<div id="outline-container-org152e4c5" class="outline-2">
-<h2 id="org152e4c5"><span class="section-number-2">4.</span> 單層感知器的極限與多層感知器: XOR gate</h2>
-<div class="outline-text-2" id="text-4">
-<p>
-到目前為止，透過權重及偏權值可以設計 AND、NAND、OR, 但無法完成 XOR。然而，其實我們可以透過 NAND、OR 及 AND 三個功能組合出 XOR 還輯閘，其組合方式如圖<a href="#orgdbeb20a">25</a>所示，顯然，若要再以感知器來模擬其運作原理，單層感知器已不敷使用。
+由XOR的電路實作(如圖<a href="#orgf4ed517">13</a>)我們也可以發現同樣的原理。
 </p>
 
-<div id="org4e5510d" class="figure">
+<div id="orgf4ed517" class="figure">
 <p><img src="images/xor.jpg" alt="xor.jpg" width="400" />
 </p>
-<p><span class="figure-number">Figure 23: </span>XOR 還輯閘的組合</p>
+<p><span class="figure-number">Figure 13: </span>XOR 還輯閘的組合</p>
 </div>
 </div>
-<div id="outline-container-orgf09a0f0" class="outline-3">
-<h3 id="orgf09a0f0"><span class="section-number-3">4.1.</span> 多層感知器(Multilayer perceptron, MLP): XOR gate 實作</h3>
-<div class="outline-text-3" id="text-4-1">
-
-<div id="org5aff5a7" class="figure">
-<p><img src="images/XORMLP.jpg" alt="XORMLP.jpg" width="500" />
+</div>
+<div id="outline-container-org04849a8" class="outline-3">
+<h3 id="org04849a8"><span class="section-number-3">3.2.</span> 多層感知器(MLP): XOR gate 實作</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+參考圖<a href="#orgf4ed517">13</a>的架構，我們可以藉由增加感知器的層數來實現 XOR 的功能，其結構如圖<a href="#orge176f5a">14</a>所示。
 </p>
-<p><span class="figure-number">Figure 24: </span>MLP解決XOR Gate</p>
-</div>
 
-
-<div id="orgdbeb20a" class="figure">
-<p><img src="images/LinearlySeparable.jpg" alt="LinearlySeparable.jpg" width="500" />
+<div id="orge176f5a" class="figure">
+<p><img src="images/2LayerSensor.png" alt="2LayerSensor.png" width="300" />
 </p>
-<p><span class="figure-number">Figure 25: </span>Linearly Separable</p>
+<p><span class="figure-number">Figure 14: </span>多層感知器模擬 XOR 還輯閘</p>
+</div>
+</div>
+<div id="outline-container-org3990164" class="outline-4">
+<h4 id="org3990164"><span class="section-number-4">3.2.1.</span> Solution</h4>
+<div class="outline-text-4" id="text-3-2-1">
+
+<div id="org05f00c5" class="figure">
+<p><img src="images/2021-05-24_14-28-04.jpg" alt="2021-05-24_14-28-04.jpg" width="300" />
+</p>
+<p><span class="figure-number">Figure 15: </span>XOR Gate Solution: (1)</p>
 </div>
 
 <p>
-參考圖<a href="#orgdbeb20a">25</a>的架構，我們可以藉由增加感知器的層數來實現 XOR 的功能，其結構如圖<a href="#org9a67dc1">26</a>所示。
+如前所述，一條線為一個perceptron，這裡會用到兩個
+</p>
+<ul class="org-ul">
+<li>\(h_1(x) = x_1 + x_2 - 0.5\)</li>
+<li>\(h_2(x) = x_1 + x_2 - 1.5\)</li>
+</ul>
+
+<div id="org39a8aed" class="figure">
+<p><img src="images/2021-05-24_14-36-07.jpg" alt="2021-05-24_14-36-07.jpg" width="400" />
+</p>
+<p><span class="figure-number">Figure 16: </span>XOR Gate Solution: (2)</p>
+</div>
+
+<p>
+將圖<a href="#org0dfaa26">11</a>的4個點代入\(h_1\):
+</p>
+\begin{align*}
+h_1(0,0) &= f(1\times0+1\times0–0.5) = f(-0.5) = 0\\
+h_1(0,1) &= f(1\times0+1\times1-0.5) = f(0.5) = 1\\
+h_1(1,0) &= f(1\times1+1\times0–0.5) = f(0.5) = 1\\
+h_1(1,1) &= f(1\times1+1\times1–0.5) = f(1.5) = 1\\
+\end{align*}
+
+<p>
+將圖<a href="#org0dfaa26">11</a>的4個點代入\(h_2\):
+</p>
+\begin{align*}
+h_2(0,0) &= f(1\times0+1\times0–1.5) = f(-1.5) = 0\\
+h_2(0,1) &= f(1\times0+1\times1-1.5) = f(-0.5) = 0\\
+h_2(1,0) &= f(1\times1+1\times0–1.5) = f(-0.5) = 0\\
+h_2(1,1) &= f(1\times1+1\times1–1.5) = f(0.5) = 1\\
+\end{align*}
+
+<p>
+由上可知:
+</p>
+<ul class="org-ul">
+<li>(0, 0)
+<ul class="org-ul">
+<li>(0, 0)帶入第1個perceptron \(h_1(0,0)\)輸出-0.5</li>
+<li>(0, 0)帶入第2個perceptron \(h_2(0,0)\)輸出-1.5</li>
+<li>(-0.5, -1.5)再經由step function轉換輸出(0,0)</li>
+</ul></li>
+<li>(0, 1)
+<ul class="org-ul">
+<li>(0, 1)帶入第1個perceptron \(h_1(0,1)\)輸出0.5</li>
+<li>(0, 1)帶入第2個perceptron \(h_2(0,1)\)輸出-0.5</li>
+<li>(0.5, -0.5)再經由step function轉換輸出(1,0)</li>
+</ul></li>
+<li>(1, 0)
+<ul class="org-ul">
+<li>(1, 0)帶入第1個perceptron \(h_1(1,0)\)輸出0.5</li>
+<li>(1, 0)帶入第2個perceptron \(h_2(1,0)\)輸出-0.5</li>
+<li>(0.5, -0.5)再經由step function轉換輸出(1,0)</li>
+</ul></li>
+<li>(1, 1)
+<ul class="org-ul">
+<li>(1, 1)帶入第1個perceptron \(h_1(1,1)\)輸出1.5</li>
+<li>(1, 1)帶入第2個perceptron \(h_2(1,1)\)輸出0.5</li>
+<li>(1.5, 0.5)再經由step function轉換輸出(1,1)</li>
+</ul></li>
+</ul>
+
+<p>
+即
+</p>
+\begin{align*}
+data(0,0) &= f(h_1,h_2) = (0,0) \\
+data(0,1) &= f(h_1,h_2) = (1,0) \\
+data(1,0) &= f(h_1,h_2) = (1,0) \\
+data(1,1) &= f(h_1,h_2) = (1,1) \\
+\end{align*}
+
+<p>
+這相當於透過兩個perceptron將原本的輸入做特徵空間轉換，如圖<a href="#org21bced4">17</a>:
 </p>
 
-<div id="org9a67dc1" class="figure">
-<p><img src="images/2LayerSensor.png" alt="2LayerSensor.png" width="500" />
+<div id="org21bced4" class="figure">
+<p><img src="images/2021-05-24_16-12-36.jpg" alt="2021-05-24_16-12-36.jpg" width="500" />
 </p>
-<p><span class="figure-number">Figure 26: </span>多層感知器模擬 XOR 還輯閘</p>
+<p><span class="figure-number">Figure 17: </span>XOR Gate Solution: (3)</p>
+</div>
+
+<p>
+這個時候只要設計一個線性分類器就可以完美分割兩類的資料了阿，如圖<a href="#org693991d">18</a>:
+</p>
+
+<div id="org693991d" class="figure">
+<p><img src="images/2021-05-24_16-13-44.jpg" alt="2021-05-24_16-13-44.jpg" width="400" />
+</p>
+<p><span class="figure-number">Figure 18: </span>XOR Gate Solution: (4)</p>
+</div>
+
+<p>
+XOR問題的神經網路結構如下圖:
+</p>
+
+<div id="org03ed2d8" class="figure">
+<p><img src="images/2021-05-24_16-15-02.jpg" alt="2021-05-24_16-15-02.jpg" width="500" />
+</p>
+<p><span class="figure-number">Figure 19: </span>XOR Gate Solution: (5)</p>
 </div>
 
 <p>
@@ -1323,24 +976,21 @@ XOR(1,1):  0
 </div>
 </div>
 </div>
+</div>
 <div id="footnotes">
 <h2 class="footnotes">Footnotes: </h2>
 <div id="text-footnotes">
 
 <div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
-<a href="http://elmer-storage.blogspot.com/2018/07/cnn-activation-function-feature.html"> CNN筆記 - 激活函數 (Activation Function)與特徵轉換 (Feature Transform) </a>
-</p></div></div>
-
-<div class="footdef"><sup><a id="fn.2" class="footnum" href="#fnr.2" role="doc-backlink">2</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
-<a href="https://chih-sheng-huang821.medium.com/%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92-%E7%A5%9E%E7%B6%93%E7%B6%B2%E8%B7%AF-%E5%A4%9A%E5%B1%A4%E6%84%9F%E7%9F%A5%E6%A9%9F-multilayer-perceptron-mlp-%E5%90%AB%E8%A9%B3%E7%B4%B0%E6%8E%A8%E5%B0%8E-ee4f3d5d1b41">機器學習- 神經網路(多層感知機 Multilayer perceptron, MLP) 含倒傳遞( Backward propagation)詳細推導</a>
-</p></div></div>
-
-<div class="footdef"><sup><a id="fn.3" class="footnum" href="#fnr.3" role="doc-backlink">3</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
 <a href="https://kknews.cc/code/o8qaazo.html">機器學習：Python測試線性可分性的方法</a>
 </p></div></div>
 
-<div class="footdef"><sup><a id="fn.4" class="footnum" href="#fnr.4" role="doc-backlink">4</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<div class="footdef"><sup><a id="fn.2" class="footnum" href="#fnr.2" role="doc-backlink">2</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
 <a href="https://s-top.github.io/blog/2018-04-19-svm">Support Vector Machine（全面推导）</a>
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.3" class="footnum" href="#fnr.3" role="doc-backlink">3</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://chih-sheng-huang821.medium.com/%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92-%E7%A5%9E%E7%B6%93%E7%B6%B2%E8%B7%AF-%E5%A4%9A%E5%B1%A4%E6%84%9F%E7%9F%A5%E6%A9%9F-multilayer-perceptron-mlp-%E5%90%AB%E8%A9%B3%E7%B4%B0%E6%8E%A8%E5%B0%8E-ee4f3d5d1b41">機器學習- 神經網路(多層感知機 Multilayer perceptron, MLP) 含倒傳遞( Backward propagation)詳細推導</a>
 </p></div></div>
 
 
@@ -1348,7 +998,7 @@ XOR(1,1):  0
 </div></div>
 <div id="postamble" class="status">
 <p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2024-01-25 Thu 13:55</p>
+<p class="date">Created: 2024-02-15 Thu 14:36</p>
 </div>
 </body>
 </html>
