@@ -1,0 +1,643 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-02-18 Sun 13:40 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>梯度下降法</title>
+<meta name="author" content="Yung-Chin Yen" />
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<link rel="stylesheet" type="text/css" href="../css/muse.css" />
+<script>
+  window.MathJax = {
+    tex: {
+      ams: {
+        multlineWidth: '85%'
+      },
+      tags: 'ams',
+      tagSide: 'right',
+      tagIndent: '.8em'
+    },
+    chtml: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    svg: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    output: {
+      font: 'mathjax-modern',
+      displayOverflow: 'overflow'
+    }
+  };
+</script>
+
+<script
+  id="MathJax-script"
+  async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">梯度下降法</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#orgbb5bcf7">1. 梯度</a>
+<ul>
+<li><a href="#org07bd362">1.1. 梯度法</a></li>
+<li><a href="#org1acd5ab">1.2. 神經網路的梯度</a></li>
+<li><a href="#orgd1e97a5">1.3. 進階閱讀</a></li>
+</ul>
+</li>
+<li><a href="#org31bcf5d">2. 梯度下降法</a></li>
+<li><a href="#org4e005b6">3. 學習演算法</a></li>
+</ul>
+</div>
+</div>
+<a href="https://letranger.github.io/AI/20240218133717-gradientdescent.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20240218133717-gradientdescent.html.svg"/></a>
+<div id="outline-container-orgbb5bcf7" class="outline-2">
+<h2 id="orgbb5bcf7"><span class="section-number-2">1.</span> 梯度</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+若要一次計算出\(x_0\)與\(x_1\)的偏微分，可以計算\((\frac{\partial{f}}{\partial{x_0}},\frac{\partial{f}}{\partial{x_1}})\)，這種方式也叫梯度（gradient），對應之計算程式碼如下：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">f(x0, x1) = x0**2 + x1**2&#12398;&#21246;&#37197;&#22259;&#12434;&#25551;&#12367;&#12469;&#12531;&#12503;&#12523;&#12467;&#12540;&#12489;&#23455;&#34892;</span>
+<span class="linenr"> 2: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">cat gradient_2d_save.py</span>
+<span class="linenr"> 3: </span>
+<span class="linenr"> 4: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">coding: utf-8</span>
+<span class="linenr"> 5: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">cf.http://d.hatena.ne.jp/white_wheels/20100327/p3</span>
+<span class="linenr"> 6: </span>  <span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 7: </span>  <span style="color: #51afef;">import</span> matplotlib.pylab <span style="color: #51afef;">as</span> plt
+<span class="linenr"> 8: </span>  plt.switch_backend(<span style="color: #98be65;">'agg'</span>)
+<span class="linenr"> 9: </span>  <span style="color: #51afef;">from</span> mpl_toolkits.mplot3d <span style="color: #51afef;">import</span> Axes3D
+<span class="linenr">10: </span>
+<span class="linenr">11: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">_numerical_gradient_no_batch</span>(f, x):
+<span class="linenr">12: </span>      <span style="color: #dcaeea;">h</span> = 1e-<span style="color: #da8548; font-weight: bold;">4</span> <span style="color: #5B6268;"># </span><span style="color: #5B6268;">0.0001</span>
+<span class="linenr">13: </span>      <span style="color: #dcaeea;">grad</span> = np.zeros_like(x) <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#29986;&#29983;&#21644;x&#30456;&#21516;&#24418;&#29376;&#12289;&#20839;&#23481;&#22343;&#28858;0&#30340;&#38499;&#21015;</span>
+<span class="linenr">14: </span>
+<span class="linenr">15: </span>      <span style="color: #51afef;">for</span> idx <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(x.size):
+<span class="linenr">16: </span>          <span style="color: #dcaeea;">tmp_val</span> = x[idx]
+<span class="linenr">17: </span>          <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35336;&#31639;f(x+h)</span>
+<span class="linenr">18: </span>          <span style="color: #dcaeea;">x</span>[idx] = <span style="color: #c678dd;">float</span>(tmp_val) + h
+<span class="linenr">19: </span>          <span style="color: #dcaeea;">fxh1</span> = f(x) <span style="color: #5B6268;"># </span><span style="color: #5B6268;">f(x+h)</span>
+<span class="linenr">20: </span>          <span style="color: #dcaeea;">x</span>[idx] = tmp_val - h
+<span class="linenr">21: </span>          <span style="color: #dcaeea;">fxh2</span> = f(x) <span style="color: #5B6268;"># </span><span style="color: #5B6268;">f(x-h)</span>
+<span class="linenr">22: </span>          <span style="color: #dcaeea;">grad</span>[idx] = (fxh1 - fxh2) / (<span style="color: #da8548; font-weight: bold;">2</span>*h)
+<span class="linenr">23: </span>
+<span class="linenr">24: </span>          <span style="color: #dcaeea;">x</span>[idx] = tmp_val <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24674;&#24489;&#21407;&#20540;</span>
+<span class="linenr">25: </span>      <span style="color: #51afef;">return</span> grad
+<span class="linenr">26: </span>
+<span id="coderef-NumerGrad" class="coderef-off"><span class="linenr">27: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">numerical_gradient</span>(f, X):</span>
+<span class="linenr">28: </span>      <span style="color: #51afef;">if</span> X.ndim == <span style="color: #da8548; font-weight: bold;">1</span>:
+<span class="linenr">29: </span>          <span style="color: #51afef;">return</span> _numerical_gradient_no_batch(f, X)
+<span class="linenr">30: </span>      <span style="color: #51afef;">else</span>:
+<span class="linenr">31: </span>          <span style="color: #dcaeea;">grad</span> = np.zeros_like(X)
+<span class="linenr">32: </span>          <span style="color: #51afef;">for</span> idx, x <span style="color: #51afef;">in</span> <span style="color: #c678dd;">enumerate</span>(X):
+<span class="linenr">33: </span>              <span style="color: #dcaeea;">grad</span>[idx] = _numerical_gradient_no_batch(f, x)
+<span class="linenr">34: </span>          <span style="color: #51afef;">return</span> grad
+<span class="linenr">35: </span>
+<span class="linenr">36: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">function_2</span>(x):
+<span class="linenr">37: </span>      <span style="color: #51afef;">if</span> x.ndim == <span style="color: #da8548; font-weight: bold;">1</span>:
+<span class="linenr">38: </span>          <span style="color: #51afef;">return</span> np.<span style="color: #c678dd;">sum</span>(x**<span style="color: #da8548; font-weight: bold;">2</span>)
+<span class="linenr">39: </span>      <span style="color: #51afef;">else</span>:
+<span class="linenr">40: </span>          <span style="color: #51afef;">return</span> np.<span style="color: #c678dd;">sum</span>(x**<span style="color: #da8548; font-weight: bold;">2</span>, axis=<span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr">41: </span>
+<span class="linenr">42: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">tangent_line</span>(f, x):
+<span class="linenr">43: </span>      <span style="color: #dcaeea;">d</span> = numerical_gradient(f, x)
+<span class="linenr">44: </span>      <span style="color: #c678dd;">print</span>(d)
+<span class="linenr">45: </span>      <span style="color: #dcaeea;">y</span> = f(x) - d*x
+<span class="linenr">46: </span>      <span style="color: #51afef;">return</span> <span style="color: #51afef;">lambda</span> t: d*t + y
+<span class="linenr">47: </span>
+<span class="linenr">48: </span>  <span style="color: #dcaeea;">x0</span> = np.arange(-<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">2.5</span>, <span style="color: #da8548; font-weight: bold;">0.25</span>)
+<span class="linenr">49: </span>  <span style="color: #dcaeea;">x1</span> = np.arange(-<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">2.5</span>, <span style="color: #da8548; font-weight: bold;">0.25</span>)
+<span class="linenr">50: </span>  <span style="color: #dcaeea;">X</span>, <span style="color: #dcaeea;">Y</span> = np.meshgrid(x0, x1)
+<span class="linenr">51: </span>  <span style="color: #dcaeea;">X</span> = X.flatten()
+<span class="linenr">52: </span>  <span style="color: #dcaeea;">Y</span> = Y.flatten()
+<span class="linenr">53: </span>  <span style="color: #dcaeea;">grad</span> = numerical_gradient(function_2, np.array([X, Y]) )
+<span class="linenr">54: </span>  plt.figure()
+<span class="linenr">55: </span>  plt.quiver(X, Y, -grad[<span style="color: #da8548; font-weight: bold;">0</span>], -grad[<span style="color: #da8548; font-weight: bold;">1</span>],  angles=<span style="color: #98be65;">"xy"</span>,color=<span style="color: #98be65;">"#666666"</span>)
+<span class="linenr">56: </span>  <span style="color: #5B6268;">#</span><span style="color: #5B6268;">,headwidth=10,scale=40,color="#444444")</span>
+<span class="linenr">57: </span>  plt.xlim([-<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">2</span>])
+<span class="linenr">58: </span>  plt.ylim([-<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">2</span>])
+<span class="linenr">59: </span>  plt.xlabel(<span style="color: #98be65;">'x0'</span>)
+<span class="linenr">60: </span>  plt.ylabel(<span style="color: #98be65;">'x1'</span>)
+<span class="linenr">61: </span>  plt.grid()
+<span class="linenr">62: </span>  plt.legend()
+<span class="linenr">63: </span>  plt.draw()
+<span class="linenr">64: </span>  <span style="color: #5B6268;">#</span><span style="color: #5B6268;">plt.show()</span>
+<span class="linenr">65: </span>  plt.savefig(<span style="color: #98be65;">'gradient_2d.png'</span>)
+<span class="linenr">66: </span>  <span style="color: #c678dd;">print</span>(numerical_gradient(function_2, np.array([<span style="color: #da8548; font-weight: bold;">3.0</span>, <span style="color: #da8548; font-weight: bold;">4.0</span>])))
+<span class="linenr">67: </span>  <span style="color: #c678dd;">print</span>(numerical_gradient(function_2, np.array([<span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">2.0</span>])))
+<span class="linenr">68: </span>  <span style="color: #c678dd;">print</span>(numerical_gradient(function_2, np.array([<span style="color: #da8548; font-weight: bold;">3.0</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>])))
+</pre>
+</div>
+
+<p>
+上述程式碼中，函數 numerical_gradient 以函數 function_2 以及陣列 x 為參數（程式碼第<a href="#coderef-NumerGrad" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-NumerGrad');" onmouseout="CodeHighlightOff(this, 'coderef-NumerGrad');">27</a>行），針對陣列 x 的各元素計算數值微分，計算(3, 4)、(0, 2)、(3, 0)各點的梯度結果如下：<br />
+</p>
+<pre class="example">
+[6. 8.]
+[0. 4.]
+[6. 0.]
+</pre>
+
+<p>
+如圖<a href="#org3898ec1">1</a>所示，所謂梯度，指的是函數\(f(x0,x1)\)的「最低位置（最小值）」，這裡的箭頭就如同羅盤，離「最低位置」越遠，箭頭越大。雖然圖<a href="#org3898ec1">1</a>中箭頭所指為最低位置，但實際上不一定如此，梯度所指其實為各點之最低方向，其數學意義為：函數值減少最多的方向。<br />
+</p>
+
+<div id="org3898ec1" class="figure">
+<p><img src="images/gradient_2d.png" alt="gradient_2d.png" width="500" /><br />
+</p>
+<p><span class="figure-number">Figure 1: </span>\(f(x_0,x_1)=x_0^2+x_1^2\)之梯度圖形</p>
+</div>
+</div>
+<div id="outline-container-org07bd362" class="outline-3">
+<h3 id="org07bd362"><span class="section-number-3">1.1.</span> 梯度法</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+神經網路的學習過程在於尋找最佳參數，這裡的意義也可說成：尋找可以讓損失函數為最小值的參數，以梯度來達成此目的的方法即為梯度法（gradient method），而最小值稱為鞍點（saddle point），鞍點是相對意義的存在，即，由某些方向看來是極大，但由其他方向看來為極小值，梯度法目的在找出梯度為 0 的位置，但不見的是極小值，當函數形成複雜扭曲形狀時，可能進入幾乎平坦而無法繼繼續學習的狀態，稱為「停滯期」。<br />
+由此觀之，梯度法的精神即在於「朝著正確的方向前進一段距離、重新計算出正確方向、再前進一段距離&#x2026;.」。同樣的方法可以用來找出極小值（此時為梯度下降法，gradient descent method)，也能用來找出極大值（梯度上升法，gradient ascent method）。<br />
+若以公式來顯示梯度法，其結果如公式\eqref{org666ad3a}所示：<br />
+</p>
+\begin{equation}
+\label{org666ad3a}
+\begin{split}
+&x_0=x_0-\eta\frac{\partial{f}}{\partial{x_0}}\\
+&x_1=x_1-\eta\frac{\partial{f}}{\partial{x_1}}
+\end{split}
+\end{equation}
+<p>
+公式\eqref{org666ad3a}中的\(\eta\)代表更新的量，在神經網路中稱為學習率（learning rate），即，在一次學習中，要學習多少，要更新多少參數。公式\eqref{org666ad3a}為一次更新的內容，或者，我們也可以看成「每次朝著正確方向前進的距離」。以 Python 實作的梯度下降法如下：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 2: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">numerical_gradient</span>(f, x): <span style="color: #5B6268;">#</span><span style="color: #5B6268;">f &#28858;&#35201;&#36914;&#34892;&#26368;&#20339;&#21270;&#30340;&#30446;&#27161;&#20989;&#25976;</span>
+<span class="linenr"> 3: </span>      <span style="color: #dcaeea;">h</span> = 1e-<span style="color: #da8548; font-weight: bold;">4</span> <span style="color: #5B6268;"># </span><span style="color: #5B6268;">0.0001</span>
+<span class="linenr"> 4: </span>      <span style="color: #dcaeea;">grad</span> = np.zeros_like(x)
+<span class="linenr"> 5: </span>      <span style="color: #51afef;">for</span> idx <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(x.size):
+<span class="linenr"> 6: </span>          <span style="color: #dcaeea;">tmp_val</span> = x[idx]
+<span class="linenr"> 7: </span>          <span style="color: #dcaeea;">x</span>[idx] = tmp_val + h <span style="color: #5B6268;">#  </span><span style="color: #5B6268;">&#35336;&#31639;f(x+h)</span>
+<span class="linenr"> 8: </span>          <span style="color: #dcaeea;">fxh1</span> = f(x)
+<span class="linenr"> 9: </span>          <span style="color: #dcaeea;">x</span>[idx] = tmp_val - h <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35336;&#31639;(x-h)</span>
+<span class="linenr">10: </span>          <span style="color: #dcaeea;">fxh2</span> = f(x)
+<span class="linenr">11: </span>          <span style="color: #dcaeea;">grad</span>[idx] = (fxh1 - fxh2) / (<span style="color: #da8548; font-weight: bold;">2</span>*h)
+<span class="linenr">12: </span>          <span style="color: #dcaeea;">x</span>[idx] = tmp_val <span style="color: #5B6268;"># </span><span style="color: #5B6268;">restore original value</span>
+<span class="linenr">13: </span>      <span style="color: #51afef;">return</span> grad
+<span class="linenr">14: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">gradient_descent</span>(f, init_x, lr=<span style="color: #da8548; font-weight: bold;">0.01</span>, step_num=<span style="color: #da8548; font-weight: bold;">100</span>):
+<span class="linenr">15: </span>      <span style="color: #dcaeea;">x</span> = init_x
+<span class="linenr">16: </span>      <span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(step_num):
+<span class="linenr">17: </span>          <span style="color: #dcaeea;">grad</span> = numerical_gradient(f, x)
+<span class="linenr">18: </span>          <span style="color: #dcaeea;">x</span> -= lr * grad
+<span class="linenr">19: </span>      <span style="color: #51afef;">return</span> x
+<span class="linenr">20: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">function_2</span>(x):
+<span class="linenr">21: </span>      <span style="color: #51afef;">return</span> x[<span style="color: #da8548; font-weight: bold;">0</span>]**<span style="color: #da8548; font-weight: bold;">2</span> + x[<span style="color: #da8548; font-weight: bold;">1</span>]**<span style="color: #da8548; font-weight: bold;">2</span>
+<span class="linenr">22: </span>  <span style="color: #dcaeea;">init_x</span> = np.array([-<span style="color: #da8548; font-weight: bold;">3.0</span>, <span style="color: #da8548; font-weight: bold;">4.0</span>])
+<span class="linenr">23: </span>  <span style="color: #c678dd;">print</span>(gradient_descent(function_2, init_x=init_x, lr=<span style="color: #da8548; font-weight: bold;">0.1</span>, step_num=<span style="color: #da8548; font-weight: bold;">100</span>))
+<span class="linenr">24: </span>  <span style="color: #dcaeea;">init_x</span> = np.array([<span style="color: #da8548; font-weight: bold;">20.0</span>, -<span style="color: #da8548; font-weight: bold;">30.0</span>])
+<span class="linenr">25: </span>  <span style="color: #c678dd;">print</span>(gradient_descent(function_2, init_x=init_x, lr=<span style="color: #da8548; font-weight: bold;">0.1</span>, step_num=<span style="color: #da8548; font-weight: bold;">100</span>))
+<span class="linenr">26: </span>  <span style="color: #dcaeea;">init_x</span> = np.array([<span style="color: #da8548; font-weight: bold;">220.0</span>, -<span style="color: #da8548; font-weight: bold;">330.0</span>])
+<span class="linenr">27: </span>  <span style="color: #c678dd;">print</span>(gradient_descent(function_2, init_x=init_x, lr=<span style="color: #da8548; font-weight: bold;">0.1</span>, step_num=<span style="color: #da8548; font-weight: bold;">100</span>))
+<span class="linenr">28: </span>  <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#23416;&#32722;&#29575;&#35373;&#28858;10.0"</span>)
+<span class="linenr">29: </span>  <span style="color: #dcaeea;">init_x</span> = np.array([-<span style="color: #da8548; font-weight: bold;">3.0</span>, <span style="color: #da8548; font-weight: bold;">4.0</span>])
+<span class="linenr">30: </span>  <span style="color: #c678dd;">print</span>(gradient_descent(function_2, init_x=init_x, lr=<span style="color: #da8548; font-weight: bold;">10.0</span>, step_num=<span style="color: #da8548; font-weight: bold;">100</span>))
+<span class="linenr">31: </span>  <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#23416;&#32722;&#29575;&#35373;&#28858;1e-10"</span>)
+<span class="linenr">32: </span>  <span style="color: #dcaeea;">init_x</span> = np.array([-<span style="color: #da8548; font-weight: bold;">3.0</span>, <span style="color: #da8548; font-weight: bold;">4.0</span>])
+<span class="linenr">33: </span>  <span style="color: #c678dd;">print</span>(gradient_descent(function_2, init_x=init_x, lr=1e-<span style="color: #da8548; font-weight: bold;">10</span>, step_num=<span style="color: #da8548; font-weight: bold;">100</span>))
+</pre>
+</div>
+
+<pre class="example">
+[-6.11110793e-10  8.14814391e-10]
+[ 4.07407195e-09 -6.11110793e-09]
+[ 4.48147915e-08 -6.72221872e-08]
+學習率設為 10.0
+[-2.58983747e+13 -1.29524862e+12]
+學習率設為 1e-10
+[-2.99999994  3.99999992]
+</pre>
+
+
+<p>
+上述程式中，init_x 為預設值、lr 代表 learning rate、step_num 為重複次數，梯度由 numerical_gradient(f,x)計算，程式執行結果為函數\(f(x_0,x_1)=x_0^2+x_1^2\)的最小值，預設值為\(x_0=-3,x_1=4\)，以梯度法求最小值，最後結果為(-6.1e-10,-8.1-10)，趨近於真實答案(0,0)，即使以其他預設值做為起點，所找到的最小值仍趨近正確答案, 而學習率太大或太小均無法得到良好的結果（學習率太大則會往大數值擴散；學習率太小則幾乎不更新就結束）。至於學習率這種依靠人工進行設定的值稱為超參數（hyperparameter），其最佳設定有賴以各種測試取得。至於梯度法的學習流程則如圖<a href="#orgb1d3951">2</a>所示。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">cat gradient_method_save.py</span>
+<span class="linenr"> 2: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">coding: utf-8</span>
+<span class="linenr"> 3: </span>  <span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 4: </span>  <span style="color: #51afef;">import</span> matplotlib.pylab <span style="color: #51afef;">as</span> plt
+<span class="linenr"> 5: </span>  plt.switch_backend(<span style="color: #98be65;">'agg'</span>)
+<span class="linenr"> 6: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">numerical_gradient</span>(f, x): <span style="color: #5B6268;">#</span><span style="color: #5B6268;">f &#28858;&#35201;&#36914;&#34892;&#26368;&#20339;&#21270;&#30340;&#30446;&#27161;&#20989;&#25976;</span>
+<span class="linenr"> 7: </span>      <span style="color: #dcaeea;">h</span> = 1e-<span style="color: #da8548; font-weight: bold;">4</span> <span style="color: #5B6268;"># </span><span style="color: #5B6268;">0.0001</span>
+<span class="linenr"> 8: </span>      <span style="color: #dcaeea;">grad</span> = np.zeros_like(x)
+<span class="linenr"> 9: </span>      <span style="color: #51afef;">for</span> idx <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(x.size):
+<span class="linenr">10: </span>          <span style="color: #dcaeea;">tmp_val</span> = x[idx]
+<span class="linenr">11: </span>          <span style="color: #dcaeea;">x</span>[idx] = tmp_val + h <span style="color: #5B6268;">#  </span><span style="color: #5B6268;">&#35336;&#31639;f(x+h)</span>
+<span class="linenr">12: </span>          <span style="color: #dcaeea;">fxh1</span> = f(x)
+<span class="linenr">13: </span>          <span style="color: #dcaeea;">x</span>[idx] = tmp_val - h <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35336;&#31639;(x-h)</span>
+<span class="linenr">14: </span>          <span style="color: #dcaeea;">fxh2</span> = f(x)
+<span class="linenr">15: </span>          <span style="color: #dcaeea;">grad</span>[idx] = (fxh1 - fxh2) / (<span style="color: #da8548; font-weight: bold;">2</span>*h)
+<span class="linenr">16: </span>          <span style="color: #dcaeea;">x</span>[idx] = tmp_val <span style="color: #5B6268;"># </span><span style="color: #5B6268;">restore original value</span>
+<span class="linenr">17: </span>      <span style="color: #51afef;">return</span> grad
+<span class="linenr">18: </span>
+<span class="linenr">19: </span>
+<span class="linenr">20: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">gradient_descent</span>(f, init_x, lr=<span style="color: #da8548; font-weight: bold;">0.01</span>, step_num=<span style="color: #da8548; font-weight: bold;">100</span>):
+<span class="linenr">21: </span>      <span style="color: #dcaeea;">x</span> = init_x
+<span class="linenr">22: </span>      <span style="color: #dcaeea;">x_history</span> = []
+<span class="linenr">23: </span>
+<span class="linenr">24: </span>      <span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(step_num):
+<span class="linenr">25: </span>          x_history.append( x.copy() )
+<span class="linenr">26: </span>
+<span class="linenr">27: </span>          <span style="color: #dcaeea;">grad</span> = numerical_gradient(f, x)
+<span class="linenr">28: </span>          <span style="color: #dcaeea;">x</span> -= lr * grad
+<span class="linenr">29: </span>
+<span class="linenr">30: </span>      <span style="color: #51afef;">return</span> x, np.array(x_history)
+<span class="linenr">31: </span>
+<span class="linenr">32: </span>
+<span class="linenr">33: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">function_2</span>(x):
+<span class="linenr">34: </span>      <span style="color: #51afef;">return</span> x[<span style="color: #da8548; font-weight: bold;">0</span>]**<span style="color: #da8548; font-weight: bold;">2</span> + x[<span style="color: #da8548; font-weight: bold;">1</span>]**<span style="color: #da8548; font-weight: bold;">2</span>
+<span class="linenr">35: </span>
+<span class="linenr">36: </span>  <span style="color: #dcaeea;">init_x</span> = np.array([-<span style="color: #da8548; font-weight: bold;">3.0</span>, <span style="color: #da8548; font-weight: bold;">4.0</span>])
+<span class="linenr">37: </span>
+<span class="linenr">38: </span>  <span style="color: #dcaeea;">lr</span> = <span style="color: #da8548; font-weight: bold;">0.1</span>
+<span class="linenr">39: </span>  <span style="color: #dcaeea;">step_num</span> = <span style="color: #da8548; font-weight: bold;">20</span>
+<span class="linenr">40: </span>  <span style="color: #dcaeea;">x</span>, <span style="color: #dcaeea;">x_history</span> = gradient_descent(function_2, init_x, lr=lr, step_num=step_num)
+<span class="linenr">41: </span>
+<span class="linenr">42: </span>  plt.plot( [-<span style="color: #da8548; font-weight: bold;">5</span>, <span style="color: #da8548; font-weight: bold;">5</span>], [<span style="color: #da8548; font-weight: bold;">0</span>,<span style="color: #da8548; font-weight: bold;">0</span>], <span style="color: #98be65;">'--b'</span>)
+<span class="linenr">43: </span>  plt.plot( [<span style="color: #da8548; font-weight: bold;">0</span>,<span style="color: #da8548; font-weight: bold;">0</span>], [-<span style="color: #da8548; font-weight: bold;">5</span>, <span style="color: #da8548; font-weight: bold;">5</span>], <span style="color: #98be65;">'--b'</span>)
+<span class="linenr">44: </span>  plt.plot(x_history[:,<span style="color: #da8548; font-weight: bold;">0</span>], x_history[:,<span style="color: #da8548; font-weight: bold;">1</span>], <span style="color: #98be65;">'o'</span>)
+<span class="linenr">45: </span>
+<span class="linenr">46: </span>  plt.xlim(-<span style="color: #da8548; font-weight: bold;">3.5</span>, <span style="color: #da8548; font-weight: bold;">3.5</span>)
+<span class="linenr">47: </span>  plt.ylim(-<span style="color: #da8548; font-weight: bold;">4.5</span>, <span style="color: #da8548; font-weight: bold;">4.5</span>)
+<span class="linenr">48: </span>  plt.xlabel(<span style="color: #98be65;">"X0"</span>)
+<span class="linenr">49: </span>  plt.ylabel(<span style="color: #98be65;">"X1"</span>)
+<span class="linenr">50: </span>  <span style="color: #5B6268;">#</span><span style="color: #5B6268;">plt.show()</span>
+<span class="linenr">51: </span>  plt.savefig(<span style="color: #98be65;">'gradient_process_method.png'</span>)
+<span class="linenr">52: </span>  <span style="color: #5B6268;">#</span><span style="color: #5B6268;">return "gradient_process_method.png"</span>
+</pre>
+</div>
+
+<div id="orgb1d3951" class="figure">
+<p><img src="images/gradient_process_method.png" alt="gradient_process_method.png" width="500" /><br />
+</p>
+<p><span class="figure-number">Figure 2: </span>\(f(x_0,x_1)=x_0^2+x_1^2\)的梯度法更新過程</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org1acd5ab" class="outline-3">
+<h3 id="org1acd5ab"><span class="section-number-3">1.2.</span> 神經網路的梯度</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+神經網路的梯度指與權重參數有關的損失函數梯度，若有個形狀為\(2*3\)、權重為\(W\)的神經網路，以\(L\)代表損失函數，則可以用\(\frac{\partial{L}}{\partial{W}}\)來表示梯度，其公式如下：<br />
+</p>
+\begin{equation}
+\label{org2405c66}
+\begin{split}
+W=
+ \begin{pmatrix}
+  w_{11} & w_{12} & w_{13} \\
+  w_{21} & w_{22} & w_{23}
+ \end{pmatrix} \\
+\frac{\partial{L}}{\partial{W}}=
+ \begin{pmatrix}
+  \frac{\partial{L}}{\partial{w_{11}}} & \frac{\partial{L}}{\partial{w_{12}}} & \frac{\partial{L}}{\partial{w_{13}}} \\
+  \frac{\partial{L}}{\partial{w_{21}}} & \frac{\partial{L}}{\partial{w_{22}}} & \frac{\partial{L}}{\partial{w_{23}}}
+ \end{pmatrix} \\
+\end{split}
+\end{equation}
+
+<p>
+\(\frac{\partial{L}}{\partial{W}}\)的各元素係由該元素的偏微分構成，如\(\frac{\partial{L}}{\partial{w_{11}}}\)即為在略改變\(w_{11}\)後損失函數所造成的變化，神經網路計算梯度的方式如下：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 2: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">softmax</span>(x):
+<span class="linenr"> 3: </span>      <span style="color: #51afef;">if</span> x.ndim == <span style="color: #da8548; font-weight: bold;">2</span>:
+<span class="linenr"> 4: </span>          <span style="color: #dcaeea;">x</span> = x.T
+<span class="linenr"> 5: </span>          <span style="color: #dcaeea;">x</span> = x - np.<span style="color: #c678dd;">max</span>(x, axis=<span style="color: #da8548; font-weight: bold;">0</span>)
+<span class="linenr"> 6: </span>          <span style="color: #dcaeea;">y</span> = np.exp(x) / np.<span style="color: #c678dd;">sum</span>(np.exp(x), axis=<span style="color: #da8548; font-weight: bold;">0</span>)
+<span class="linenr"> 7: </span>          <span style="color: #51afef;">return</span> y.T
+<span class="linenr"> 8: </span>
+<span class="linenr"> 9: </span>      <span style="color: #dcaeea;">x</span> = x - np.<span style="color: #c678dd;">max</span>(x)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#28322;&#20986;&#23545;&#31574;</span>
+<span class="linenr">10: </span>      <span style="color: #51afef;">return</span> np.exp(x) / np.<span style="color: #c678dd;">sum</span>(np.exp(x))
+<span class="linenr">11: </span>
+<span class="linenr">12: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">cross_entropy_error</span>(y, t):
+<span class="linenr">13: </span>      <span style="color: #51afef;">if</span> y.ndim == <span style="color: #da8548; font-weight: bold;">1</span>:
+<span class="linenr">14: </span>          <span style="color: #dcaeea;">t</span> = t.reshape(<span style="color: #da8548; font-weight: bold;">1</span>, t.size)
+<span class="linenr">15: </span>          <span style="color: #dcaeea;">y</span> = y.reshape(<span style="color: #da8548; font-weight: bold;">1</span>, y.size)
+<span class="linenr">16: </span>
+<span class="linenr">17: </span>      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#30417;&#30563;&#25968;&#25454;&#26159;one-hot-vector&#30340;&#24773;&#20917;&#19979;&#65292;&#36716;&#25442;&#20026;&#27491;&#30830;&#35299;&#26631;&#31614;&#30340;&#32034;&#24341;</span>
+<span class="linenr">18: </span>      <span style="color: #51afef;">if</span> t.size == y.size:
+<span class="linenr">19: </span>          <span style="color: #dcaeea;">t</span> = t.argmax(axis=<span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr">20: </span>
+<span class="linenr">21: </span>      <span style="color: #dcaeea;">batch_size</span> = y.shape[<span style="color: #da8548; font-weight: bold;">0</span>]
+<span class="linenr">22: </span>      <span style="color: #51afef;">return</span> -np.<span style="color: #c678dd;">sum</span>(np.log(y[np.arange(batch_size), t] + 1e-<span style="color: #da8548; font-weight: bold;">7</span>)) / batch_size
+<span class="linenr">23: </span>
+<span class="linenr">24: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">_numerical_gradient_no_batch</span>(f, x):
+<span class="linenr">25: </span>      <span style="color: #dcaeea;">h</span> = 1e-<span style="color: #da8548; font-weight: bold;">4</span> <span style="color: #5B6268;"># </span><span style="color: #5B6268;">0.0001</span>
+<span class="linenr">26: </span>      <span style="color: #dcaeea;">grad</span> = np.zeros_like(x) <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#29986;&#29983;&#21644;x&#30456;&#21516;&#24418;&#29376;&#12289;&#20839;&#23481;&#22343;&#28858;0&#30340;&#38499;&#21015;</span>
+<span class="linenr">27: </span>
+<span class="linenr">28: </span>      <span style="color: #51afef;">for</span> idx <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(x.size):
+<span class="linenr">29: </span>          <span style="color: #dcaeea;">tmp_val</span> = x[idx]
+<span class="linenr">30: </span>          <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35336;&#31639;f(x+h)</span>
+<span class="linenr">31: </span>          <span style="color: #dcaeea;">x</span>[idx] = <span style="color: #c678dd;">float</span>(tmp_val) + h
+<span class="linenr">32: </span>          <span style="color: #dcaeea;">fxh1</span> = f(x) <span style="color: #5B6268;"># </span><span style="color: #5B6268;">f(x+h)</span>
+<span class="linenr">33: </span>          <span style="color: #dcaeea;">x</span>[idx] = tmp_val - h
+<span class="linenr">34: </span>          <span style="color: #dcaeea;">fxh2</span> = f(x) <span style="color: #5B6268;"># </span><span style="color: #5B6268;">f(x-h)</span>
+<span class="linenr">35: </span>          <span style="color: #dcaeea;">grad</span>[idx] = (fxh1 - fxh2) / (<span style="color: #da8548; font-weight: bold;">2</span>*h)
+<span class="linenr">36: </span>
+<span class="linenr">37: </span>          <span style="color: #dcaeea;">x</span>[idx] = tmp_val <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24674;&#24489;&#21407;&#20540;</span>
+<span class="linenr">38: </span>      <span style="color: #51afef;">return</span> grad
+<span class="linenr">39: </span>
+<span id="coderef-NumerGrad" class="coderef-off"><span class="linenr">40: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">numerical_gradient</span>(f, X):</span>
+<span class="linenr">41: </span>      <span style="color: #51afef;">if</span> X.ndim == <span style="color: #da8548; font-weight: bold;">1</span>:
+<span class="linenr">42: </span>          <span style="color: #51afef;">return</span> _numerical_gradient_no_batch(f, X)
+<span class="linenr">43: </span>      <span style="color: #51afef;">else</span>:
+<span class="linenr">44: </span>          <span style="color: #dcaeea;">grad</span> = np.zeros_like(X)
+<span class="linenr">45: </span>          <span style="color: #51afef;">for</span> idx, x <span style="color: #51afef;">in</span> <span style="color: #c678dd;">enumerate</span>(X):
+<span class="linenr">46: </span>              <span style="color: #dcaeea;">grad</span>[idx] = _numerical_gradient_no_batch(f, x)
+<span class="linenr">47: </span>          <span style="color: #51afef;">return</span> grad
+<span class="linenr">48: </span>
+<span class="linenr">49: </span>  <span style="color: #51afef;">class</span> <span style="color: #ECBE7B;">simpleNet</span>:
+<span class="linenr">50: </span>      <span style="color: #51afef;">def</span> <span style="color: #c678dd;">__init__</span>(<span style="color: #51afef;">self</span>):
+<span class="linenr">51: </span>          <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">W</span> = np.random.randn(<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">3</span>)  <span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#20197;&#24120;&#24907;&#20998;&#20296;&#21021;&#22987;&#21270;&#27402;&#37325;&#20998;&#37197;</span>
+<span class="linenr">52: </span>
+<span class="linenr">53: </span>      <span style="color: #51afef;">def</span> <span style="color: #c678dd;">predict</span>(<span style="color: #51afef;">self</span>, x):
+<span class="linenr">54: </span>          <span style="color: #51afef;">return</span> np.dot(x, <span style="color: #51afef;">self</span>.W)
+<span class="linenr">55: </span>
+<span class="linenr">56: </span>      <span style="color: #51afef;">def</span> <span style="color: #c678dd;">loss</span>(<span style="color: #51afef;">self</span>, x, t):
+<span class="linenr">57: </span>          <span style="color: #dcaeea;">z</span> = <span style="color: #51afef;">self</span>.predict(x)
+<span class="linenr">58: </span>          <span style="color: #dcaeea;">y</span> = softmax(z)
+<span class="linenr">59: </span>          <span style="color: #dcaeea;">loss</span> = cross_entropy_error(y, t)
+<span class="linenr">60: </span>          <span style="color: #51afef;">return</span> loss
+<span class="linenr">61: </span>
+<span class="linenr">62: </span>  <span style="color: #dcaeea;">net</span> = simpleNet()
+<span class="linenr">63: </span>  <span style="color: #c678dd;">print</span>(net.W)
+<span class="linenr">64: </span>  <span style="color: #dcaeea;">x</span> = np.array([<span style="color: #da8548; font-weight: bold;">0.6</span>, <span style="color: #da8548; font-weight: bold;">0.9</span>])
+<span class="linenr">65: </span>  <span style="color: #dcaeea;">p</span> = net.predict(x)
+<span class="linenr">66: </span>  <span style="color: #c678dd;">print</span>(p)
+<span class="linenr">67: </span>  <span style="color: #dcaeea;">t</span> = np.array([<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">1</span>])
+<span class="linenr">68: </span>  <span style="color: #c678dd;">print</span>(net.loss(x, t))
+<span class="linenr">69: </span>  <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"========================="</span>)
+<span class="linenr">70: </span>  <span style="color: #dcaeea;">f</span> = <span style="color: #51afef;">lambda</span> w: net.loss(x,t)
+<span class="linenr">71: </span>  <span style="color: #dcaeea;">dW</span> = numerical_gradient(f, net.W)
+<span class="linenr">72: </span>  <span style="color: #c678dd;">print</span>(dW)
+</pre>
+</div>
+
+<pre class="example">
+[[-0.17058278  0.11372612 -1.53368818]
+ [ 0.19931583 -0.60202593  0.07473724]]
+[ 0.07703458 -0.47358766 -0.85294939]
+1.6086010849717751
+=========================
+[[ 0.30439054  0.17550882 -0.47989936]
+ [ 0.45658581  0.26326323 -0.71984904]]
+</pre>
+
+
+<p>
+simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t為正確答案標籤，此處我們希望針對 loss 函數進行梯度法取得最小值，所以定義一個函數 f，代入 x 及 t 傳回損失函數，然後將函數 f 做為參數傳給 numerical_gradient 進行梯度下降運算，由運算結果 dW 的陣列內容可以看出，每增加一個\(h\)，\(w_{11}\)就增加 0.45、而\(w_{23}\)則下降 0.72。由此看來，為了要減少損失函數，應該持續增加\(w_{11}\)、減少\(w{23}\)，而且，\(w{23}\)的貢獻最大。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgd1e97a5" class="outline-3">
+<h3 id="orgd1e97a5"><span class="section-number-3">1.3.</span> 進階閱讀</h3>
+<div class="outline-text-3" id="text-1-3">
+<ul class="org-ul">
+<li><a href="https://www.youtube.com/watch?v=reOgXrNxwV8">https://www.youtube.com/watch?v=reOgXrNxwV8</a><br /></li>
+<li><a href="https://www.youtube.com/watch?v=FPD2fsryGYk">https://www.youtube.com/watch?v=FPD2fsryGYk</a><br /></li>
+<li><a href="https://github.com/Qinbf">https://github.com/Qinbf</a><br /></li>
+<li><a href="https://www.youtube.com/channel/UCHbGAYq21PNz9REWNwe8Z-Q/videos">https://www.youtube.com/channel/UCHbGAYq21PNz9REWNwe8Z-Q/videos</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org31bcf5d" class="outline-2">
+<h2 id="org31bcf5d"><span class="section-number-2">2.</span> 梯度下降法</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+<a href="https://www.youtube.com/watch?v=reOgXrNxwV8">https://www.youtube.com/watch?v=reOgXrNxwV8</a><br />
+<a href="https://www.youtube.com/watch?v=FPD2fsryGYk">https://www.youtube.com/watch?v=FPD2fsryGYk</a><br />
+<a href="https://github.com/Qinbf">https://github.com/Qinbf</a><br />
+<a href="https://www.youtube.com/channel/UCHbGAYq21PNz9REWNwe8Z-Q/videos">https://www.youtube.com/channel/UCHbGAYq21PNz9REWNwe8Z-Q/videos</a><br />
+</p>
+</div>
+</div>
+<div id="outline-container-org4e005b6" class="outline-2">
+<h2 id="org4e005b6"><span class="section-number-2">3.</span> 學習演算法</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+至此，神經網路的學習步驟大致如下：<br />
+</p>
+<ol class="org-ol">
+<li>小批次: 即從訓練資料中所隨機挑選部份數據<br /></li>
+<li>計算梯度: 然後朝著「減少小批次損失函數」為目標前進<br /></li>
+<li>更新參數: 每前進一步，就更新參數<br /></li>
+<li>回到步驟 1<br /></li>
+</ol>
+
+<p>
+上述作法稱之為「準確率梯度下降法(<i>stochastic gradient descent</i>)」，意味著「針對所選出的資料進行梯度下降」，一般以 SGD 為名。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Yung-Chin Yen</p>
+<p class="date">Created: 2024-02-18 Sun 13:40</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,491 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-02-18 Sun 13:56 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>反向傳播法</title>
+<meta name="author" content="Yung-Chin Yen" />
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<link rel="stylesheet" type="text/css" href="../css/muse.css" />
+<script>
+  window.MathJax = {
+    tex: {
+      ams: {
+        multlineWidth: '85%'
+      },
+      tags: 'ams',
+      tagSide: 'right',
+      tagIndent: '.8em'
+    },
+    chtml: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    svg: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    output: {
+      font: 'mathjax-modern',
+      displayOverflow: 'overflow'
+    }
+  };
+</script>
+
+<script
+  id="MathJax-script"
+  async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">反向傳播法</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org0d3d828">1. Backward propagation</a></li>
+<li><a href="#org44227c5">2. 倒遞神經網路(Back-Propagation) 數學推導</a>
+<ul>
+<li><a href="#org9881e65">2.1. 數學推導</a></li>
+<li><a href="#org8227860">2.2. 數值微分</a></li>
+</ul>
+</li>
+<li><a href="#orge44744b">3. Godfather of Deep Learning</a></li>
+</ul>
+</div>
+</div>
+<a href="https://letranger.github.io/AI/20240218131944-backpropagation.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20240218131944-backpropagation.html.svg"/></a>
+
+<p>
+Backprogation的目的在於快速計算 w 與 b 的更新
+</p>
+<div id="outline-container-org0d3d828" class="outline-2">
+<h2 id="org0d3d828"><span class="section-number-2">1.</span> Backward propagation</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+反向傳遞的目的就是利用最後的目標函數(loss/cost function)來進行參數的更新，一般來說都是用誤差均方和(mean square error)當作目標函數。如果誤差值越大，代表參數學得不好，所以需要繼續學習，直到參數或是誤差值收斂<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。
+</p>
+
+
+<div id="org09666bb" class="figure">
+<p><img src="images/3LayerNetwork.png" alt="3LayerNetwork.png" width="400" />
+</p>
+<p><span class="figure-number">Figure 1: </span>三層神經網路</p>
+</div>
+
+<p>
+回到圖<a href="#org09666bb">1</a>
+\(x^{(i)}\)為第i筆輸入，其輸出值為
+\[ y^{(i)}=\begin{bmatrix}
+y_1^{(1)} \\
+y_2^{(1)} \\
+\end{bmatrix}\]
+而輸出值與目標的誤差為
+\[
+E^{(i)}=\frac{1}{2}\sum_{j=0}^m(\hat{y}_j^{(i)}-y_j^{(i)})^2
+\]
+目標函數為所有樣本的誤差和
+\[
+E=\sum_{i=0}^nE^{(i)}
+\]
+最佳化的目的就是讓「所有樣本的誤差均方和」越小越好，所以目標是將最小化(微分方程式等於0找解)。
+</p>
+</div>
+</div>
+<div id="outline-container-org44227c5" class="outline-2">
+<h2 id="org44227c5"><span class="section-number-2">2.</span> 倒遞神經網路(Back-Propagation) 數學推導</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-org9881e65" class="outline-3">
+<h3 id="org9881e65"><span class="section-number-3">2.1.</span> <a href="https://honglung.pixnet.net/blog/post/202201656-back-propagation-%E6%95%B8%E5%AD%B8%E6%8E%A8%E5%B0%8E">數學推導</a></h3>
+<div class="outline-text-3" id="text-2-1">
+<ol class="org-ol">
+<li>背景: 以下 a,b,c 為輸入值.並且激勵函數(activity function) 採用 sigmoid 進行說明:</li>
+</ol>
+
+<div id="org0372fd8" class="figure">
+<p><img src="images/Backprogation-1.png" alt="Backprogation-1.png" width="500" />
+</p>
+<p><span class="figure-number">Figure 2: </span>數學推導-1</p>
+</div>
+
+<p>
+依上圖所述，數學式如下：
+\[ z = aw_a + bw_b + cw_c \]
+\[ \delta (z) = \frac{1}{1+e^{-x}} \]
+</p>
+<ol class="org-ol">
+<li>由於在訓練過程中目的是找到最適合的權重值(weight).可透過微分求解梯度後可以找到權重應該修正的數值.因為每個變數都需要各自進行微分,因此透過偏微分求解(在遇到非目標為分數值時,將其視為常數):
+\[ \frac{\vartheta z}{\vartheta w_a} = a ,  \frac{\vartheta z}{\vartheta w_b} = b, \frac{\vartheta z}{\vartheta w_c} = c\]
+\[ \delta '(z) = (1-\delta (z)) \cdot \delta (z) \]</li>
+<li>得知以上各個偏微分數值後,透過連鎖律進行神經元的偏微分,可得到以下式子:
+\[\frac{\vartheta f}{\vartheta w_a} = \frac {\vartheta f}{\vartheta z} \cdot \frac{\vartheta z}{\vartheta w_a} = [(1-\delta (z)) \cdot \delta (z)] \cdot a\]</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-org8227860" class="outline-3">
+<h3 id="org8227860"><span class="section-number-3">2.2.</span> 數值微分</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+梯度法使用梯度的資料來決定學習（或找出最佳參數）的方向，此處會應用到數學的微分。微分指的是某個瞬間的變化量（如行進中的車輛瞬間速度的變化量），可以公式\eqref{org0550ba8}來定義：
+</p>
+\begin{equation}
+\label{org0550ba8}
+\frac{df(x)}{dx}=\lim_{h\to0}\frac{f(x+h)-f(x)}{h}
+\end{equation}
+<p>
+上述公式中，等號左側\(\frac{df(x)}{dx}\)代表\(f(x)\)中對\(x\)微分，亦即，找出相對 x 之 f(x)的變化，也就是希望能找出：「隨著\(x\)的細微改變，函數\(f(x)\)會出現何種變化？」的答案，此處的\(h\)趨近於 0。
+以公式\eqref{org0550ba8}實際進行 python 運算會因為 h 值太小而導致四捨五入無法計算出真實結果，如下列程式碼，若\(x=10e-50\)，其計算結果為 0。
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">numerical_diff</span>(f, x):
+<span class="linenr">2: </span>      <span style="color: #dcaeea;">h</span> = 10e - <span style="color: #da8548; font-weight: bold;">50</span>
+<span class="linenr">3: </span>      <span style="color: #51afef;">return</span> (f(x+h) - f(x)) /h
+</pre>
+</div>
+<p>
+原因是因為\(h\)值過小而被四捨五入為 0，改善方式為將\(h\)設定為\(10^-4\)。
+另一個要處理的問題是：我們想求得的是函數\(f(x)\)在點\(x\)的斜率，然而上述程式碼所計算出的是函數\(f(x)\)在\(x\)與\(x+h\)區間的斜率，改善方式是改為計算\(f(x+h)\)與\(f(x-h)\)區間的斜率，即進行數值微分（數值梯度），其程式碼如下：
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">numerical_diff</span>(f, x):
+<span class="linenr">2: </span>      <span style="color: #dcaeea;">h</span> = 1e-<span style="color: #da8548; font-weight: bold;">4</span>
+<span class="linenr">3: </span>      <span style="color: #51afef;">return</span> (f(x+h) - f(x-h)) / (<span style="color: #da8548; font-weight: bold;">2</span>*h)
+</pre>
+</div>
+<p>
+若以上述方式，分別在\(x=5\)及\(x=10\)時對計算算式\(y=0.01x^2+0.1x\)的微分，其結果如下，橘色與綠色直線分別為\(x=5\)與\(x=10\)的切線。
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 2: </span>  <span style="color: #51afef;">import</span> matplotlib.pylab <span style="color: #51afef;">as</span> plt
+<span class="linenr"> 3: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">numerical_diff</span>(f, x):
+<span class="linenr"> 4: </span>      <span style="color: #dcaeea;">h</span> = 1e-<span style="color: #da8548; font-weight: bold;">4</span>
+<span class="linenr"> 5: </span>      <span style="color: #51afef;">return</span> (f(x+h) - f(x-h)) / (<span style="color: #da8548; font-weight: bold;">2</span>*h)
+<span class="linenr"> 6: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">function_1</span>(x):
+<span class="linenr"> 7: </span>      <span style="color: #51afef;">return</span> <span style="color: #da8548; font-weight: bold;">0.01</span>*x**<span style="color: #da8548; font-weight: bold;">2</span> + <span style="color: #da8548; font-weight: bold;">0.1</span>*x
+<span class="linenr"> 8: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">tangent_line</span>(f, x):
+<span class="linenr"> 9: </span>      <span style="color: #dcaeea;">d</span> = numerical_diff(f, x)
+<span class="linenr">10: </span>      <span style="color: #dcaeea;">y</span> = f(x) - d*x
+<span class="linenr">11: </span>      <span style="color: #51afef;">return</span> <span style="color: #51afef;">lambda</span> t: d*t + y
+<span class="linenr">12: </span>  <span style="color: #dcaeea;">x</span> = np.arange(<span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">20.0</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>)
+<span class="linenr">13: </span>  <span style="color: #dcaeea;">y</span> = function_1(x)
+<span class="linenr">14: </span>  <span style="color: #dcaeea;">tf</span> = tangent_line(function_1, <span style="color: #da8548; font-weight: bold;">5</span>)
+<span class="linenr">15: </span>  <span style="color: #dcaeea;">y2</span> = tf(x)
+<span class="linenr">16: </span>  <span style="color: #dcaeea;">tf2</span> = tangent_line(function_1, <span style="color: #da8548; font-weight: bold;">10</span>)
+<span class="linenr">17: </span>  <span style="color: #dcaeea;">y3</span> = tf2(x)
+<span class="linenr">18: </span>  plt.xlabel(<span style="color: #98be65;">"x"</span>)
+<span class="linenr">19: </span>  plt.ylabel(<span style="color: #98be65;">"f(x)"</span>)
+<span class="linenr">20: </span>  plt.plot(x, y)
+<span class="linenr">21: </span>  plt.plot(x, y2)
+<span class="linenr">22: </span>  plt.plot(x, y3)
+<span class="linenr">23: </span>  plt.savefig(<span style="color: #98be65;">"function_1.png"</span>)
+<span class="linenr">24: </span>  <span style="color: #c678dd;">print</span>(numerical_diff(function_1,<span style="color: #da8548; font-weight: bold;">5</span>))
+<span class="linenr">25: </span>  <span style="color: #c678dd;">print</span>(numerical_diff(function_1,<span style="color: #da8548; font-weight: bold;">10</span>))
+<span class="linenr">26: </span>  <span style="color: #5B6268;">#</span><span style="color: #5B6268;">return "function_1.png"</span>
+</pre>
+</div>
+
+<pre class="example">
+0.1999999999990898
+0.2999999999986347
+</pre>
+
+
+
+<div id="orgca85b52" class="figure">
+<p><img src="images/function_1.png" alt="function_1.png" width="500" />
+</p>
+<p><span class="figure-number">Figure 3: </span>\(f(x)=0.01x^2+0.1x\)圖表</p>
+</div>
+
+<p>
+此處計算的結果與數學解相比：\(\frac{df(x)}{dx}=0.02x+0.1\)，\(x=5\)、\(x=10\)的實際微分值應為 0.2、0.3，嚴格來說並不一致，但因誤差太小，可以視為相同。
+</p>
+
+<p>
+若再進一步考慮兩個變數時的微分，如算式\eqref{orged6a98d}，這種由多個變數形成的微分，稱作偏微分，，該公式對應的 python 程式碼如下：
+</p>
+\begin{equation}
+\label{orged6a98d}
+\(f(x_0,x_1)=x_0^2+x_1^2\)
+\end{equation}
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">function_2</span>(x):
+<span class="linenr">2: </span>      <span style="color: #51afef;">return</span> x[<span style="color: #da8548; font-weight: bold;">0</span>]**<span style="color: #da8548; font-weight: bold;">2</span> + x[<span style="color: #da8548; font-weight: bold;">1</span>]**<span style="color: #da8548; font-weight: bold;">2</span>
+<span class="linenr">3: </span>      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25110; return np.sum(x**2)</span>
+</pre>
+</div>
+<p>
+公式\(fx_0,x_1)=x_0^2+x_1^2\)的圖表如圖<a href="#org0264b91">4</a>所示。
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">function_2</span>(x):
+<span class="linenr"> 2: </span>    <span style="color: #51afef;">return</span> x[<span style="color: #da8548; font-weight: bold;">0</span>]**<span style="color: #da8548; font-weight: bold;">2</span> + x[<span style="color: #da8548; font-weight: bold;">1</span>]**<span style="color: #da8548; font-weight: bold;">2</span>
+<span class="linenr"> 3: </span>
+<span class="linenr"> 4: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">3D&#12464;&#12521;&#12501;&#12434;&#25551;&#30011;</span>
+<span class="linenr"> 5: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">cat multivariate_func_save.py</span>
+<span class="linenr"> 6: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">coding: utf-8</span>
+<span class="linenr"> 7: </span>  <span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 8: </span>  <span style="color: #51afef;">import</span> matplotlib.pylab <span style="color: #51afef;">as</span> plt
+<span class="linenr"> 9: </span>  plt.switch_backend(<span style="color: #98be65;">'agg'</span>)
+<span class="linenr">10: </span>  <span style="color: #51afef;">from</span> mpl_toolkits.mplot3d <span style="color: #51afef;">import</span> Axes3D
+<span class="linenr">11: </span>
+<span class="linenr">12: </span>  <span style="color: #dcaeea;">x</span> = np.meshgrid(np.arange(-<span style="color: #da8548; font-weight: bold;">3</span>, <span style="color: #da8548; font-weight: bold;">3</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>), np.arange(-<span style="color: #da8548; font-weight: bold;">3</span>, <span style="color: #da8548; font-weight: bold;">3</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>))
+<span class="linenr">13: </span>  <span style="color: #dcaeea;">z</span> = x[<span style="color: #da8548; font-weight: bold;">0</span>]**<span style="color: #da8548; font-weight: bold;">2</span> + x[<span style="color: #da8548; font-weight: bold;">1</span>]**<span style="color: #da8548; font-weight: bold;">2</span>
+<span class="linenr">14: </span>
+<span class="linenr">15: </span>  <span style="color: #dcaeea;">fig</span> = plt.figure()
+<span class="linenr">16: </span>  <span style="color: #dcaeea;">ax</span> = Axes3D(fig)
+<span class="linenr">17: </span>  ax.plot_wireframe(x[<span style="color: #da8548; font-weight: bold;">0</span>], x[<span style="color: #da8548; font-weight: bold;">1</span>], z)
+<span class="linenr">18: </span>
+<span class="linenr">19: </span>  plt.xlim(-<span style="color: #da8548; font-weight: bold;">3.5</span>, <span style="color: #da8548; font-weight: bold;">3.5</span>)
+<span class="linenr">20: </span>  plt.ylim(-<span style="color: #da8548; font-weight: bold;">4.5</span>, <span style="color: #da8548; font-weight: bold;">4.5</span>)
+<span class="linenr">21: </span>  plt.xlabel(<span style="color: #98be65;">"x0"</span>)
+<span class="linenr">22: </span>  plt.ylabel(<span style="color: #98be65;">"x1"</span>)
+<span class="linenr">23: </span>  plt.savefig(<span style="color: #98be65;">'multivariate_func.png'</span>)
+</pre>
+</div>
+
+
+<div id="org0264b91" class="figure">
+<p><img src="images/multivariate_func.png" alt="multivariate_func.png" width="500" />
+</p>
+<p><span class="figure-number">Figure 4: </span>\(f(x_0,x_1)=x_0^2+x_1^2\)圖表</p>
+</div>
+
+
+<pre class="example">
+6.00000000000378
+7.999999999999119
+</pre>
+
+
+<p>
+上述程式碼中，function_mult1 是先將計算「將\(x_1\)固定為常數 4.0 的新函數」，對\(x_0\)進行微分；function_multi2 則是先將\(x_0\)固定為常數 3，再對\(x_1\)求出微分。
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orge44744b" class="outline-2">
+<h2 id="orge44744b"><span class="section-number-2">3.</span> Godfather of Deep Learning</h2>
+<div class="outline-text-2" id="text-3">
+<ul class="org-ul">
+<li>1986: the backpropagation algorithm for training multi-layer neural networks</li>
+<li>Hinton, G. E., Osindero, S. and Teh, Y. (2006), A fast learning algorithm for deep belief nets. Neural Computation, 18, pp. 1527-1554</li>
+<li>2012: AlexNet (Alex Krizhevsky)啟動 AI/NN 電腦視覺熱潮</li>
+<li>2018: Turing Prize (Yoshua Bengio and Yann LeCun)</li>
+</ul>
+<p>
+(<a href="https://www.cs.toronto.edu/~hinton/coursera_slides.html">https://www.cs.toronto.edu/~hinton/coursera_slides.html</a>)
+</p>
+</div>
+</div>
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://chih-sheng-huang821.medium.com/%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92-%E7%A5%9E%E7%B6%93%E7%B6%B2%E8%B7%AF-%E5%A4%9A%E5%B1%A4%E6%84%9F%E7%9F%A5%E6%A9%9F-multilayer-perceptron-mlp-%E5%90%AB%E8%A9%B3%E7%B4%B0%E6%8E%A8%E5%B0%8E-ee4f3d5d1b41">機器學習- 神經網路(多層感知機 Multilayer perceptron, MLP) 含倒傳遞( Backward propagation)詳細推導</a>
+</p></div></div>
+
+
+</div>
+</div></div>
+<div id="postamble" class="status">
+<p class="author">Author: Yung-Chin Yen</p>
+<p class="date">Created: 2024-02-18 Sun 13:56</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-02-18 Sun 15:40 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>overfitting</title>
+<meta name="author" content="Yung-Chin Yen" />
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<link rel="stylesheet" type="text/css" href="../css/muse.css" />
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">overfitting</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org3db952c">1. 縮減神經網路的大小</a></li>
+<li><a href="#org1f205b3">2. 加入權重常規化 (weight regularization)</a></li>
+<li><a href="#org572650b">3. 丟棄法 (dropout)</a></li>
+</ul>
+</div>
+</div>
+<a href="https://letranger.github.io/AI/20240218132641-overfitting.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20240218132641-overfitting.html.svg"/></a>
+
+<p>
+機器學習的本質即在於 <b>最佳化</b> 與 <b>普遍性</b> 之間的拉扯，最佳化(optimization)是指調整模型使得模型能在訓練資料上獲得最佳表現的過程；而普遍性(generalization)是指已訓練過的模型對從未見過的資料的預測能力。在訓練之初，最佳化和普遍性是高度相關的，訓練資料的損失越低、測試資料的損失也越低。此時，模型仍處於低度擬合狀態，仍有進步空間；在訓練資料經過一定回合(epoch)的訓練後，普遍程度的改善幅逐漸停止，驗證指標隨之停滯然後開始變差，於是模型開始 overfitting。也就是說，模型已經學習了一些訓練集特有的模式，但這些特有模式根本和新資料不相關、甚或會誤導對新資料的預測。<br />
+</p>
+
+<p>
+為了防止模型在訓練資料中學到錯誤或不相關的模式，最好的解決方案是取得更多訓練資料，如果無法做到這一點，次佳的解決方案是調配模型儲存的訊息量或者限制儲存資訊的類型或數值，如果一個神經網路只能記住少量的模式，那麼優化過程將迫使它專注於最顯著的那些模式，而不會去記住那些不相關的資訊，如此才能適應從未見過的新資料。<br />
+</p>
+
+<p>
+這種週配或限制模型資訊(即參數)以對抗 overfitting 的方式稱為常規化(regularization)，幾個常見的常規化技術如下：<br />
+</p>
+<ul class="org-ul">
+<li>縮減神經網路的大小<br /></li>
+<li>加入權重常規化 (weight regularization)<br /></li>
+<li>丟棄法 (dropout)<br /></li>
+</ul>
+<div id="outline-container-org3db952c" class="outline-2">
+<h2 id="org3db952c"><span class="section-number-2">1.</span> 縮減神經網路的大小</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+即減少模型可用來學習的參數數量(包含網路的層數和每層的神經元個數)，在深度學習中，模型中可學習參數的數量(權重數量)通常被稱為容量(capacity)。直覺上，有更多參數的模型具有更多的記憶能力(memorization capacity)，因此可以很容易在訓練樣本與其目標之間做出完美的對應，但卻沒有任何適應學習的能力。例如，我們可以建立具有 500000 個參數的模型來輕鬆學習(記憶)MNIST 訓練集中的每個數字所屬類別，但這種模型對於預測新的數字圖案毫無用處。<br />
+</p>
+
+<p>
+此外，如果神經網路的記憶資源有限，則無法輕易地直接在訓練樣本與目標之間做出對應，因此，要讓損失最小化，神經網路必須採用萃取過的資料表示法，以建立對目標的預測能力；另一方面，我們仍須讓神經網路擁有足夠的參數，以免模型 underfitting。也就是說，我們必須在容量過大(too much capacity)和容量不足(not enough capacity)之間取得平衡。<br />
+</p>
+
+<p>
+然而，到目前為止還沒有有效的公式來確定網路最佳的層數和神經元數，我們必須實際在神經網路進行多次評估(在驗證集上，而非測試集)，以找到正確的模型大小。我們通常會從較少的層數和 units 數開始，再逐漸增加層的 units 數或增加新層數，直到驗證損失不再進步為止。<br />
+</p>
+
+<p>
+以 imdb 的例子來看，原本的網路模型如下：<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>  <span style="color: #dcaeea;">model</span> = models.Sequential()
+<span class="linenr">2: </span>  model.add(layers.Dense(<span style="color: #da8548; font-weight: bold;">16</span>, activation=<span style="color: #98be65;">'relu'</span>, input_shape=(<span style="color: #da8548; font-weight: bold;">10000</span>,)))
+<span class="linenr">3: </span>  model.add(layers.Dense(<span style="color: #da8548; font-weight: bold;">16</span>, activation=<span style="color: #98be65;">'relu'</span>))
+<span class="linenr">4: </span>  model.add(layers.Dense(<span style="color: #da8548; font-weight: bold;">1</span>, activation=<span style="color: #98be65;">'sigmoid'</span>))
+</pre>
+</div>
+
+<p>
+如果我們將每一層的神經元數量縮小：<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>  <span style="color: #dcaeea;">model</span> = models.Sequential()
+<span class="linenr">2: </span>  model.add(layers.Dense(<span style="color: #da8548; font-weight: bold;">4</span>, activation=<span style="color: #98be65;">'relu'</span>, input_shape=(<span style="color: #da8548; font-weight: bold;">10000</span>,)))
+<span class="linenr">3: </span>  model.add(layers.Dense(<span style="color: #da8548; font-weight: bold;">4</span>, activation=<span style="color: #98be65;">'relu'</span>))
+<span class="linenr">4: </span>  model.add(layers.Dense(<span style="color: #da8548; font-weight: bold;">1</span>, activation=<span style="color: #98be65;">'sigmoid'</span>))
+</pre>
+</div>
+
+<p>
+則兩個版本的驗證損失比較如下圖，黑點為縮小網路 capacity 的驗證損失值，可以看出較原始版本的表現更佳，這個版本的神經網路在第 6 個 epoch 之後才開始 overfitting（原始的模型在第 4 個 epoch）就開始 overfitting。<br />
+</p>
+
+
+<div id="org8f154c4" class="figure">
+<p><img src="images/img-191120103824.jpg" alt="img-191120103824.jpg" width="500" /><br />
+</p>
+<p><span class="figure-number">Figure 1: </span>模型容量對驗證損失分數的影響-較小的模型</p>
+</div>
+
+<p>
+相反的，如果我們刻意將神經網路的 capacity 擴大，如下，每一層的神經元數量由原來的 16 增加到 512，則結果如圖<a href="#orgf40ddef">2</a>，擴大版的神經網路幾乎在訓練之初就開始 overfitting，而且越來越嚴重，其驗證損失的表現也較原始版本差。<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>  <span style="color: #dcaeea;">model</span> = models.Sequential()
+<span class="linenr">2: </span>  model.add(layers.Dense(<span style="color: #da8548; font-weight: bold;">512</span>, activation=<span style="color: #98be65;">'relu'</span>, input_shape=(<span style="color: #da8548; font-weight: bold;">10000</span>,)))
+<span class="linenr">3: </span>  model.add(layers.Dense(<span style="color: #da8548; font-weight: bold;">512</span>, activation=<span style="color: #98be65;">'relu'</span>))
+<span class="linenr">4: </span>  model.add(layers.Dense(<span style="color: #da8548; font-weight: bold;">1</span>, activation=<span style="color: #98be65;">'sigmoid'</span>))
+</pre>
+</div>
+
+
+<div id="orgf40ddef" class="figure">
+<p><img src="images/img-191120103825.jpg" alt="img-191120103825.jpg" width="500" /><br />
+</p>
+<p><span class="figure-number">Figure 2: </span>模型容量對驗證損失分數的影響-較大的容量</p>
+</div>
+
+<p>
+較大模型的神經網路雖然導致驗證損失的效能下降，但在訓練損失上的表現則否，由圖<a href="#org232a9bc">3</a>的黑點可明顯看出大網路模型在訓練期間的損失極低，然而這種效能在面對新資料（驗證資集）時確無法表現出來。<br />
+</p>
+
+
+<div id="org232a9bc" class="figure">
+<p><img src="images/img-191120103826.jpg" alt="img-191120103826.jpg" width="500" /><br />
+</p>
+<p><span class="figure-number">Figure 3: </span>模型容量對訓練損失分數的影響-較大的容量</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org1f205b3" class="outline-2">
+<h2 id="org1f205b3"><span class="section-number-2">2.</span> 加入權重常規化 (weight regularization)</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+在設計網路模型時，一個原則為：如果兩種模型有同樣的效能表現，則較簡單的模型通常是更好的設計，也更不容易導致 overfitting。這裡所謂的簡單指的是參數值分佈的熵比較小(entropy of distribution of parameter values las less entropy)的模型，或是使用較少參數的模型。因此，降低 overfitting 就是想辦法採用較小的權重值以限制神經網路的複雜性，這會讓權重的分佈更為常規化(regularized)。權重值常規化(weight regularization)在作法上就是對損失函數中較大的權重加上代價(cost)項目，通常有兩種方式：<br />
+</p>
+
+<ul class="org-ul">
+<li>L1 regularization: 在損失函數多加上一項 cost，這一項和權重係數的絕對值成正比。<br /></li>
+<li>L2 regularization: 在損失函數多加上一項 cost，這一項和權重係數的平方成正比。L2 也稱為 weight decay。<br /></li>
+</ul>
+
+<p>
+在 Keras 中，常規化的實作只要利用 model.add()並指名參數把權重常規化物件傳入神經網路層即可。以下為 L2 regularization 的做法：<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>  <span style="color: #51afef;">from</span> keras <span style="color: #51afef;">import</span> regularizers
+<span class="linenr">2: </span>
+<span class="linenr">3: </span>  <span style="color: #dcaeea;">model</span> = models.Sequential()
+<span class="linenr">4: </span>  model.add(layers.Dense(<span style="color: #da8548; font-weight: bold;">16</span>, kernel_regularizer=regularizers.l2(<span style="color: #da8548; font-weight: bold;">0.001</span>),
+<span class="linenr">5: </span>                         activation=<span style="color: #98be65;">'relu'</span>, input_shape=(<span style="color: #da8548; font-weight: bold;">10000</span>,)))
+<span class="linenr">6: </span>  model.add(layers.Dense(<span style="color: #da8548; font-weight: bold;">16</span>, kernel_regularizer=regularizers.l2(<span style="color: #da8548; font-weight: bold;">0.001</span>),
+<span class="linenr">7: </span>                         activation=<span style="color: #98be65;">'relu'</span>))
+<span class="linenr">8: </span>  model.add(layers.Dense(<span style="color: #da8548; font-weight: bold;">1</span>, activation=<span style="color: #98be65;">'sigmoid'</span>))
+</pre>
+</div>
+
+<p>
+上述程式中 l2(0.001)的意思是表示該層權重矩陣中的每個係數都會加上(0.001*權重係數值)到神經網路的總損失函數上，由圖<a href="#orgfaa1dbd">4</a>的結果可看，加入 L2 regularization 的模組，其驗證損失的表現較佳。<br />
+</p>
+
+
+<div id="orgfaa1dbd" class="figure">
+<p><img src="images/img-19112010382A.jpg" alt="img-19112010382A.jpg" width="500" /><br />
+</p>
+<p><span class="figure-number">Figure 4: </span>權重正規化對訓練損失分數的影響</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org572650b" class="outline-2">
+<h2 id="org572650b"><span class="section-number-2">3.</span> 丟棄法 (dropout)</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+由 Ceoff Hinton 教授和他在多倫多大學的學生所開發出來的常規化技術之一，主要是在訓練期間隨機丟棄(dropping out，即把 feature 值歸零)layer 的一些輸出特徵，假設某層在訓練期間的某一狀態下其正常輸出向量為[0.2, 0.5, 1.3, 0.8, 1.1]，在 dropout 後，某幾個輸輸向量的值會被歸零，如[0, 0.5, 1.3, 0, 1.1]。丟棄率則是指被歸零的特徵值個數佔特徵值總數的比例，以此例而言丟棄率為 2/5=0.4。<br />
+</p>
+
+<p>
+丟棄率通常介於 0.2 到 0.5 之間，而在測試時，其實沒有任何特徵質會被丟棄，取而代之的是層的輸出值將依照丟棄率的比例縮小，以平䚘訓練時的輸出被歸零的影響。隨機歸零的核心想法是在 layer 的輸出值中加入&ldquo;雜訊&rdquo;，這樣可以打破不重要的偶然模式，如果沒有雜訊，神經網路就會開始&ldquo;死記&rdquo;。在 Keras 中，我們可以很簡單的透過 add()來加入 Dropout：<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #51afef;">from</span> keras <span style="color: #51afef;">import</span> regularizers
+<span class="linenr"> 2: </span>
+<span class="linenr"> 3: </span>  <span style="color: #dcaeea;">model</span> = models.Sequential()
+<span class="linenr"> 4: </span>  model.add(layers.Dense(<span style="color: #da8548; font-weight: bold;">16</span>, kernel_regularizer=regularizers.l2(<span style="color: #da8548; font-weight: bold;">0.001</span>),
+<span class="linenr"> 5: </span>                         activation=<span style="color: #98be65;">'relu'</span>, input_shape=(<span style="color: #da8548; font-weight: bold;">10000</span>,)))
+<span class="linenr"> 6: </span>  model.add(layers.Dropout(<span style="color: #da8548; font-weight: bold;">0.5</span>))
+<span class="linenr"> 7: </span>  model.add(layers.Dense(<span style="color: #da8548; font-weight: bold;">16</span>, kernel_regularizer=regularizers.l2(<span style="color: #da8548; font-weight: bold;">0.001</span>),
+<span class="linenr"> 8: </span>                         activation=<span style="color: #98be65;">'relu'</span>))
+<span class="linenr"> 9: </span>  model.add(layers.Dropout(<span style="color: #da8548; font-weight: bold;">0.5</span>))
+<span class="linenr">10: </span>  model.add(layers.Dense(<span style="color: #da8548; font-weight: bold;">1</span>, activation=<span style="color: #98be65;">'sigmoid'</span>))
+</pre>
+</div>
+
+<p>
+在加入兩個 Dropout 層後對於降低 overfitting 的效果如圖<a href="#org9c7e7af">5</a>所示。<br />
+</p>
+
+
+<div id="org9c7e7af" class="figure">
+<p><img src="images/img-19112010382B.jpg" alt="img-19112010382B.jpg" width="500" /><br />
+</p>
+<p><span class="figure-number">Figure 5: </span>權重正規化對訓練損失分數的影響</p>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Yung-Chin Yen</p>
+<p class="date">Created: 2024-02-18 Sun 15:40</p>
+</div>
+</body>
+</html>

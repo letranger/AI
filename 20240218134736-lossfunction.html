@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-02-18 Sun 14:08 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Loss Function</title>
+<meta name="author" content="Yung-Chin Yen" />
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<link rel="stylesheet" type="text/css" href="../css/muse.css" />
+<script>
+  window.MathJax = {
+    tex: {
+      ams: {
+        multlineWidth: '85%'
+      },
+      tags: 'ams',
+      tagSide: 'right',
+      tagIndent: '.8em'
+    },
+    chtml: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    svg: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    output: {
+      font: 'mathjax-modern',
+      displayOverflow: 'overflow'
+    }
+  };
+</script>
+
+<script
+  id="MathJax-script"
+  async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">Loss Function</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org693876b">1. 均方誤差</a></li>
+<li><a href="#orgf8ad127">2. 交叉熵誤差</a></li>
+<li><a href="#orge2ed72a">3. 批次學習</a></li>
+<li><a href="#orgf2f6217">4. 設定損失函數做為效能指標的原因</a></li>
+<li><a href="#orgcd8fe36">5. Keras 在 losses.py 定義常用的損失函數</a></li>
+</ul>
+</div>
+</div>
+<a href="https://letranger.github.io/AI/20240218134736-lossfunction.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20240218134736-lossfunction.html.svg"/></a>
+
+<p>
+至於神經網路模型的成效則可由損失函數（loss function）來判斷，常見的損失函數有均方誤差與交叉熵誤差兩種。
+</p>
+<div id="outline-container-org693876b" class="outline-2">
+<h2 id="org693876b"><span class="section-number-2">1.</span> 均方誤差</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+均方誤差（mean squared error）可以公式\eqref{org4bd4df9}表示：
+</p>
+\begin{equation}
+\label{org4bd4df9}
+E = \frac{1}{2} \sum_{k}(y_k-t_k)^2
+\end{equation}
+<p>
+公式\eqref{org4bd4df9}中的\(y_k\)為神經網路的輸出，\(t_k\)為訓練資料，\(k\)為資料的維度，其實際運算的資料內容與結果可由如下程式碼，當 y 的預測機率越接近正確答案時，均方誤差的值越小。
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 2: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">mean_squared_error</span>(y, t):
+<span class="linenr"> 3: </span>      <span style="color: #51afef;">return</span> <span style="color: #da8548; font-weight: bold;">0.5</span> * np.<span style="color: #c678dd;">sum</span>((y-t)**<span style="color: #da8548; font-weight: bold;">2</span>)
+<span class="linenr"> 4: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">case 1: &#27491;&#30906;&#31572;&#26696;&#28858;2, y[2]&#30340;&#27231;&#29575;&#26368;&#39640;&#26178;</span>
+<span class="linenr"> 5: </span>  <span style="color: #dcaeea;">y</span> = np.array([<span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.05</span>, <span style="color: #da8548; font-weight: bold;">0.6</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.05</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>])
+<span class="linenr"> 6: </span>  <span style="color: #dcaeea;">t</span> = np.array([<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>])
+<span class="linenr"> 7: </span>  <span style="color: #c678dd;">print</span>(mean_squared_error(y,t))
+<span class="linenr"> 8: </span>
+<span class="linenr"> 9: </span>  <span style="color: #5B6268;">#</span><span style="color: #5B6268;">case 2: &#27491;&#30906;&#31572;&#26696;&#28858;2, y[7]&#30340;&#27231;&#29575;&#26368;&#39640;&#26178;</span>
+<span class="linenr">10: </span>  <span style="color: #dcaeea;">y</span> = np.array([<span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.05</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.05</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.6</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>])
+<span class="linenr">11: </span>  <span style="color: #c678dd;">print</span>(mean_squared_error(y,t))
+</pre>
+</div>
+
+<pre class="example">
+0.09750000000000003
+0.5975
+</pre>
+</div>
+</div>
+<div id="outline-container-orgf8ad127" class="outline-2">
+<h2 id="orgf8ad127"><span class="section-number-2">2.</span> 交叉熵誤差</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+交叉熵誤差（cross entropy error）可以公式\eqref{orgd0a12ec}表示：
+</p>
+\begin{equation}
+\label{orgd0a12ec}
+E = -\sum_{k}t_k\log y_k
+\end{equation}
+<p>
+公式\eqref{orgd0a12ec}中的\(y_k\)為神經網路的輸出，\(t_k\)為訓練資料（即正確答案標籤，為 one-hot 形式，只有正確案為 1，其餘為 0），\(log\)為以\(e\)為底的自然對數，其輸出圖形如圖<a href="#org4206808">1</a>所示。
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>  <span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr">2: </span>  <span style="color: #51afef;">import</span> matplotlib.pylab <span style="color: #51afef;">as</span> plt
+<span class="linenr">3: </span>  <span style="color: #dcaeea;">x</span> = np.arange(-<span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">0.0001</span>)
+<span class="linenr">4: </span>  <span style="color: #dcaeea;">y</span> = np.log(x)
+<span class="linenr">5: </span>  plt.figure(figsize=(<span style="color: #da8548; font-weight: bold;">4</span>,<span style="color: #da8548; font-weight: bold;">3</span>))
+<span class="linenr">6: </span>  plt.plot(x, y)
+<span class="linenr">7: </span>  plt.ylim(-<span style="color: #da8548; font-weight: bold;">5.1</span>, <span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr">8: </span>  plt.savefig(<span style="color: #98be65;">"log.png"</span>)
+<span class="linenr">9: </span>  <span style="color: #51afef;">return</span> <span style="color: #98be65;">"log.png"</span>
+</pre>
+</div>
+
+<div id="org4206808" class="figure">
+<p><img src="images/log.png" alt="log.png" width="500" />
+</p>
+<p><span class="figure-number">Figure 1: </span>自然對數\(y=\log x\)曲線圖</p>
+</div>
+
+<p>
+以前述範例進行交叉熵的計算，其運算結果如下所示。進行\(log\)運算前先加上一極小值 delta 的原因在於避免因 log(0)產生無限大的-inf。執行結果與前例大致相同，越接近正確答案，誤差值越小。
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 2: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">cross_entropy_error</span>(y, t):
+<span class="linenr"> 3: </span>      <span style="color: #dcaeea;">delta</span> = 1e-<span style="color: #da8548; font-weight: bold;">7</span>
+<span class="linenr"> 4: </span>      <span style="color: #51afef;">return</span> -np.<span style="color: #c678dd;">sum</span>(t * np.log(y + delta))
+<span class="linenr"> 5: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">case 1: &#27491;&#30906;&#31572;&#26696;&#28858;2, y[2]&#30340;&#27231;&#29575;&#26368;&#39640;&#26178;</span>
+<span class="linenr"> 6: </span>  <span style="color: #dcaeea;">y</span> = np.array([<span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.05</span>, <span style="color: #da8548; font-weight: bold;">0.6</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.05</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>])
+<span class="linenr"> 7: </span>  <span style="color: #dcaeea;">t</span> = np.array([<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>])
+<span class="linenr"> 8: </span>  <span style="color: #c678dd;">print</span>(cross_entropy_error(y,t))
+<span class="linenr"> 9: </span>
+<span class="linenr">10: </span>  <span style="color: #5B6268;">#</span><span style="color: #5B6268;">case 2: &#27491;&#30906;&#31572;&#26696;&#28858;2, y[7]&#30340;&#27231;&#29575;&#26368;&#39640;&#26178;</span>
+<span class="linenr">11: </span>  <span style="color: #dcaeea;">y</span> = np.array([<span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.05</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.05</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.6</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>])
+<span class="linenr">12: </span>  <span style="color: #c678dd;">print</span>(cross_entropy_error(y,t))
+</pre>
+</div>
+
+<pre class="example">
+0.510825457099338
+2.302584092994546
+</pre>
+</div>
+</div>
+<div id="outline-container-orge2ed72a" class="outline-2">
+<h2 id="orge2ed72a"><span class="section-number-2">3.</span> 批次學習</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+機器學習的目的在於使用訓練資料找能能儘量縮小損失函數的參數，因此，計算損失函數自然不是逐一計算，而是以縮小所有訓練資料的損失函數總和為最終目標。
+因此，前節中的交叉熵誤差（公式\eqref{orgd0a12ec}）就要修改為以下算式（\eqref{org950547c}）：
+</p>
+\begin{equation}
+\label{org950547c}
+E = -\frac{1}{N}\sum_{n}\sum_{k}t_{nk}\log y_{nk}
+\end{equation}
+<p>
+公式\eqref{org950547c}的 N 為資料筆數，\(y_{nk}\)代表神經網路第 n 筆資料的第 k 個輸出、\(t){nk}\)則為第 n 筆訓練資料的第 k 個值，最後除以 N、進行正規化，所得即為這 N 筆資料的「平均損失函數」。然而，實際執行時並無法取出所有訓練資料來運算，以 MNIST 資料集為例，訓練資料就有 60000 筆，若是其他大數劇則資料筆數可能達數千萬，較務實的作法，是隨機自資料集中抽取 N 筆資料（稱之為 mini batch）來計算平均損失函數，以代表整體。
+那麼，這個隨機抽取的資料筆數要設定為多少才適合？可以從以下兩個觀點來看：
+</p>
+<ul class="org-ul">
+<li>在合理範圍內，增大 Batch_Size 有何好處？
+<ul class="org-ul">
+<li>內存利用率提高了，大矩陣乘法的並行化效率提高。</li>
+<li>跑完一次 epoch（全數據集）所需的迭代次數減少，對於相同數據量的處理速度進一步加快。</li>
+<li>在一定範圍內，一般來說 Batch_Size 越大，其確定的下降方向越准，引起訓練震蕩越小。</li>
+</ul></li>
+<li>盲目增大 Batch_Size 有何壞處？
+<ul class="org-ul">
+<li>內存利用率提高了，但是內存容量可能撐不住了。</li>
+<li>跑完一次 epoch（全數據集）所需的迭代次數減少，要想達到相同的精度，其所花費的時間大大增加了，從而對參數的修正也就顯得更加緩慢。</li>
+<li>Batch_Size 增大到一定程度，其確定的下降方向已經基本不再變化。</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgf2f6217" class="outline-2">
+<h2 id="orgf2f6217"><span class="section-number-2">4.</span> 設定損失函數做為效能指標的原因</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+進行神經網路的學習，目的在於找出辨識準確度高的參數，那麼，為什麼不以「辨識準確率」做為指標，而是要導入損失函數？
+神經網路的學習過程在於尋找最佳參數（即偏移值與權重），藉以找出能盡量縮小損失函數的參數，為達此目的，我們要對某特定參數所得的損失函數進行微分（即找出其斜度），亦即，找出「如果稍微改變這些參數，損失函數將會有何種變化？」的答案，假如微分後損失函數的值變為負值，則我們就將參數往正向變化以減少損失函數；假如微分後損失函數的值變為正值，我們就讓參數往負值變化，以減少損失函數；直到損失函數微分後的值變為 0 為止。
+無法將辨識準確率作為指標的原因即在於，不論我們如何調整參數，辨識準確率的微分值都為 0。
+例如，有 100 張訓練資料，如果能成功辨識出 32 張影像，其準確率為 32%，如果調整參數後只得到極小的變化，辨識準確度也只能在 33%、34%這些不連續的變化，而不會有 32.0124%的連續性變化。然而，如果以損失函數為指標，則能顯示出 0.92345&#x2026;.的結果；而略為改變參數值，即能得到 0.24884 的連續變化。
+辨識準確率幾乎不會反應改變參數所帶來的微小變化，即使有反應也是不連續的變化，這個道理就好像把階梯函數拿來當成活化函數，對階梯函數的任何點（除 0 以外）做切線，其斜率均為 0。
+</p>
+</div>
+</div>
+<div id="outline-container-orgcd8fe36" class="outline-2">
+<h2 id="orgcd8fe36"><span class="section-number-2">5.</span> Keras 在 losses.py 定義常用的損失函數</h2>
+<div class="outline-text-2" id="text-5">
+<ul class="org-ul">
+<li><a href="https://github.com/keras-team/keras/blob/master/keras/losses.py">https://github.com/keras-team/keras/blob/master/keras/losses.py</a></li>
+<li>MSE: mean_squared_error</li>
+<li>MAE: mean_absolute_error</li>
+<li>mape = MAPE = mean_absolute_percentage_error</li>
+<li>msle = MSLE = mean_squared_logarithmic_error</li>
+<li>kld = KLD = kullback_leibler_divergence</li>
+<li>cosine = cosine_proximity</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Yung-Chin Yen</p>
+<p class="date">Created: 2024-02-18 Sun 14:08</p>
+</div>
+</body>
+</html>
