@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-02-25 Sun 17:14 -->
+<!-- 2024-02-27 Tue 12:01 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>深度學習</title>
@@ -234,44 +234,46 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org881e39e">1. 深度學習</a>
+<li><a href="#org3ee7342">1. 深度學習</a>
 <ul>
-<li><a href="#org0ecc547">1.1. 深度學習的知名模型</a></li>
-<li><a href="#org262259c">1.2. 深度學習的高速化</a></li>
+<li><a href="#org87b50e7">1.1. 深度學習的知名模型</a></li>
+<li><a href="#org613d783">1.2. 深度學習的高速化</a></li>
 </ul>
 </li>
-<li><a href="#org19f860b">2. 深度學習運作原理</a>
+<li><a href="#org5e7d810">2. 深度學習運作原理</a>
 <ul>
-<li><a href="#org4264063">2.1. Layer, 損失函數與優化器</a></li>
+<li><a href="#orgd362324">2.1. Layer, 損失函數與優化器</a></li>
 </ul>
 </li>
-<li><a href="#orgddc7265">3. 實作範例</a>
+<li><a href="#orgc08984d">3. 實作範例</a>
 <ul>
-<li><a href="#org2521144">3.1. 二元分類：IMDB</a></li>
-<li><a href="#orgb766282">3.2. 多類別分類：數位新聞</a></li>
-<li><a href="#org6602e6a">3.3. 以 Keras 解決迴歸問題：預測房價</a></li>
+<li><a href="#orga44c6ce">3.1. 二元分類：IMDB</a></li>
+<li><a href="#org8385dee">3.2. 多類別分類：數位新聞</a></li>
+<li><a href="#org50f1a44">3.3. 迴歸問題：預測房價</a></li>
+<li><a href="#org0e857ce">3.4. 圖片識別: MNIST</a></li>
+<li><a href="#org9b23043">3.5. 圖片識別版本2: MNIST</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 <a href="https://letranger.github.io/AI/20221023101228-深度學習.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20221023101228-深度學習.html.svg"/></a>
-<div id="outline-container-org881e39e" class="outline-2">
-<h2 id="org881e39e"><span class="section-number-2">1.</span> 深度學習</h2>
+<div id="outline-container-org3ee7342" class="outline-2">
+<h2 id="org3ee7342"><span class="section-number-2">1.</span> 深度學習</h2>
 <div class="outline-text-2" id="text-1">
 
-<div id="org1f0bd27" class="figure">
+<div id="org203c5ff" class="figure">
 <p><img src="images/AI,_Machine_Learning與Deep_Learning/2024-02-19_16-24-48_2024-02-19_16-23-09.png" alt="2024-02-19_16-24-48_2024-02-19_16-23-09.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 1: </span>AI, Machine Learning與Deep Learning</p>
 </div>
 
 <p>
-在<a href="20221025104603-神經網路.html#ID-d6daa102-05bb-475d-b619-db8b61e86030">神經網路</a>中我們曾經提及：<br />
+在<a href="../../../../../Dropbox/notes/roam/20221025104603-神經網路.html#ID-d6daa102-05bb-475d-b619-db8b61e86030">神經網路</a>中我們曾經提及：<br />
 </p>
 <blockquote>
 <p>
-深度神經網路(Deep Neural Network, DNN)，顧名思義就是有很多層的神經網路。然而，幾層才算是多呢？一般來說有1-2個隱藏層的神經網絡就可以叫做多層，準確的說是(淺層)神經網絡(Shallow Neural Networks)。隨著隱藏層的增多，更深的神經網絡(一般來說超過3層)就都叫做深度神經網路<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。而那些以深度神經網路為模型的機器學習就是我們耳熟能詳的<a href="20221023101228-深度學習.html#ID-20221023T101228.247381">深度學習</a>。<br />
+深度神經網路(Deep Neural Network, DNN)，顧名思義就是有很多層的神經網路。然而，幾層才算是多呢？一般來說有1-2個隱藏層的神經網絡就可以叫做多層，準確的說是(淺層)神經網絡(Shallow Neural Networks)。隨著隱藏層的增多，更深的神經網絡(一般來說超過3層)就都叫做深度神經網路<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。而那些以深度神經網路為模型的機器學習就是我們耳熟能詳的<a href="../../../../../Dropbox/notes/roam/20221023101228-深度學習.html#ID-20221023T101228.247381">深度學習</a>。<br />
 </p>
 </blockquote>
 
@@ -280,22 +282,22 @@
 </p>
 
 <p>
-典型的深度學習如圖<a href="#orgce4a604">2</a>，在此例中，輸入為一張手寫數字的影像，經由 4 層的深度學習模型後得知此數字為 4。<br />
+典型的深度學習如圖<a href="#orgd76e131">2</a>，在此例中，輸入為一張手寫數字的影像，經由 4 層的深度學習模型後得知此數字為 4。<br />
 </p>
 
 
-<div id="orgce4a604" class="figure">
+<div id="orgd76e131" class="figure">
 <p><img src="images/img-191107113927.jpg" alt="img-191107113927.jpg" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 2: </span>典型的深度神經網路-1</p>
 </div>
 
 <p>
-圖<a href="#org430dcf5">3</a>進一步說明網路模型中每一層的作用，可以將每一層網路視為對影像的特殊運算，如此一層一層逐一精煉(purified)，最後得到結果。<br />
+圖<a href="#orgc887ad5">3</a>進一步說明網路模型中每一層的作用，可以將每一層網路視為對影像的特殊運算，如此一層一層逐一精煉(purified)，最後得到結果。<br />
 </p>
 
 
-<div id="org430dcf5" class="figure">
+<div id="orgc887ad5" class="figure">
 <p><img src="images/img-1911071139277.jpg" alt="img-1911071139277.jpg" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 3: </span>典型的深度神經網路-2</p>
@@ -312,31 +314,31 @@
 <li>加深層數可以階層性的傳遞資料，例如，擷取出邊界的下一層會使用邊界資料來學習更高階的問題（如判斷形狀）。<br /></li>
 </ol>
 </div>
-<div id="outline-container-org0ecc547" class="outline-3">
-<h3 id="org0ecc547"><span class="section-number-3">1.1.</span> 深度學習的知名模型</h3>
+<div id="outline-container-org87b50e7" class="outline-3">
+<h3 id="org87b50e7"><span class="section-number-3">1.1.</span> 深度學習的知名模型</h3>
 <div class="outline-text-3" id="text-1-1">
 <p>
 幾個知名的深度學習模型如下：<br />
 </p>
 </div>
-<div id="outline-container-orga6384ea" class="outline-4">
-<h4 id="orga6384ea"><span class="section-number-4">1.1.1.</span> VGG</h4>
+<div id="outline-container-orgbd699a1" class="outline-4">
+<h4 id="orgbd699a1"><span class="section-number-4">1.1.1.</span> VGG</h4>
 <div class="outline-text-4" id="text-1-1-1">
 <p>
 VGG 為由卷積層與池化層構成的基本 CNN。特色是含權重層（卷積層及全連接層）共 16-19 層，有時會稱為 VGG16 或 VGG19。VGG 由於結構非常簡單，應用性高，所以多數技術人員喜歡使用以 VGG 為最基礎的網路。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org692175d" class="outline-4">
-<h4 id="org692175d"><span class="section-number-4">1.1.2.</span> GoogLeNet</h4>
+<div id="outline-container-orgee747fa" class="outline-4">
+<h4 id="orgee747fa"><span class="section-number-4">1.1.2.</span> GoogLeNet</h4>
 <div class="outline-text-4" id="text-1-1-2">
 <p>
 GoogLeLeNet 基本上與 CNN 相同，其特色是不僅會往垂直方向加深網路，也會往水平方向加深。GoogLeNet 往水平方向的做法稱為「Inception 結構」。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org69c869f" class="outline-4">
-<h4 id="org69c869f"><span class="section-number-4">1.1.3.</span> ResNet</h4>
+<div id="outline-container-orge73390d" class="outline-4">
+<h4 id="orge73390d"><span class="section-number-4">1.1.3.</span> ResNet</h4>
 <div class="outline-text-4" id="text-1-1-3">
 <p>
 ResNet 是由 Microsoft 團隊開發的網路，特色是具有能加深比過去更多層的「結構」，為了解決因加深過多層數無法順利學習的問題，ResNet 導入了「跳躍結構」（也稱為捷徑或分流）。跳躍結構是「直接」傳遞輸入資料，所以在反向傳播時，也會將上層的梯度「直接」傳遞給下層。透過這種跳躍結構，不用擔心梯度變小（或變得太大），可以把「具有意義的梯度」傳遞給上層。因此，跳躍結構能減少之前因為加深層數，使得梯度變小，出現梯度消失的問題。<br />
@@ -344,8 +346,8 @@ ResNet 是由 Microsoft 團隊開發的網路，特色是具有能加深比過�
 </div>
 </div>
 </div>
-<div id="outline-container-org262259c" class="outline-3">
-<h3 id="org262259c"><span class="section-number-3">1.2.</span> 深度學習的高速化</h3>
+<div id="outline-container-org613d783" class="outline-3">
+<h3 id="org613d783"><span class="section-number-3">1.2.</span> 深度學習的高速化</h3>
 <div class="outline-text-3" id="text-1-2">
 <p>
 由於大數據(big data)與大型網路的關係，使得深度學習必須進行大量運算，過去我們使用 CPU 來進行運算，如今多數深度學習的框架多支援 GPU，甚至支援以多個 GPU 與多台裝置進行分散式學習。GPU 原本是圖形專用處理器，可以快速處理平行運算，GPU 運算的目標是把其強大的效能運用在各種用途。比較 CPU 與 GPU 在 AlexNet 的學習，CPU 需花費 40 天以上，GPU 則可以在 6 天內完成。<br />
@@ -359,18 +361,18 @@ ResNet 是由 Microsoft 團隊開發的網路，特色是具有能加深比過�
 在深度學習的高速化過程中，包含運算量在內，記憶體容量、匯流排頻寬等，都會造成瓶頸，就記憶體容量來說，必須考慮到大量權重參數及中間資料會儲存在記憶體的情況。至於匯流排頻寛，一旦通過 GPU(或 CPU)的匯流排資料超過一定的限制，該處就會形成瓶頸，所以，最好能儘量減少通過網路的資料位元數。<br />
 </p>
 </div>
-<div id="outline-container-org4232457" class="outline-4">
-<h4 id="org4232457"><span class="section-number-4">1.2.1.</span> GPU v.s. CPU</h4>
+<div id="outline-container-org2c53500" class="outline-4">
+<h4 id="org2c53500"><span class="section-number-4">1.2.1.</span> GPU v.s. CPU</h4>
 <div class="outline-text-4" id="text-1-2-1">
 
-<div id="orgda4bcb7" class="figure">
+<div id="orgc0279ed" class="figure">
 <p><img src="images/深度學習/2024-02-20_10-26-27_2024-02-20_10-25-03.png" alt="2024-02-20_10-26-27_2024-02-20_10-25-03.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 4: </span>CPU 與 GPU 在架構上的設計差異</p>
 </div>
 
 <p>
-如圖<a href="#orgda4bcb7">4</a>，CPU 和 GPU 的差異起源於其相異的設計目標與應用場景， CPU的設計目的是處理各種不同的數據運算、邏輯判斷和中斷要求;而 GPU 的設計目的則是為了圖形運算， 其優勢在於能快速對同類型的數據進行平行運算<sup><a id="fnr.3" class="footref" href="#fn.3" role="doc-backlink">3</a></sup>。二者主要差異大致如下：<br />
+如圖<a href="#orgc0279ed">4</a>，CPU 和 GPU 的差異起源於其相異的設計目標與應用場景， CPU的設計目的是處理各種不同的數據運算、邏輯判斷和中斷要求;而 GPU 的設計目的則是為了圖形運算， 其優勢在於能快速對同類型的數據進行平行運算<sup><a id="fnr.3" class="footref" href="#fn.3" role="doc-backlink">3</a></sup>。二者主要差異大致如下：<br />
 </p>
 <ul class="org-ul">
 <li>CPU 是由幾個每次可處理數個獨立「執行緒」(threads)的核心(core)所組成；GPU 則有數百個這樣的核心，同時可以處理上千個執行緒<br /></li>
@@ -382,15 +384,15 @@ ResNet 是由 Microsoft 團隊開發的網路，特色是具有能加深比過�
 </div>
 </div>
 </div>
-<div id="outline-container-org19f860b" class="outline-2">
-<h2 id="org19f860b"><span class="section-number-2">2.</span> 深度學習運作原理</h2>
+<div id="outline-container-org5e7d810" class="outline-2">
+<h2 id="org5e7d810"><span class="section-number-2">2.</span> 深度學習運作原理</h2>
 <div class="outline-text-2" id="text-2">
 </div>
-<div id="outline-container-org4264063" class="outline-3">
-<h3 id="org4264063"><span class="section-number-3">2.1.</span> Layer, 損失函數與優化器</h3>
+<div id="outline-container-orgd362324" class="outline-3">
+<h3 id="orgd362324"><span class="section-number-3">2.1.</span> Layer, 損失函數與優化器</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
-前節深度學習中的每一「層」(layer)如何運作，取決於儲存於該層的權重(weight)，而權重是由多個數字組成。從技術層面來看，layer 是由各個權重參數(parameters)來和輸入的資料(如圖<a href="#orgac87ef2">5</a>中的X)進行運算以執行資料轉換的工作(如圖<a href="#orgac87ef2">5</a>)。而所謂的學習，指的就是幫助神經網路的每一層找出適當的權重值，讓神經網路可以將輸入的訓練資料經由與權重的運作推導出接近標準答案的運算結果(即圖<a href="#orgac87ef2">5</a>中的預測 Y)。<br />
+前節深度學習中的每一「層」(layer)如何運作，取決於儲存於該層的權重(weight)，而權重是由多個數字組成。從技術層面來看，layer 是由各個權重參數(parameters)來和輸入的資料(如圖<a href="#org6d1ca7c">5</a>中的X)進行運算以執行資料轉換的工作(如圖<a href="#org6d1ca7c">5</a>)。而所謂的學習，指的就是幫助神經網路的每一層找出適當的權重值，讓神經網路可以將輸入的訓練資料經由與權重的運作推導出接近標準答案的運算結果(即圖<a href="#org6d1ca7c">5</a>中的預測 Y)。<br />
 </p>
 
 <p>
@@ -398,18 +400,18 @@ ResNet 是由 Microsoft 團隊開發的網路，特色是具有能加深比過�
 </p>
 
 
-<div id="orgac87ef2" class="figure">
+<div id="org6d1ca7c" class="figure">
 <p><img src="images/img-191107115233.jpg" alt="img-191107115233.jpg" width="400" /><br />
 </p>
 <p><span class="figure-number">Figure 5: </span>nn 中 layer 的 parameter</p>
 </div>
 
 <p>
-為了提高神經網路的效能(預測的準確率)，我們要即時的掌握目前的輸出(Y)與真正的標準答案Y還差多少，這個評估由神經網路的損失函數(loss function;或稱目標函數, objective function;或稱成本函數, cost function<sup><a id="fnr.4" class="footref" href="#fn.4" role="doc-backlink">4</a></sup>)來負責，如圖<a href="#org6dabacf">6</a>。損失函數會取得神經網路的預測結果與標準答案二者的損失分數(又稱差距分數)，做為每一次學習的表現效能之評估標準。<br />
+為了提高神經網路的效能(預測的準確率)，我們要即時的掌握目前的輸出(Y)與真正的標準答案Y還差多少，這個評估由神經網路的損失函數(loss function;或稱目標函數, objective function;或稱成本函數, cost function<sup><a id="fnr.4" class="footref" href="#fn.4" role="doc-backlink">4</a></sup>)來負責，如圖<a href="#org7acfad4">6</a>。損失函數會取得神經網路的預測結果與標準答案二者的損失分數(又稱差距分數)，做為每一次學習的表現效能之評估標準。<br />
 </p>
 
 
-<div id="org6dabacf" class="figure">
+<div id="org7acfad4" class="figure">
 <p><img src="images/img-191107115304.jpg" alt="img-191107115304.jpg" width="400" /><br />
 </p>
 <p><span class="figure-number">Figure 6: </span>損失函數</p>
@@ -420,14 +422,14 @@ ResNet 是由 Microsoft 團隊開發的網路，特色是具有能加深比過�
 </p>
 
 
-<div id="orgfd27496" class="figure">
+<div id="org2f1bd17" class="figure">
 <p><img src="images/img-1911071153041.jpg" alt="img-1911071153041.jpg" width="400" /><br />
 </p>
 <p><span class="figure-number">Figure 7: </span>優化器</p>
 </div>
 
 <p>
-事實上，同樣的流程我們也曾在<a href="20221023154410-regression.html#ID-6ae7fb7a-0b38-4448-b19f-073d262513f2">迴歸</a>裡看過，在找到一條理想的迴歸方程式時，我們也是先隨便找一條，然後用loss function去評估這條方程式的優劣，再「求切線斜率」的方式來修正方程式的係數。差別只在於：在<a href="20221023154410-regression.html#ID-6ae7fb7a-0b38-4448-b19f-073d262513f2">迴歸</a>時我們要修正的係數只有一、兩個，而在深度學習中，我們要同時修正成千上萬個權重。<br />
+事實上，同樣的流程我們也曾在<a href="../../../../../Dropbox/notes/roam/20221023154410-regression.html#ID-6ae7fb7a-0b38-4448-b19f-073d262513f2">迴歸</a>裡看過，在找到一條理想的迴歸方程式時，我們也是先隨便找一條，然後用loss function去評估這條方程式的優劣，再「求切線斜率」的方式來修正方程式的係數。差別只在於：在<a href="../../../../../Dropbox/notes/roam/20221023154410-regression.html#ID-6ae7fb7a-0b38-4448-b19f-073d262513f2">迴歸</a>時我們要修正的係數只有一、兩個，而在深度學習中，我們要同時修正成千上萬個權重。<br />
 </p>
 
 <p>
@@ -435,32 +437,32 @@ ResNet 是由 Microsoft 團隊開發的網路，特色是具有能加深比過�
 </p>
 
 <p>
-我們再複習一下<a href="20221025104603-神經網路.html#ID-d6daa102-05bb-475d-b619-db8b61e86030">神經網路</a>這章裡的文字：<br />
+我們再複習一下<a href="../../../../../Dropbox/notes/roam/20221025104603-神經網路.html#ID-d6daa102-05bb-475d-b619-db8b61e86030">神經網路</a>這章裡的文字：<br />
 </p>
 
 <blockquote>
 <p>
-是的，就如同考試時你面對陌生選擇題的反應，神經網路也決定這麼幹，隨便丟一些數值填到矩陣中當成第一批參數。事實上，同樣的策略我們在<a href="20221023154410-regression.html#ID-7cd4a142-4cd9-46b6-b9a4-2ad750ae622f">線性迴歸:年齡身高預測/隨機的力量</a>裡已經玩過了，當初在找出方程式的最佳參數組合時，我們也是閉上眼睛隨便選一組。不管整個網路中有多少參數，當我們隨機設定好了所有參數的最初值後，整個神經網就就可以運作了，嗯&#x2026;至少已經可以依照前向傳播的流程輸出第一個預測結果了，你看，我們已經朝完美的人工智慧跨近一大步了-_-<br />
+是的，就如同考試時你面對陌生選擇題的反應，神經網路也決定這麼幹，隨便丟一些數值填到矩陣中當成第一批參數。事實上，同樣的策略我們在<a href="../../../../../Dropbox/notes/roam/20221023154410-regression.html#ID-7cd4a142-4cd9-46b6-b9a4-2ad750ae622f">線性迴歸:年齡身高預測/隨機的力量</a>裡已經玩過了，當初在找出方程式的最佳參數組合時，我們也是閉上眼睛隨便選一組。不管整個網路中有多少參數，當我們隨機設定好了所有參數的最初值後，整個神經網就就可以運作了，嗯&#x2026;至少已經可以依照前向傳播的流程輸出第一個預測結果了，你看，我們已經朝完美的人工智慧跨近一大步了-_-<br />
 </p>
 
-<div id="org6dac52c" class="figure">
+<div id="orgc044c7b" class="figure">
 <p><img src="images/類神經網路/2024-02-18_10-23-40_2024-02-18_10-20-52.png" alt="2024-02-18_10-23-40_2024-02-18_10-20-52.png" width="400" /><br />
 </p>
 </div>
 
 <p>
-接下來的流程其實和<a href="20221023154410-regression.html#ID-6ae7fb7a-0b38-4448-b19f-073d262513f2">迴歸</a>有點類似，我們評估預測結果的品質，然後回頭修正參數，只是這次的工程有點浩大，我們要修正所有的參數，這個回頭修正所有參數的過程稱為反向傳播(backward propagation)。<br />
+接下來的流程其實和<a href="../../../../../Dropbox/notes/roam/20221023154410-regression.html#ID-6ae7fb7a-0b38-4448-b19f-073d262513f2">迴歸</a>有點類似，我們評估預測結果的品質，然後回頭修正參數，只是這次的工程有點浩大，我們要修正所有的參數，這個回頭修正所有參數的過程稱為反向傳播(backward propagation)。<br />
 </p>
 </blockquote>
 </div>
 </div>
 </div>
-<div id="outline-container-orgddc7265" class="outline-2">
-<h2 id="orgddc7265"><span class="section-number-2">3.</span> 實作範例</h2>
+<div id="outline-container-orgc08984d" class="outline-2">
+<h2 id="orgc08984d"><span class="section-number-2">3.</span> 實作範例</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-org2521144" class="outline-3">
-<h3 id="org2521144"><span class="section-number-3">3.1.</span> 二元分類：IMDB</h3>
+<div id="outline-container-orga44c6ce" class="outline-3">
+<h3 id="orga44c6ce"><span class="section-number-3">3.1.</span> 二元分類：IMDB</h3>
 <div class="outline-text-3" id="text-3-1">
 <p>
 自 IMDB 資料集中取得 50000 個正/負評論，各 25000 個，該資料集已內建於 Keras 中，且資料已先預處理，電影評論內容為由單字構成的 list 結構，例如，若評論內容為&ldquo;In a Wonderful morning&#x2026;&rdquo;，其 list 結構可能為(8, 3, 386, 1969&#x2026;)，每個單字都會依據其出現頻率給定一個編號，編號越小越常見。(與 IMDb 相關的 paper 參見<a href="https://paperswithcode.com/sota/sentiment-analysis-on-imdb">Sentiment Analysis on IMDb / paperswithcode</a><br />
@@ -514,8 +516,8 @@ Downloading data from https://storage.googleapis.com/tensorflow/tf-keras-dataset
 上述程式中第<a href="#coderef-wordIndex" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-wordIndex');" onmouseout="CodeHighlightOff(this, 'coderef-wordIndex');">2</a>行主要負責取得單字(key)的對應數字(value)的字典，再藉由第<a href="#coderef-reverseWordIndex" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-reverseWordIndex');" onmouseout="CodeHighlightOff(this, 'coderef-reverseWordIndex');">5</a>行將(key:value)轉換為(value:key)，最後第<a href="#coderef-decodedReview" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-decodedReview');" onmouseout="CodeHighlightOff(this, 'coderef-decodedReview');">11</a>行將字典中的單字回復至原始評論，程式中(i-3)的原因是imdb.load_data已預留了第 0~2 個位置做特殊用途。<br />
 </p>
 </div>
-<div id="outline-container-org982465d" class="outline-4">
-<h4 id="org982465d"><span class="section-number-4">3.1.1.</span> 準備資料</h4>
+<div id="outline-container-org8a502dd" class="outline-4">
+<h4 id="org8a502dd"><span class="section-number-4">3.1.1.</span> 準備資料</h4>
 <div class="outline-text-4" id="text-3-1-1">
 <p>
 由於 IMDB 匯入 train_data 及 test_data 均為 list 型態，要先轉換為 tensor 才能輸入至神經網路，方法有二：<br />
@@ -560,22 +562,28 @@ Downloading data from https://storage.googleapis.com/tensorflow/tf-keras-dataset
 </pre>
 </div>
 </div>
-<div id="outline-container-org79bcd69" class="outline-4">
-<h4 id="org79bcd69"><span class="section-number-4">3.1.2.</span> 建立神經網路</h4>
+<div id="outline-container-org29aa82a" class="outline-4">
+<h4 id="org29aa82a"><span class="section-number-4">3.1.2.</span> 建立神經網路</h4>
 <div class="outline-text-4" id="text-3-1-2">
 <p>
 要建構一個 Dense 層堆疊架構的神經網路，要考慮兩個關鍵：<br />
 </p>
 <ol class="org-ol">
 <li>要用多少層？<br /></li>
-<li>每一層要有多少神經元？<br /></li>
+<li><p>
+每一層要有多少神經元？<br />
+</p>
+
+<p>
+a<br />
+</p></li>
 </ol>
 <p>
-此處使用兩個中間層、一個輸出層，如圖<a href="#org7e95fca">8</a>，一般的神經網路中，對那些介於輸入層和輸出層間的layer，我們習慣上稱之為隱藏層(hidden layers)，但此處 Keras 的輸入層也有隱藏層的特性。圖<a href="#org7e95fca">8</a>的 hidden layer 以 relu 為啟動函數，輸出層以 sigmoid 啟動函數輸出機率值。<br />
+此處使用兩個中間層、一個輸出層，如圖<a href="#orga771a11">8</a>，一般的神經網路中，對那些介於輸入層和輸出層間的layer，我們習慣上稱之為隱藏層(hidden layers)，但此處 Keras 的輸入層也有隱藏層的特性。圖<a href="#orga771a11">8</a>的 hidden layer 以 relu 為啟動函數，輸出層以 sigmoid 啟動函數輸出機率值。<br />
 </p>
 
 
-<div id="org7e95fca" class="figure">
+<div id="orga771a11" class="figure">
 <p><img src="images/nn3-6.png" alt="nn3-6.png" width="300" /><br />
 </p>
 <p><span class="figure-number">Figure 8: </span>IMDB model 架構</p>
@@ -595,38 +603,37 @@ model.add(layers.Dense(<span style="color: #da8548; font-weight: bold;">16</span
 </p>
 
 
-<div id="org4b7ede7" class="figure">
+<div id="org50dadb7" class="figure">
 <p><img src="images/ReLUPlot.png" alt="ReLUPlot.png" width="300" /><br />
 </p>
 <p><span class="figure-number">Figure 9: </span>ReLU 函數圖</p>
 </div>
 
 <p>
-為何要有 relu 等啟動函數？原因之一是這類函數為非線性函數(如圖<a href="#org4b7ede7">9</a>)，回顧<a href="20221025104603-神經網路.html#ID-d6daa102-05bb-475d-b619-db8b61e86030">神經網路</a>中的「學測成績預測模型」，像圖<a href="#org615c1b0">10</a>的模型，我們也只是在解一個如\(f(x)=x_1*w_1+x_2*w_2+x_3*w_3+...+x_7*w_7\)這樣的函式問題。<br />
+為何要有 relu 等啟動函數？原因之一是這類函數為非線性函數(如圖<a href="#org50dadb7">9</a>)，回顧<a href="../../../../../Dropbox/notes/roam/20221025104603-神經網路.html#ID-d6daa102-05bb-475d-b619-db8b61e86030">神經網路</a>中的「學測成績預測模型」，像圖<a href="#orge113a64">10</a>的模型，我們也只是在解一個如\(f(x)=x_1*w_1+x_2*w_2+x_3*w_3+...+x_7*w_7\)這樣的函式問題。<br />
 </p>
 
 
-<div id="org615c1b0" class="figure">
+<div id="orge113a64" class="figure">
 <p><img src="images/exam-Network2.png" alt="exam-Network2.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 10: </span>學測成績預測模型#2</p>
 </div>
 
 <p>
-就算我們把模型2進化為模型3(如圖<a href="#org86de0f9">11</a>)，本質上也仍只是一層，再多的層數也能合併為一層，此類模型並無助於複雜的學習。為了有效讓模型更加複雜，此處可以在模型中加入非線性轉換，如圖<a href="#org4b7ede7">9</a>中的ReLU激勵函數。<br />
+就算我們把模型2進化為模型3(如圖<a href="#org2d1e38d">11</a>)，本質上也仍只是一層，再多的層數也能合併為一層，此類模型並無助於複雜的學習。為了有效讓模型更加複雜，此處可以在模型中加入非線性轉換，如圖<a href="#org50dadb7">9</a>中的ReLU激勵函數。<br />
 </p>
 
 
-<div id="org86de0f9" class="figure">
+<div id="org2d1e38d" class="figure">
 <p><img src="images/exam-Network3.png" alt="exam-Network3.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 11: </span>學測成績預測模型#3</p>
 </div>
 
 <p>
-圖<a href="#org7e95fca">8</a>的實作程式如下：<br />
+圖<a href="#orga771a11">8</a>的實作程式如下，此處以最簡單的 NN (Neural Network) 作為範例。以 Keras 的核心為模型，應用最常使用 Sequential 模型。藉由.add()我們可以一層一層的將神經網路疊起。在每一層之中我們只需要簡單的設定每層的大小(units)與激勵函數(activation function)。<br />
 </p>
-
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">from</span> keras <span style="color: #51afef;">import</span> models
 <span class="linenr">2: </span><span style="color: #51afef;">from</span> keras <span style="color: #51afef;">import</span> layers
@@ -681,8 +688,8 @@ WARNING:absl:At this time, the v2.11+ optimizer `tf.keras.optimizers.RMSprop` ru
 </p>
 </div>
 </div>
-<div id="outline-container-org9f8ab27" class="outline-4">
-<h4 id="org9f8ab27"><span class="section-number-4">3.1.3.</span> 驗證神經網路的 model</h4>
+<div id="outline-container-orgc4195bd" class="outline-4">
+<h4 id="orgc4195bd"><span class="section-number-4">3.1.3.</span> 驗證神經網路的 model</h4>
 <div class="outline-text-4" id="text-3-1-3">
 <p>
 為了在訓練期間監控 model 對新資料的準確度，可以從原始訓練資料中分離出 10000 個樣本來建立驗證資料集。<br />
@@ -708,7 +715,7 @@ WARNING:absl:At this time, the v2.11+ optimizer `tf.keras.optimizers.RMSprop` ru
 </pre>
 </div>
 
-<pre class="example" id="org55a01f6">
+<pre class="example" id="org4109cb6">
 Epoch 1/20
 30/30 [==============================] - 2s 44ms/step - loss: 0.5010 - accuracy: 0.7841 - val_loss: 0.3645 - val_accuracy: 0.8758
 Epoch 2/20
@@ -765,25 +772,25 @@ dict_keys(['loss', 'accuracy', 'val_loss', 'val_accuracy'])
 
 
 
-<div id="org814ca6e" class="figure">
+<div id="org2192d73" class="figure">
 <p><img src="images/imdb-Keras-1.png" alt="imdb-Keras-1.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 12: </span>IMDB-Keras-1</p>
 </div>
 
 
-<div id="org637493c" class="figure">
+<div id="orgeefe62a" class="figure">
 <p><img src="images/imdb-Keras-2.png" alt="imdb-Keras-2.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 13: </span>IMDB-Keras-2</p>
 </div>
 </div>
 </div>
-<div id="outline-container-org3cb53a5" class="outline-4">
-<h4 id="org3cb53a5"><span class="section-number-4">3.1.4.</span> 優化 model</h4>
+<div id="outline-container-orgb18a0b3" class="outline-4">
+<h4 id="orgb18a0b3"><span class="section-number-4">3.1.4.</span> 優化 model</h4>
 <div class="outline-text-4" id="text-3-1-4">
 <p>
-由圖<a href="#orgd84be62">15</a>、<a href="#org78b4995">16</a>可以看出，上述 model 雖然在訓練階段的效能不錯，loss function 隨 epoch 下降、accuracy 也隨 epoch 升高，但在驗證階段的表現卻十分不理想，不僅 accuracy 隨 epoch 的增加呈緩降趨勢，loss function 甚至還往上急升。<br />
+由圖<a href="#org7db96ad">15</a>、<a href="#org5ccbed3">16</a>可以看出，上述 model 雖然在訓練階段的效能不錯，loss function 隨 epoch 下降、accuracy 也隨 epoch 升高，但在驗證階段的表現卻十分不理想，不僅 accuracy 隨 epoch 的增加呈緩降趨勢，loss function 甚至還往上急升。<br />
 </p>
 
 <p>
@@ -791,10 +798,10 @@ dict_keys(['loss', 'accuracy', 'val_loss', 'val_accuracy'])
 </p>
 <ul class="org-ul">
 <li>將資料向量化(vectorize_sequences())<br /></li>
-<li>加入了兩層 layer 以及 dropout 層，其架構如圖<a href="#org45619a2">14</a><br /></li>
+<li>加入了兩層 layer 以及 dropout 層，其架構如圖<a href="#org8b49c87">14</a><br /></li>
 </ul>
 
-<div id="org45619a2" class="figure">
+<div id="org8b49c87" class="figure">
 <p><img src="images/nn3-6-2.png" alt="nn3-6-2.png" width="300" /><br />
 </p>
 <p><span class="figure-number">Figure 14: </span>IMDB model 架構#2</p>
@@ -901,28 +908,28 @@ dict_keys(['loss', 'binary_accuracy', 'val_loss', 'val_binary_accuracy'])
 
 
 
-<div id="orgd84be62" class="figure">
+<div id="org7db96ad" class="figure">
 <p><img src="images/imdb-Keras-1.png" alt="imdb-Keras-1.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 15: </span>IMDB-Keras-1</p>
 </div>
 
 
-<div id="org78b4995" class="figure">
+<div id="org5ccbed3" class="figure">
 <p><img src="images/imdb-Keras-2.png" alt="imdb-Keras-2.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 16: </span>IMDB-Keras-2</p>
 </div>
 
 
-<div id="orgd99da3c" class="figure">
+<div id="org4ab78c2" class="figure">
 <p><img src="images/imdb-Keras-3.png" alt="imdb-Keras-3.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 17: </span>IMDB-Keras-3</p>
 </div>
 
 
-<div id="orgc81226b" class="figure">
+<div id="org3f8f8f5" class="figure">
 <p><img src="images/imdb-Keras-4.png" alt="imdb-Keras-4.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 18: </span>IMDB-Keras-4</p>
@@ -934,15 +941,15 @@ dict_keys(['loss', 'binary_accuracy', 'val_loss', 'val_binary_accuracy'])
 </div>
 </div>
 </div>
-<div id="outline-container-orgb766282" class="outline-3">
-<h3 id="orgb766282"><span class="section-number-3">3.2.</span> 多類別分類：數位新聞</h3>
+<div id="outline-container-org8385dee" class="outline-3">
+<h3 id="org8385dee"><span class="section-number-3">3.2.</span> 多類別分類：數位新聞</h3>
 <div class="outline-text-3" id="text-3-2">
 <p>
 目標：將路透社(Reuters)的數位新聞專欄分成 46 個主題，這屬於多類別分類(multiclass classification)問題，每個資料點只會被歸入一個類別；如果每個資料點可能屬於多個類別，則屬於多標籤多類別(multilabel multiclass classification)問題。<br />
 </p>
 </div>
-<div id="outline-container-orga6aef98" class="outline-4">
-<h4 id="orga6aef98"><span class="section-number-4">3.2.1.</span> 資料集</h4>
+<div id="outline-container-org02eb416" class="outline-4">
+<h4 id="org02eb416"><span class="section-number-4">3.2.1.</span> 資料集</h4>
 <div class="outline-text-4" id="text-3-2-1">
 <p>
 和 MNIST、IMDB 一樣，這組由 Reuters 在 1986 年發布的簡短新聞主題資料集也內建在 Keras 中，這個資料集總共分為 46 個不同主題。<br />
@@ -1012,8 +1019,8 @@ dict_keys(['loss', 'binary_accuracy', 'val_loss', 'val_binary_accuracy'])
 </pre>
 </div>
 </div>
-<div id="outline-container-org154ce3a" class="outline-4">
-<h4 id="org154ce3a"><span class="section-number-4">3.2.2.</span> 建立神經網路</h4>
+<div id="outline-container-org922e133" class="outline-4">
+<h4 id="org922e133"><span class="section-number-4">3.2.2.</span> 建立神經網路模型</h4>
 <div class="outline-text-4" id="text-3-2-2">
 <p>
 此次面臨的問題不似 IMDB 只分成兩類，而是共有 46 類，若每個 Dense layer 仍只使用16個維度，可能無法學會區分 46 個不同類別，故有需要將維度增加：<br />
@@ -1045,8 +1052,8 @@ dict_keys(['loss', 'binary_accuracy', 'val_loss', 'val_binary_accuracy'])
 </p>
 </div>
 </div>
-<div id="outline-container-orgf2f6856" class="outline-4">
-<h4 id="orgf2f6856"><span class="section-number-4">3.2.3.</span> 驗證數據集</h4>
+<div id="outline-container-org49b97b0" class="outline-4">
+<h4 id="org49b97b0"><span class="section-number-4">3.2.3.</span> 驗證數據集</h4>
 <div class="outline-text-4" id="text-3-2-3">
 <p>
 由訓練集抽出 1000 個樣本來驗證：<br />
@@ -1061,8 +1068,8 @@ dict_keys(['loss', 'binary_accuracy', 'val_loss', 'val_binary_accuracy'])
 </div>
 </div>
 </div>
-<div id="outline-container-orge121688" class="outline-4">
-<h4 id="orge121688"><span class="section-number-4">3.2.4.</span> 訓練模型</h4>
+<div id="outline-container-orgb95582e" class="outline-4">
+<h4 id="orgb95582e"><span class="section-number-4">3.2.4.</span> 訓練模型</h4>
 <div class="outline-text-4" id="text-3-2-4">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">history</span> = model.fit(partial_x_train,
@@ -1081,8 +1088,8 @@ dict_keys(['loss', 'accuracy', 'val_loss', 'val_accuracy'])
 </pre>
 </div>
 </div>
-<div id="outline-container-orga9881ce" class="outline-4">
-<h4 id="orga9881ce"><span class="section-number-4">3.2.5.</span> 評估模型</h4>
+<div id="outline-container-orgf0f273d" class="outline-4">
+<h4 id="orgf0f273d"><span class="section-number-4">3.2.5.</span> 評估模型</h4>
 <div class="outline-text-4" id="text-3-2-5">
 <p>
 程式第<a href="#coderef-modelEvaluate" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-modelEvaluate');" onmouseout="CodeHighlightOff(this, 'coderef-modelEvaluate');">6</a>行的model.evaluate()會傳回兩個結果:<br />
@@ -1110,7 +1117,7 @@ dict_keys(['loss', 'accuracy', 'val_loss', 'val_accuracy'])
 </pre>
 </div>
 
-<pre class="example" id="org16ea85a">
+<pre class="example" id="org804e297">
 loss: [0.23970305919647217, 0.2028971165418625, 0.18050165474414825, 0.16348564624786377, 0.14964115619659424, 0.14013586938381195, 0.13095684349536896, 0.1236189678311348, 0.11970153450965881]
 accuracy: [0.9445001482963562, 0.9502630829811096, 0.9521422982215881, 0.9515159130096436, 0.9556502103805542, 0.9548985362052917, 0.9553996324539185, 0.9576547145843506, 0.9574041366577148]
 val_accuracy: [0.7990000247955322, 0.8220000267028809, 0.8209999799728394, 0.8169999718666077, 0.8149999976158142, 0.8100000023841858, 0.8080000281333923, 0.8119999766349792, 0.8149999976158142]
@@ -1137,8 +1144,8 @@ val_accuracy: [0.7990000247955322, 0.8220000267028809, 0.8209999799728394, 0.816
 </p>
 </div>
 </div>
-<div id="outline-container-org94608c8" class="outline-4">
-<h4 id="org94608c8"><span class="section-number-4">3.2.6.</span> 評估結果視覺化</h4>
+<div id="outline-container-orge1ddcea" class="outline-4">
+<h4 id="orge1ddcea"><span class="section-number-4">3.2.6.</span> 評估結果視覺化</h4>
 <div class="outline-text-4" id="text-3-2-6">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#30059;&#22294;</span>
@@ -1179,22 +1186,22 @@ val_accuracy: [0.7990000247955322, 0.8220000267028809, 0.8209999799728394, 0.816
 </div>
 
 
-<div id="org93e5ad1" class="figure">
+<div id="orgdc524d3" class="figure">
 <p><img src="images/reuters-1.png" alt="reuters-1.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 19: </span>Reuters-1</p>
 </div>
 
 
-<div id="org8a8afb4" class="figure">
+<div id="orgd77db7b" class="figure">
 <p><img src="images/reuters-2.png" alt="reuters-2.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 20: </span>Reuters-2</p>
 </div>
 </div>
 </div>
-<div id="outline-container-org1ccf6cf" class="outline-4">
-<h4 id="org1ccf6cf"><span class="section-number-4">3.2.7.</span> 優化 model</h4>
+<div id="outline-container-org895c928" class="outline-4">
+<h4 id="org895c928"><span class="section-number-4">3.2.7.</span> 優化 model</h4>
 <div class="outline-text-4" id="text-3-2-7">
 <p>
 上例中的中間層若將神經元數(維度)降到 4，則其驗證準確率會降至 71%，主要原因是因為這樣會壓縮大量資訊到一個低維度的中間層表示空間，雖然神經網路能將大部份必要的資訊塞進這 4 維表示法中，但仍顯不足。若再提升維度、增加層數、加入 Dropout，結果似乎沒有顯著改善，為什麼？<br />
@@ -1274,7 +1281,7 @@ val_accuracy: [0.7990000247955322, 0.8220000267028809, 0.8209999799728394, 0.816
 </pre>
 </div>
 
-<pre class="example" id="org01b7fb0">
+<pre class="example" id="orgc44759e">
 dict_keys(['loss', 'accuracy', 'val_loss', 'val_accuracy'])
 71/71 [==============================] - 0s 1ms/step - loss: 1.4258 - accuracy: 0.7458
 評估資料內容： [1.4258323907852173, 0.745770275592804]
@@ -1298,28 +1305,28 @@ dict_keys(['loss', 'accuracy', 'val_loss', 'val_accuracy'])
 </pre>
 
 
-<div id="orgfb26fca" class="figure">
+<div id="org7314bb3" class="figure">
 <p><img src="images/reuters-1.png" alt="reuters-1.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 21: </span>Rueter-1</p>
 </div>
 
 
-<div id="orgaccd357" class="figure">
+<div id="orga0a6c90" class="figure">
 <p><img src="images/reuters-2.png" alt="reuters-2.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 22: </span>Rueter-2</p>
 </div>
 
 
-<div id="orge1a7b3a" class="figure">
+<div id="orgeaa7c41" class="figure">
 <p><img src="images/reuters-3.png" alt="reuters-3.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 23: </span>Rueter-3</p>
 </div>
 
 
-<div id="org132695c" class="figure">
+<div id="orgb3477c0" class="figure">
 <p><img src="images/reuters-4.png" alt="reuters-4.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 24: </span>Rueter-4</p>
@@ -1327,12 +1334,12 @@ dict_keys(['loss', 'accuracy', 'val_loss', 'val_accuracy'])
 </div>
 </div>
 </div>
-<div id="outline-container-org6602e6a" class="outline-3">
-<h3 id="org6602e6a"><span class="section-number-3">3.3.</span> 以 Keras 解決迴歸問題：預測房價</h3>
+<div id="outline-container-org50f1a44" class="outline-3">
+<h3 id="org50f1a44"><span class="section-number-3">3.3.</span> 迴歸問題：預測房價</h3>
 <div class="outline-text-3" id="text-3-3">
 </div>
-<div id="outline-container-org0220af4" class="outline-4">
-<h4 id="org0220af4"><span class="section-number-4">3.3.1.</span> 準備資料</h4>
+<div id="outline-container-org50cf3d2" class="outline-4">
+<h4 id="org50cf3d2"><span class="section-number-4">3.3.1.</span> 準備資料</h4>
 <div class="outline-text-4" id="text-3-3-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">from</span> keras.datasets <span style="color: #51afef;">import</span> boston_housing
@@ -1349,9 +1356,9 @@ dict_keys(['loss', 'accuracy', 'val_loss', 'val_accuracy'])
 (102, 13)
 </pre>
 </div>
-<div id="outline-container-orgcb0c028" class="outline-5">
-<h5 id="orgcb0c028">資料集標準化</h5>
-<div class="outline-text-5" id="text-orgcb0c028">
+<div id="outline-container-org01847d7" class="outline-5">
+<h5 id="org01847d7">資料集標準化</h5>
+<div class="outline-text-5" id="text-org01847d7">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">mean</span> = train_data.mean(axis=<span style="color: #da8548; font-weight: bold;">0</span>)
 <span class="linenr">2: </span><span style="color: #dcaeea;">train_data</span> -= mean
@@ -1365,8 +1372,8 @@ dict_keys(['loss', 'accuracy', 'val_loss', 'val_accuracy'])
 </div>
 </div>
 </div>
-<div id="outline-container-org64912cb" class="outline-4">
-<h4 id="org64912cb"><span class="section-number-4">3.3.2.</span> 建立神經網路</h4>
+<div id="outline-container-orge3ecea4" class="outline-4">
+<h4 id="orge3ecea4"><span class="section-number-4">3.3.2.</span> 建立神經網路</h4>
 <div class="outline-text-4" id="text-3-3-2">
 <p>
 由於可用的樣本很少，所以使用一個較小的神經網路，一般來說，訓練資料集越少，過度配適的情況會越嚴重。<br />
@@ -1395,15 +1402,15 @@ dict_keys(['loss', 'accuracy', 'val_loss', 'val_accuracy'])
 </p>
 </div>
 </div>
-<div id="outline-container-org4ae75bc" class="outline-4">
-<h4 id="org4ae75bc"><span class="section-number-4">3.3.3.</span> 驗證</h4>
+<div id="outline-container-orge3dc500" class="outline-4">
+<h4 id="orge3dc500"><span class="section-number-4">3.3.3.</span> 驗證</h4>
 <div class="outline-text-4" id="text-3-3-3">
 <p>
-本例中由於資料點少，驗證集也只有 100 筆資料，故驗證分數可能會因驗證資料點或訓練資料點的選用而有很大的變化，因而阻礙評估 model 優劣的可靠性。在這種情況下，最好的方式是選用 K-fold corss validation，做法如圖<a href="#orgf73a089">25</a>，原理是將資料拆分為 K 個區域(通常 K=4 或 5)，每次取一個區域做為驗證資料集，最後求 K 次驗證分數的平均值。<br />
+本例中由於資料點少，驗證集也只有 100 筆資料，故驗證分數可能會因驗證資料點或訓練資料點的選用而有很大的變化，因而阻礙評估 model 優劣的可靠性。在這種情況下，最好的方式是選用 K-fold corss validation，做法如圖<a href="#orgb8c527a">25</a>，原理是將資料拆分為 K 個區域(通常 K=4 或 5)，每次取一個區域做為驗證資料集，最後求 K 次驗證分數的平均值。<br />
 </p>
 
 
-<div id="orgf73a089" class="figure">
+<div id="orgb8c527a" class="figure">
 <p><img src="images/k-fold-validation.png" alt="k-fold-validation.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 25: </span>K-fold 交叉驗證</p>
@@ -1450,8 +1457,8 @@ processing fold # 3
 </pre>
 </div>
 </div>
-<div id="outline-container-org3adce07" class="outline-4">
-<h4 id="org3adce07"><span class="section-number-4">3.3.4.</span> 查看結果</h4>
+<div id="outline-container-org48eeb8d" class="outline-4">
+<h4 id="org48eeb8d"><span class="section-number-4">3.3.4.</span> 查看結果</h4>
 <div class="outline-text-4" id="text-3-3-4">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #c678dd;">print</span>(all_scores)
@@ -1480,9 +1487,9 @@ processing fold # 3
 </pre>
 </div>
 </div>
-<div id="outline-container-orge895ea7" class="outline-5">
-<h5 id="orge895ea7">評估結果視覺化</h5>
-<div class="outline-text-5" id="text-orge895ea7">
+<div id="outline-container-org23687d5" class="outline-5">
+<h5 id="org23687d5">評估結果視覺化</h5>
+<div class="outline-text-5" id="text-org23687d5">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">Some memory clean-up</span>
 <span class="linenr"> 2: </span><span style="color: #dcaeea;">k</span> = <span style="color: #da8548; font-weight: bold;">4</span>
@@ -1551,14 +1558,14 @@ processing fold # 3
 
 
 
-<div id="org02daf45" class="figure">
+<div id="orgdfe081a" class="figure">
 <p><img src="images/Boston-House-Price.png" alt="Boston-House-Price.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 26: </span>Boston House Price Training MAE</p>
 </div>
 
 <p>
-圖<a href="#org02daf45">26</a>是由每一訓練週期的平均 MAE 分數所繪出的折線圖，由於單位刻度與 y 軸刻度問題，此圖失去了部份重要細節，經由下列方式進行修正：<br />
+圖<a href="#orgdfe081a">26</a>是由每一訓練週期的平均 MAE 分數所繪出的折線圖，由於單位刻度與 y 軸刻度問題，此圖失去了部份重要細節，經由下列方式進行修正：<br />
 </p>
 <ul class="org-ul">
 <li>省略前 10 個資料點，<br /></li>
@@ -1593,20 +1600,20 @@ EMA 的數學函式如下：<br />
 </p>
 
 
-<div id="org38ce2ed" class="figure">
+<div id="org75438ef" class="figure">
 <p><img src="images/Boston-House-Price-ex10.png" alt="Boston-House-Price-ex10.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 27: </span>Boston House Price Training MAE (排除前 10 個資料點)</p>
 </div>
 
 <p>
-由圖<a href="#org38ce2ed">27</a>是可看出 MAE 在 80 個週期後已停止改善，然後開始往上升，即，過了這點就開始發生過度適配的情況。<br />
+由圖<a href="#org75438ef">27</a>是可看出 MAE 在 80 個週期後已停止改善，然後開始往上升，即，過了這點就開始發生過度適配的情況。<br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org117324f" class="outline-4">
-<h4 id="org117324f"><span class="section-number-4">3.3.5.</span> 小結</h4>
+<div id="outline-container-org1d188cd" class="outline-4">
+<h4 id="org1d188cd"><span class="section-number-4">3.3.5.</span> 小結</h4>
 <div class="outline-text-4" id="text-3-3-5">
 <p>
 由此範例可知：<br />
@@ -1617,15 +1624,364 @@ EMA 的數學函式如下：<br />
 <li>當可用資料很少時，使用 K-fold 驗證來評估模式。<br /></li>
 <li>當可用資料很少時，最好使用隠藏層較少(較淺)的小型神經網路，如一個或兩個，以免產生過渡配適。<br /></li>
 </ul>
-
+</div>
+</div>
+</div>
+<div id="outline-container-org0e857ce" class="outline-3">
+<h3 id="org0e857ce"><span class="section-number-3">3.4.</span> 圖片識別: MNIST</h3>
+<div class="outline-text-3" id="text-3-4">
+<p>
+此處以最簡單的 NN (Neural Network) 作為範例。以 Keras 的核心為模型，應用最常使用 Sequential 模型。藉由.add()我們可以一層一層的將神經網路疊起。在每一層之中我們只需要簡單的設定每層的大小(units)與激勵函數(activation function)。需要特別記得的是：第一層要記得寫輸入的向量大小、最後一層的 units 要等於輸出的向量大小。在這邊我們最後一層使用的激活函數(activation function)為 softmax。<br />
+</p>
+</div>
+<div id="outline-container-org0449a2f" class="outline-4">
+<h4 id="org0449a2f"><span class="section-number-4">3.4.1.</span> Import Library</h4>
+<div class="outline-text-4" id="text-3-4-1">
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr">1: </span>  <span style="color: #51afef;">import</span> keras
-<span class="linenr">2: </span>  <span style="color: #c678dd;">print</span>(keras.__version__)
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">from</span> keras.datasets <span style="color: #51afef;">import</span> mnist
+<span class="linenr"> 2: </span><span style="color: #51afef;">from</span> tensorflow.keras.utils <span style="color: #51afef;">import</span> to_categorical
+<span class="linenr"> 3: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 4: </span>
+<span class="linenr"> 5: </span>(x_train, y_train), (<span style="color: #dcaeea;">x_test</span>, <span style="color: #dcaeea;">y_test</span>) = mnist.load_data()
+<span class="linenr"> 6: </span>
+<span class="linenr"> 7: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23559;&#35347;&#32244;&#38598;&#29305;&#24501;x_train&#25892;&#24179;&#25104;&#19968;&#32173;&#21521;&#37327;</span>
+<span class="linenr"> 8: </span><span style="color: #dcaeea;">X_train</span> = x_train.reshape(x_train.shape[<span style="color: #da8548; font-weight: bold;">0</span>], -<span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr"> 9: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23559;&#27161;&#31844;y_train&#36914;&#34892;&#29544;&#29105;&#32232;&#30908;</span>
+<span class="linenr">10: </span><span style="color: #dcaeea;">Y_train</span> = to_categorical(y_train)
+<span class="linenr">11: </span>
+<span class="linenr">12: </span><span style="color: #dcaeea;">X_test</span> = x_test.reshape(x_test.shape[<span style="color: #da8548; font-weight: bold;">0</span>], -<span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr">13: </span><span style="color: #dcaeea;">Y_test</span> = to_categorical(y_test)
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org5ce5e0e" class="outline-4">
+<h4 id="org5ce5e0e"><span class="section-number-4">3.4.2.</span> 建立模型</h4>
+<div class="outline-text-4" id="text-3-4-2">
+<ul class="org-ul">
+<li>Keras的模型有Sequential與Model兩類<br /></li>
+<li>決定好要設計的模型類別，還要決定模型裡的layer如何叠力，layer有許多選擇，例如<a href="https://keras.io/api/layers/">Layer</a>的種類就有Dense layer, Activation layer, Conv1D layer, Dropout layer&#x2026;..<br /></li>
+<li>決定好layer,還要再選activation function，如 relu, sigmoid, softmax&#x2026;..<br /></li>
+<li><a href="https://keras.io/api/layers/activations/">Keras API reference / Layers API / Layer activation functions </a><br /></li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">from</span> keras.models <span style="color: #51afef;">import</span> Sequential
+<span class="linenr"> 2: </span><span style="color: #51afef;">from</span> keras.layers <span style="color: #51afef;">import</span> Dense
+<span class="linenr"> 3: </span><span style="color: #51afef;">from</span> keras.layers <span style="color: #51afef;">import</span> Dropout
+<span class="linenr"> 4: </span>
+<span class="linenr"> 5: </span><span style="color: #dcaeea;">model</span> = Sequential()
+<span class="linenr"> 6: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#23559;&#27169;&#22411;&#30090;&#36215;</span>
+<span class="linenr"> 7: </span>model.add(Dense(input_dim=<span style="color: #da8548; font-weight: bold;">28</span>*<span style="color: #da8548; font-weight: bold;">28</span>,units=<span style="color: #da8548; font-weight: bold;">128</span>,activation=<span style="color: #98be65;">'relu'</span>))
+<span class="linenr"> 8: </span>model.add(Dense(units=<span style="color: #da8548; font-weight: bold;">64</span>,activation=<span style="color: #98be65;">'relu'</span>))
+<span class="linenr"> 9: </span>model.add(Dense(units=<span style="color: #da8548; font-weight: bold;">10</span>,activation=<span style="color: #98be65;">'softmax'</span>))
+<span class="linenr">10: </span>model.summary()
+</pre>
+</div>
+
+<pre class="example" id="org30d5f5b">
+Model: "sequential"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #
+=================================================================
+ dense (Dense)               (None, 128)               100480
+
+ dense_1 (Dense)             (None, 64)                8256
+
+ dense_2 (Dense)             (None, 10)                650
+
+=================================================================
+Total params: 109386 (427.29 KB)
+Trainable params: 109386 (427.29 KB)
+Non-trainable params: 0 (0.00 Byte)
+_________________________________________________________________
+</pre>
+
+<p>
+藉由model.summary()可以簡略輸出模型的大概架構與所使用的參數總數。<br />
+</p>
+
+<p>
+此例中叠了三個Dense層，第一層為每張圖的輸入(28*28個點)，有784個神經元(或node)，第二層有64個神經元，這是隱藏層，最後一層有10神經元，分別代表10種數字的可能性。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org6a1f6a7" class="outline-4">
+<h4 id="org6a1f6a7"><span class="section-number-4">3.4.3.</span> 訓練模型</h4>
+<div class="outline-text-4" id="text-3-4-3">
+<p>
+訓練模型時要決定使用何種loss function、使用何種optimizer，可以到官網(<a href="https://keras.io/api/models/model_training_apis/">Model training APIs</a>)查看有哪些選項可使用以及何種選項適合哪些類型的資料集與問題。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>
+<span class="linenr">2: </span>model.<span style="color: #c678dd;">compile</span>(loss=<span style="color: #98be65;">'categorical_crossentropy'</span>,
+<span class="linenr">3: </span>              optimizer=<span style="color: #98be65;">'adam'</span>, metrics=[<span style="color: #98be65;">'accuracy'</span>])
+<span class="linenr">4: </span>
+<span class="linenr">5: </span><span style="color: #dcaeea;">train_history</span> = model.fit(x=X_train, y=Y_train, validation_split=<span style="color: #da8548; font-weight: bold;">0.2</span>,
+<span class="linenr">6: </span>                          epochs=<span style="color: #da8548; font-weight: bold;">50</span>, batch_size=<span style="color: #da8548; font-weight: bold;">1000</span>, verbose=<span style="color: #da8548; font-weight: bold;">2</span>)
+</pre>
+</div>
+
+<pre class="example" id="orgf350e58">
+Epoch 1/50
+48/48 - 0s - loss: 0.0079 - accuracy: 0.9979 - val_loss: 0.4309 - val_accuracy: 0.9731 - 326ms/epoch - 7ms/step
+Epoch 2/50
+48/48 - 0s - loss: 0.0043 - accuracy: 0.9990 - val_loss: 0.4585 - val_accuracy: 0.9717 - 165ms/epoch - 3ms/step
+...略...
+Epoch 49/50
+48/48 - 0s - loss: 0.0048 - accuracy: 0.9991 - val_loss: 0.5361 - val_accuracy: 0.9718 - 194ms/epoch - 4ms/step
+Epoch 50/50
+48/48 - 0s - loss: 0.0088 - accuracy: 0.9986 - val_loss: 0.4997 - val_accuracy: 0.9740 - 192ms/epoch - 4ms/step
+</pre>
+</div>
+</div>
+<div id="outline-container-orgd91eba4" class="outline-4">
+<h4 id="orgd91eba4"><span class="section-number-4">3.4.4.</span> 查看訓練過程</h4>
+<div class="outline-text-4" id="text-3-4-4">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
+<span class="linenr"> 2: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">show_train_history</span>(train_acc,test_acc,fn):
+<span class="linenr"> 3: </span>    plt.cla()
+<span class="linenr"> 4: </span>    plt.plot(train_history.history[train_acc])
+<span class="linenr"> 5: </span>    plt.plot(train_history.history[test_acc])
+<span class="linenr"> 6: </span>    plt.title(<span style="color: #98be65;">'Train History'</span>)
+<span class="linenr"> 7: </span>    plt.ylabel(<span style="color: #98be65;">'Accuracy'</span>)
+<span class="linenr"> 8: </span>    plt.xlabel(<span style="color: #98be65;">'Epoch'</span>)
+<span class="linenr"> 9: </span>    plt.legend([<span style="color: #98be65;">'train'</span>, <span style="color: #98be65;">'test'</span>], loc=<span style="color: #98be65;">'center left'</span>)
+<span class="linenr">10: </span>    plt.savefig(<span style="color: #98be65;">"images/"</span>+fn, dpi=<span style="color: #da8548; font-weight: bold;">300</span>)
+<span class="linenr">11: </span>    <span style="color: #5B6268;">##</span><span style="color: #5B6268;">plt.show()</span>
+<span class="linenr">12: </span>
+<span class="linenr">13: </span>show_train_history(<span style="color: #98be65;">'accuracy'</span>,<span style="color: #98be65;">'val_accuracy'</span>,<span style="color: #98be65;">'mnist-acc-val.png'</span>)
+<span class="linenr">14: </span>show_train_history(<span style="color: #98be65;">'loss'</span>,<span style="color: #98be65;">'val_loss'</span>,<span style="color: #98be65;">'mnist-loss-val.png'</span>)
+</pre>
+</div>
+
+<p>
+訓練完就可以透過accuracy與loss來評估模型的效能，可以粗略看出隨著epoch的增加，精確度也隨之提升、loss則隨之下降。<br />
+</p>
+
+<div id="org9c76b7f" class="figure">
+<p><img src="images/mnist-acc-val.png" alt="mnist-acc-val.png" width="500" /><br />
+</p>
+<p><span class="figure-number">Figure 28: </span>Caption</p>
+</div>
+
+
+<div id="orgc8a5dd0" class="figure">
+<p><img src="images/mnist-loss-val.png" alt="mnist-loss-val.png" width="500" /><br />
+</p>
+<p><span class="figure-number">Figure 29: </span>Caption</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org3b9ac13" class="outline-4">
+<h4 id="org3b9ac13"><span class="section-number-4">3.4.5.</span> 評估模型準確率</h4>
+<div class="outline-text-4" id="text-3-4-5">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">score</span> = model.evaluate(X_train, Y_train, batch_size = <span style="color: #da8548; font-weight: bold;">200</span>)
+<span class="linenr">2: </span><span style="color: #c678dd;">print</span> (<span style="color: #98be65;">'</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">Train Acc:'</span>, score[<span style="color: #da8548; font-weight: bold;">1</span>])
+<span class="linenr">3: </span><span style="color: #dcaeea;">score</span> = model.evaluate(X_test, Y_test, batch_size = <span style="color: #da8548; font-weight: bold;">200</span>)
+<span class="linenr">4: </span><span style="color: #c678dd;">print</span> (<span style="color: #98be65;">'</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">Test Acc:'</span>, score[<span style="color: #da8548; font-weight: bold;">1</span>])
 </pre>
 </div>
 
 <pre class="example">
-2.3.1
+300/300 [==============================] - 0s 922us/step - loss: 0.1039 - accuracy: 0.9941
+
+Train Acc: 0.9940666556358337
+50/50 [==============================] - 0s 892us/step - loss: 0.5575 - accuracy: 0.9729
+
+Test Acc: 0.9728999733924866
+</pre>
+</div>
+</div>
+<div id="outline-container-orgff6a20c" class="outline-4">
+<h4 id="orgff6a20c"><span class="section-number-4">3.4.6.</span> 實際預測結果</h4>
+<div class="outline-text-4" id="text-3-4-6">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">prediction</span>=model.predict(X_test)
+<span class="linenr">2: </span><span style="color: #c678dd;">print</span>(prediction.shape)
+<span class="linenr">3: </span><span style="color: #c678dd;">print</span>(prediction[:<span style="color: #da8548; font-weight: bold;">2</span>])
+</pre>
+</div>
+
+<pre class="example">
+  1/313 [..............................] - ETA: 2s118/313 [==========&gt;...................] - ETA: 0s246/313 [======================&gt;.......] - ETA: 0s313/313 [==============================] - 0s 407us/step
+(10000, 10)
+[[0. 0. 0. 0. 0. 0. 0. 1. 0. 0.]
+ [0. 0. 1. 0. 0. 0. 0. 0. 0. 0.]]
+</pre>
+
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
+<span class="linenr"> 2: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 3: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">oneHotDecode</span>(number):
+<span class="linenr"> 4: </span>    <span style="color: #51afef;">return</span> np.argmax(number)
+<span class="linenr"> 5: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">plot_images_labels_prediction</span>(images, labels, prediction, num, fn):
+<span class="linenr"> 6: </span>    plt.cla()
+<span class="linenr"> 7: </span>    <span style="color: #dcaeea;">fig</span> = plt.gcf()
+<span class="linenr"> 8: </span>
+<span class="linenr"> 9: </span>    fig.set_size_inches(<span style="color: #da8548; font-weight: bold;">10</span>, <span style="color: #da8548; font-weight: bold;">14</span>)
+<span class="linenr">10: </span>
+<span class="linenr">11: </span>    <span style="color: #dcaeea;">idx</span> = <span style="color: #da8548; font-weight: bold;">0</span>
+<span class="linenr">12: </span>    <span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #da8548; font-weight: bold;">0</span>, num):
+<span class="linenr">13: </span>        <span style="color: #dcaeea;">ax</span>=plt.subplot(<span style="color: #da8548; font-weight: bold;">5</span>, <span style="color: #da8548; font-weight: bold;">5</span>, <span style="color: #da8548; font-weight: bold;">1</span>+i)
+<span class="linenr">14: </span>        ax.imshow(images[idx].reshape(<span style="color: #da8548; font-weight: bold;">28</span>, <span style="color: #da8548; font-weight: bold;">28</span>), cmap=<span style="color: #98be65;">'binary'</span>)
+<span class="linenr">15: </span>
+<span class="linenr">16: </span>        ax.set_title(<span style="color: #98be65;">"label="</span> +<span style="color: #c678dd;">str</span>(oneHotDecode(labels[idx]))+
+<span class="linenr">17: </span>                     <span style="color: #98be65;">",</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">predict="</span>+<span style="color: #c678dd;">str</span>(np.argmax(prediction[idx]))
+<span class="linenr">18: </span>                     ,fontsize=<span style="color: #da8548; font-weight: bold;">10</span>)
+<span class="linenr">19: </span>        <span style="color: #dcaeea;">idx</span>+=<span style="color: #da8548; font-weight: bold;">1</span>
+<span class="linenr">20: </span>    plt.savefig(<span style="color: #98be65;">"images/"</span>+fn, dpi=<span style="color: #da8548; font-weight: bold;">300</span>, bbox_inches=<span style="color: #98be65;">'tight'</span>,pad_inches = <span style="color: #da8548; font-weight: bold;">0.2</span>)
+<span class="linenr">21: </span>plot_images_labels_prediction(x_test, y_test, prediction, <span style="color: #da8548; font-weight: bold;">20</span>, <span style="color: #98be65;">'mnist-predic-perf.png'</span>)
+<span class="linenr">22: </span>
+</pre>
+</div>
+
+<p>
+最後輸出測試資料集的前20筆資料的圖、label以及預測結果<br />
+</p>
+
+<div id="org54d8ce4" class="figure">
+<p><img src="images/mnist-predic-perf.png" alt="mnist-predic-perf.png" width="500" /><br />
+</p>
+<p><span class="figure-number">Figure 30: </span>前20筆測試集預測結果</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org9b23043" class="outline-3">
+<h3 id="org9b23043"><span class="section-number-3">3.5.</span> 圖片識別版本2: MNIST</h3>
+<div class="outline-text-3" id="text-3-5">
+</div>
+<div id="outline-container-orgffa8a03" class="outline-4">
+<h4 id="orgffa8a03"><span class="section-number-4">3.5.1.</span> 另一版本</h4>
+<div class="outline-text-4" id="text-3-5-1">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36617;&#20837;&#36039;&#26009;</span>
+<span class="linenr"> 2: </span><span style="color: #51afef;">from</span> keras.datasets <span style="color: #51afef;">import</span> mnist
+<span class="linenr"> 3: </span><span style="color: #51afef;">from</span> tensorflow.keras.utils <span style="color: #51afef;">import</span> to_categorical
+<span class="linenr"> 4: </span>
+<span class="linenr"> 5: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">load_data</span>():
+<span class="linenr"> 6: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36617;&#20837;minst&#30340;&#36039;&#26009;</span>
+<span class="linenr"> 7: </span>    (x_train, y_train), (<span style="color: #dcaeea;">x_test</span>, <span style="color: #dcaeea;">y_test</span>) = mnist.load_data()
+<span class="linenr"> 8: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23559;&#22294;&#29255;&#36681;&#25563;&#28858;&#19968;&#20491;60000*784&#30340;&#21521;&#37327;&#65292;&#20006;&#19988;&#27161;&#28310;&#21270;</span>
+<span class="linenr"> 9: </span>    <span style="color: #dcaeea;">x_train</span> = x_train.reshape(x_train.shape[<span style="color: #da8548; font-weight: bold;">0</span>], <span style="color: #da8548; font-weight: bold;">28</span>*<span style="color: #da8548; font-weight: bold;">28</span>)
+<span class="linenr">10: </span>    <span style="color: #dcaeea;">x_test</span> = x_test.reshape(x_test.shape[<span style="color: #da8548; font-weight: bold;">0</span>], <span style="color: #da8548; font-weight: bold;">28</span>*<span style="color: #da8548; font-weight: bold;">28</span>)
+<span class="linenr">11: </span>    <span style="color: #dcaeea;">x_train</span> = x_train.astype(<span style="color: #98be65;">'float32'</span>)
+<span class="linenr">12: </span>    <span style="color: #dcaeea;">x_test</span> = x_test.astype(<span style="color: #98be65;">'float32'</span>)
+<span class="linenr">13: </span>    <span style="color: #dcaeea;">x_train</span> = x_train/<span style="color: #da8548; font-weight: bold;">255</span>
+<span class="linenr">14: </span>    <span style="color: #dcaeea;">x_test</span> = x_test/<span style="color: #da8548; font-weight: bold;">255</span>
+<span class="linenr">15: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23559;y&#36681;&#25563;&#25104;one-hot encoding</span>
+<span class="linenr">16: </span>    <span style="color: #dcaeea;">y_train</span> = to_categorical(y_train, <span style="color: #da8548; font-weight: bold;">10</span>)
+<span class="linenr">17: </span>    <span style="color: #dcaeea;">y_test</span> = to_categorical(y_test, <span style="color: #da8548; font-weight: bold;">10</span>)
+<span class="linenr">18: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#22238;&#20659;&#34389;&#29702;&#23436;&#30340;&#36039;&#26009;</span>
+<span class="linenr">19: </span>    <span style="color: #51afef;">return</span> (x_train, y_train), (x_test, y_test)
+<span class="linenr">20: </span>
+<span class="linenr">21: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr">22: </span><span style="color: #51afef;">from</span> keras <span style="color: #51afef;">import</span> layers
+<span class="linenr">23: </span><span style="color: #51afef;">from</span> keras <span style="color: #51afef;">import</span> models
+<span class="linenr">24: </span>
+<span class="linenr">25: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">build_model</span>():<span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#24314;&#31435;&#27169;&#22411;</span>
+<span class="linenr">26: </span>    <span style="color: #dcaeea;">model</span> = models.Sequential()
+<span class="linenr">27: </span>    <span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#23559;&#27169;&#22411;&#30090;&#36215;</span>
+<span class="linenr">28: </span>    model.add(layers.Dense(input_dim=<span style="color: #da8548; font-weight: bold;">28</span>*<span style="color: #da8548; font-weight: bold;">28</span>,units=<span style="color: #da8548; font-weight: bold;">128</span>,activation=<span style="color: #98be65;">'relu'</span>))
+<span class="linenr">29: </span>    model.add(layers.Dense(units=<span style="color: #da8548; font-weight: bold;">64</span>,activation=<span style="color: #98be65;">'relu'</span>))
+<span class="linenr">30: </span>    model.add(layers.Dense(units=<span style="color: #da8548; font-weight: bold;">10</span>,activation=<span style="color: #98be65;">'softmax'</span>))
+<span class="linenr">31: </span>    model.summary()
+<span class="linenr">32: </span>    <span style="color: #51afef;">return</span> model
+<span class="linenr">33: </span>
+<span class="linenr">34: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38283;&#22987;&#35347;&#32244;&#27169;&#22411;&#65292;&#27492;&#34389;&#20351;&#29992;&#20102;Adam&#20570;&#28858;&#25105;&#20497;&#30340;&#20778;&#21270;&#22120;&#65292;loss function&#36984;&#29992;&#20102;categorical_crossentropy&#12290;</span>
+<span class="linenr">35: </span>(x_train,y_train),(<span style="color: #dcaeea;">x_test</span>,<span style="color: #dcaeea;">y_test</span>)=load_data()
+<span class="linenr">36: </span><span style="color: #dcaeea;">model</span> = build_model()
+<span class="linenr">37: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#38283;&#22987;&#35347;&#32244;&#27169;&#22411;</span>
+<span class="linenr">38: </span>model.<span style="color: #c678dd;">compile</span>(loss=<span style="color: #98be65;">'categorical_crossentropy'</span>,optimizer=<span style="color: #98be65;">"adam"</span>,metrics=[<span style="color: #98be65;">'accuracy'</span>])
+<span class="linenr">39: </span>model.fit(x_train, y_train, batch_size=<span style="color: #da8548; font-weight: bold;">100</span>, epochs=<span style="color: #da8548; font-weight: bold;">5</span>, verbose=<span style="color: #da8548; font-weight: bold;">0</span>)
+<span class="linenr">40: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#39023;&#31034;&#35347;&#32244;&#32080;&#26524;</span>
+<span class="linenr">41: </span><span style="color: #dcaeea;">score</span> = model.evaluate(x_train, y_train)
+<span class="linenr">42: </span><span style="color: #c678dd;">print</span> (<span style="color: #98be65;">'</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">Train Acc:'</span>, score[<span style="color: #da8548; font-weight: bold;">1</span>])
+<span class="linenr">43: </span><span style="color: #dcaeea;">score</span> = model.evaluate(x_test,y_test)
+<span class="linenr">44: </span><span style="color: #c678dd;">print</span> (<span style="color: #98be65;">'</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">Test Acc:'</span>, score[<span style="color: #da8548; font-weight: bold;">1</span>])
+<span class="linenr">45: </span>
+<span class="linenr">46: </span><span style="color: #5B6268;">### </span><span style="color: #5B6268;">&#36914;&#34892;&#38928;&#28204;</span>
+<span class="linenr">47: </span><span style="color: #dcaeea;">prediction</span> = model.predict(x_test)
+<span class="linenr">48: </span><span style="color: #c678dd;">print</span>(prediction[:<span style="color: #da8548; font-weight: bold;">10</span>])
+<span class="linenr">49: </span>
+<span class="linenr">50: </span><span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
+<span class="linenr">51: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23558;&#39044;&#27979;&#32467;&#26524;&#36716;&#25442;&#20026;&#31867;&#21035;&#26631;&#31614;</span>
+<span class="linenr">52: </span><span style="color: #dcaeea;">predicted_labels</span> = np.argmax(prediction, axis=<span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr">53: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23558;&#30495;&#23454;&#26631;&#31614;&#36716;&#25442;&#20026;&#31867;&#21035;&#26631;&#31614;</span>
+<span class="linenr">54: </span><span style="color: #dcaeea;">true_labels</span> = np.argmax(y_test, axis=<span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr">55: </span>
+<span class="linenr">56: </span><span style="color: #dcaeea;">p</span> = pd.crosstab(true_labels, predicted_labels, rownames=[<span style="color: #98be65;">'label'</span>], colnames=[<span style="color: #98be65;">'predict'</span>])
+<span class="linenr">57: </span><span style="color: #c678dd;">print</span>(p)
+<span class="linenr">58: </span>
+</pre>
+</div>
+
+<pre class="example" id="org15422eb">
+Model: "sequential"
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓
+┃ Layer (type)                    ┃ Output Shape           ┃       Param # ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩
+│ dense (Dense)                   │ (None, 128)            │       100,480 │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ dense_1 (Dense)                 │ (None, 64)             │         8,256 │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ dense_2 (Dense)                 │ (None, 10)             │           650 │
+└─────────────────────────────────┴────────────────────────┴───────────────┘
+ Total params: 109,386 (427.29 KB)
+ Trainable params: 109,386 (427.29 KB)
+ Non-trainable params: 0 (0.00 B)
+[1m   1/1875[0m [37m━━━━━━━━━━━━━━━━━━━━[0m [1m1:11[0m 38ms/step - accuracy: 1.0000 - loss: 0.0060[1m 119/1875[0m [32m━[0m[37m━━━━━━━━━━━━━━━━━━━[0m [1m0s[0m 426us/step - accuracy: 0.9900 - loss: 0.0408 [1m 266/1875[0m [32m━━[0m[37m━━━━━━━━━━━━━━━━━━[0m [1m0s[0m 379us/step - accuracy: 0.9910 - loss: 0.0376[1m 406/1875[0m [32m━━━━[0m[37m━━━━━━━━━━━━━━━━[0m [1m0s[0m 372us/step - accuracy: 0.9909 - loss: 0.0371[1m 553/1875[0m [32m━━━━━[0m[37m━━━━━━━━━━━━━━━[0m [1m0s[0m 364us/step - accuracy: 0.9909 - loss: 0.0365[1m 691/1875[0m [32m━━━━━━━[0m[37m━━━━━━━━━━━━━[0m [1m0s[0m 364us/step - accuracy: 0.9908 - loss: 0.0361[1m 838/1875[0m [32m━━━━━━━━[0m[37m━━━━━━━━━━━━[0m [1m0s[0m 360us/step - accuracy: 0.9907 - loss: 0.0359[1m 975/1875[0m [32m━━━━━━━━━━[0m[37m━━━━━━━━━━[0m [1m0s[0m 361us/step - accuracy: 0.9906 - loss: 0.0358[1m1115/1875[0m [32m━━━━━━━━━━━[0m[37m━━━━━━━━━[0m [1m0s[0m 360us/step - accuracy: 0.9904 - loss: 0.0358[1m1261/1875[0m [32m━━━━━━━━━━━━━[0m[37m━━━━━━━[0m [1m0s[0m 358us/step - accuracy: 0.9903 - loss: 0.0358[1m1410/1875[0m [32m━━━━━━━━━━━━━━━[0m[37m━━━━━[0m [1m0s[0m 356us/step - accuracy: 0.9903 - loss: 0.0358[1m1554/1875[0m [32m━━━━━━━━━━━━━━━━[0m[37m━━━━[0m [1m0s[0m 355us/step - accuracy: 0.9902 - loss: 0.0359[1m1686/1875[0m [32m━━━━━━━━━━━━━━━━━[0m[37m━━━[0m [1m0s[0m 357us/step - accuracy: 0.9901 - loss: 0.0360[1m1801/1875[0m [32m━━━━━━━━━━━━━━━━━━━[0m[37m━[0m [1m0s[0m 362us/step - accuracy: 0.9900 - loss: 0.0361[1m1875/1875[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m1s[0m 364us/step - accuracy: 0.9900 - loss: 0.0361
+
+Train Acc: 0.9893333315849304
+[1m  1/313[0m [37m━━━━━━━━━━━━━━━━━━━━[0m [1m14s[0m 45ms/step - accuracy: 1.0000 - loss: 0.0102[1m144/313[0m [32m━━━━━━━━━[0m[37m━━━━━━━━━━━[0m [1m0s[0m 350us/step - accuracy: 0.9736 - loss: 0.0826[1m279/313[0m [32m━━━━━━━━━━━━━━━━━[0m[37m━━━[0m [1m0s[0m 361us/step - accuracy: 0.9729 - loss: 0.0823[1m313/313[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 359us/step - accuracy: 0.9733 - loss: 0.0810
+
+Test Acc: 0.9764999747276306
+[1m  1/313[0m [37m━━━━━━━━━━━━━━━━━━━━[0m [1m5s[0m 17ms/step[1m139/313[0m [32m━━━━━━━━[0m[37m━━━━━━━━━━━━[0m [1m0s[0m 364us/step[1m288/313[0m [32m━━━━━━━━━━━━━━━━━━[0m[37m━━[0m [1m0s[0m 350us/step[1m313/313[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 378us/step
+[[1.58942123e-06 4.56630090e-07 1.44183810e-04 7.96658918e-04
+  4.83289035e-08 5.57914291e-07 8.43276837e-12 9.98949349e-01
+  7.18311139e-06 9.99482872e-05]
+ [9.20066245e-11 8.16951651e-05 9.99909282e-01 7.55548444e-06
+  9.96026872e-11 2.12249276e-07 8.12293024e-08 3.26049777e-11
+  1.17174454e-06 2.21182258e-14]
+ [1.82215524e-06 9.96792972e-01 3.96484742e-04 1.60194541e-04
+  1.02035912e-04 1.21604295e-04 6.79323348e-05 8.09717865e-04
+  1.49104348e-03 5.62478417e-05]
+ [9.99915719e-01 5.35815747e-09 4.51234046e-05 5.88590240e-07
+  1.43257850e-07 3.82396547e-06 1.11071859e-05 1.55277394e-06
+  2.66697526e-08 2.18579280e-05]
+ [4.33285859e-05 1.10104907e-06 1.34856982e-05 1.56399324e-06
+  9.93066788e-01 4.01588704e-06 4.50718362e-05 1.48709762e-04
+  9.48531579e-06 6.66645123e-03]
+ [6.66389894e-08 9.97991085e-01 3.08640438e-06 4.88619798e-06
+  1.13685437e-05 2.65808126e-07 6.75553053e-08 1.93838566e-03
+  2.31987287e-05 2.76108785e-05]
+ [7.66120678e-08 4.94036567e-06 2.84373783e-07 6.58262920e-08
+  9.98910308e-01 1.59385650e-06 7.10860562e-08 8.05889431e-06
+  4.70556435e-04 6.04005065e-04]
+ [6.92483184e-07 7.98684960e-06 4.36144364e-05 3.25308600e-03
+  4.72561878e-05 9.02633201e-06 8.00792588e-09 1.29608334e-05
+  2.07478279e-05 9.96604562e-01]
+ [1.25154367e-08 2.27490159e-06 1.40500115e-03 6.09770814e-06
+  4.96629109e-05 8.98099899e-01 9.85215753e-02 2.18058993e-08
+  1.91533507e-03 1.61481594e-07]
+ [6.98578688e-08 2.19913043e-09 5.58190187e-08 9.24819687e-06
+  1.30430009e-04 7.13636261e-09 4.16892909e-12 4.35012007e-05
+  2.02734009e-06 9.99814689e-01]]
+predict    0     1     2    3    4    5    6     7    8    9
+label
+0        960     0     6    0    2    0    7     1    4    0
+1          0  1128     3    0    0    0    1     0    3    0
+2          2     4  1015    2    1    0    1     4    2    1
+3          0     0    11  979    0    9    0     4    2    5
+4          0     1     1    0  955    0    6     4    2   13
+5          2     0     0   14    1  860    4     1    7    3
+6          3     3     2    1    1    3  942     1    2    0
+7          0     4     7    1    1    0    0  1004    0   11
+8          5     1     4    7    3    2    3     5  938    6
+9          3     2     2    6    6    1    2     3    0  984
 </pre>
 </div>
 </div>
@@ -1656,7 +2012,7 @@ EMA 的數學函式如下：<br />
 </div></div>
 <div id="postamble" class="status">
 <p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2024-02-25 Sun 17:14</p>
+<p class="date">Created: 2024-02-27 Tue 12:01</p>
 </div>
 </body>
 </html>
