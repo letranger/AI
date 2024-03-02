@@ -3,11 +3,11 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-12-19 Mon 21:01 -->
+<!-- 2024-03-02 Sat 13:10 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>CNN實作</title>
-<meta name="author" content="Yung Chin, Yen" />
+<meta name="author" content="Yung-Chin Yen" />
 <meta name="generator" content="Org Mode" />
 <style>
   #content { max-width: 60em; margin: auto; }
@@ -194,27 +194,38 @@
   .org-svg { }
 </style>
 <link rel="stylesheet" type="text/css" href="../css/muse.css" />
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        displayAlign: "center",
-        displayIndent: "0em",
-
-        "HTML-CSS": { scale: 100,
-                        linebreaks: { automatic: "false" },
-                        webFont: "TeX"
-                       },
-        SVG: {scale: 100,
-              linebreaks: { automatic: "false" },
-              font: "TeX"},
-        NativeMML: {scale: 100},
-        TeX: { equationNumbers: {autoNumber: "AMS"},
-               MultLineWidth: "85%",
-               TagSide: "right",
-               TagIndent: ".8em"
-             }
-});
+<script>
+  window.MathJax = {
+    tex: {
+      ams: {
+        multlineWidth: '85%'
+      },
+      tags: 'ams',
+      tagSide: 'right',
+      tagIndent: '.8em'
+    },
+    chtml: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    svg: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    output: {
+      font: 'mathjax-modern',
+      displayOverflow: 'overflow'
+    }
+  };
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+
+<script
+  id="MathJax-script"
+  async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
 </head>
 <body>
 <div id="content" class="content">
@@ -223,50 +234,49 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgf55f089">1. 實作1</a>
+<li><a href="#orgfd5656f">1. 實作1</a>
 <ul>
-<li><a href="#org77b3c38">1.1. 任務說明(資料集簡介)</a></li>
-<li><a href="#orga13dada">1.2. 下載資料集/分割資料集</a></li>
-<li><a href="#org0c2f005">1.3. 觀察資料集內容</a></li>
-<li><a href="#org9ae7dd8">1.4. 將資料標準化/歸一化</a></li>
-<li><a href="#orge8b6ef1">1.5. 建立模型</a></li>
-<li><a href="#org2c60fb3">1.6. 模型編譯</a></li>
-<li><a href="#org76b2b4a">1.7. 模型訓練</a></li>
-<li><a href="#orgeb315ba">1.8. 測試性能</a></li>
+<li><a href="#org965af68">1.1. 任務說明(資料集簡介)</a></li>
+<li><a href="#orgda0f2b8">1.2. 下載資料集/分割資料集</a></li>
+<li><a href="#org08d3376">1.3. 觀察資料集內容</a></li>
+<li><a href="#orgf6d1a84">1.4. 將資料標準化/歸一化</a></li>
+<li><a href="#orgc6267dd">1.5. 建立模型</a></li>
+<li><a href="#org2584830">1.6. 模型編譯</a></li>
+<li><a href="#org02cf944">1.7. 模型訓練</a></li>
+<li><a href="#orga689f23">1.8. 測試性能</a></li>
 </ul>
 </li>
-<li><a href="#orga917476">2. 實作2</a>
+<li><a href="#orgaff7120">2. 實作2</a>
 <ul>
-<li><a href="#org5d67b5f">2.1. 進一步查看效能</a></li>
-<li><a href="#orgadc4f58">2.2. 轉換label資料格式</a></li>
-<li><a href="#orge46392a">2.3. 增加卷積層、池化層、Dropout層以及全連接層</a></li>
-<li><a href="#orge1b675e">2.4. 測試性能</a></li>
-<li><a href="#org19b1e38">2.5. 再查看效能</a></li>
-<li><a href="#org4b2aba1">2.6. 有沒有其他的效能提升建議</a></li>
+<li><a href="#org9a950c1">2.1. 進一步查看效能</a></li>
+<li><a href="#org58ef4f9">2.2. 轉換label資料格式</a></li>
+<li><a href="#orge035d77">2.3. 增加卷積層、池化層、Dropout層以及全連接層</a></li>
+<li><a href="#org0639056">2.4. 測試性能</a></li>
+<li><a href="#org2498a21">2.5. 再查看效能</a></li>
+<li><a href="#orgc855584">2.6. 有沒有其他的效能提升建議</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 <a href="https://hits.sh/letranger.github.io/working/%E7%A7%91%E6%8A%80%E5%8A%9B%E6%94%AF%E6%8C%81%E9%9B%99%E8%AA%9E%E8%B7%A8%E5%9F%9F.html/"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/working/%E7%A7%91%E6%8A%80%E5%8A%9B%E6%94%AF%E6%8C%81%E9%9B%99%E8%AA%9E%E8%B7%A8%E5%9F%9F.html.svg?style=plastic"/></a>
-
-<div id="outline-container-orgf55f089" class="outline-2">
-<h2 id="orgf55f089"><span class="section-number-2">1.</span> 實作1</h2>
+<div id="outline-container-orgfd5656f" class="outline-2">
+<h2 id="orgfd5656f"><span class="section-number-2">1.</span> 實作1</h2>
 <div class="outline-text-2" id="text-1">
 </div>
-<div id="outline-container-org77b3c38" class="outline-3">
-<h3 id="org77b3c38"><span class="section-number-3">1.1.</span> 任務說明(資料集簡介)</h3>
+<div id="outline-container-org965af68" class="outline-3">
+<h3 id="org965af68"><span class="section-number-3">1.1.</span> 任務說明(資料集簡介)</h3>
 <div class="outline-text-3" id="text-1-1">
 </div>
 <ol class="org-ol">
-<li><a id="org95349bc"></a>資料集<br />
+<li><a id="org886d002"></a>資料集<br />
 <div class="outline-text-4" id="text-1-1-1">
 <p>
 Fashion-MNIST是一個替代MNIST手寫數字集的圖像資料集。 它是由Zalando（一家德國的時尚科技公司）旗下的研究部門提供。其涵蓋了來自10種類別的共7萬個不同商品的正面圖片。Fashion-MNIST的大小、格式和訓練集/測試集劃分與原始的MNIST完全一致。60000/10000的訓練測試資料劃分，28x28的灰度圖片。你可以直接用它來測試你的機器學習和深度學習演算法性能，且不需要改動任何的程式碼<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。<br />
 </p>
 </div>
 </li>
-<li><a id="org1a35f5c"></a>資料庫類別：<br />
+<li><a id="org59bfe3a"></a>資料庫類別：<br />
 <div class="outline-text-4" id="text-1-1-2">
 <p>
 每個訓練和測試樣本都按照以下類別進行了標註：<br />
@@ -341,7 +351,7 @@ Fashion-MNIST是一個替代MNIST手寫數字集的圖像資料集。 它是由Z
 這個資料集的樣子大致如下:<br />
 </p>
 
-<div id="org4e80e86" class="figure">
+<div id="org3fdbd85" class="figure">
 <p><img src="images/20191202101617492.png" alt="20191202101617492.png" width="500" /><br />
 </p>
 </div>
@@ -355,7 +365,7 @@ Fashion-MNIST是一個替代MNIST手寫數字集的圖像資料集。 它是由Z
 </ul>
 </div>
 </li>
-<li><a id="org51d9b49"></a>為什麼不用更常見的MNIST手寫數字資料集<br />
+<li><a id="org7d2560e"></a>為什麼不用更常見的MNIST手寫數字資料集<br />
 <div class="outline-text-4" id="text-1-1-3">
 <p>
 取代MNIST資料集的原因由如下幾個：<br />
@@ -367,7 +377,7 @@ Fashion-MNIST是一個替代MNIST手寫數字集的圖像資料集。 它是由Z
 </ul>
 </div>
 </li>
-<li><a id="org24037fd"></a>任務<br />
+<li><a id="orge497c34"></a>任務<br />
 <div class="outline-text-4" id="text-1-1-4">
 <p>
 我們的任務是利用<a href="20221023101228-深度學習.html#ID-20221023T101228.247381">深度學習</a>的方法建立一個<a href="20221023101414-卷積神經網路.html#ID-20221023T101414.457264">卷積神經網路</a>模型來識別出每張圖片屬於哪一個類別，在 <b>實作1</b> 中，我們打算建立一個最基本的CNN模型，只包含<br />
@@ -382,7 +392,7 @@ Fashion-MNIST是一個替代MNIST手寫數字集的圖像資料集。 它是由Z
 </p>
 </div>
 </li>
-<li><a id="org2dceb50"></a>語言與程式庫<br />
+<li><a id="orge9959b8"></a>語言與程式庫<br />
 <div class="outline-text-4" id="text-1-1-5">
 <p>
 有很多函式庫和模組可以用來建立卷積神經網路 (CNN) 模型。一些受歡迎的選項包括 TensorFlow、Keras、PyTorch 和 scikit-learn。這些函式庫每個都有自己的優點和缺點，你選擇哪一個取決於你的特定需求和喜好。一般來說，TensorFlow 和 Keras 是初學者的好選擇，而 PyTorch 是一個更進階的選項，適合用於研發。scikit-learn 是一個機器學習函式庫，包含了許多用於訓練和評估機器學習模型（包括 CNN）的有用工具。你可以閱讀更多關於這些函式庫及其功能的信息，幫助你選擇適合你項目的選項。<br />
@@ -395,8 +405,8 @@ Fashion-MNIST是一個替代MNIST手寫數字集的圖像資料集。 它是由Z
 </li>
 </ol>
 </div>
-<div id="outline-container-orga13dada" class="outline-3">
-<h3 id="orga13dada"><span class="section-number-3">1.2.</span> 下載資料集/分割資料集</h3>
+<div id="outline-container-orgda0f2b8" class="outline-3">
+<h3 id="orgda0f2b8"><span class="section-number-3">1.2.</span> 下載資料集/分割資料集</h3>
 <div class="outline-text-3" id="text-1-2">
 <p>
 要使用TensorFlow函式庫，TensorFlow函式庫提供了十分方便的資料集下載函式(load_data())，只需一行指令便可下載Fashion-MNIST的60000張訓練集圖片和10000張測試集圖片。<br />
@@ -407,7 +417,7 @@ Fashion-MNIST是一個替代MNIST手寫數字集的圖像資料集。 它是由Z
 <li>至於y_train則是60000張x_train的標籤(或是類別)，這是60000X1的陣列，每張照片對映到一個代表類別的數字<br /></li>
 </ul>
 <div class="org-src-container">
-<pre class="src src-python" id="org3712909"><span class="linenr">1: </span><span style="color: #51afef;">import</span> tensorflow <span style="color: #51afef;">as</span> tf
+<pre class="src src-python" id="orga58d70f"><span class="linenr">1: </span><span style="color: #51afef;">import</span> tensorflow <span style="color: #51afef;">as</span> tf
 <span class="linenr">2: </span>
 <span class="linenr">3: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24478;&#32178;&#36335;&#19979;&#36617;&#36039;&#26009;&#38598;</span>
 <span class="linenr">4: </span>(x_train, y_train), (<span style="color: #dcaeea;">x_test</span>, <span style="color: #dcaeea;">y_test</span>) = tf.keras.datasets.fashion_mnist.load_data()
@@ -423,9 +433,8 @@ Fashion-MNIST是一個替代MNIST手寫數字集的圖像資料集。 它是由Z
 </pre>
 </div>
 </div>
-
-<div id="outline-container-org0c2f005" class="outline-3">
-<h3 id="org0c2f005"><span class="section-number-3">1.3.</span> 觀察資料集內容</h3>
+<div id="outline-container-org08d3376" class="outline-3">
+<h3 id="org08d3376"><span class="section-number-3">1.3.</span> 觀察資料集內容</h3>
 <div class="outline-text-3" id="text-1-3">
 <p>
 那麼，資料集中的圖片與標籤實際內容又是如何呢？我們可以先挑第一張來看看：<br />
@@ -439,7 +448,7 @@ Fashion-MNIST是一個替代MNIST手寫數字集的圖像資料集。 它是由Z
 </pre>
 </div>
 
-<pre class="example" id="org079f2bf">
+<pre class="example" id="org5d851e2">
 第一張圖: [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] [ 0  0  0  0  0  0  0  0  0  0  0  0  1  0  0 13 73  0  0  1  4  0  0  0
   0  1  1  0] [  0   0   0   0   0   0   0   0   0   0   0   0   3   0  36 136 127  62
   54   0   0   0   1   3   4   0   0   3] [  0   0   0   0   0   0   0   0   0   0   0   0   6   0 102 204 176 134
@@ -531,9 +540,8 @@ Ankle boot/短靴
 </pre>
 </div>
 </div>
-
-<div id="outline-container-org9ae7dd8" class="outline-3">
-<h3 id="org9ae7dd8"><span class="section-number-3">1.4.</span> 將資料標準化/歸一化</h3>
+<div id="outline-container-orgf6d1a84" class="outline-3">
+<h3 id="orgf6d1a84"><span class="section-number-3">1.4.</span> 將資料標準化/歸一化</h3>
 <div class="outline-text-3" id="text-1-4">
 <p>
 資料標準化為資料前處理(data preprocessing)的一部份，為什麼資料在送進模型之前還要再處理過呢？<br />
@@ -576,7 +584,7 @@ Ankle boot/短靴
 </ul>
 </div>
 <ol class="org-ol">
-<li><a id="org4c92236"></a>實作<br />
+<li><a id="org7ecd592"></a>實作<br />
 <div class="outline-text-4" id="text-1-4-1">
 <p>
 許多AI函式庫提供了方便的標準化函數，例如<br />
@@ -608,7 +616,7 @@ Ankle boot/短靴
 </pre>
 </div>
 
-<pre class="example" id="orgbcd4179">
+<pre class="example" id="orga5b06f9">
 標準化後的第一張圖:
 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00
 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00
@@ -643,9 +651,8 @@ Ankle boot/短靴
 </li>
 </ol>
 </div>
-
-<div id="outline-container-orge8b6ef1" class="outline-3">
-<h3 id="orge8b6ef1"><span class="section-number-3">1.5.</span> 建立模型</h3>
+<div id="outline-container-orgc6267dd" class="outline-3">
+<h3 id="orgc6267dd"><span class="section-number-3">1.5.</span> 建立模型</h3>
 <div class="outline-text-3" id="text-1-5">
 <p>
 做好資料預處理，接下來就能動手建立模型了，在這裡我們使用Keras這個基於TensorFlow所開發的深度學習函式庫，Keras提供了許多簡單易用的模型建構函式，十分適合快速建立模型，讓使用者不用太過關注底層細節。 底下是一個非常基本的卷積神經網路模型:<br />
@@ -685,7 +692,7 @@ To enable them in other operations, rebuild TensorFlow with the appropriate comp
 </pre>
 </div>
 
-<pre class="example" id="orgf88cc67">
+<pre class="example" id="orgef5384b">
 Model: "sequential"
 _________________________________________________________________
  Layer (type)                Output Shape              Param #
@@ -725,16 +732,15 @@ TensorFlow另外提供了一個讓模型更佳視覺化的工具：plot_model()�
 </div>
 
 
-<div id="orgd232c63" class="figure">
+<div id="org4a8cc3e" class="figure">
 <p><img src="images/model-1.png" alt="model-1.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 1: </span>Caption</p>
 </div>
 </div>
 </div>
-
-<div id="outline-container-org2c60fb3" class="outline-3">
-<h3 id="org2c60fb3"><span class="section-number-3">1.6.</span> 模型編譯</h3>
+<div id="outline-container-org2584830" class="outline-3">
+<h3 id="org2584830"><span class="section-number-3">1.6.</span> 模型編譯</h3>
 <div class="outline-text-3" id="text-1-6">
 <p>
 在正式訓練模型之前，我們要先對模型進行編譯(compile)，這裡主要是要宣告等下要訓練模型的三個重要方法：如何找到所有參數的最佳值(optimizer)、如何評估預測結果(loss)、如何評估模型整體效能(metrics)。<br />
@@ -755,8 +761,8 @@ Keras中可用的損失函數可以從官網<a href="https://keras.io/api/losses
 </p>
 </div>
 </div>
-<div id="outline-container-org76b2b4a" class="outline-3">
-<h3 id="org76b2b4a"><span class="section-number-3">1.7.</span> 模型訓練</h3>
+<div id="outline-container-org02cf944" class="outline-3">
+<h3 id="org02cf944"><span class="section-number-3">1.7.</span> 模型訓練</h3>
 <div class="outline-text-3" id="text-1-7">
 <p>
 建立完模型架構後就可以開始訓練，所謂訓練就是將資料丟進模型中，讓模型(透過優化器)找出模型中每個參數（上面的Trainable params，共有54,250個)的最佳數值。Keras使用fit函式來進行訓練，訓練時要宣告以下兩個參數值：<br />
@@ -788,7 +794,7 @@ Batch Size的大小影響模型的最佳化程度和速度，但如何設定batc
 </pre>
 </div>
 
-<pre class="example" id="org66e6abc">
+<pre class="example" id="orgfbe037b">
 Epoch 1/5
 600/600 [==============================] - 7s 11ms/step - loss: 0.2756 - accuracy: 0.9023
 Epoch 2/5
@@ -806,7 +812,7 @@ Epoch 5/5
 </p>
 </div>
 <ol class="org-ol">
-<li><a id="orgc680eba"></a>當batch size = data set size<sup><a id="fnr.8" class="footref" href="#fn.8" role="doc-backlink">8</a></sup><br />
+<li><a id="orgfe14295"></a>當batch size = data set size<sup><a id="fnr.8" class="footref" href="#fn.8" role="doc-backlink">8</a></sup><br />
 <div class="outline-text-4" id="text-1-7-1">
 <p>
 如果資料比較小，可以採取全資料集的形式，由全資料集確定的方向能夠更進一步地代表樣本整體(整體性)，進一步更準確地朝向極值(Gradient為0)的方向走；對於較大的資料極一樣採取全資料的形式訓練，缺點如下:<br />
@@ -817,25 +823,25 @@ Epoch 5/5
 </ul>
 </div>
 </li>
-<li><a id="org952600a"></a>當batch size = 1<sup><a id="fnr.2.100" class="footref" href="#fn.2" role="doc-backlink">2</a></sup><br />
+<li><a id="org18fcc2d"></a>當batch size = 1<sup><a id="fnr.2.100" class="footref" href="#fn.2" role="doc-backlink">2</a></sup><br />
 <div class="outline-text-4" id="text-1-7-2">
 <p>
 假如每次只訓練一個樣本，即Batch Size=1。線性神經元在均方誤差代價函數的錯誤面是一個拋物面，橫截面是橢圓。對於多層神經元, 非線性網路，在局部依然近似一個拋物面。此時，每次修正以各自樣本的梯度方向修正，橫衝直撞各自為政，難以達到收斂的效果。<br />
 </p>
 </div>
 </li>
-<li><a id="org0dbfbff"></a>Batch size的進階問題<br />
+<li><a id="org49d00f2"></a>Batch size的進階問題<br />
 <ol class="org-ol">
-<li><a id="orgedc9a01"></a>若batchsize太小的缺點<sup><a id="fnr.9" class="footref" href="#fn.9" role="doc-backlink">9</a></sup><br />
+<li><a id="org6fa470c"></a>若batchsize太小的缺點<sup><a id="fnr.9" class="footref" href="#fn.9" role="doc-backlink">9</a></sup><br />
 <ol class="org-ol">
-<li><a id="org1ee4afa"></a>耗時長，訓練效率低。<br />
+<li><a id="orgec20ffc"></a>耗時長，訓練效率低。<br />
 <div class="outline-text-6" id="text-1-7-3-1-1">
 <p>
 假設batchsize=1，每次用一個數據進行訓練，如果數據總量很多時(假設有十萬條數據），就需要向模型投十萬次數據，完整訓練完一遍數據需要很長的時問，訓練效率很低；<br />
 </p>
 </div>
 </li>
-<li><a id="org4bd4441"></a>訓練數據就會非常難收斂，從而導致欠擬合。<br />
+<li><a id="org0441f96"></a>訓練數據就會非常難收斂，從而導致欠擬合。<br />
 <div class="outline-text-6" id="text-1-7-3-1-2">
 <p>
 假設batchsize=1，每次用一個數據進行訓練，則由於個體的差異性或者異常值的影響，模型的參數變化也會很大，每一層的梯度都具有很高的隨機性，而且需要耗費了大量的時間，從而導致模型非常難收斂。<br />
@@ -844,37 +850,37 @@ Epoch 5/5
 </li>
 </ol>
 </li>
-<li><a id="orgd6ec0fc"></a>隨著batchsize逐漸增大的優缺點<sup><a id="fnr.9.100" class="footref" href="#fn.9" role="doc-backlink">9</a></sup><sup>, </sup><sup><a id="fnr.8.100" class="footref" href="#fn.8" role="doc-backlink">8</a></sup><br />
+<li><a id="orge332bfb"></a>隨著batchsize逐漸增大的優缺點<sup><a id="fnr.9.100" class="footref" href="#fn.9" role="doc-backlink">9</a></sup><sup>, </sup><sup><a id="fnr.8.100" class="footref" href="#fn.8" role="doc-backlink">8</a></sup><br />
 <ol class="org-ol">
-<li><a id="orgb3db606"></a>大的batchsize減少訓練時間的同時所需內存容量增加<br />
+<li><a id="orga4edc9e"></a>大的batchsize減少訓練時間的同時所需內存容量增加<br />
 <div class="outline-text-6" id="text-1-7-3-2-1">
 <p>
 大的batchsize減少訓練時間這是肯定的，同樣的epoch數目，大的batchsize需要的batch數目減少了，所以處理速度變快，可以減少訓練時間；<br />
 </p>
 </div>
 </li>
-<li><a id="org70ea75a"></a>需要更多的epoch<br />
+<li><a id="org7301517"></a>需要更多的epoch<br />
 <div class="outline-text-6" id="text-1-7-3-2-2">
 <p>
 著Batch Size不斷的增大，處理相同資料量的速度將會變快。但是達到相同精度的Epoch數量變更多。<br />
 </p>
 </div>
 </li>
-<li><a id="orgd0c0cbd"></a>大的batchsize所需內存容量增加<br />
+<li><a id="org7c643d4"></a>大的batchsize所需內存容量增加<br />
 <div class="outline-text-6" id="text-1-7-3-2-3">
 <p>
 但是如果該值太大，假設batchsize=100000，一次將十萬條數據扔進模型，很可能會造成內存溢出，而無法正常進行訓練。<br />
 </p>
 </div>
 </li>
-<li><a id="org48ea457"></a>大的batchsize在提高穩定性的同時可能導致模型泛化能力下降<br />
+<li><a id="orgb7c81f8"></a>大的batchsize在提高穩定性的同時可能導致模型泛化能力下降<br />
 <div class="outline-text-6" id="text-1-7-3-2-4">
 <p>
 大的batch size梯度的計算更加穩定，因為模型訓練曲線會更加平滑。在微調的時候，大的batchsize可能會取得更好的結果。因為在一定範圍內，一般來說batchsize越大，其確定的下降方向越準，引起訓練震盪越小。batchsize增大到一定程度，其確定的下降方向已經基本不再變化。<br />
 </p>
 </div>
 </li>
-<li><a id="org8192811"></a>大的batchsize可能導致模型泛化能力下降<br />
+<li><a id="org009eeb2"></a>大的batchsize可能導致模型泛化能力下降<br />
 <div class="outline-text-6" id="text-1-7-3-2-5">
 <p>
 在一定範圍內，增加batchsize有助於收斂的穩定性，但是隨著batchsize的增加，模型的泛化性能會下降。若batchsize設為最大（樣本總個數），則每次更新參數都是相同的樣本，下降方向基本確定，這會導致模型的泛化性能下降。<br />
@@ -883,7 +889,7 @@ Epoch 5/5
 </li>
 </ol>
 </li>
-<li><a id="org895bdbe"></a>如何平衡batchsize的大小<sup><a id="fnr.9.100" class="footref" href="#fn.9" role="doc-backlink">9</a></sup>？<br />
+<li><a id="org14d4637"></a>如何平衡batchsize的大小<sup><a id="fnr.9.100" class="footref" href="#fn.9" role="doc-backlink">9</a></sup>？<br />
 <div class="outline-text-5" id="text-1-7-3-3">
 <p>
 batchsize太大或者太小都不好。所以 batch size 的值越大，梯度也就越穩定，而 batch size 越小，梯度具有越高的隨機性，但如果 batch size 太大，對於內存的需求就更高，同時也不利於網絡跳出局部極小點。所以，我們需要設置一個合適的batchsize值，在訓練速度和內存容量之間尋找到最佳的平衡點。<br />
@@ -898,7 +904,7 @@ batchsize太大或者太小都不好。所以 batch size 的值越大，梯度�
 </p>
 </div>
 </li>
-<li><a id="orgfe29015"></a>在合理範圍內增大Batch Size有以下好處:<br />
+<li><a id="org2fc4bd5"></a>在合理範圍內增大Batch Size有以下好處:<br />
 <div class="outline-text-5" id="text-1-7-3-4">
 <p>
 (1) 記憶體使用率增強，大矩陣乘法的平行運算效率加強!<br />
@@ -907,7 +913,7 @@ batchsize太大或者太小都不好。所以 batch size 的值越大，梯度�
 </p>
 </div>
 </li>
-<li><a id="org035def8"></a>也別盲目增大Batch Size其壞處是:<br />
+<li><a id="org4a87d07"></a>也別盲目增大Batch Size其壞處是:<br />
 <div class="outline-text-5" id="text-1-7-3-5">
 <p>
 剛剛提到，在合理的範圍內增加Batch Size有好處的，但一定不能盲目增加。原因如下:<br />
@@ -921,8 +927,8 @@ batchsize太大或者太小都不好。所以 batch size 的值越大，梯度�
 </li>
 </ol>
 </div>
-<div id="outline-container-orgeb315ba" class="outline-3">
-<h3 id="orgeb315ba"><span class="section-number-3">1.8.</span> 測試性能</h3>
+<div id="outline-container-orga689f23" class="outline-3">
+<h3 id="orga689f23"><span class="section-number-3">1.8.</span> 測試性能</h3>
 <div class="outline-text-3" id="text-1-8">
 <p>
 訓練完模型後，我們就可以直接拿模型來預測一下效果，並且評估模型的整體效能。<br />
@@ -980,7 +986,7 @@ evaluate()會傳回loss與accuracy兩個值<sup><a id="fnr.10" class="footref" h
 </p>
 </div>
 <ol class="org-ol">
-<li><a id="orgf3f9d35"></a>loss與accuracy的關係<sup><a id="fnr.11" class="footref" href="#fn.11" role="doc-backlink">11</a></sup><br />
+<li><a id="orgad67018"></a>loss與accuracy的關係<sup><a id="fnr.11" class="footref" href="#fn.11" role="doc-backlink">11</a></sup><br />
 <div class="outline-text-4" id="text-1-8-1">
 <p>
 清楚了定義之後，仔細思考就會發現其中的問題，因為精準率是輸出最大的機率，因此0.9的機率值和0.5的機率值效果是等價的，只要保證他們是最大機率即可！請看下面的例子：<br />
@@ -991,7 +997,7 @@ evaluate()會傳回loss與accuracy兩個值<sup><a id="fnr.10" class="footref" h
 </p>
 </div>
 </li>
-<li><a id="orgc4a78a6"></a>為什麼要用兩個指標<sup><a id="fnr.11.100" class="footref" href="#fn.11" role="doc-backlink">11</a></sup><br />
+<li><a id="orge555b17"></a>為什麼要用兩個指標<sup><a id="fnr.11.100" class="footref" href="#fn.11" role="doc-backlink">11</a></sup><br />
 <div class="outline-text-4" id="text-1-8-2">
 <p>
 既然精準率和損失都是評價模型好壞的，那麼用一個不行嗎？為什麼要用兩個並不完全等價的評價指標呢？<br />
@@ -1011,7 +1017,7 @@ evaluate()會傳回loss與accuracy兩個值<sup><a id="fnr.10" class="footref" h
 </p>
 </div>
 </li>
-<li><a id="orged5cf16"></a>關於loss與accuracy的另一種比諭說法<sup><a id="fnr.12" class="footref" href="#fn.12" role="doc-backlink">12</a></sup><br />
+<li><a id="org9018579"></a>關於loss與accuracy的另一種比諭說法<sup><a id="fnr.12" class="footref" href="#fn.12" role="doc-backlink">12</a></sup><br />
 <div class="outline-text-4" id="text-1-8-3">
 <p>
 一個更通俗的例子是：一個數學老師，在努力提高同學們的平均分，但期末考核的指標卻是及格率（60分及格）。假如平均分是100分（也就意味著所有同學都考到了100分），那麼自然及格率是100%，這是最理想的。但現實不一定這麼美好，平均分越高，只要平均分還沒有達到100，那麼及格率卻不一定越高，比如兩個人分別考40和90，那麼平均分就是65，及格率只有50%；如果兩個人的成績都是60，平均分就是60，及格率卻有100%。這也就是說，平均分可以作為一個目標，但這個目標並不直接跟考核目標掛鉤。<br />
@@ -1025,9 +1031,8 @@ evaluate()會傳回loss與accuracy兩個值<sup><a id="fnr.10" class="footref" h
 </ol>
 </div>
 </div>
-
-<div id="outline-container-orga917476" class="outline-2">
-<h2 id="orga917476"><span class="section-number-2">2.</span> 實作2</h2>
+<div id="outline-container-orgaff7120" class="outline-2">
+<h2 id="orgaff7120"><span class="section-number-2">2.</span> 實作2</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 在實作1中我們以卷積層、池化層、激活函數與全連接層建構出最簡單的模型，同時評估了一下整體的效能。<br />
@@ -1035,8 +1040,8 @@ evaluate()會傳回loss與accuracy兩個值<sup><a id="fnr.10" class="footref" h
 在實作2裡，我們要再進一步詳細的評估模型的效能，接下來變更模型的架構，最後再次評估模型的成效，看看我們重新設計的架構是否有助於優化模型。<br />
 </p>
 </div>
-<div id="outline-container-org5d67b5f" class="outline-3">
-<h3 id="org5d67b5f"><span class="section-number-3">2.1.</span> 進一步查看效能</h3>
+<div id="outline-container-org9a950c1" class="outline-3">
+<h3 id="org9a950c1"><span class="section-number-3">2.1.</span> 進一步查看效能</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
 訓練模型只是整個模型建構的一部份，後續的模型調校以提高模型效能才是我們的目的。為了更清楚模型的效能，我們將epoch的次數增加到50次，以測試集這個模型在訓練過程中沒有看過的資料(x_test, y_test)來驗證一下模型效能，並將每個epoch的效能驗證結果(就是後面的validation_data)記錄下來，全部先存到history中。<br />
@@ -1046,7 +1051,7 @@ evaluate()會傳回loss與accuracy兩個值<sup><a id="fnr.10" class="footref" h
 這次的訓練會花掉比實作1更多時間，建議訓練前先打開colab加速器。<br />
 </p>
 
-<div id="orgfee221f" class="figure">
+<div id="orgd75ddee" class="figure">
 <p><img src="images/2022-12-16_13-34-18.gif" alt="2022-12-16_13-34-18.gif" width="500" /><br />
 </p>
 </div>
@@ -1057,7 +1062,7 @@ evaluate()會傳回loss與accuracy兩個值<sup><a id="fnr.10" class="footref" h
 </pre>
 </div>
 
-<pre class="example" id="orgdc60247">
+<pre class="example" id="orgcaa2dae">
 Epoch 1/60
 600/600 [==============================] - 7s 12ms/step - loss: 0.2333 - accuracy: 0.9170 - val_loss: 0.2860 - val_accuracy: 0.8968
 Epoch 2/60
@@ -1228,14 +1233,14 @@ DEPRECATION WARNING: The system version of Tk is deprecated and may be removed i
 接下來我們打算進一步改善一下這個模型。<br />
 </p>
 
-<div id="orgf51cb06" class="figure">
+<div id="org85c8d5d" class="figure">
 <p><img src="images/cnn-eva-2.png" alt="cnn-eva-2.png" width="500" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgadc4f58" class="outline-3">
-<h3 id="orgadc4f58"><span class="section-number-3">2.2.</span> 轉換label資料格式</h3>
+<div id="outline-container-org58ef4f9" class="outline-3">
+<h3 id="org58ef4f9"><span class="section-number-3">2.2.</span> 轉換label資料格式</h3>
 <div class="outline-text-3" id="text-2-2">
 <p>
 首先要解決的是資料集的標籤表示法。這個模型的任務是進行分類，在資料集中以數字0~9來表示10種不同的分類，雖然從精準率看來效能還可以，但這種表示法隱含了一些問題。我們以數字來表示分類，這會讓模型誤會這些分類是連續、有序的，也就是說，第2類比第1類大，第3類到第5類的距離等於第5類到第7類的距離，這顯然是荒謬錯誤的。<br />
@@ -1278,8 +1283,8 @@ Keras提供的to_categorical()函式可以讓我們簡單快速的對資枓集�
 </p>
 </div>
 </div>
-<div id="outline-container-orge46392a" class="outline-3">
-<h3 id="orge46392a"><span class="section-number-3">2.3.</span> 增加卷積層、池化層、Dropout層以及全連接層</h3>
+<div id="outline-container-orge035d77" class="outline-3">
+<h3 id="orge035d77"><span class="section-number-3">2.3.</span> 增加卷積層、池化層、Dropout層以及全連接層</h3>
 <div class="outline-text-3" id="text-2-3">
 <p>
 接下來我們試著增加模型中卷積層、池化層與全連接層的層數，同時為了解決過擬合的問題，我們也在各層中加入Dropout層，其目的是隨機丟掉(重置)一些神經元的參數，Dropout()裡的數值為所要丟棄的神經元百分比。<br />
@@ -1316,7 +1321,7 @@ Keras提供的to_categorical()函式可以讓我們簡單快速的對資枓集�
 <span class="linenr">2: </span>model.summary()
 </pre>
 </div>
-<pre class="example" id="org656ce98">
+<pre class="example" id="org2d346d2">
 Model: "sequential_1"
 _________________________________________________________________
  Layer (type)                Output Shape              Param #
@@ -1368,14 +1373,14 @@ _________________________________________________________________
 </pre>
 </div>
 
-<div id="org1113e23" class="figure">
+<div id="orgf1b6b9e" class="figure">
 <p><img src="images/model-2.png" alt="model-2.png" width="500" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-orge1b675e" class="outline-3">
-<h3 id="orge1b675e"><span class="section-number-3">2.4.</span> 測試性能</h3>
+<div id="outline-container-org0639056" class="outline-3">
+<h3 id="org0639056"><span class="section-number-3">2.4.</span> 測試性能</h3>
 <div class="outline-text-3" id="text-2-4">
 <p>
 接下來便是對這個修改過後的模型進行編譯及訓練<br />
@@ -1387,7 +1392,7 @@ _________________________________________________________________
 </pre>
 </div>
 
-<pre class="example" id="orgb358f83">
+<pre class="example" id="org07572b8">
 Epoch 1/50
 600/600 [==============================] - 46s 76ms/step - loss: 0.6692 - accuracy: 0.7549 - val_loss: 0.4094 - val_accuracy: 0.8506
 Epoch 2/50
@@ -1491,8 +1496,8 @@ Epoch 50/50
 </pre>
 </div>
 </div>
-<div id="outline-container-org19b1e38" class="outline-3">
-<h3 id="org19b1e38"><span class="section-number-3">2.5.</span> 再查看效能</h3>
+<div id="outline-container-org2498a21" class="outline-3">
+<h3 id="org2498a21"><span class="section-number-3">2.5.</span> 再查看效能</h3>
 <div class="outline-text-3" id="text-2-5">
 <p>
 完成訓練後再將各個epoch的loss變化畫成折線圖，由圖中的折線變化可以看出，不但整體loss降低，模型也沒有再出現過擬合的現象，模型對於訓練集與測試集資料的損失值都隨著訓練次數而不斷下降<br />
@@ -1535,8 +1540,8 @@ accuracy: 0.9236000180244446
 </pre>
 </div>
 </div>
-<div id="outline-container-org4b2aba1" class="outline-3">
-<h3 id="org4b2aba1"><span class="section-number-3">2.6.</span> 有沒有其他的效能提升建議</h3>
+<div id="outline-container-orgc855584" class="outline-3">
+<h3 id="orgc855584"><span class="section-number-3">2.6.</span> 有沒有其他的效能提升建議</h3>
 <div class="outline-text-3" id="text-2-6">
 <ul class="org-ul">
 <li>以Keras的ImageDataGenerator多產生額外的影像資料(旋轉、偏移、放大、縮小)，增加變異性<sup><a id="fnr.13" class="footref" href="#fn.13" role="doc-backlink">13</a></sup><br /></li>
@@ -1606,8 +1611,8 @@ accuracy: 0.9236000180244446
 </div>
 </div></div>
 <div id="postamble" class="status">
-<p class="author">Author: Yung Chin, Yen</p>
-<p class="date">Created: 2022-12-19 Mon 21:01</p>
+<p class="author">Author: Yung-Chin Yen</p>
+<p class="date">Created: 2024-03-02 Sat 13:10</p>
 </div>
 </body>
 </html>
