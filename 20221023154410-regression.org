@@ -1235,16 +1235,1138 @@ print('MSE={0:.6f}'.format(mse(year, height, [W0, W1])))
 : dMSE=[0.004964, -0.099983]
 : MSE=22.955476
 
-* 簡單線性迴歸建模：Pizza
+* 線性迴歸實作: 波士頓房價預測
+- 本例中部份程式碼及文字來自[[https://medium.com/li-ting-liao-tiffany/python-%E5%BF%AB%E9%80%9F%E8%B3%87%E6%96%99%E5%88%86%E6%9E%90-boston-housing%E6%B3%A2%E5%A3%AB%E9%A0%93%E6%88%BF%E5%83%B9-9c535fb7ceb7][What impacts Boston Housing Prices]]
+- 本例使用資料集為 1970 年中期 Boston 郊區資料，包含犯罪率、當地財產稅等，用以預測某郊區房價中位數，本例有 506 筆資料，分為 404 個訓練樣本和 102 個測試樣本，但每個 feature 的單位不同，故須先進行資料預調整。
+** 下載資料
+#+begin_src python -r -n :async :results output :exports both :session boston
+import pandas as pd
+
+housing = pd.read_csv('https://raw.githubusercontent.com/letranger/AI/gh-pages/Downloads/boston_housing.csv')
+#+end_src
+
+#+RESULTS:
+
+也可以用tensorflow的load_data()直接下載，但這組沒有column title
+#+begin_src python -r -n :async :results output :exports both :session boston
+import matplotlib.pyplot as plt
+from tensorflow.keras.datasets import boston_housing
+
+(train_x, train_y), (test_x, test_y) = boston_housing.load_data()
+#+end_src
+
+** 大概觀察一下資料集
+#+begin_src python -r -n :async :results output :exports both :session boston
+print(type(housing))
+print(housing.shape)
+print(housing.iloc[0])
+#+end_src
+
+#+RESULTS:
+#+begin_example
+<class 'pandas.core.frame.DataFrame'>
+(506, 14)
+crim         0.00632
+zn          18.00000
+indus        2.31000
+chas         0.00000
+nox          0.53800
+rm           6.57500
+age         65.20000
+dis          4.09000
+rad          1.00000
+tax        296.00000
+ptratio     15.30000
+b          396.90000
+lstat        4.98000
+medv        24.00000
+Name: 0, dtype: float64
+#+end_example
+這個資料集共有506筆資料，前13個為特徵值，最後一個medv為房價。其他特徵值分別代表:
+- CRIM: per capita crime rate by town
+- ZN: proportion of residential land zoned for lots over 25,000 sq.ft.
+- INDUS: proportion of non-retail business acres per town
+- CHAS: Charles River dummy variable (= 1 if tract bounds river; 0 otherwise)
+- NOX: nitric oxides concentration (parts per 10 million)
+- RM: average number of rooms per dwelling
+- AGE: proportion of owner-occupied units built prior to 1940
+- DIS: weighted distances to five Boston employment centres
+- RAD: index of accessibility to radial highways
+- TAX: full-value property-tax rate per $10,000
+- PTRATIO: pupil-teacher ratio by town
+- B: 1000(Bk - 0.63)^2 where Bk is the proportion of blacks by town
+- LSTAT: % lower status of the population
+- MEDV: Median value of owner-occupied homes in $1000's
+
+** 資料預處理
+*** 處理缺漏值
+快速檢查是否有缺漏值
+#+begin_src python -r -n :async :results output :exports both :session boston
+print(housing.isnull().sum())
+#+end_src
+#+RESULTS:
+#+begin_example
+crim        0
+zn          0
+indus       0
+chas        0
+nox         0
+rm          0
+age         0
+dis         0
+rad         0
+tax         0
+ptratio     0
+b           0
+lstat       0
+medv       54
+dtype: int64
+#+end_example
+刪掉有缺失值的資料
+#+begin_src python -r -n :async :results output :exports both :session boston
+housing.dropna(axis=0, inplace=True)
+print(housing.isnull().sum())
+print(housing.shape)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+crim       0
+zn         0
+indus      0
+chas       0
+nox        0
+rm         0
+age        0
+dis        0
+rad        0
+tax        0
+ptratio    0
+b          0
+lstat      0
+medv       0
+dtype: int64
+(452, 14)
+#+end_example
+*** 資料標準化
+由第一筆訓練資料特徵housing.iloc[0]可以看出，每項特徵值的差異甚大，我們可以先對這些資料特徵進行標準化：
+#+begin_src python -r -n :async :results output :exports both :session boston
+print(housing.iloc[0,:-1])
+
+mean = housing.iloc[:,:-1].mean(axis=0)
+housing.iloc[:,:-1] -= mean
+std = housing.iloc[:,:-1].std(axis=0)
+housing.iloc[:,:-1] /= std
+
+print(housing.iloc[0,:-1])
+#+end_src
+
+#+RESULTS:
+#+begin_example
+crim         0.00632
+zn          18.00000
+indus        2.31000
+chas         0.00000
+nox          0.53800
+rm           6.57500
+age         65.20000
+dis          4.09000
+rad          1.00000
+tax        296.00000
+ptratio     15.30000
+b          396.90000
+lstat        4.98000
+Name: 0, dtype: float64
+<string>:5: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise in a future error of pandas. Value '0     -6.823009
+1     -5.823009
+2     -5.823009
+3     -4.823009
+4     -4.823009
+         ...
+501   -6.823009
+502   -6.823009
+503   -6.823009
+504   -6.823009
+505   -6.823009
+Name: rad, Length: 452, dtype: float64' has dtype incompatible with int64, please explicitly cast to a compatible dtype first.
+crim      -0.566733
+zn         0.217000
+indus     -1.176220
+chas      -0.289391
+nox       -0.024739
+rm         0.347120
+age       -0.012727
+dis        0.022210
+rad       -0.904489
+tax       -0.538187
+ptratio   -1.339563
+b          0.394920
+lstat     -1.049614
+Name: 0, dtype: float64
+#+end_example
+
+** 觀察資料
+*** 初步看一下房價的分佈
+#+begin_src python -r -n :async :results output :exports both :session boston
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.histplot(housing['medv'])
+plt.savefig("images/housing-price.png", dpi=300)
+#+end_src
+#+CAPTION: 房價分佈概況
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/housing-price.png]]
+*** 各特徵值間的關係
+#+begin_src python -r -n :async :results output :exports both :session boston
+correlation_matrix = housing.corr().round(2)
+# annot = True 讓我們可以把數字標進每個格子裡
+sns.heatmap(data=correlation_matrix, annot = True)
+plt.savefig("images/housing-corr.png", dpi=300)
+#+end_src
+#+CAPTION: 特徵值間的闗係
+#+LABEL:fig:Labl
+#+name: fig:boston-cor
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/housing-corr.png]]
+
+由圖[[fig:boston-cor]]可以看出：
+- 跟MEDV（房價）高度相關的是LSTAT（中低收入戶佔當地居住人口的比例）和RM（房子有幾間房間）這兩個變數。
+- 此外也看到DIS（到波士頓商業中心的距離）和AGE（屋齡），INDUS（非零售業土地使用比例）和ZN（居住使用土地比例）這兩組變數有多元共線性問題，所以未來如果要做其他模型，避免同時使用這兩組中的變數。
+
+所以目前可以用LSTAT和RM來做出預測MEDV的模型。再次把這兩個變數跟房價變數的關係畫出來，可以看到兩者和房價變數都接近線性關係：
+#+begin_src python -r -n :async :results output :exports both :session boston
+# 設定整張圖的長寬
+plt.figure(figsize=(20, 10))
+features = ['lstat', 'rm']
+target = housing['medv']
+for i, col in enumerate(features):
+    # 排版1 row, 2 columns, nth plot：在jupyter notebook上兩張並排
+    plt.subplot(1, len(features) , i+1)
+    # add data column into plot
+    x = housing[col]
+    y = target
+    plt.scatter(x, y, marker='o')
+    plt.title(col)
+    plt.xlabel(col)
+    plt.ylabel('medv')
+plt.savefig('images/housing-2var.png', dpi=300)
+#+end_src
+
+#+RESULTS:
+
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 600
+[[file:images/housing-2var.png]]
+*** 準備訓練用的資料
+先拿兩項特徵值來試一下水溫: lstat和rm
+#+begin_src python -r -n :async :results output :exports both :session boston
+import numpy as np
+X = housing[['lstat', 'rm']]
+Y = housing['medv']
+print(X)
+print(Y)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+        lstat        rm
+0   -1.049614  0.347120
+1   -0.373898  0.116169
+2   -1.203924  1.261927
+3   -1.380974  0.981486
+4   -0.992763  1.204939
+..        ...       ...
+501 -0.287809  0.374115
+502 -0.383644 -0.335236
+503 -0.942409  0.948493
+504 -0.805966  0.675551
+505 -0.578562 -0.470207
+
+[452 rows x 2 columns]
+0      24.0
+1      21.6
+2      34.7
+3      33.4
+4      36.2
+       ...
+501    22.4
+502    20.6
+503    23.9
+504    22.0
+505    11.9
+Name: medv, Length: 452, dtype: float64
+#+end_example
+
+** 分割訓練集與測試集
+訓練集佔80%、測試集佔20%
+#+begin_src python -r -n :async :results output :exports both :session boston
+# train_test_split
+from sklearn.model_selection import train_test_split
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size = 0.2, random_state=5)
+# 再用.shape看切出來的資料的長相（列, 欄）
+print(X_train.shape)
+print(X_test.shape)
+print(Y_train.shape)
+print(Y_test.shape)
+#+end_src
+
+#+RESULTS:
+: (361, 2)
+: (91, 2)
+: (361,)
+: (91,)
+
+** 建立模型
+new出一個LinearRegression的物件後，用特徵變數的訓練資料和目標變數的訓練資料產生一個模型。接著將特徵變數的測試資料倒進這個新產生的模型當中，得到預測的目標變數資料[fn:2]。
+#+begin_src python -r -n :async :results output :exports both :session boston
+# Modeling
+from sklearn.linear_model import LinearRegression
+reg = LinearRegression()# 學習/訓練Fitting linear model
+reg.fit(X_train,Y_train)
+#+end_src
+
+#+RESULTS:
+
+** 測試效能
+將這個預測的目標變數資料（預測結果）和目標變數的測試資料（真實結果）做R2-score：
+#+begin_src python -r -n :async :results output :exports both :session boston
+# 預測結果Predicting using the linear model
+reg.predict(X_test)# 真實結果：Y_test# 測試準確度：
+print('R2:', reg.score(X_test, Y_test))
+#+end_src
+
+#+RESULTS:
+: R2: 0.6048366146231109
+得到的這個R2-score讓我們可以知道特徵變數對於目標變數的解釋程度為何，而越接近1代表越準確。這裡大約是66%，解釋程度算是相當好的[fn:2]。
+*** 模型效能視覺化
+把剛剛的預測的目標變數資料和測試的目標變數資料畫成散佈圖
+#+begin_src python -r -n :async :results output :exports both :session boston
+# plotting the y_test vs y_pred
+Y_pred = reg.predict(X_test)
+plt.cla()
+plt.tight_layout()
+plt.figure(figsize=(10,8))
+
+plt.scatter(Y_pred, Y_test)
+plt.xlabel('Y_pred')
+plt.ylabel('Y_test')
+plt.savefig('images/boston-perf.png', dpi=300)
+#+end_src
+
+#+RESULTS:
+
+#+CAPTION: Caption
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/boston-perf.png]]
+
+** 找出線性模型
+由LinearRegression()找出線性模型的intercept和coefficient
+#+begin_src python -r -n :async :results output :exports both :session boston
+print('intercept:',reg.intercept_)
+print('coefficient::',reg.coef_)
+print('lstat:',reg.coef_[0])
+print('rm:',reg.coef_[1])
+#+end_src
+
+#+RESULTS:
+: intercept: 23.662167506495486
+: coefficient:: [-3.2284783   4.66331239]
+: lstat: -3.228478297753095
+: rm: 4.663312387946355
+線性模型為：\(medv=23.66 + -3.22 \times lstat + 4.66 \times rm + error\)
+
+* [作業]依據期中考成績預測期末考成績 :TNFSH:
+** Data
+- 線上資料: [[https://letranger.github.io/AI/2023A-CS-Data.csv][https://letranger.github.io/AI/PythonScores.csv]]
+- 資料中有424筆記錄，每筆記錄分別為學生的
+  1. id: 學號
+  2. class: 平時成績
+  3. task: 作業成績
+  4. mid: 期中考成績
+  5. final: 期末考成績
+
+** Task
+你的任務是建立一個模型，輸入一個或多個特徵值(class, task, mid)來預測期末考成績(final)，其他相關任務包括:
+1. 部份學生的期中、期末考有缺考行為，請將這些缺考記錄填入0分
+2. 畫出所有特徵資料的分佈狀況(直方圖)
+3. 將所有分數間的相關以視覺化方式表現出來
+4. 將資料集分割為訓練集(70%)及測試集(30%)
+5. 請自行決定你要用多少個特徵值來預測，並以測試集來評估模型效能，輸出分數(R2-score)
+6. 列出你找出的模型方程式
+
+** Solution :noexport:TNFSH:
+#+begin_src python -r -n :results output :exports both
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+plt.rcParams['font.sans-serif'] = ['Arial Unicode MS'] # 步驟一（替換系統中的字型，這裡用的是Ma
+plt.rcParams['axes.unicode_minus'] = False  # 步驟二（解決座標軸負數的負號顯示問題）
+
+from sklearn.linear_model import LinearRegression
+import seaborn as sns
+
+# 讀資料
+docURL = 'https://letranger.github.io/AI/Downloads/PythonScores.csv'
+df = pd.read_csv(docURL)
+
+# 1. 處理缺失值
+print(df.isnull().sum())
+df = df.fillna(0)
+print(df.isnull().sum())
+print(df.describe())
+# 2. 畫出所有特徵值分佈
+plt.cla()
+plt.figure(figsize=(20, 10))
+features = ['class', 'task', 'mid', 'final']
+for i, col in enumerate(features):
+    # 排版1 row, 2 columns, nth plot：在jupyter notebook上兩張並排
+    plt.subplot(2, 2, i+1)
+    sns.histplot(df[col])
+    plt.title(col)
+    plt.xlabel(col)
+    plt.ylabel('Density')
+plt.savefig('images/taskPythonScoreDist.png', dpi=300)
+# 3. 特徵值間的闗係
+plt.clf()
+plt.figure(figsize=(12, 10))
+correlation_matrix = df[features].corr().round(2)
+# 4. 分割訓練集與資料集
+X = df[['class', 'task', 'mid']]
+y = df['final']
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state=5)
+# 5. 建模、預測
+# annot = True 讓我們可以把數字標進每個格子裡
+sns.heatmap(data=correlation_matrix, annot = True)
+plt.savefig("images/takPythonScore-corr.png", dpi=300)
+from sklearn.linear_model import LinearRegression
+reg = LinearRegression()# 學習/訓練Fitting linear model
+reg.fit(X_train,y_train)
+reg.predict(X_test)# 真實結果：Y_test# 測試準確度：
+
+# 5. 方程式
+print('R2:', reg.score(X_test, y_test))
+print('intercept:',reg.intercept_)
+print('coefficient::',reg.coef_)
+print(f'方程式: final={reg.intercept_:.2f}+{reg.coef_[0]:.2f}*class+{reg.coef_[1]:.2f}*task+{reg.coef_[2]:.2f}*mid+error')
+#+end_src
+
+#+RESULTS:
+#+begin_example
+id        0
+class     0
+task      2
+mid      34
+final    38
+dtype: int64
+id       0
+class    0
+task     0
+mid      0
+final    0
+dtype: int64
+            class        task         mid      final
+count  424.000000  424.000000  424.000000  424.00000
+mean    81.500000   91.613208   49.813679   52.28066
+std     10.073724   24.310665   33.377144   37.37800
+min     30.000000    0.000000    0.000000    0.00000
+25%     77.000000   84.000000   25.500000   20.00000
+50%     80.000000   99.000000   43.000000   50.00000
+75%     88.000000  105.000000   70.000000   82.00000
+max    120.000000  120.000000  124.000000  120.00000
+R2: 0.6019870084729806
+intercept: -29.2033592850823
+coefficient:: [0.43379714 0.06700382 0.80966573]
+方程式: final=-29.20+0.43*class+0.07*task+0.81*mid+error
+#+end_example
+#+CAPTION: 迴歸作業2
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/taskPythonScoreDist.png]]
+#+CAPTION: 迴歸作業3
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/takPythonScore-corr.png]]
+
+方程式: \(final=-29.20+0.43*class+0.07*task+0.81*mid+error\)
+
+* [作業]依據期中考成績預測期末考成績:1->1 :TNFSH:noexport:
+** Data
+- 線上資料: [[https://letranger.github.io/AI/2023A-CS-Data.csv][https://letranger.github.io/AI/2023A-CS-Data.csv]]
+- 資料中有208筆記錄，每筆記錄分別為學生 *期中考成績, 期末考成績*
+
+** Task
+1. 畫出所有來源資料的分佈狀況
+2. 畫出預測迴歸線
+3. 依據期中考成績預測以下學生的學期成績
+   - 38
+   - 87
+   - 92
+4. 列出你找出的模型方程式
+
+** Solution :noexport:
+#+begin_src python -r -n :results output :exports both
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+plt.rcParams['font.sans-serif'] = ['Arial Unicode MS'] # 步驟一（替換系統中的字型，這裡用的是Ma
+plt.rcParams['axes.unicode_minus'] = False  # 步驟二（解決座標軸負數的負號顯示問題）
+
+from sklearn.linear_model import LinearRegression
+
+docURL = 'https://letranger.github.io/AI/2023A-CS-Data.csv'
+df = pd.read_csv(docURL)
+df = df.to_numpy()
+
+mid, final = df[:,0].reshape([-1,1]), df[:,1]
+#print(mid.shape)
+#print(final.shape)
+#print(final)
+model = LinearRegression()
+model.fit(mid, final)
+#print(model.coef_)
+
+# Plot
+plt.figure(figsize=(7, 5))
+plt.xlabel('期中考成績',fontsize=12)
+plt.ylabel('期末考成績',fontsize=12)
+plt.scatter(mid, final)
+plt.plot(mid, model.predict(mid), color='r')
+plt.savefig("images/regression-task-1.png", dpi=300)
+pred = np.array([
+    [38], [87], [92]
+])
+print(f'期中考:{pred[0]}, 學期成績:{model.predict(pred)[[0]]}')
+print(f'期中考:{pred[1]}, 學期成績:{model.predict(pred)[[1]]}')
+print(f'期中考:{pred[2]}, 學期成績:{model.predict(pred)[[2]]}')
+#+end_src
+
+#+RESULTS:
+: 期中考:[38], 學期成績:[62.10283135]
+: 期中考:[87], 學期成績:[92.65879543]
+: 期中考:[92], 學期成績:[95.77675095]
+#+CAPTION: 迴歸作業1
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/regression-task-1.png]]
+
+* 新的資料集 :noexport:
+#+begin_src python -r -n :async :results output :exports both :session boston
+#+begin_src python -r -n :async :results output :exports both :session boston
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+
+from sklearn.datasets import fetch_openml
+housing = fetch_openml(name="house_prices", as_frame=True)
+
+print(type(housing))
+print(housing.keys())
+#+end_src
+根據[[https://scikit-learn.org/stable/modules/generated/sklearn.utils.Bunch.html][scikit官網]]的描述，bunch是一種類似字典的資料型別，其中的幾個key:
+- data： 每個房子的資訊
+- target： 每個房子的價格
+- feature_names： 每個房子的特徵
+- DESCR： 這個資料集的描述
+如果想知道每個欄位詳細的描述，可以用：
+#+begin_src python -r -n :async :results output :exports both :session boston
+print(housing.DESCR)
+#+end_src
+#+RESULTS:
+#+begin_example
+        Id  MSSubClass MSZoning  LotFrontage  LotArea Street Alley LotShape  ... PoolQC  Fence MiscFeature MiscVal MoSold YrSold SaleType SaleCondition
+0        1          60       RL         65.0     8450   Pave   NaN      Reg  ...    NaN    NaN         NaN       0      2   2008       WD        Normal
+1        2          20       RL         80.0     9600   Pave   NaN      Reg  ...    NaN    NaN         NaN       0      5   2007       WD        Normal
+2        3          60       RL         68.0    11250   Pave   NaN      IR1  ...    NaN    NaN         NaN       0      9   2008       WD        Normal
+3        4          70       RL         60.0     9550   Pave   NaN      IR1  ...    NaN    NaN         NaN       0      2   2006       WD       Abnorml
+4        5          60       RL         84.0    14260   Pave   NaN      IR1  ...    NaN    NaN         NaN       0     12   2008       WD        Normal
+...    ...         ...      ...          ...      ...    ...   ...      ...  ...    ...    ...         ...     ...    ...    ...      ...           ...
+1455  1456          60       RL         62.0     7917   Pave   NaN      Reg  ...    NaN    NaN         NaN       0      8   2007       WD        Normal
+1456  1457          20       RL         85.0    13175   Pave   NaN      Reg  ...    NaN  MnPrv         NaN       0      2   2010       WD        Normal
+1457  1458          70       RL         66.0     9042   Pave   NaN      Reg  ...    NaN  GdPrv        Shed    2500      5   2010       WD        Normal
+1458  1459          20       RL         68.0     9717   Pave   NaN      Reg  ...    NaN    NaN         NaN       0      4   2010       WD        Normal
+1459  1460          20       RL         75.0     9937   Pave   NaN      Reg  ...    NaN    NaN         NaN       0      6   2008       WD        Normal
+
+[1460 rows x 80 columns]
+#+end_example
+#+begin_src python -r -n :async :results output :exports both :session boston
+print(housing.DESCR)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Ask a home buyer to describe their dream house, and they probably won't begin with the height of the basement ceiling or the proximity to an east-west railroad. But this playground competition's dataset proves that much more influences price negotiations than the number of bedrooms or a white-picket fence.
+
+With 79 explanatory variables describing (almost) every aspect of residential homes in Ames, Iowa, this competition challenges you to predict the final price of each home.
+
+MSSubClass: Identifies the type of dwelling involved in the sale.
+
+        20	1-STORY 1946 & NEWER ALL STYLES
+        30	1-STORY 1945 & OLDER
+        40	1-STORY W/FINISHED ATTIC ALL AGES
+        45	1-1/2 STORY - UNFINISHED ALL AGES
+        50	1-1/2 STORY FINISHED ALL AGES
+        60	2-STORY 1946 & NEWER
+        70	2-STORY 1945 & OLDER
+        75	2-1/2 STORY ALL AGES
+        80	SPLIT OR MULTI-LEVEL
+        85	SPLIT FOYER
+        90	DUPLEX - ALL STYLES AND AGES
+       120	1-STORY PUD (Planned Unit Development) - 1946 & NEWER
+       150	1-1/2 STORY PUD - ALL AGES
+       160	2-STORY PUD - 1946 & NEWER
+       180	PUD - MULTILEVEL - INCL SPLIT LEV/FOYER
+       190	2 FAMILY CONVERSION - ALL STYLES AND AGES
+
+MSZoning: Identifies the general zoning classification of the sale.
+
+       A	Agriculture
+       C	Commercial
+       FV	Floating Village Residential
+       I	Industrial
+       RH	Residential High Density
+       RL	Residential Low Density
+       RP	Residential Low Density Park
+       RM	Residential Medium Density
+
+LotFrontage: Linear feet of street connected to property
+
+LotArea: Lot size in square feet
+
+Street: Type of road access to property
+
+       Grvl	Gravel
+       Pave	Paved
+
+Alley: Type of alley access to property
+
+       Grvl	Gravel
+       Pave	Paved
+       NA 	No alley access
+
+LotShape: General shape of property
+
+       Reg	Regular
+       IR1	Slightly irregular
+       IR2	Moderately Irregular
+       IR3	Irregular
+
+LandContour: Flatness of the property
+
+       Lvl	Near Flat/Level
+       Bnk	Banked - Quick and significant rise from street grade to building
+       HLS	Hillside - Significant slope from side to side
+       Low	Depression
+
+Utilities: Type of utilities available
+
+       AllPub	All public Utilities (E,G,W,& S)
+       NoSewr	Electricity, Gas, and Water (Septic Tank)
+       NoSeWa	Electricity and Gas Only
+       ELO	Electricity only
+
+LotConfig: Lot configuration
+
+       Inside	Inside lot
+       Corner	Corner lot
+       CulDSac	Cul-de-sac
+       FR2	Frontage on 2 sides of property
+       FR3	Frontage on 3 sides of property
+
+LandSlope: Slope of property
+
+       Gtl	Gentle slope
+       Mod	Moderate Slope
+       Sev	Severe Slope
+
+Neighborhood: Physical locations within Ames city limits
+
+       Blmngtn	Bloomington Heights
+       Blueste	Bluestem
+       BrDale	Briardale
+       BrkSide	Brookside
+       ClearCr	Clear Creek
+       CollgCr	College Creek
+       Crawfor	Crawford
+       Edwards	Edwards
+       Gilbert	Gilbert
+       IDOTRR	Iowa DOT and Rail Road
+       MeadowV	Meadow Village
+       Mitchel	Mitchell
+       Names	North Ames
+       NoRidge	Northridge
+       NPkVill	Northpark Villa
+       NridgHt	Northridge Heights
+       NWAmes	Northwest Ames
+       OldTown	Old Town
+       SWISU	South & West of Iowa State University
+       Sawyer	Sawyer
+       SawyerW	Sawyer West
+       Somerst	Somerset
+       StoneBr	Stone Brook
+       Timber	Timberland
+       Veenker	Veenker
+
+Condition1: Proximity to various conditions
+
+       Artery	Adjacent to arterial street
+       Feedr	Adjacent to feeder street
+       Norm	Normal
+       RRNn	Within 200' of North-South Railroad
+       RRAn	Adjacent to North-South Railroad
+       PosN	Near positive off-site feature--park, greenbelt, etc.
+       PosA	Adjacent to postive off-site feature
+       RRNe	Within 200' of East-West Railroad
+       RRAe	Adjacent to East-West Railroad
+
+Condition2: Proximity to various conditions (if more than one is present)
+
+       Artery	Adjacent to arterial street
+       Feedr	Adjacent to feeder street
+       Norm	Normal
+       RRNn	Within 200' of North-South Railroad
+       RRAn	Adjacent to North-South Railroad
+       PosN	Near positive off-site feature--park, greenbelt, etc.
+       PosA	Adjacent to postive off-site feature
+       RRNe	Within 200' of East-West Railroad
+       RRAe	Adjacent to East-West Railroad
+
+BldgType: Type of dwelling
+
+       1Fam	Single-family Detached
+       2FmCon	Two-family Conversion; originally built as one-family dwelling
+       Duplx	Duplex
+       TwnhsE	Townhouse End Unit
+       TwnhsI	Townhouse Inside Unit
+
+HouseStyle: Style of dwelling
+
+       1Story	One story
+       1.5Fin	One and one-half story: 2nd level finished
+       1.5Unf	One and one-half story: 2nd level unfinished
+       2Story	Two story
+       2.5Fin	Two and one-half story: 2nd level finished
+       2.5Unf	Two and one-half story: 2nd level unfinished
+       SFoyer	Split Foyer
+       SLvl	Split Level
+
+OverallQual: Rates the overall material and finish of the house
+
+       10	Very Excellent
+       9	Excellent
+       8	Very Good
+       7	Good
+       6	Above Average
+       5	Average
+       4	Below Average
+       3	Fair
+       2	Poor
+       1	Very Poor
+
+OverallCond: Rates the overall condition of the house
+
+       10	Very Excellent
+       9	Excellent
+       8	Very Good
+       7	Good
+       6	Above Average
+       5	Average
+       4	Below Average
+       3	Fair
+       2	Poor
+       1	Very Poor
+
+YearBuilt: Original construction date
+
+YearRemodAdd: Remodel date (same as construction date if no remodeling or additions)
+
+RoofStyle: Type of roof
+
+       Flat	Flat
+       Gable	Gable
+       Gambrel	Gabrel (Barn)
+       Hip	Hip
+       Mansard	Mansard
+       Shed	Shed
+
+RoofMatl: Roof material
+
+       ClyTile	Clay or Tile
+       CompShg	Standard (Composite) Shingle
+       Membran	Membrane
+       Metal	Metal
+       Roll	Roll
+       Tar&Grv	Gravel & Tar
+       WdShake	Wood Shakes
+       WdShngl	Wood Shingles
+
+Exterior1st: Exterior covering on house
+
+       AsbShng	Asbestos Shingles
+       AsphShn	Asphalt Shingles
+       BrkComm	Brick Common
+       BrkFace	Brick Face
+       CBlock	Cinder Block
+       CemntBd	Cement Board
+       HdBoard	Hard Board
+       ImStucc	Imitation Stucco
+       MetalSd	Metal Siding
+       Other	Other
+       Plywood	Plywood
+       PreCast	PreCast
+       Stone	Stone
+       Stucco	Stucco
+       VinylSd	Vinyl Siding
+       Wd Sdng	Wood Siding
+       WdShing	Wood Shingles
+
+Exterior2nd: Exterior covering on house (if more than one material)
+
+       AsbShng	Asbestos Shingles
+       AsphShn	Asphalt Shingles
+       BrkComm	Brick Common
+       BrkFace	Brick Face
+       CBlock	Cinder Block
+       CemntBd	Cement Board
+       HdBoard	Hard Board
+       ImStucc	Imitation Stucco
+       MetalSd	Metal Siding
+       Other	Other
+       Plywood	Plywood
+       PreCast	PreCast
+       Stone	Stone
+       Stucco	Stucco
+       VinylSd	Vinyl Siding
+       Wd Sdng	Wood Siding
+       WdShing	Wood Shingles
+
+MasVnrType: Masonry veneer type
+
+       BrkCmn	Brick Common
+       BrkFace	Brick Face
+       CBlock	Cinder Block
+       None	None
+       Stone	Stone
+
+MasVnrArea: Masonry veneer area in square feet
+
+ExterQual: Evaluates the quality of the material on the exterior
+
+       Ex	Excellent
+       Gd	Good
+       TA	Average/Typical
+       Fa	Fair
+       Po	Poor
+
+ExterCond: Evaluates the present condition of the material on the exterior
+
+       Ex	Excellent
+       Gd	Good
+       TA	Average/Typical
+       Fa	Fair
+       Po	Poor
+
+Foundation: Type of foundation
+
+       BrkTil	Brick & Tile
+       CBlock	Cinder Block
+       PConc	Poured Contrete
+       Slab	Slab
+       Stone	Stone
+       Wood	Wood
+
+BsmtQual: Evaluates the height of the basement
+
+       Ex	Excellent (100+ inches)
+       Gd	Good (90-99 inches)
+       TA	Typical (80-89 inches)
+       Fa	Fair (70-79 inches)
+       Po	Poor (<70 inches
+       NA	No Basement
+
+BsmtCond: Evaluates the general condition of the basement
+
+       Ex	Excellent
+       Gd	Good
+       TA	Typical - slight dampness allowed
+       Fa	Fair - dampness or some cracking or settling
+       Po	Poor - Severe cracking, settling, or wetness
+       NA	No Basement
+
+BsmtExposure: Refers to walkout or garden level walls
+
+       Gd	Good Exposure
+       Av	Average Exposure (split levels or foyers typically score average or above)
+       Mn	Mimimum Exposure
+       No	No Exposure
+       NA	No Basement
+
+BsmtFinType1: Rating of basement finished area
+
+       GLQ	Good Living Quarters
+       ALQ	Average Living Quarters
+       BLQ	Below Average Living Quarters
+       Rec	Average Rec Room
+       LwQ	Low Quality
+       Unf	Unfinshed
+       NA	No Basement
+
+BsmtFinSF1: Type 1 finished square feet
+
+BsmtFinType2: Rating of basement finished area (if multiple types)
+
+       GLQ	Good Living Quarters
+       ALQ	Average Living Quarters
+       BLQ	Below Average Living Quarters
+       Rec	Average Rec Room
+       LwQ	Low Quality
+       Unf	Unfinshed
+       NA	No Basement
+
+BsmtFinSF2: Type 2 finished square feet
+
+BsmtUnfSF: Unfinished square feet of basement area
+
+TotalBsmtSF: Total square feet of basement area
+
+Heating: Type of heating
+
+       Floor	Floor Furnace
+       GasA	Gas forced warm air furnace
+       GasW	Gas hot water or steam heat
+       Grav	Gravity furnace
+       OthW	Hot water or steam heat other than gas
+       Wall	Wall furnace
+
+HeatingQC: Heating quality and condition
+
+       Ex	Excellent
+       Gd	Good
+       TA	Average/Typical
+       Fa	Fair
+       Po	Poor
+
+CentralAir: Central air conditioning
+
+       N	No
+       Y	Yes
+
+Electrical: Electrical system
+
+       SBrkr	Standard Circuit Breakers & Romex
+       FuseA	Fuse Box over 60 AMP and all Romex wiring (Average)
+       FuseF	60 AMP Fuse Box and mostly Romex wiring (Fair)
+       FuseP	60 AMP Fuse Box and mostly knob & tube wiring (poor)
+       Mix	Mixed
+
+1stFlrSF: First Floor square feet
+
+2ndFlrSF: Second floor square feet
+
+LowQualFinSF: Low quality finished square feet (all floors)
+
+GrLivArea: Above grade (ground) living area square feet
+
+BsmtFullBath: Basement full bathrooms
+
+BsmtHalfBath: Basement half bathrooms
+
+FullBath: Full bathrooms above grade
+
+HalfBath: Half baths above grade
+
+Bedroom: Bedrooms above grade (does NOT include basement bedrooms)
+
+Kitchen: Kitchens above grade
+
+KitchenQual: Kitchen quality
+
+       Ex	Excellent
+       Gd	Good
+       TA	Typical/Average
+       Fa	Fair
+       Po	Poor
+
+TotRmsAbvGrd: Total rooms above grade (does not include bathrooms)
+
+Functional: Home functionality (Assume typical unless deductions are warranted)
+
+       Typ	Typical Functionality
+       Min1	Minor Deductions 1
+       Min2	Minor Deductions 2
+       Mod	Moderate Deductions
+       Maj1	Major Deductions 1
+       Maj2	Major Deductions 2
+       Sev	Severely Damaged
+       Sal	Salvage only
+
+Fireplaces: Number of fireplaces
+
+FireplaceQu: Fireplace quality
+
+       Ex	Excellent - Exceptional Masonry Fireplace
+       Gd	Good - Masonry Fireplace in main level
+       TA	Average - Prefabricated Fireplace in main living area or Masonry Fireplace in basement
+       Fa	Fair - Prefabricated Fireplace in basement
+       Po	Poor - Ben Franklin Stove
+       NA	No Fireplace
+
+GarageType: Garage location
+
+       2Types	More than one type of garage
+       Attchd	Attached to home
+       Basment	Basement Garage
+       BuiltIn	Built-In (Garage part of house - typically has room above garage)
+       CarPort	Car Port
+       Detchd	Detached from home
+       NA	No Garage
+
+GarageYrBlt: Year garage was built
+
+GarageFinish: Interior finish of the garage
+
+       Fin	Finished
+       RFn	Rough Finished
+       Unf	Unfinished
+       NA	No Garage
+
+GarageCars: Size of garage in car capacity
+
+GarageArea: Size of garage in square feet
+
+GarageQual: Garage quality
+
+       Ex	Excellent
+       Gd	Good
+       TA	Typical/Average
+       Fa	Fair
+       Po	Poor
+       NA	No Garage
+
+GarageCond: Garage condition
+
+       Ex	Excellent
+       Gd	Good
+       TA	Typical/Average
+       Fa	Fair
+       Po	Poor
+       NA	No Garage
+
+PavedDrive: Paved driveway
+
+       Y	Paved
+       P	Partial Pavement
+       N	Dirt/Gravel
+
+WoodDeckSF: Wood deck area in square feet
+
+OpenPorchSF: Open porch area in square feet
+
+EnclosedPorch: Enclosed porch area in square feet
+
+3SsnPorch: Three season porch area in square feet
+
+ScreenPorch: Screen porch area in square feet
+
+PoolArea: Pool area in square feet
+
+PoolQC: Pool quality
+
+       Ex	Excellent
+       Gd	Good
+       TA	Average/Typical
+       Fa	Fair
+       NA	No Pool
+
+Fence: Fence quality
+
+       GdPrv	Good Privacy
+       MnPrv	Minimum Privacy
+       GdWo	Good Wood
+       MnWw	Minimum Wood/Wire
+       NA	No Fence
+
+MiscFeature: Miscellaneous feature not covered in other categories
+
+       Elev	Elevator
+       Gar2	2nd Garage (if not described in garage section)
+       Othr	Other
+       Shed	Shed (over 100 SF)
+       TenC	Tennis Court
+       NA	None
+
+MiscVal: $Value of miscellaneous feature
+
+MoSold: Month Sold (MM)
+
+YrSold: Year Sold (YYYY)
+
+SaleType: Type of sale
+
+       WD 	Warranty Deed - Conventional
+       CWD	Warranty Deed - Cash
+       VWD	Warranty Deed - VA Loan
+       New	Home just constructed and sold
+       COD	Court Officer Deed/Estate
+       Con	Contract 15% Down payment regular terms
+       ConLw	Contract Low Down payment and low interest
+       ConLI	Contract Low Interest
+       ConLD	Contract Low Down
+       Oth	Other
+
+SaleCondition: Condition of sale
+
+       Normal	Normal Sale
+       Abnorml	Abnormal Sale -  trade, foreclosure, short sale
+       AdjLand	Adjoining Land Purchase
+       Alloca	Allocation - two linked properties with separate deeds, typically condo with a garage unit
+       Family	Sale between family members
+       Partial	Home was not completed when last assessed (associated with New Homes)
+
+Downloaded from openml.org.
+#+end_example
+
+#+begin_src python -r -n :async :results output :exports both :session boston
+#+end_src
+#+begin_src python -r -n :async :results output :exports both :session boston
+#+end_src
+
+* 簡單線性迴歸建模：Pizza :noexport:
 Let's assume that you have recorded the diameters and prices of pizzas that you have previously eaten in your pizza journal. These observations comprise our training data:
 |--------------------+------------------|
+|        <c>         |       <c>        |
 | Diameter in inches | Price in dollars |
 |--------------------+------------------|
-|                  6 |                7 |
-|                  8 |                9 |
-|                 10 |               13 |
-|                 14 |             17.5 |
-|                 18 |               18 |
+|         6          |        7         |
+|         8          |        9         |
+|         10         |        13        |
+|         14         |       17.5       |
+|         18         |        18        |
 |--------------------+------------------|
 ** 觀察數據
 We can visualize our training data by plotting it on a graph using matplotlib:
