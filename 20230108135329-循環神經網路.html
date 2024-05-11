@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-05-11 Sat 09:40 -->
+<!-- 2024-05-11 Sat 10:04 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>時間序列的預言者：如何通過 RNN、LSTM 和 GRU 預測未來</title>
@@ -234,31 +234,31 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org06c3f2c">1. CNN的限制</a></li>
-<li><a href="#org1fb4dbe">2. 遞迴神經網路(Recurrent Neural Networks, RNNs)</a></li>
-<li><a href="#org6ce5420">3. RNN實作</a>
+<li><a href="#org47bb8fb">1. CNN的限制</a></li>
+<li><a href="#orge416d06">2. 遞迴神經網路(Recurrent Neural Networks, RNNs)</a></li>
+<li><a href="#org36bde17">3. RNN實作</a>
 <ul>
-<li><a href="#org62c9f40">3.1. 概念</a></li>
+<li><a href="#orgc2f9762">3.1. 概念</a></li>
 </ul>
 </li>
-<li><a href="#org1048ddd">4. LSTM</a>
+<li><a href="#orgac68c43">4. LSTM</a>
 <ul>
-<li><a href="#orgc870e14">4.1. LSTM的運作原理</a></li>
-<li><a href="#org19247ee">4.2. 實作: 以AI預測股價-隔日漲跌</a></li>
+<li><a href="#orgee30bec">4.1. LSTM的運作原理</a></li>
+<li><a href="#orgd50b9b7">4.2. 實作: 以AI預測股價-隔日漲跌</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org06c3f2c" class="outline-2">
-<h2 id="org06c3f2c"><span class="section-number-2">1.</span> CNN的限制</h2>
+<div id="outline-container-org47bb8fb" class="outline-2">
+<h2 id="org47bb8fb"><span class="section-number-2">1.</span> CNN的限制</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 在<a href="20221023101414-卷積神經網路.html#ID-20221023T101414.457264">卷積神經網路</a>中，我們提過CNN的想法源自於對人類大腦認知方式的模仿，當我們辨識一個圖像，會先注意到顏色鮮明的點、線、面，之後將它們構成一個個不同的形狀(眼睛、鼻子、嘴巴 &#x2026;)，這種抽象化的過程就是 CNN 演算法建立模型的方式。其過程如下圖<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。<br />
 </p>
 
 
-<div id="org45841d8" class="figure">
+<div id="org2a31854" class="figure">
 <p><img src="images/CNN-1.png" alt="CNN-1.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 1: </span>CNN 概念</p>
@@ -268,7 +268,7 @@
 至於圖片中的每一個特徵則是利用卷積核來取得(如下圖)，換言之，CNN其實是在模擬人類的眼睛。<br />
 </p>
 
-<div id="orgb161db8" class="figure">
+<div id="org02cfd35" class="figure">
 <p><img src="images/CNN_卷積神經網路/2024-04-17_09-18-53_2024-04-17_09-11-28.png" alt="2024-04-17_09-18-53_2024-04-17_09-11-28.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 2: </span>CNN原理</p>
@@ -292,8 +292,8 @@
 </p>
 </div>
 </div>
-<div id="outline-container-org1fb4dbe" class="outline-2">
-<h2 id="org1fb4dbe"><span class="section-number-2">2.</span> 遞迴神經網路(Recurrent Neural Networks, RNNs)</h2>
+<div id="outline-container-orge416d06" class="outline-2">
+<h2 id="orge416d06"><span class="section-number-2">2.</span> 遞迴神經網路(Recurrent Neural Networks, RNNs)</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 遞迴神經網絡（RNN）是一種專門設計來處理序列數據的人工神經網絡。序列數據指的是那些隨時間連續出現的數據，比如語言（單詞組成的句子）、影片（一連串的影像畫面），或者是音樂（一連串的音符）。<br />
@@ -304,38 +304,38 @@
 </p>
 
 <p>
-那RNN是如何做到這點的呢?這種“記憶”是通過網絡中的循環連接實現的。這些連接使得訊息可以在模型的一層之間前後流動，就像你在看連續劇時保持對劇情的記憶一樣。我們先來看圖<a href="#org948bfea">3</a>，右邊是我們熟悉的神經網路(例如<a href="20221023101414-卷積神經網路.html#ID-20221023T101414.457264">CNN</a>、DNN)，資料一律由模型的左側layer往右側傳送；而左邊的RNN則有點不同，每一層的神經元在將資料往右傳遞的同時，還偷偷留了一份給 <b><b>自己</b></b> ，這裡說的自己不是真正的自己，而是 <b><b>下一個回合的自己</b></b> 。<br />
+那RNN是如何做到這點的呢?這種“記憶”是通過網絡中的循環連接實現的。這些連接使得訊息可以在模型的一層之間前後流動，就像你在看連續劇時保持對劇情的記憶一樣。我們先來看圖<a href="#orgb8891e1">3</a>，右邊是我們熟悉的神經網路(例如<a href="20221023101414-卷積神經網路.html#ID-20221023T101414.457264">CNN</a>、DNN)，資料一律由模型的左側layer往右側傳送；而左邊的RNN則有點不同，每一層的神經元在將資料往右傳遞的同時，還偷偷留了一份給 <b><b>自己</b></b> ，這裡說的自己不是真正的自己，而是 <b><b>下一個回合的自己</b></b> 。<br />
 </p>
 
 
-<div id="org948bfea" class="figure">
+<div id="orgb8891e1" class="figure">
 <p><img src="images/遞迴神經網路(Recurrent_Neural_Networks,_RNNs)/2024-05-10_08-43-10_RNN-03.png" alt="2024-05-10_08-43-10_RNN-03.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 3: </span>CNN v.s. RNN</p>
 </div>
 
 <p>
-聽起來好像有點抽象，沒關係，我們現在把圖<a href="#org948bfea">3</a>中左側RNN的某一個神經元單獨抽出來分解它的內部動作，我們把圖<a href="#org948bfea">3</a>中的那個循環的箭頭拆解成如圖<a href="#orgeb29623">4</a>。<br />
+聽起來好像有點抽象，沒關係，我們現在把圖<a href="#orgb8891e1">3</a>中左側RNN的某一個神經元單獨抽出來分解它的內部動作，我們把圖<a href="#orgb8891e1">3</a>中的那個循環的箭頭拆解成如圖<a href="#orge60a52a">4</a>。<br />
 </p>
 
 
-<div id="orgeb29623" class="figure">
+<div id="orge60a52a" class="figure">
 <p><img src="images/遞迴神經網路(Recurrent_Neural_Networks,_RNNs)/2024-05-10_09-01-35_RNN-Cell-1.png" alt="2024-05-10_09-01-35_RNN-Cell-1.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 4: </span>RNN典型結構</p>
 </div>
 
 <p>
-要看懂圖<a href="#orgeb29623">4</a>，你只要搞清楚三件事:<br />
+要看懂圖<a href="#orge60a52a">4</a>，你只要搞清楚三件事:<br />
 </p>
 <ol class="org-ol">
 <li>RNN不像<a href="20221023101414-卷積神經網路.html#ID-20221023T101414.457264">CNN</a>那樣每次讀入一整張圖，而是分批讀入序列資料，例如，第1次(也就是第1個時間點(\(t_0\))讀入\(X_0\)、第2次(也就是第2個時間點(\(t_1\))讀入\(X_1\)&#x2026;<br /></li>
 <li>圖中右側「展開後」的三神經元其實是同一個，分別代表不同時間點的神經元，我們可以由 \(h_{t-1}, h_{t}, h_{t+1}\) 和 \(X_{t-1}, X_{t}, X_{t+1}\) 觀察出同樣的意思。<br /></li>
-<li>原本常見的資料在模型中傳遞方向是由左而右，在圖<a href="#orgeb29623">4</a>中則是由下而上，也就是輸入資料是底下的\(X_t\)、輸出為上面的\(h_t\)。<br /></li>
+<li>原本常見的資料在模型中傳遞方向是由左而右，在圖<a href="#orge60a52a">4</a>中則是由下而上，也就是輸入資料是底下的\(X_t\)、輸出為上面的\(h_t\)。<br /></li>
 </ol>
 
 <p>
-圖<a href="#orgeb29623">4</a>右側代表的意思是：<br />
+圖<a href="#orge60a52a">4</a>右側代表的意思是：<br />
 </p>
 <ol class="org-ol">
 <li>在第1個時間點(\(t-1\))取得輸入(\(X_{t-1}\))後，神經元會針對 \(X_{t-1}\) 進行運算，更新自己的「狀態」(這個就是會影響「下一個自己」的關鍵)然後輸出結果\(h_{t-1}\)<br /></li>
@@ -348,7 +348,7 @@
 </p>
 
 
-<div id="org30f2a71" class="figure">
+<div id="orgbab8988" class="figure">
 <p><img src="images/遞迴神經網路(Recurrent_Neural_Networks,_RNNs)/2024-05-10_13-00-27_Fully_connected_Recurrent_Neural_Network.webp" alt="2024-05-10_13-00-27_Fully_connected_Recurrent_Neural_Network.webp" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 5: </span>RNN的運作流程</p>
@@ -369,7 +369,7 @@
 則接下來 RNN 會這樣處理剩下的句子：<br />
 </p>
 
-<div id="org16f296c" class="figure">
+<div id="orgd183249" class="figure">
 <p><img src="images/rnn-animate.gif" alt="rnn-animate.gif" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 6: </span>RNN如何處理自然語言</p>
@@ -380,11 +380,11 @@
 </p>
 
 <p>
-上面提及RNN的「記憶」能力是由神經元的「狀態」實作出來，這種狀態以一個隱藏向量(hidden vector)的形式存在於神經元中，如圖<a href="#org88ee647">7</a>中的\(h_{t}\))。<br />
+上面提及RNN的「記憶」能力是由神經元的「狀態」實作出來，這種狀態以一個隱藏向量(hidden vector)的形式存在於神經元中，如圖<a href="#org2502ffc">7</a>中的\(h_{t}\))。<br />
 </p>
 
 
-<div id="org88ee647" class="figure">
+<div id="org2502ffc" class="figure">
 <p><img src="images/遞迴神經網路(Recurrent_Neural_Networks,_RNNs)/2024-05-10_15-39-00_RNN-Cell-2.png" alt="2024-05-10_15-39-00_RNN-Cell-2.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 7: </span>RNN神經元</p>
@@ -412,12 +412,12 @@
 </p>
 </div>
 </div>
-<div id="outline-container-org6ce5420" class="outline-2">
-<h2 id="org6ce5420"><span class="section-number-2">3.</span> RNN實作</h2>
+<div id="outline-container-org36bde17" class="outline-2">
+<h2 id="org36bde17"><span class="section-number-2">3.</span> RNN實作</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-org62c9f40" class="outline-3">
-<h3 id="org62c9f40"><span class="section-number-3">3.1.</span> 概念</h3>
+<div id="outline-container-orgc2f9762" class="outline-3">
+<h3 id="orgc2f9762"><span class="section-number-3">3.1.</span> 概念</h3>
 <div class="outline-text-3" id="text-3-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">state_t</span> = <span style="color: #da8548; font-weight: bold;">0</span>
@@ -449,7 +449,7 @@
 </pre>
 </div>
 
-<div id="orgdcafe87" class="figure">
+<div id="orge650f1d" class="figure">
 <p><img src="images/nn-layers.jpg" alt="nn-layers.jpg" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 8: </span>RNN示例</p>
@@ -457,14 +457,14 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org1048ddd" class="outline-2">
-<h2 id="org1048ddd"><span class="section-number-2">4.</span> LSTM</h2>
+<div id="outline-container-orgac68c43" class="outline-2">
+<h2 id="orgac68c43"><span class="section-number-2">4.</span> LSTM</h2>
 <div class="outline-text-2" id="text-4">
 <p>
 為了加強這種RNN的「記憶能力」，人們開發各種各樣的變形體，如非常著名的Long Short-term Memory(LSTM)，用於解決「長期及遠距離的依賴關係」。如下圖所示，左邊的小圖是最簡單版本的循環網絡，而右邊是人們為了增強記憶能力而開發的LSTM。<br />
 </p>
 
-<div id="org57a2235" class="figure">
+<div id="org24812cd" class="figure">
 <p><img src="images/3r5o0000r126proo7o8q.jpg" alt="3r5o0000r126proo7o8q.jpg" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 9: </span>LSTM</p>
@@ -492,8 +492,8 @@
 長短期記憶（Long Short-Term Memory, 後簡稱 LSTM）就是被設計來解決 RNN 的這個問題。<br />
 </p>
 </div>
-<div id="outline-container-orgc870e14" class="outline-3">
-<h3 id="orgc870e14"><span class="section-number-3">4.1.</span> LSTM的運作原理</h3>
+<div id="outline-container-orgee30bec" class="outline-3">
+<h3 id="orgee30bec"><span class="section-number-3">4.1.</span> LSTM的運作原理</h3>
 <div class="outline-text-3" id="text-4-1">
 <p>
 想象你有一個書包（LSTM的內部結構），你可以決定在上課前放入什麼書籍、何時取出某本書，或者甚至決定更新裡面的某些書，你每天上學就利用書包裡的書來學習新的知識。LSTM也有類似的機制來處理信息，這些機制就是一個個的閘門(Gate)。<br />
@@ -505,24 +505,24 @@
 </ol>
 
 
-<div id="org994b1f7" class="figure">
+<div id="org0cb5a73" class="figure">
 <p><img src="images/LSTM/2024-05-10_23-22-45_LSTM-arch-00.jpeg" alt="2024-05-10_23-22-45_LSTM-arch-00.jpeg" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 10: </span>LSTM架構</p>
 </div>
 
 <p>
-典型的LSTM架構如圖<a href="#org994b1f7">10</a>所示，可以看出除了原本的資料輸入(input)，LSTM還多了三個輸入，分別是input(模型輸入），forget gate(遺忘門)，input gate(輸入門)，以及output gate(輸出門)。因此相比普通的神經網路，LSTM的參數量是它們的4倍。這3個門訊號都是處於0～1之間的實數，1代表完全打開，0代表關閉。<br />
+典型的LSTM架構如圖<a href="#org0cb5a73">10</a>所示，可以看出除了原本的資料輸入(input)，LSTM還多了三個輸入，分別是input(模型輸入），forget gate(遺忘門)，input gate(輸入門)，以及output gate(輸出門)。因此相比普通的神經網路，LSTM的參數量是它們的4倍。這3個門訊號都是處於0～1之間的實數，1代表完全打開，0代表關閉。<br />
 </p>
 
 <ul class="org-ul">
-<li>遺忘閘(Forget Gate)：該閘決定在特定時間點(timestamp, 例如圖<a href="#orgdea98dd">11</a>中的\(t\) )，前一個時間點(\(t-1\)) 的模型記憶(也就是狀態, state)是否會被記住保留參與這個時間點的運算，或是直接被遺忘。當遺忘門打開時，前一刻的記憶會被保留，當遺忘門關閉時，前一刻的記憶就會被清空。換句話說，就讓模型具備選擇性遺忘部份訊息的能力，這個機制可以由激活函數sigmoid來實作，其中0代表完全忘記，1代表完全記住。<br /></li>
+<li>遺忘閘(Forget Gate)：該閘決定在特定時間點(timestamp, 例如圖<a href="#org08472e6">11</a>中的\(t\) )，前一個時間點(\(t-1\)) 的模型記憶(也就是狀態, state)是否會被記住保留參與這個時間點的運算，或是直接被遺忘。當遺忘門打開時，前一刻的記憶會被保留，當遺忘門關閉時，前一刻的記憶就會被清空。換句話說，就讓模型具備選擇性遺忘部份訊息的能力，這個機制可以由激活函數sigmoid來實作，其中0代表完全忘記，1代表完全記住。<br /></li>
 <li>輸入閘(Input Gate): 決定目前這個時間點有哪些神經元的輸入(\(X\))中有哪些是足夠重要到可以保留下來加入「目前狀態」中，因為在序列輸入中，並不是每個時刻的輸入的資訊都是同等重要的，當輸入完全沒有用時，輸入門關閉，也就是此時刻的輸入資訊被丟棄了。這個機制同樣也可以由sigmoid 激活函數來實作，sigmoid產生的值介於0到1之間，可以被看作是一個閘控信號，這個閘控信號​和tanh函數生成的候選隱藏狀態相乘，確定了從候選狀態中將多少資訊添加到當前的單元狀態​中。<br /></li>
 <li>輸出閘(Output Gate): 決定目前神經元的狀態中有哪一部分可以輸出(流向下一個狀態)，同樣由激活函數來sigmoid來決定，這個輸出會通過tanh函數來調整，因為Tanh能夠將單元狀態的值正規化到-1到1之間，這有助於控制神經網絡的激活範圍。再由Tanh來提供輸出權重。<br /></li>
 </ul>
 
 
-<div id="orgdea98dd" class="figure">
+<div id="org08472e6" class="figure">
 <p><img src="images/LSTM/2024-05-10_21-14-18_LSTM-arch-01.png" alt="2024-05-10_21-14-18_LSTM-arch-01.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 11: </span>LSTM運作原理</p>
@@ -533,15 +533,15 @@
 </p>
 </div>
 </div>
-<div id="outline-container-org19247ee" class="outline-3">
-<h3 id="org19247ee"><span class="section-number-3">4.2.</span> 實作: 以AI預測股價-隔日漲跌</h3>
+<div id="outline-container-orgd50b9b7" class="outline-3">
+<h3 id="orgd50b9b7"><span class="section-number-3">4.2.</span> 實作: 以AI預測股價-隔日漲跌</h3>
 <div class="outline-text-3" id="text-4-2">
 <p>
 <a href="https://colab.research.google.com/drive/1IehBuskagMTm6RK6WB-dsf3NPZKTNVqs?usp=sharing">當AI遇上股票-LSTM.ipynb</a><br />
 </p>
 </div>
 <ol class="org-ol">
-<li><a id="org703825a"></a>安裝相關套件<br />
+<li><a id="org60b36d3"></a>安裝相關套件<br />
 <div class="outline-text-4" id="text-4-2-1">
 <div class="org-src-container">
 <pre class="src src-shell"><span class="linenr">1: </span>pip install yfinance
@@ -549,7 +549,7 @@
 </div>
 </div>
 </li>
-<li><a id="org9ee0151"></a>下載股價資訊<br />
+<li><a id="org758bb20"></a>下載股價資訊<br />
 <div class="outline-text-4" id="text-4-2-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> yfinance <span style="color: #51afef;">as</span> yf
@@ -560,7 +560,7 @@
 </div>
 </div>
 <ol class="org-ol">
-<li><a id="orga4d6aa4"></a>查看下載的資料集<br />
+<li><a id="orgb43f19d"></a>查看下載的資料集<br />
 <div class="outline-text-5" id="text-4-2-2-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span>df
@@ -569,7 +569,7 @@
 </div>
 </div>
 </li>
-<li><a id="orga49b059"></a>取出需要的特徵值<br />
+<li><a id="org5a05c8f"></a>取出需要的特徵值<br />
 <div class="outline-text-5" id="text-4-2-2-2">
 <p>
 此次將成交量納入考慮<br />
@@ -583,7 +583,7 @@
 </li>
 </ol>
 </li>
-<li><a id="orgc4c805f"></a>觀察原始資料/日K圖<br />
+<li><a id="orgef4f5f9"></a>觀察原始資料/日K圖<br />
 <div class="outline-text-4" id="text-4-2-3">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
@@ -594,7 +594,7 @@
 </div>
 </div>
 </li>
-<li><a id="org1929ac6"></a>將資料標準化<br />
+<li><a id="orgecb8c61"></a>將資料標準化<br />
 <div class="outline-text-4" id="text-4-2-4">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">from</span> sklearn.preprocessing <span style="color: #51afef;">import</span> MinMaxScaler
@@ -606,9 +606,9 @@
 </div>
 </div>
 </li>
-<li><a id="org9f27a21"></a>建立、分割資料<br />
+<li><a id="org5b3f79b"></a>建立、分割資料<br />
 <ol class="org-ol">
-<li><a id="orge59a592"></a>建立資料集及標籤<br />
+<li><a id="org540e9ac"></a>建立資料集及標籤<br />
 <div class="outline-text-5" id="text-4-2-5-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
@@ -630,7 +630,7 @@
 </div>
 </div>
 </li>
-<li><a id="org66d608b"></a>分割訓練集與測試集<br />
+<li><a id="org1bca7a5"></a>分割訓練集與測試集<br />
 <div class="outline-text-5" id="text-4-2-5-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #dcaeea;">ratio</span> = <span style="color: #da8548; font-weight: bold;">0.8</span>
@@ -649,16 +649,16 @@
 </li>
 </ol>
 </li>
-<li><a id="org62232f8"></a>建立、編譯、訓練模型<br />
+<li><a id="org13ff918"></a>建立、編譯、訓練模型<br />
 <ol class="org-ol">
-<li><a id="orgc83612a"></a>建立模型<br />
+<li><a id="org28c62be"></a>建立模型<br />
 <div class="outline-text-5" id="text-4-2-6-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> tensorflow <span style="color: #51afef;">as</span> tf
 <span class="linenr">2: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#24314;&#27083;LSTM&#27169;&#22411;</span>
 <span class="linenr">3: </span><span style="color: #dcaeea;">model</span> = tf.keras.Sequential()
 <span class="linenr">4: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">LSTM&#23652;</span>
-<span class="linenr">5: </span>model.add(tf.keras.layers.LSTM(units=<span style="color: #da8548; font-weight: bold;">64</span>, unroll = <span style="color: #a9a1e1;">False</span>, input_shape=(featureDays,<span style="color: #da8548; font-weight: bold;">1</span>)))
+<span class="linenr">5: </span>model.add(tf.keras.layers.LSTM(units=<span style="color: #da8548; font-weight: bold;">64</span>, input_shape=(featureDays,<span style="color: #da8548; font-weight: bold;">1</span>)))
 <span class="linenr">6: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">Dense&#23652;</span>
 <span class="linenr">7: </span>model.add(tf.keras.layers.Dense(units=<span style="color: #da8548; font-weight: bold;">1</span>))
 </pre>
@@ -669,7 +669,7 @@
 </div>
 </div>
 </li>
-<li><a id="org55a86c3"></a>編譯模型<br />
+<li><a id="orga9b7c5d"></a>編譯模型<br />
 <div class="outline-text-5" id="text-4-2-6-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span>model.<span style="color: #c678dd;">compile</span>(loss=<span style="color: #98be65;">'mse'</span>, optimizer=<span style="color: #98be65;">'adam'</span>, metrics=[<span style="color: #98be65;">'accuracy'</span>])
@@ -677,7 +677,7 @@
 </div>
 </div>
 </li>
-<li><a id="org130f6be"></a>訓練模型<br />
+<li><a id="orga861397"></a>訓練模型<br />
 <div class="outline-text-5" id="text-4-2-6-3">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span>model.fit(x_train, y_train,
@@ -689,9 +689,9 @@
 </li>
 </ol>
 </li>
-<li><a id="orga5b77ca"></a>性能測試<br />
+<li><a id="orgc70165d"></a>性能測試<br />
 <ol class="org-ol">
-<li><a id="org310b70f"></a>loss<br />
+<li><a id="org72b24c2"></a>loss<br />
 <div class="outline-text-5" id="text-4-2-7-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">score</span> = model.evaluate(x_test, y_test)
@@ -700,7 +700,7 @@
 </div>
 </div>
 </li>
-<li><a id="org66d3542"></a>predict<br />
+<li><a id="org82b7a7e"></a>predict<br />
 <div class="outline-text-5" id="text-4-2-7-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">predict</span> = model.predict(x_test)
@@ -714,7 +714,7 @@
 </div>
 </div>
 </li>
-<li><a id="org631d5e6"></a>plot<br />
+<li><a id="orgae60375"></a>plot<br />
 <div class="outline-text-5" id="text-4-2-7-3">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span>plt.plot(predict)
@@ -742,7 +742,7 @@
 </div></div>
 <div id="postamble" class="status">
 <p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2024-05-11 Sat 09:40</p>
+<p class="date">Created: 2024-05-11 Sat 10:04</p>
 </div>
 </body>
 </html>
