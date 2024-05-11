@@ -1,433 +1,198 @@
 :PROPERTIES:
 :ID:       d6daa102-05bb-475d-b619-db8b61e86030
+:ROAM_ALIASES: Neural-Network
 :END:
 #+title: 神經網路
-
+# -*- org-export-babel-evaluate: nil -*-
 #+INCLUDE: ../pdf.org
-#+TAGS: AI
-#+OPTIONS: toc:2 ^:nil num:5
 #+PROPERTY: header-args :eval never-export
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/muse.css" />
+#+TAGS: AI, Python
 #+EXCLUDE_TAGS: noexport
-#+latex:\newpage
+#+OPTIONS: toc:2 ^:nil num:3
+#+OPTIONS: H:4
+#+LATEX:\newpage
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/muse.css" />
+#+begin_export html
+<a href="https://letranger.github.io/AI/20221025104603-神經網路.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20221025104603-神經網路.html.svg"/></a>
+#+end_export
+
+* How machine recognize image
+:PROPERTIES:
+:ID:       da15978e-768b-4d4e-ac51-5ff75446e642
+:END:
+#+CAPTION: 貓狗特徵如何區別
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/How_machine_recognize_image/2024-02-16_15-23-39_2024-02-16_15-22-53.png]]
+
+機器是如何能區分貓狗的圖片？現在這似乎是個十分尋常簡單的能力，就和電腦能計算加減乘除那樣。然而在機器學習成熟前，這卻是個十分困難的問題。在回答這個問題之前，我們先來看一個更簡單的圖形識別問題：讓電腦來讀入「／」及「＼」兩個圖像並進行識別。
+
+** 「／」v.s.「＼」
+首先要先理解，電腦眼中的圖像皆是由像素(pixel)組成，我們先假設「／」及「＼」兩個圖像在電腦眼中其實是如以下的矩陣所示：其中+1表示有像素存在，反之則以-1表示。
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/How_machine_recognize_image/2024-02-16_15-25-10_2024-02-16_15-24-54.png]]
+
+如同我們之前在[[id:20221023T101626.420918][監督式學習]]中的[[id:1592687a-cca7-4473-83a0-682a36394a28][分類]]和[[id:6ae7fb7a-0b38-4448-b19f-073d262513f2][迴歸]]所做的，我們希望能找到一個機制，將矩陣A、B當成輸入，最後希望能輸出0、1來代表「／」、「＼」，講白了，我們其實一直在做的事情都是找到一個這樣的函數：
+ - 若輸入矩陣A，則函數傳回
+   #+LABEL:fig:Labl
+   #+name: fig:Name
+   #+ATTR_LATEX: :width 200
+   #+ATTR_ORG: :width 200
+   #+ATTR_HTML: :width 400
+   [[file:images/How_machine_recognize_image/2024-02-17_09-41-39_2024-02-17_09-41-12.png]]
+- 若輸入矩陣B，則函數傳回
+  #+LABEL:fig:Labl
+  #+name: fig:Name
+  #+ATTR_LATEX: :width 200
+  #+ATTR_ORG: :width 200
+  #+ATTR_HTML: :width 400
+  [[file:images/How_machine_recognize_image/2024-02-17_09-42-15_2024-02-17_09-41-24.png]]
+
+能做到這點，也許我們將來就能找出這種函數:
+#+ATTR_LATEX: :width 200
+#+ATTR_ORG: :width 200
+#+ATTR_HTML: :width 400
+[[file:images/How_machine_recognize_image/2024-02-17_09-43-18_2024-02-17_09-43-06.png]]
+
+或是這種函數
+#+ATTR_LATEX: :width 200
+#+ATTR_ORG: :width 200
+#+ATTR_HTML: :width 400
+[[file:images/How_machine_recognize_image/2024-02-17_09-44-00_2024-02-17_09-43-48.png]]
+
+也就是語音辨識，甚至是找出這類函數：
+#+ATTR_LATEX: :width 200
+#+ATTR_ORG: :width 200
+#+ATTR_HTML: :width 400
+[[file:images/How_machine_recognize_image/2024-02-17_09-44-52_2024-02-17_09-44-41.png]]
+
+這雖然只是五子棋，但我們也向AlphaGo邁進一小步了。
+
+** 將待解問題數學化
+在繼續做夢之前，讓我們回到現實，怎麼找出這個函數：
+#+CAPTION: 目標函數
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 200
+#+ATTR_ORG: :width 200
+#+ATTR_HTML: :width 400
+[[file:images/How_machine_recognize_image/2024-02-17_09-47-27_2024-02-17_09-47-07.png]]
+
+如何藉由數學運算來將上述兩個矩陣區分為「／」及「＼」兩個圖像？似乎把矩陣裡的數值進行相加或相乘都無法達到要求，因為兩個矩陣元素相加或相乘的結果都相同。顯然我們需要引入額外的變數來協助：加入另一個新的矩陣來與這兩個矩陣進行運算。
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 100
+#+ATTR_ORG: :width 100
+#+ATTR_HTML: :width 120
+[[file:images/How_machine_recognize_image/2024-02-17_09-55-04_2024-02-17_09-54-47.png]]
+
+經由如下的矩陣計算，我們可以初步擬定一條分類規則：若是運算所得值大於0，則此圖像為＼；若是運算所得值小於0，則判定為／。
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/How_machine_recognize_image/2024-02-17_09-56-41_2024-02-17_09-56-25.png]]
+
+然而，若是電腦所讀入的「／」及「＼」兩符號書寫過於潦草，那麼我們的判斷是否仍然正確呢？假設所讀入的「＼」圖像在右上角的彎曲幅度過大，以致於佔去了三個像素（如下圖矩陣A）；而「／」圖像又因寫的太短，僅佔了左下角一個像素（如下圖矩陣B）。經由如下的計算結果，我們發現仍可將二者進行正確分類。此時，我們可以宣稱這個方法是強韌的(robust)。
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/How_machine_recognize_image/2024-02-17_09-59-34_2024-02-17_09-59-21.png]]
+
+在上述範例中：
+- 矩陣K對矩陣A、B所進行的運算即為卷積(convolution)，矩陣K在[[id:20221023T101414.457264][卷積神經網路]]中稱之為卷積核(convolution kernel)，其作用即在於萃取出資料特徵。藉此，我們達成了利用數學運算來擷取圖像特徵，也可以理解到為何深度學習能夠過濾資料雜訊而完成圖像識別。
+- 計算得到結果後，我們私自擬定一條分類規則：若是運算所得值大於0，則此圖像為＼；若是運算所得值小於0，則判定為／。在神經網路中，這就是[[id:d3bcc30a-3d94-4a3c-8e66-baaac7325c75][激勵函數]]([[id:d3bcc30a-3d94-4a3c-8e66-baaac7325c75][Activation Function]])。
+
+至此，你有沒有一種[[https://zh.wikipedia.org/zh-tw/%E6%97%A2%E8%A6%96%E6%84%9F][Déjà vu]]的感覺？沒錯，我們實作出了一個[[id:20221023T103538.640537][感知器]](如圖[[fig:perceptron-struct]])：
+- 矩陣A就是感知器的輸入值
+- 矩陣K裡的值就是感知器中的weight和bias
+- 決定何時輸出"\"、何時輸出"\"的功能其實就是[[id:d3bcc30a-3d94-4a3c-8e66-baaac7325c75][激勵函數]]
+#+CAPTION: 感知器基本結構
+#+LABEL:fig:Labl
+#+name: fig:perceptron-struct
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/How_machine_recognize_image/2024-02-17_13-44-03_2024-02-17_13-21-43.png]]
+
+而[[id:20221023T103538.640537][感知器]]只是神經網路中的基本元素。
+
+** [課堂作業]如何辨識「及」 :TNFSH:
+:PROPERTIES:
+:ID:       407bb0b4-adc6-4619-a08d-6c488eb9b308
+:END:
+思考一下，如果你想要區分「及」兩個符號(如右圖)，你要如何訂制你的卷積核？你的方法夠強韌嗎？
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 200
+#+ATTR_ORG: :width 200
+#+ATTR_HTML: :width 300
+[[file:images/How_machine_recognize_image/2024-02-17_10-01-54_2024-02-17_10-01-44.png]]
+
+* 照片分類任務的兩個難題
+** 缺乏可用特徵值
+回顧[[id:20221023T101626.420918][監督式學習]]中的[[id:1592687a-cca7-4473-83a0-682a36394a28][分類]]任務中，我們為每張照片中的動物手動定義了不同的特徵，並賦予不同動物不同數值，最後利用這些特徵值來進行分類預測。
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/最短距離分類器/2024-02-05_13-44-20_2024-02-05_13-44-08.png]]
+
+就連在[[file:20231204210821-分類.org::#IRIS-KNN][KNN分類器:IRIS]]的任務中，鳶尾花的資料集也是友善的自帶花萼和花瓣資料才來要求我們完成分類工作。
+#+ATTR_LATEX: :width 200
+#+ATTR_ORG: :width 200
+#+ATTR_HTML: :width 300
+[[file:images/iris-1.png]]
+
+但是，如果我們要辨別的是全新的照片呢？難道我們要進行下圖這種分類時都要手動生成相對應的特徵？所以在輸入照片後還要再手動丈量所需特徵值(頭部及尾巴佔身體比例)？如果是，這種能力也太廢了點。
+#+ATTR_LATEX: :width 200
+#+ATTR_ORG: :width 200
+#+ATTR_HTML: :width 400
+[[file:images/How_machine_recognize_image/2024-02-17_09-43-18_2024-02-17_09-43-06.png]]
+
+至此我們發現了真正要實作照片辨識時的第一個問題：缺乏特徵值。
+
+** 缺乏適當參數
+在[[id:da15978e-768b-4d4e-ac51-5ff75446e642][How machine recognize image]]一節中，我們想出了利用另一個新矩陣K來從兩張影像的矩陣抽取出特徵。
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 100
+#+ATTR_ORG: :width 100
+#+ATTR_HTML: :width 120
+[[file:images/How_machine_recognize_image/2024-02-17_09-55-04_2024-02-17_09-54-47.png]]
+
+如果你有認真做完[[id:407bb0b4-adc6-4619-a08d-6c488eb9b308][[課堂作業]如何辨識「及」]]，你大概會發現這個矩陣K並不是那麼好踹出來的，而且我們花了這麼多精力踹出一個矩陣也只能抽取出原圖的一個特徵，難道這就是機器學習的玩法？
 
 * 類神經網路
+:PROPERTIES:
+:ID:       56483fdc-98a3-4606-884f-5165eb4be80d
+:END:
 ** 概念
-生物神經系統的結構，神經元(Neuron)之間 互相連結，由外部神經元接收信號，再層層 傳導至其他神經元，最後作出反應的過程
+類神經網路的機制解決了前述兩大問題，方法是效法人類腦神經系統的運作。
+
+在生物神經系統的結構中，神經元(Neuron)之間互相連結，由外部神經元接收信號，再逐層傳導至其他神經元，最後作出反應。
 #+CAPTION: 神經元與神經網路
 #+name: fig:Neuron-1
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 400
+#+ATTR_HTML: :width 500
 #+Results:
 [[file:images/Neuron.jpg]]
-#+CAPTION: 感知器
-#+name: fig:Perceptron
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 400
-#+Results:
-[[file:images/Perceptron.jpg]]
-神經網絡是非常重要的一種機器學習機制，它是一種模仿人類大腦學習機制的一種方法。人類的大腦從外界接受刺激，並處理這些輸入（通過神經元處理），最終產生輸出[fn:2]。
-當任務變得複雜的時候，大腦會使用多個神經元來形成一個複雜的網絡，並在神經元之間傳遞信息，人工神經網絡就是模仿這種處理機制的一種算法。如下圖的網絡是一種由多個互聯的神經元組成的網絡[fn:2]。
 
-#+CAPTION: DEEP NEURAL NETWORK
-#+LABEL:fig:DNN
-#+name: fig:DNN
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
-[[file:images/2021-05-22_23-30-45.jpg]]
+類神經網絡是一種機器學習機制，它模仿人類大腦的學習方法。人類的大腦從外界接受刺激，並處理這些輸入（通過神經元處理），最終產生輸出[fn:1]。當任務變得複雜的時候，大腦會使用多個神經元來形成一個複雜的網絡，並在神經元之間傳遞訊息，人工神經網絡就是模仿這種處理機制的一種算法。
 
-- 圖[[fig:DNN]]中的圓圈就是神經元(perceptron)。每一個perceptron都由weight、bias和activation function(如圖[[fig:ActivationFunction]])組成。數據由input layer輸入。然後perceptron基於weight和bias，通過線性變換將輸入數據進行轉換。activation function則是用來完成非線性的轉換。數據從輸入層輸入後，會來到隱藏層。隱藏層將會對數據進行處理並輸送到輸出層。這種數據處理方式就是著名的前向傳播。
-  #+CAPTION: Activation function
-  #+name: fig:ActivationFunction
-  #+ATTR_LATEX: :width 300
-  #+ATTR_ORG: :width 300
-  #+ATTR_HTML: :width 400
-  #+Results:
-  [[file:images/ActivationFunction.jpg]]
-
-- 當輸出層的結果和我們期望的結果相差很大怎麼辦呢？在神經網絡中，我們可以基於這種錯誤來更新神經元的權重和偏移。這種處理方式被稱為後向傳播算法。一旦所有的數據經歷過這個處理，最終的權重和便宜就可以用來做預測了[fn:2][fn:3]。
-  #+CAPTION: Neural Network
-  #+LABEL:fig:Neural Network
-  #+name: fig:Neural Network
-  #+ATTR_LATEX: :width 300
-  #+ATTR_ORG: :width 300
-  #+ATTR_HTML: :width 500
-  [[file:images/nn.gif]]
-
-** NN如何學習
-*** 神經網路學習(ANN)的基本步驟
-利用隨機梯度下降法(SGD)求梯度並更新 weight 和 bias 參數
-1. 從訓練資料中隨機選擇一部分資料
-2. 構建網路，利用前向傳播，求出輸出值。利用輸出值與目標值得到損失函數(loss Function)，利用損失函數，並用反向傳播方法，求各參數的梯度。
-3. 將權重參數沿梯度方向進行微小更新
-4. 重複以上步驟(epoch=100, 500, 1000, ...)直到誤差最小化
-   (http://www.feiguyunai.com/index.php/2019/03/31/python-ml-24th-backp/)
-*** Error Function
-Error(錯誤) = 真正的值(t) + 預測值(y)
-$$ E=\frac{1}{2}\sum^{n}_{i=1}(y_i = t_i)^2$$
-$$ E=-\sum_{i=1}^{n}t_i*\log{y_i}$$
-*** Keras 在 losses.py 定義常用的損失函數
-- https://github.com/keras-team/keras/blob/master/keras/losses.py
-- MSE: mean_squared_error
-- MAE: mean_absolute_error
-- mape = MAPE = mean_absolute_percentage_error
-- msle = MSLE = mean_squared_logarithmic_error
-- kld = KLD = kullback_leibler_divergence
-- cosine = cosine_proximity
-*** 誤差實際計算
-#+CAPTION: 誤差計算範例
-#+LABEL:fig:Error-Computation
-#+name: fig:Error-Computation
-#+ATTR_LATEX: :width 400
-#+ATTR_HTML: :width 400
-#+ATTR_ORG: :width 00
-[[file:images/Error-Computation.jpg]]
-*** 學習步驟
-#+CAPTION: 類神經網路
-#+LABEL:fig:ANN-1
-#+name: fig:ANN-1
-#+ATTR_LATEX: :width 300
-#+ATTR_HTML: :width 400
-#+ATTR_ORG: :width 300
-[[file:images/ANN-1.jpg]]
-1. 將 weight 與 bias 隨機設定，例如，全設為 0
-2. 計算出模型結果值
-3. 計算出誤差：即計算結果與真實值之差異
-#+CAPTION: 類神經網路
-#+LABEL:fig:ANN-4
-#+name: fig:ANN-4
-#+ATTR_LATEX: :width 300
-#+ATTR_HTML: :width 400
-#+ATTR_ORG: :width 300
-[[file:images/ANN-4.jpg]]
-4. 定義 weight 與 bias 的更新策略(update the weights and bias)，其更新策略為從錯誤中學習。學習規則為
-   $$\Delta w=\eta X^T\cdot (\hat{y} - y)$$: $w$(新的)=$w$(前一回)+$\Delta w$(誤差變動)
-   $$\Delta b=\eta (\hat{y} - y)$$: $b$(新的)=$b$(前靣)+$\Delta b$(誤差變動)
-#+CAPTION: 類神經網路
-#+LABEL:fig:ANN-5
-#+name: fig:ANN-5
-#+ATTR_LATEX: :width 300
-#+ATTR_HTML: :width 400
-#+ATTR_ORG: :width 300
-[[file:images/ANN-5.jpg]]
-5. 使用新的 weight 與 bias，計算直到誤差很小(定義何時結束)
-   $$\Delta w=\eta X^T\cdot (\hat{y} - y)$$: $w$(新的)=$w$(前一回)+$\Delta w$(誤差變動)
-   $$\Delta b=\eta (\hat{y} - y)$$: $b$(新的)=$b$(前靣)+$\Delta b$(誤差變動)
-   $$\eta$$ = 學習率
-
-** 為什麼沒有Activation Function的perceptron為linear model
-思考下方堆疊兩層感知器的例子(這裡我們捨棄偏權值b，使問題單純化)：
-#+CAPTION: Stacked perceptrons
-#+LABEL:fig:StackedPerceptrons
-#+name: fig:StackedPerceptrons
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
-[[file:images/2perceptrons.png]]
-
-其中
-$$
-y_1 = w_1^1x_1 + w_2^1x_2 \\
-y_2 = w_3^1x_1 + w_4^1x_2 \\
-\hat{y} = w_1^2y_1 + w_2^2y_2
-$$
-若將\(y_1\)與\(y_2\)代入\(\hat{y}\)，可以發現仍然是原始數據的線性組合，代表即使堆疊多層的感知器時，若沒有使用激活函數，本質上可以被單層感知器取代，如下[fn:6]：
-$$\hat{y} = w_1^2y_1 + w_2^2y_2  = (w_1^1w_1^2 + w_2^1x_2^2)x_1 + (w_3^1w_1^2 + w_4^1x_2^2)x_2$$
-
-激活函數最重要的功能在於引入神經網路非線性，因為若未加入激活函數，卷積層與全連接層只是單純的線性運算，只是將上層的數據經過線性地組合成下層數據而已，對於線性不可分的問題仍然是無解的[fn:7]。
-
-舉個常見的例子，如果輸入的資料如下圖(這是互斥或閘XOR的例子)，圈圈與叉叉分別是兩種不同的類別，我們的目標就是利用一條直線將兩類別切開，但實際上根本無法利用一條直線切割開，因此需要對輸入資料做特徵轉換(feature transform)，將其從x1-x2特徵平面映射其他線性可分的特徵平面(可單純利用一條直線切分)[fn:7]。
-
-** Backprogation: 如何快速計算 w 與 b 的更新
-*** Godfather of Deep Learning
-- 1986: the backpropagation algorithm for training multi-layer neural networks
-- Hinton, G. E., Osindero, S. and Teh, Y. (2006), A fast learning algorithm for deep belief nets. Neural Computation, 18, pp. 1527-1554
-- 2012: AlexNet (Alex Krizhevsky)啟動 AI/NN 電腦視覺熱潮
-- 2018: Turing Prize (Yoshua Bengio and Yann LeCun)
-(https://www.cs.toronto.edu/~hinton/coursera_slides.html)
-*** 倒遞神經網路(Back-Propagation) 數學推導
-**** [[https://honglung.pixnet.net/blog/post/202201656-back-propagation-%E6%95%B8%E5%AD%B8%E6%8E%A8%E5%B0%8E][數學推導]]
-1. 背景: 以下 a,b,c 為輸入值.並且激勵函數(activity function) 採用 sigmoid 進行說明:
-#+CAPTION: 數學推導-1
-#+LABEL:fig:Backprogation-1
-#+name: fig:Backprogation-1
-#+ATTR_LATEX: :width 300
-#+ATTR_HTML: :width 400
-#+ATTR_ORG: :width 400
-[[file:images/Backprogation-1.png]]
-依上圖所述，數學式如下：
-$$ z = aw_a + bw_b + cw_c $$
-$$ \delta (z) = \frac{1}{1+e^{-x}} $$
-2. 由於在訓練過程中目的是找到最適合的權重值(weight).可透過微分求解梯度後可以找到權重應該修正的數值.因為每個變數都需要各自進行微分,因此透過偏微分求解(在遇到非目標為分數值時,將其視為常數):
-   $$ \frac{\vartheta z}{\vartheta w_a} = a ,  \frac{\vartheta z}{\vartheta w_b} = b, \frac{\vartheta z}{\vartheta w_c} = c$$
-   $$ \delta '(z) = (1-\delta (z)) \cdot \delta (z) $$
-3. 得知以上各個偏微分數值後,透過連鎖律進行神經元的偏微分,可得到以下式子:
-   $$\frac{\vartheta f}{\vartheta w_a} = \frac {\vartheta f}{\vartheta z} \cdot \frac{\vartheta z}{\vartheta w_a} = [(1-\delta (z)) \cdot \delta (z)] \cdot a$$
-
-** Activation Function
-Activation function是神經網絡中極其重要的概念。它們決定了某個神經元是否被activate，這個神經元接受到的信息是否是有用的，是否該留下或者是該拋棄。
-Activation) function的形式如下[fn:2]：
-- 在神經元裡定義一些權重(weight)，經過計算之後，判斷結果是否超過一個閾值(threshold)，如果超過，神經元輸出為 1；反之，則輸出 0。
-- 如果不用Activation function，每一層output都是上層input的線性函數，無論神經網絡有多少層，輸出都是輸入的線性組合。
-- 加入非線性的function就能改變線性問題
-
-*** Step function
-Step function，若輸入超過 0，則輸出 1；若輪入小於等於 0，則輸出 0，如公式[[eqn:stepFunc]]所示，其函數圖形則如圖[[fig:stepFuncFig]]所示。
-#+NAME: eqn:stepFunc
-\begin{equation}
-h(x) = \begin{cases}
-1 & \text{if } x > 0 \\
-0 & \text{if } x\leq 0
-\end{cases}
-\end{equation}
-#+begin_src python -r -n :results file :exports both
-import numpy as np
-import matplotlib.pylab as plt
-
-def step_function(x):
-    return np.array(x>0, dtype=np.int) (ref:why)
-
-x = np.arange(-5.0, 5.0, 0.1)
-y = step_function(x)
-plt.figure(figsize=(4,3))
-plt.plot(x, y)
-plt.ylim(-0.1, 1.1)
-plt.savefig("images/stepFuncPlot.png")
-return "images/stepFuncPlot.png"
-#+END_SRC
-#+CAPTION: 階梯函數圖
-#+LABEL:fig:stepFuncFig
-#+name: fig:stepFuncFig
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
-#+RESULTS:
-[[file:images/stepFuncPlot.png]]
-- 為什麼第[[(why)]]行(np.array(x>0, dtype=np.int))這樣寫會變成0/1
-- 當調整參數時，節點輸出的值在 0 和 1 之間躍遷，對調整參數造成很大不便。
-
-*** Sigmoid 函數
-公式[[eqn:sigmoidv1]]即為 sigmoid 函數(sigmoid function)，其中的\(exp(-x)\)代表\(e^{-x}\)，\(e\)為納皮爾常數(Napier's constant)2.71828...的實數。
-#+NAME: eqn:sigmoidv1
-\begin{equation}
-h(x) = \frac{1}{1+exp(-x)} = \frac{1}{1+e^{-x}}
-\end{equation}
-
-sigmoid 函數的 python 實作如下所述，而其圖形結果為平滑曲線(圖[[fig:sigmoidFunction]])，針對輸入產生連續性的輸出，但仍與階梯函數相同，以 0 為界線，這種平滑度對於神經網路有相當重要的意義。此外，step function只能回傳 0 或 1，而 sigmoid 函數可以回傳實數。
-#+BEGIN_SRC python -n -r :exports both :results file
-import numpy as np
-import matplotlib.pylab as plt
-def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
-x = np.arange(-5.0, 5.0, 0.1)
-y = sigmoid(x)
-print(y)
-plt.figure(figsize=(4,3))
-plt.plot(x, y)
-plt.ylim(-0.1, 1.1)
-plt.savefig("images/sigmoidplot2.png")
-return "images/sigmoidplot2.png"
-#+END_SRC
-#+CAPTION: sigmoid 函數圖
-#+LABEL:fig:sigmoidFunction
-#+name: fig:sigmoidFunction
-#+ATTR_LATEX: :width 200
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
-#+RESULTS:
-[[file:images/sigmoidplot2.png]]
-- 非線性功能
-- 輸出：（0,1）
-- 處理極端值
-- 常用於隱藏層和輸出層
-- 常用於二元分類
-- 梯度消失問題
-
-*** ReLU 函數
-神經網路感知器使用的活化函數多為非線性函數，如階梯函數與 sigmoid 函數，其主要原因在於，若在神經網路中使用線性函數，則不論加深多少層，這些函數都能合併為一個單一函數。例如，一個以\(h(x)=cx\)為活化函數的三層網路，其執行結果便相當於\(y(x)=h(h(h(x)))\)，亦即，其執行網果就如同一個以\(y(h)=ax\)為活化函數的一層網路，其中\(a=c^{3}\)。
-
-雖然 sigmoid 函數很早就應用於神經網路中，但最近較常使用的為 ReLU (Rectified Linear Unit)函數，若輸入超過 0，則直接輸出；若輪入小於 0，則輸出 0，如公式[[eqn:ReLUfn]]所示，其函數圖形則如圖[[fig:ReLUFunction]]所示。
-#+NAME: eqn:ReLUfn
-\begin{equation}
-h(x) = \begin{cases} x & \text{if } x > 0
-\\ 0 & \text{if } x\leq 0 \end{cases}
-\end{equation}
-or
-$$h(x) = max(0,x)$$
-
-#+BEGIN_SRC python -n -r :exports both :results file
-import numpy as np
-import matplotlib.pylab as plt
-def relu(x):
-    return np.maximum(0, x)
-x = np.arange(-5.0, 5.0, 0.1)
-y = relu(x)
-print(y)
-plt.figure(figsize=(4,3))
-plt.plot(x, y)
-plt.ylim(-0.5, 5)
-plt.savefig("images/ReLUPlot.png")
-#return "ReLUPlot.png"
-#+END_SRC
-#+CAPTION: ReLU 函數圖
-#+LABEL:fig:ReLUFunction
-#+name: fig:ReLUFunction
-#+ATTR_LATEX: :width 200
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
-#+RESULTS:
-[[file:images/ReLUPlot.png]]
-- 非線性功能
-- 輸出範圍：（0，$\infty$）
-- 捨棄一些信息
-- 常用於隱藏層
-- 梯度爆炸問題
-
-* 神經網路的學習
-
-** 從資料中學習
-
-神經網路的特色是可以從資料中學習，此處的學習指「自動決定權重參數」，以人工來指定權重參數值這個工作太過鉅大以至於可行性不高，因為有些神經網路的權重參數可能高達數千億個。機器學習與神經網路最大的差異也在於此。以辨識手寫字（如圖[[fig:MNIST-Image]]）為例，機器學習的作法是先以人工找出該字圖形的特徵量（可以透過 SIFT、SURF、HOG 等視覺領域方法），將該特徵量轉換為向量，再利用機器學習的辨識器（如 SVM、KNN）來學習這些轉換過的特徵向量；而神經網路的作法則是直接將原始圖形當成輸入，至於特徵量本身也是透過神經網路自行學習取得，再透過這些行習得的特徵量進行學習辨識。
-
-在機器學習的過程中，一般會把資料分成訓練資料與測試資料兩類，其中訓練資料用來進行學習、尋找最佳參數；而測試資料則是用來評估訓練後的模型成效。若只使用同一種資料集（如同一個人的字跡）來進行訓練與評估，則可能導致模型只對此人的字跡有辨識成效，這㮔問題稱為過度擬合（overfitting）。
-#+CAPTION: 手寫字體辨識
-#+LABEL:fig:MNIST-Image
-#+name: fig:MNIST-Image
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
-[[file:images/MNIST-Image.png]]
-
-** Overfitting v.s. underfitting
-
-機器學習的本質即在於最佳化與普遍性之間的拉扯，最佳化(optimization)是指調整模型使得模型能在訓練資料上獲得最佳表現的過程；而普遍性(generalization)是指已訓練過的模型對從未見過的資料的預測能力。在訓練之初，最佳化和普遍性是高度相關的，訓練資料的損失越低、測試資料的損失也越低。此時，模型仍處於低度擬合狀態，仍有進步空間；在訓練資料經過一定回合(epoch)的訓練後，普遍程度的改善幅逐漸停止，驗證指標隨之停滯然後開始變差，於是模型開始 overfitting。也就是說，模型已經學習了一些訓練集特有的模式，但這些特有模式根本和新資料不相關、甚或會誤導對新資料的預測。
-
-為了防止模型在訓練資料中學到錯誤或不相關的模式，最好的解決方案是取得更多訓練資料，如果無法做到這一點，次佳的解決方案是調配模型儲存的訊訊量或者限制儲存資訊的類型或數值，如果一個神經網路只能記住少量的模式，那麼優化過程將迫使它專注於最顯著的那些模式，而不會去記住那些不相關的資訊，如此才能適應從未見過的新資料。
-
-這種週配或限制模型資訊(即參數)以對抗 overfitting 的方式稱為常規化(regularization)，幾個常見的常規化技術如下：
-
-*** 縮減神經網路的大小
-
-即減少模型可用來學習的參數數量(包含網路的層數和每層的神經元個數)，在深度學習中，模型中可學習參數的數量(權重數量)通常被稱為容量(capacity)。直覺上，有更多參數的模型具有更多的記憶能力(memorization capacity)，因此可以很容易在訓練樣本與其目標之間做出完美的對應，但卻沒有任何適應學習的能力。例如，我們可以建立具有 500000 個參數的模型來輕鬆學習(記憶)MNIST 訓練集中的每個數字所屬類別，但這種模型對於預測新的數字圖案毫無用處。
-
-此外，如果神經網路的記憶資源有限，則無法輕易地直接在訓練樣本與目標之間做出對應，因此，要讓損失最小化，神經網路必須採用萃取過的資料表示法，以建立對目標的預測能力；另一方面，我們仍須讓神經網路擁有足夠的參數，以免模型 underfitting。也就是說，我們必須在容量過大(too much capacity)和容量不足(not enough capacity)之間取得平衡。
-
-然而，到目前為止還沒有有效的公式來確定網路最佳的層數和神經元數，我們必須實際在神經網路進行多次評估(在驗證集上，而非測試集)，以找到正確的模型大小。我們通常會從較少的層數和 units 數開始，再逐漸增加層的 units 數或增加新層數，直到驗證損失不再進步為止。
-
-以 imdb 的例子來看，原本的網路模型如下：
-
-#+BEGIN_SRC python -r -n :results output :exports both :eval no
-  model = models.Sequential()
-  model.add(layers.Dense(16, activation='relu', input_shape=(10000,)))
-  model.add(layers.Dense(16, activation='relu'))
-  model.add(layers.Dense(1, activation='sigmoid'))
-#+END_SRC
-
-如果我們將每一層的神經元數量縮小：
-
-#+BEGIN_SRC python -r -n :results output :exports both :eval no
-  model = models.Sequential()
-  model.add(layers.Dense(4, activation='relu', input_shape=(10000,)))
-  model.add(layers.Dense(4, activation='relu'))
-  model.add(layers.Dense(1, activation='sigmoid'))
-#+END_SRC
-
-則兩個版本的驗證損失比較如下圖，黑點為縮小網路 capacity 的驗證損失值，可以看出較原始版本的表現更佳，這個版本的神經網路在第 6 個 epoch 之後才開始 overfitting（原始的模型在第 4 個 epoch）就開始 overfitting。
-
-#+CAPTION: 模型容量對驗證損失分數的影響-較小的模型
-#+LABEL:fig: Compare-Capacity-1
-#+name: fig:Compare-Capacity-1
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-[[file:images/img-191120103824.jpg]]
-
-相反的，如果我們刻意將神經網路的 capacity 擴大，如下，每一層的神經元數量由原來的 16 增加到 512，則結果如圖[[fig:Compare-Capacity-2]]，擴大版的神經網路幾乎在訓練之初就開始 overfitting，而且越來越嚴重，其驗證損失的表現也較原始版本差。
-
-#+BEGIN_SRC python -r -n :results output :exports both
-  model = models.Sequential()
-  model.add(layers.Dense(512, activation='relu', input_shape=(10000,)))
-  model.add(layers.Dense(512, activation='relu'))
-  model.add(layers.Dense(1, activation='sigmoid'))
-#+END_SRC
-
-#+CAPTION: 模型容量對驗證損失分數的影響-較大的容量
-#+LABEL:fig: Compare-Capacity-2
-#+name: fig:Compare-Capacity-2
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-[[file:images/img-191120103825.jpg]]
-
-較大模型的神經網路雖然導致驗證損失的效能下降，但在訓練損失上的表現則否，由圖[[fig:Compare-Capacity-3]]的黑點可明顯看出大網路模型在訓練期間的損失極低，然而這種效能在面對新資料（驗證資烞十）時確無法表現出來。
-
-#+CAPTION: 模型容量對訓練損失分數的影響-較大的容量
-#+LABEL:fig: Compare-Capacity-3
-#+name: fig:Compare-Capacity-3
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-[[file:images/img-191120103826.jpg]]
-
-*** 加入權重常規化 (weight regularization)
-
-在設計網路模型時，一個原則為：如果兩種模型有同樣的效能表現，則較簡單的模型通常是更好的設計，也更不容易導致 overfitting。這裡所謂的簡單指的是參數值分佈的熵比較小(entropy of distribution of parameter values las less entropy)的模型，或是使用較少參數的模型。因此，降低 overfitting 就是想辦法採用較小的權重值以限制神經網路的複雜性，這會讓權重的分佈更為常規化(regularized)。權重值常規化(weight regularization)在作法上就是對損失函數中較大的權重加上代價(cost)項目，通常有兩種方式：
-
-- L1 regularization: 在損失函數多加上一項 cost，這一項和權重係數的絕對值成正比。
-- L2 regularization: 在損失函數多加上一項 cost，這一項和權重係數的平方成正比。L2 也稱為 weight decay。
-
-在 Keras 中，常規化的實作只要利用 model.add()並指名參數把權重常規化物件傳入神經網路層即可。以下為 L2 regularization 的做法：
-
-#+BEGIN_SRC python -r -n :results output :exports both :eval no
-  from keras import regularizers
-
-  model = models.Sequential()
-  model.add(layers.Dense(16, kernel_regularizer=regularizers.l2(0.001),
-                         activation='relu', input_shape=(10000,)))
-  model.add(layers.Dense(16, kernel_regularizer=regularizers.l2(0.001),
-                         activation='relu'))
-  model.add(layers.Dense(1, activation='sigmoid'))
-#+END_SRC
-
-上述程式中 l2(0.001)的意思是表示該層權重矩陣中的每個係數都會加上(0.001*權重係數值)到神經網路的總損失函數上，由圖[[fig:Compare-Capacity-4]]的結果可看，加入 L2 regularization 的模組，其驗證損失的表現較佳。
-
-#+CAPTION: 權重正規化對訓練損失分數的影響
-#+LABEL:fig: Compare-Capacity-4
-#+name: fig:Compare-Capacity-4
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-[[file:images/img-19112010382A.jpg]]
-
-*** 丟棄法 (dropout)
-
-由 Ceoff Hinton 教授和他在多倫多大學的學生所開發出來的常規化技術之一，主要是在訓練期間隨機丟棄(dropping out，即把 feature 值歸零)layer 的一些輸出特徵，假設某層在訓練期間的某一狀態下其正常輸出向量為[0.2, 0.5, 1.3, 0.8, 1.1]，在 dropout 後，某幾個輸輸向量的值會被歸零，如[0, 0.5, 1.3, 0, 1.1]。丟棄率則是指被歸零的特徵值個數佔特徵值總數的比例，以此例而言丟棄率為 2/5=0.4。
-
-丟棄率通常介於 0.2 到 0.5 之間，而在測試時，其實沒有任何特徵質會被丟棄，取而代之的是層的輸出值將依照丟棄率的比例縮小，以平䚘訓練時的輸出被歸零的影響。隨機歸零的核心想法是在 layer 的輸出值中加入"雜訊"，這樣可以打破不重要的偶然模式，如果沒有雜訊，神經網路就會開始"死記"。在 Keras 中，我們可以很簡單的透過 add()來加入 Dropout：
-
-#+BEGIN_SRC python -r -n :results output :exports both :eval no
-  from keras import regularizers
-
-  model = models.Sequential()
-  model.add(layers.Dense(16, kernel_regularizer=regularizers.l2(0.001),
-                         activation='relu', input_shape=(10000,)))
-  model.add(layers.Dropout(0.5))
-  model.add(layers.Dense(16, kernel_regularizer=regularizers.l2(0.001),
-                         activation='relu'))
-  model.add(layers.Dropout(0.5))
-  model.add(layers.Dense(1, activation='sigmoid'))
-#+END_SRC
-
-在加入兩個 Dropout 層後對於降低 overfitting 的效果如圖[[fig:Compare-Capacity-5]]所示。
-
-#+CAPTION: 權重正規化對訓練損失分數的影響
-#+LABEL:fig: Compare-Capacity-5
-#+name: fig:Compare-Capacity-5
-#+ATTR_LATEX: :width 300
-[[file:images/img-19112010382B.jpg]]
-
-** 三層神經網路
-
-圖[[fig:ThreeLayerNT]]為典型的三層神經網路，輸入層(layer 0)有 2 個神經元，兩個隱藏層(layer 1, 2)各有 3 個及 2 個神經元，輸出層(layer 3)則有兩個神經元。神經網路中各層的神經元的訊息傳遞則是透過矩陣相乘來進行。
+圖[[fig:ThreeLayerNT]]為典型的三層類神經網路，輸入層(layer 0)有 2 個神經元，兩個隱藏層(layer 1, layer 2)各有3個(a1, a2, a3)及2個(b1, b2)神經元(灰色圓圈為bias)，輸出層(layer 3)則有兩個神經元。
 
 #+BEGIN_SRC dot :file images/3LayerNetwork.png :cmdline -Kdot -Tpng
   digraph threeLayerNetwork{
@@ -507,425 +272,127 @@ plt.savefig("images/ReLUPlot.png")
 #+name: fig:ThreeLayerNT
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
+#+ATTR_HTML: :width 400
 #+RESULTS:
 [[file:images/3LayerNetwork.png]]
 
-神網網路間的訊息傳遞(propagation)可分為以下兩類:
-- 前向傳遞(Forward propagation): 較簡單 (只有線性合成，和非線性轉換)
-- 反向傳遞 (Backward propagation): 較複雜 (因為多微分方程)
+神經網絡的基礎模型是[[id:20221023T103538.640537][感知器]](perceptron)，因此神經網絡也可以叫做多層感知器(Multi-layer Perceptron)，簡稱MLP[fn:2]。
 
-** 損失函數
+我們可以把圖[[fig:ThreeLayerNT]]中的每個神經元都視為一個抽象的[[id:20221023T103538.640537][感知器]]實作，如圖[[fig:Perceptron]]，每個神經元都自前方取得輸入資料，經過一番計算後，再將輸出結果傳結後方的神經元，當成後方神經元的輸入。這種訊息在神經網路中傳遞的方式稱為前向傳播(forward propagation)，而實際神經網路中各層的神經元的訊息傳遞則是透過矩陣相乘來進行。
 
-至於神經網路模型的成效則可由損失函數（loss function）來判斷，常見的損失函數有均方誤差與交叉熵誤差兩種。
-
-*** 均方誤差
-
-均方誤差（mean squared error）可以公式[[eqn:mse-func]]表示：
-#+NAME: eqn:mse-func
-\begin{equation}
-E = \frac{1}{2} \sum_{k}(y_k-t_k)^2
-\end{equation}
-公式[[eqn:mse-func]]中的\(y_k\)為神經網路的輸出，\(t_k\)為訓練資料，\(k\)為資料的維度，其實際運算的資料內容與結果可由如下程式碼，當 y 的預測機率越接近正確答案時，均方誤差的值越小。
-#+BEGIN_SRC python -r -n :results output :exports both
-  import numpy as np
-  def mean_squared_error(y, t):
-      return 0.5 * np.sum((y-t)**2)
-  # case 1: 正確答案為2, y[2]的機率最高時
-  y = np.array([0.1, 0.05, 0.6, 0.0, 0.05, 0.1, 0.0, 0.1, 0.0, 0.0])
-  t = np.array([0, 0, 1, 0, 0, 0, 0, 0, 0, 0])
-  print(mean_squared_error(y,t))
-
-  #case 2: 正確答案為2, y[7]的機率最高時
-  y = np.array([0.1, 0.05, 0.1, 0.0, 0.05, 0.1, 0.6, 0.0, 0.0, 0.0])
-  print(mean_squared_error(y,t))
-#+END_SRC
-
-#+RESULTS[97a59ebe6de5b787074005ae73b96b684c6b1127]:
-: 0.09750000000000003
-: 0.5975
-
-*** 交叉熵誤差
-
-交叉熵誤差（cross entropy error）可以公式[[eqn:cee-func]]表示：
-#+NAME: eqn:cee-func
-\begin{equation}
-E = -\sum_{k}t_k\log y_k
-\end{equation}
-公式[[eqn:cee-func]]中的\(y_k\)為神經網路的輸出，\(t_k\)為訓練資料（即正確答案標籤，為 one-hot 形式，只有正確案為 1，其餘為 0），\(log\)為以\(e\)為底的自然對數，其輸出圖形如圖[[fig:logFunction]]所示。
-#+BEGIN_SRC python -n -r :exports both :results file
-  import numpy as np
-  import matplotlib.pylab as plt
-  x = np.arange(-0.1, 2, 0.0001)
-  y = np.log(x)
-  plt.figure(figsize=(4,3))
-  plt.plot(x, y)
-  plt.ylim(-5.1, 1)
-  plt.savefig("log.png")
-  return "log.png"
-#+END_SRC
-#+CAPTION: 自然對數\(y=\log x\)曲線圖
-#+LABEL:fig: logFunction
-#+name: fig:logFunction
+#+CAPTION: 神經元/感知器
+#+name: fig:Perceptron
 #+ATTR_LATEX: :width 200
-#+ATTR_ORG: :width 300
-#+RESULTS:
-[[file:images/log.png]]
+#+ATTR_ORG: :width 200
+#+ATTR_HTML: :width 400
+#+Results:
+[[file:images/perceptron-3.png]]
 
-以前述範例進行交叉熵的計算，其運算結果如下所示。進行\(log\)運算前先加上一極小值 delta 的原因在於避免因 log(0)產生無限大的-inf。執行結果與前例大致相同，越接近正確答案，誤差值越小。
+** 解決第一個問題
+如前所述，一個[[id:20221023T103538.640537][感知器]]可以抽取出一份輸入資料的特徵值，那麼，再看一下圖[[fig:ThreeLayerNT]]中的forward propagation
+- 第0層(layer 0)裡的兩個神經元(x1, x2)在取得原始資料後，就能抽取出其中的兩項特徵值，而這兩項特徵值就當成(layer 2)的輸入來源
+- 第1層(layer 1)裡的三個神經元(a1, a2, a3)則可抽取出來源資料的三項特徵值(可視為更高階或更抽象的特徵)，而這三項特徵值再當成layer 2的輸入
+- 第2層(layer 2)裡面的兩個神經元(b1, b2)繼續抽取出更抽象的兩項特徵值經過計算送往layer 3
+- 第3層(layer 3)在收到layer 2傳來的結果後，經過內部運算並輸出預測結果。
 
-#+BEGIN_SRC python -r -n :results output :exports both
-  import numpy as np
-  def cross_entropy_error(y, t):
-      delta = 1e-7
-      return -np.sum(t * np.log(y + delta))
-  # case 1: 正確答案為2, y[2]的機率最高時
-  y = np.array([0.1, 0.05, 0.6, 0.0, 0.05, 0.1, 0.0, 0.1, 0.0, 0.0])
-  t = np.array([0, 0, 1, 0, 0, 0, 0, 0, 0, 0])
-  print(cross_entropy_error(y,t))
-
-  #case 2: 正確答案為2, y[7]的機率最高時
-  y = np.array([0.1, 0.05, 0.1, 0.0, 0.05, 0.1, 0.6, 0.0, 0.0, 0.0])
-  print(cross_entropy_error(y,t))
-#+END_SRC
-
-#+RESULTS[2718e9e7fb419c2556285b444d2bc1a3ed6d9ee0]:
-: 0.510825457099338
-: 2.302584092994546
-
-*** 批次學習
-
-機器學習的目的在於使用訓練資料找能能儘量縮小損失函數的參數，因此，計算損失函數自然不是逐一計算，而是以縮小所有訓練資料的損失函數總和為最終目標。
-因此，前節中的交叉熵誤差（公式[[eqn:cee-func]]）就要修改為以下算式（[[eqn:ceesum-func]]）：
-#+NAME: eqn:ceesum-func
-\begin{equation}
-E = -\frac{1}{N}\sum_{n}\sum_{k}t_{nk}\log y_{nk}
-\end{equation}
-公式[[eqn:ceesum-func]]的 N 為資料筆數，\(y_{nk}\)代表神經網路第 n 筆資料的第 k 個輸出、\(t){nk}\)則為第 n 筆訓練資料的第 k 個值，最後除以 N、進行正規化，所得即為這 N 筆資料的「平均損失函數」。然而，實際執行時並無法取出所有訓練資料來運算，以 MNIST 資料集為例，訓練資料就有 60000 筆，若是其他大數劇則資料筆數可能達數千萬，較務實的作法，是隨機自資料集中抽取 N 筆資料（稱之為 mini batch）來計算平均損失函數，以代表整體。
-那麼，這個隨機抽取的資料筆數要設定為多少才適合？可以從以下兩個觀點來看：
-- 在合理範圍內，增大 Batch_Size 有何好處？
-  - 內存利用率提高了，大矩陣乘法的並行化效率提高。
-  - 跑完一次 epoch（全數據集）所需的迭代次數減少，對於相同數據量的處理速度進一步加快。
-  - 在一定範圍內，一般來說 Batch_Size 越大，其確定的下降方向越准，引起訓練震蕩越小。
-- 盲目增大 Batch_Size 有何壞處？
-  - 內存利用率提高了，但是內存容量可能撐不住了。
-  - 跑完一次 epoch（全數據集）所需的迭代次數減少，要想達到相同的精度，其所花費的時間大大增加了，從而對參數的修正也就顯得更加緩慢。
-  - Batch_Size 增大到一定程度，其確定的下降方向已經基本不再變化。
-
-*** 設定損失函數做為效能指標的原因
-
-進行神經網路的學習，目的在於找出辨識準確度高的參數，那麼，為什麼不以「辨識準確率」做為指標，而是要導入損失函數？
-神經網路的學習過程在於尋找最佳參數（即偏移值與權重），藉以找出能盡量縮小損失函數的參數，為達此目的，我們要對某特定參數所得的損失函數進行微分（即找出其斜度），亦即，找出「如果稍微改變這些參數，損失函數將會有何種變化？」的答案，假如微分後損失函數的值變為負值，則我們就將參數往正向變化以減少損失函數；假如微分後損失函數的值變為正值，我們就讓參數往負值變化，以減少損失函數；直到損失函數微分後的值變為 0 為止。
-無法將辨識準確率作為指標的原因即在於，不論我們如何調整參數，辨識準確率的微分值都為 0。
-例如，有 100 張訓練資料，如果能成功辨識出 32 張影像，其準確率為 32%，如果調整參數後只得到極小的變化，辨識準確度也只能在 33%、34%這些不連續的變化，而不會有 32.0124%的連續性變化。然而，如果以損失函數為指標，則能顯示出 0.92345....的結果；而略為改變參數值，即能得到 0.24884 的連續變化。
-辨識準確率幾乎不會反應改變參數所帶來的微小變化，即使有反應也是不連續的變化，這個道理就好像把階梯函數拿來當成活化函數，對階梯函數的任何點（除 0 以外）做切線，其斜率均為 0。
-
-** 數值微分
-
-梯度法使用梯度的資料來決定學習（或找出最佳參數）的方向，此處會應用到數學的微分。微分指的是某個瞬間的變化量（如行進中的車輛瞬間速度的變化量），可以公式[[eqn:diff-frac]]來定義：
-#+NAME: eqn:diff-frac
-\begin{equation}
-\frac{df(x)}{dx}=\lim_{h\to0}\frac{f(x+h)-f(x)}{h}
-\end{equation}
-上述公式中，等號左側\(\frac{df(x)}{dx}\)代表\(f(x)\)中對\(x\)微分，亦即，找出相對 x 之 f(x)的變化，也就是希望能找出：「隨著\(x\)的細微改變，函數\(f(x)\)會出現何種變化？」的答案，此處的\(h\)趨近於 0。
-以公式[[eqn:diff-frac]]實際進行 python 運算會因為 h 值太小而導致四捨五入無法計算出真實結果，如下列程式碼，若\(x=10e-50\)，其計算結果為 0。
-#+BEGIN_SRC python -n -r :output results :exports both :eval no
-  def numerical_diff(f, x):
-      h = 10e - 50
-      return (f(x+h) - f(x)) /h
-#+END_SRC
-原因是因為\(h\)值過小而被四捨五入為 0，改善方式為將\(h\)設定為\(10^-4\)。
-另一個要處理的問題是：我們想求得的是函數\(f(x)\)在點\(x\)的斜率，然而上述程式碼所計算出的是函數\(f(x)\)在\(x\)與\(x+h\)區間的斜率，改善方式是改為計算\(f(x+h)\)與\(f(x-h)\)區間的斜率，即進行數值微分（數值梯度），其程式碼如下：
-#+BEGIN_SRC python -n -r :output results :exports both :eval no
-  def numerical_diff(f, x):
-      h = 1e-4
-      return (f(x+h) - f(x-h)) / (2*h)
-#+END_SRC
-若以上述方式，分別在\(x=5\)及\(x=10\)時對計算算式\(y=0.01x^2+0.1x\)的微分，其結果如下，橘色與綠色直線分別為\(x=5\)與\(x=10\)的切線。
-#+BEGIN_SRC python -n -r :results output :exports both
-  import numpy as np
-  import matplotlib.pylab as plt
-  def numerical_diff(f, x):
-      h = 1e-4
-      return (f(x+h) - f(x-h)) / (2*h)
-  def function_1(x):
-      return 0.01*x**2 + 0.1*x
-  def tangent_line(f, x):
-      d = numerical_diff(f, x)
-      y = f(x) - d*x
-      return lambda t: d*t + y
-  x = np.arange(0.0, 20.0, 0.1)
-  y = function_1(x)
-  tf = tangent_line(function_1, 5)
-  y2 = tf(x)
-  tf2 = tangent_line(function_1, 10)
-  y3 = tf2(x)
-  plt.xlabel("x")
-  plt.ylabel("f(x)")
-  plt.plot(x, y)
-  plt.plot(x, y2)
-  plt.plot(x, y3)
-  plt.savefig("function_1.png")
-  print(numerical_diff(function_1,5))
-  print(numerical_diff(function_1,10))
-  #return "function_1.png"
-#+END_SRC
-
-#+RESULTS[c4090a99807439b4a46a9c906be3031e4a6a6763]:
-: 0.1999999999990898
-: 0.2999999999986347
-
-#+CAPTION: \(f(x)=0.01x^2+0.1x\)圖表
-#+LABEL:fig:function_1_plot
+#+CAPTION: Forward propagation
+#+LABEL:fig:ForwardPropagation
+#+name: fig:ForwardPropagation
 #+ATTR_LATEX: :width 200
-#+ATTR_ORG: :width 300
-#+RESULTS:
-[[file:images/function_1.png]]
+#+ATTR_ORG: :width 200
+#+ATTR_HTML: :width 400
+[[file:images/nn.gif]]
 
-此處計算的結果與數學解相比：\(\frac{df(x)}{dx}=0.02x+0.1\)，\(x=5\)、\(x=10\)的實際微分值應為 0.2、0.3，嚴格來說並不一致，但因誤差太小，可以視為相同。
+藉由這樣的設計，在進行照片分類時，如果我們在每一層都塞入512個神經元，那光是透過第一層就能由每張照片中抽取出512種不同特徵值了，如此就解決了我們面臨的第一個問題：缺乏可用特徵值。
 
-若再進一步考慮兩個變數時的微分，如算式[[eqn:PartialDiff]]，這種由多個變數形成的微分，稱作偏微分，，該公式對應的 python 程式碼如下：
-#+NAME: eqn:PartialDiff
-\begin{equation}
-\(f(x_0,x_1)=x_0^2+x_1^2\)
-\end{equation}
+** 解決第二個問題
+然而如果事情有這麼簡單，機器學習也不至於在1970年代邁入寒冬。還記得[[id:407bb0b4-adc6-4619-a08d-6c488eb9b308][[課堂作業]如何辨識「及」]]吧，裡面只有一個要處理的矩陣K，一共只有4個要踹出來的數值，想像一下有512個神經元，裡面有512個矩陣K，每個矩陣也不用太大，只要3\times3就好(9個參數)，那光第一層我們就要處理多少參數呢...顯然，要踹出合適的所有參數值不是人力所能及的工作。
 
-#+BEGIN_SRC python -n -r :results output :exports both :eval no
-  def function_2(x):
-      return x[0]**2 + x[1]**2
-      # 或 return np.sum(x**2)
-#+END_SRC
-公式\(fx_0,x_1)=x_0^2+x_1^2\)的圖表如圖[[fig:mult_function_plot]]所示。
-#+BEGIN_SRC python -n -r :results output :exports file
-  def function_2(x):
-    return x[0]**2 + x[1]**2
+神經網路解決這個問題的方式非常的率性且不負責任：隨機!!
+#+ATTR_LATEX: :width 100
+#+ATTR_ORG: :width 100
+#+ATTR_HTML: :width 100
+[[file:images/類神經網路/2024-02-18_09-55-35_2024-02-18_09-55-22.png]]
 
-  # 3Dグラフを描画
-  # cat multivariate_func_save.py
-  # coding: utf-8
-  import numpy as np
-  import matplotlib.pylab as plt
-  plt.switch_backend('agg')
-  from mpl_toolkits.mplot3d import Axes3D
-
-  x = np.meshgrid(np.arange(-3, 3, 0.1), np.arange(-3, 3, 0.1))
-  z = x[0]**2 + x[1]**2
-
-  fig = plt.figure()
-  ax = Axes3D(fig)
-  ax.plot_wireframe(x[0], x[1], z)
-
-  plt.xlim(-3.5, 3.5)
-  plt.ylim(-4.5, 4.5)
-  plt.xlabel("x0")
-  plt.ylabel("x1")
-  plt.savefig('multivariate_func.png')
-#+END_SRC
-
-#+RESULTS:
-
-#+CAPTION: \(f(x_0,x_1)=x_0^2+x_1^2\)圖表
-#+LABEL:fig:mult_function_plot
+是的，就如同考試時你面對陌生選擇題的反應，神經網路也決定這麼幹，隨便丟一些數值填到矩陣中當成第一批參數。事實上，同樣的策略我們在[[id:7cd4a142-4cd9-46b6-b9a4-2ad750ae622f][線性迴歸:年齡身高預測/隨機的力量]]裡已經玩過了，當初在找出方程式的最佳參數組合時，我們也是閉上眼睛隨便選一組。不管整個網路中有多少參數，當我們隨機設定好了所有參數的最初值後，整個神經網就就可以運作了，嗯...至少已經可以依照前向傳播的流程輸出第一個預測結果了，你看，我們已經朝完美的人工智慧跨近一大步了-_-
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
-[[file:images/multivariate_func.png]]
+#+ATTR_HTML: :width 400
+[[file:images/類神經網路/2024-02-18_10-23-40_2024-02-18_10-20-52.png]]
 
+接下來的流程其實和[[id:6ae7fb7a-0b38-4448-b19f-073d262513f2][迴歸]]有點類似，我們評估預測結果的品質，然後回頭修正參數，只是這次的工程有點浩大，我們要修正所有的參數，這個回頭修正所有參數的過程稱為反向傳播(backward propagation)。
 
-#+BEGIN_SRC python -n -r :results output :exports results
-  # 當x0=3, x1=4時，對x0微分
-  def numerical_diff(f, x):
-      h = 1e-4
-      return (f(x+h) - f(x-h)) / (2*h)
-  def function_mult1(x0):
-      return x0*x0 + 4.0**2.0
-  # 當x0=3, x1=4時，對x1微分
-  def function_mult2(x1):
-      return 3.0**2.0 + x1*x1
-  print(numerical_diff(function_mult1, 3.0))
-  print(numerical_diff(function_mult2, 4.0))
-#+END_SRC
+#+CAPTION: Back Propagation
+#+LABEL:fig:BackPropagation
+#+name: fig:BackPropagation
+#+ATTR_LATEX: :width 200
+#+ATTR_ORG: :width 200
+#+ATTR_HTML: :width 400
+[[file:images/類神經網路/2024-02-15_15-15-43_2024-02-15_15-07-16.png]]
 
-#+RESULTS[1d1a84954af439edaee1e089b4b8f4044f74ac5e]:
-: 6.00000000000378
-: 7.999999999999119
+第一次以隨機設定的參數跑出來的結果肯定是慘不忍睹的，因為它的原則就是「有就好」，就好像某些政黨在成立之初找不到信徒，所以什麼殺人犯或貪污犯，只要你肯入黨就照單全收，因為只要親近黨主席，這些人最終都會變成好人。
 
-上述程式碼中，function_mult1 是先將計算「將\(x_1\)固定為常數 4.0 的新函數」，對\(x_0\)進行微分；function_multi2 則是先將\(x_0\)固定為常數 3，再對\(x_1\)求出微分。
-
-** Forward propagation
-*** 各層間的訊息傳遞
-
-以輸入層傳遞訊息至 layer 1 的神經元 a1 為例，a1 的訊息可由公式[[eqn:Layer0-1]]計算出來。
-#+NAME: eqn:Layer0-1
-\begin{equation}
-a_1^{(1)}=w_{11}^{(1)}x_1+w_{12}^{(1)}x_2+b_1^{(1)}
-\end{equation}
-其中
-- \(w_{ab}^{(c)}\)中的\(a\)指的是下一層的第\(a\)個神經元
-- \(w_{ab}^{(c)}\)中\(b\)指的是上一層的第\(b\)個神經
-- \(w_{ab}^{(c)}\)中\(c\)指的則是第\(c\)層的權重。
-
-而透過矩陣乘積，可由公式[[eqn:Layer1sum]]顯示 layer 1 的「加權總和」。
-#+NAME: eqn:Layer1sum
-\begin{equation}
-A_1^{(1)}=XW^{(1)}+B^{(1)}
-\end{equation}
-
-其中，
-$$
-X = \begin{pmatrix} x_1 & x_2 \end{pmatrix},
-A^{(1)} = \begin{pmatrix}
-          a_1^{(1)} & a_2^{(1)} & a_3^{(1)}
-          \end{pmatrix},
-B^{(1)} = \begin{pmatrix}
-          b_1^{(1)} & b_2^{(1)} & b_3^{(1)}
-          \end{pmatrix}, \\
-W^{(1)} = \begin{pmatrix}
-  w_{11}^{(1)} & w_{21}^{(1)} & w_{31}^{(1)} \\
-  w_{12}^{(1)} & w_{22}^{(1)} & w_{32}^{(1)}
-\end{pmatrix}
-$$
-
-圖[[fig:ThreeLayerNTV1]]以\(a_i\)代表隱藏層 layer 1 中各節點的加權總和，以\(z\)代表以活化函數轉換後的訊號，至於\(h()\)則表示活化函數 sigmoid。
-#+BEGIN_SRC dot :file images/3LayerNetworkv1.png :cmdline -Kdot -Tpng
-  digraph threeLayerNetworkv1{
-        rankdir=LR
-        graph [pad="0.2", nodesep="0.1", ranksep="2"];
-        subgraph cluster_0 {
-                 color=white;
-                 node [style=filled,color=gray];
-                 x0[label = 1];
-                 node [style=empty,color=blue4];
-                 x1[label = x1];
-                 x2[label = x2];
-                 label = "layer 0";
-        }
-        subgraph cluster_1 {
-                 color=white;
-                 node [style=filled,color=gray];
-                 a12[label = 1];
-                 node [style=solid,color=red2];
-                 a22[label = "z2=h(a2)"];
-                 a32[label = "z3=h(a3)"];
-                 a42[label = "z1=h(a1)"];
-                 label = "layer 1";
-        }
-
-        x0 -> a22[label = b2];
-        x0 -> a32[label = b3];
-        x0 -> a42[label = b1];
-
-        x1 -> a22[label = w12];
-        x1 -> a32[label = w13];
-        x1 -> a42[label = w11];
-
-        x2 -> a22[label = w22];
-        x2 -> a32[label = w23];
-        x2 -> a42[label = w21];
-  }
-#+END_SRC
-#+CAPTION: 三層神經網路中 layer 0 至 layer 1 間的訊息傳遞
-#+name: fig:ThreeLayerNTV1
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
+好吧，扯遠了，反正神經網路的第一輪預測品質基本上就是瞎猜，不過沒關係，就像我們在[[id:6ae7fb7a-0b38-4448-b19f-073d262513f2][迴歸]]裡做的事一樣，我們每次都會評估預測品質，在這裡我們用損失函數(lost function, 也就是圖[[fig:BackPropagation]]裡的cost function, J)來評估預測品質，當評估結果未達標準，我們就回頭修正參數。在[[id:6ae7fb7a-0b38-4448-b19f-073d262513f2][迴歸]]這一章[[id:e02d602e-c9a4-4a8b-8e5b-336dcac6cc63][保持距離以測安全]]裡的例子裡，我們只要修正一個參數($\hat{y} = w * x$ 裡的$w$)，用的方法是找出參數的切線斜率，決定修正方向。二者的最終目標其實是一樣的：讓預測誤差達到最小化。
+#+CAPTION: 決定w應往哪個方向移動
+#+name: fig:carLoss2
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 400
 #+ATTR_HTML: :width 500
-#+RESULTS:
-[[file:images/3LayerNetworkv1.png]]
+[[file:images/carsLoss2.png]]
 
+面對動軏成升上萬的參數，神經網路採用「隨機梯度下降法（Stochastic Gradient Descent，SGD）」來找出各個參數的梯度(我們可以先把它當成前例中的切線斜率)，然後沿著梯度方向修正各個參數，從最後一層反向修正回到第一層(就是反向傳播在做的事)，於是我們就有了第二個版本的參數值了(第一個版本就是隨機指定的)。
 
-以下列 python 執行此次轉換的結果如下。
-#+BEGIN_SRC python -n -r :results output :exports both
-#python code for message from layer 0 to node a1
-import numpy as np
-def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
-X = np.array([1.0, 0.5])
-W1 = np.array([[0.1, 0.3, 0.5], [0.2, 0.4, 0.6]])
-B1 = np.array([0.1, 0.2, 0.3])
-A1 = np.dot(X, W1) + B1
-Z1 = sigmoid(A1)
-print(X)
-print(Z1)
-#+END_SRC
+然後呢?就再從頭玩一次啊：以一批原始資料(圖片)當成輸入再跑一次正向傳播，得到預測、評估預測品質、再反向傳播回去修正所有參數，得到第三個版本的參數值...，只要你時間夠多，你可以一直玩下去，這就是神經網路學習的奧義了...
 
-#+RESULTS[4926220e1f51928522d808d302756cdf18cab35b]:
-: [1.  0.5]
-: [0.57444252 0.66818777 0.75026011]
+什麼？你問「隨機梯度下降法」原理？這個等我學完偏微分以後再解釋給你聽....QQ
 
-各層間的訊息傳遞大致如上述模式，唯一稍有不同的地方在於當隱藏層 layer 2 將訊習傳遞給輸出層 layer 4 時，所應用的活化函數為 identitiy function，其實作方式如下：
+** 神經網路如何學習(正經版)
+*** 基本步驟
+利用隨機梯度下降法(SGD)求梯度並更新 weight 和 bias 參數
+1. 從訓練資料中隨機選擇一部分資料
+2. 利用前向傳播，求出預測的輸出值，以損失函數(loss Function)計算預測值與真實答案(label)的誤差，再利用用反向傳播方法，求各參數的梯度。
+3. 將所有權重參數沿其各自的梯度方向進行微小更新
+4. 重複以上步驟(epoch=100, 500, 1000, ...)直到誤差最小化
+   (http://www.feiguyunai.com/index.php/2019/03/31/python-ml-24th-backp/)
+*** Error Function
+也就是loss function，依不同的資料型別各有遉用的loss function。典型的計算方式如下：
+Error(錯誤) = 真正的值(\(y\)) + 預測值(\(\hat{y}\))
+- $E=\frac{1}{2}\sum\limits^{n}_{i=1}(y_i - \hat{y}_i)^2$
+- $E=-\sum\limits_{i=1}^{n}\hat{y}_i*\log{y_i}$
+*** 學習步驟
+#+CAPTION: 類神經網路
+#+LABEL:fig:ANN-1
+#+name: fig:ANN-1
+#+ATTR_LATEX: :width 300
+#+ATTR_HTML: :width 500
+#+ATTR_ORG: :width 300
+[[file:images/ANN-1.jpg]]
 
-#+BEGIN_SRC python -n -r :results output :exports both
-  #python code for identity function
-  import numpy as np
-  def identity_fun(x):
-      return x
-  W3 = np.array([[0.1, 0.3], [0.2, 0.4]])
-  B3 = np.array([0.1, 0.2])
-  Z2 = [0.62624937, 0.7710107]
-  A3 = np.dot(Z2, W3) + B3
-  Y = identity_fun(A3)
-  print(Y)
-#+END_SRC
+以上面這個簡化版的神經元為例：
+1. 隨機指定weight與bias的值。
+2. 計算出模型結果值
+3. 計算出誤差：即計算結果與真實值之差異
+   #+CAPTION: 類神經網路
+   #+LABEL:fig:ANN-4
+   #+name: fig:ANN-4
+   #+ATTR_LATEX: :width 300
+   #+ATTR_HTML: :width 500
+   #+ATTR_ORG: :width 300
+   [[file:images/ANN-4.jpg]]
+4. 定義 weight 與 bias 的更新策略(update the weights and bias)，其更新策略為從錯誤中學習。學習規則為
+   - $\Delta w=\eta X^T (\hat{y} - y)$: $w$(新的)=$w$(前一回)+$\Delta w$(誤差變動)
+   - $\Delta b=\eta (\hat{y} - y)$: $b$(新的)=$b$(前靣)+$\Delta b$(誤差變動)
+   - $\eta$ = 學習率
+5. 使用新的 weight 與 bias，計算直到誤差很小(定義何時結束)
+   #+CAPTION: 類神經網路
+   #+LABEL:fig:ANN-5
+   #+name: fig:ANN-5
+   #+ATTR_LATEX: :width 300
+   #+ATTR_ORG: :width 400
+   #+ATTR_HTML: :width 500
+   [[file:images/ANN-5.jpg]]
 
-#+RESULTS[a530e2ff318fb104fa601854c3706795a1e3cf3c]:
-: [0.31682708 0.69627909]
-*** Python 實作: 多層神經網路的訊息傳遞
-#+BEGIN_SRC python -n -r :results output :exports both
-  #python code for complete multi-layer network message trasmission
-  import numpy as np
-  def identity_fun(x):
-      return x
-  def sigmoid(x):
-      return 1 / (1 + np.exp(-x))
-  def init_network():
-      network = {}
-      network['W1'] = np.array([[0.1, 0.3, 0.5], [0.2, 0.4, 0.6]])
-      network['b1'] = np.array([0.1, 0.2, 0.3])
-      network['W2'] = np.array([[0.1, 0.4], [0.2, 0.5], [0.3, 0.6]])
-      network['b2'] = np.array([0.1, 0.2])
-      network['W3'] = np.array([[0.1, 0.3], [0.2, 0.4]])
-      network['b3'] = np.array([0.1, 0.2])
-      return network
-  def forword(network, x):
-      W1, W2, W3 = network['W1'], network['W2'], network['W3']
-      b1, b2, b3 = network['b1'], network['b2'], network['b3']
-      a1 = np.dot(x, W1) + b1
-      z1 = sigmoid(a1)
-      a2 = np.dot(z1, W2) + b2
-      z2 = sigmoid(a2)
-      a3 = np.dot(z2, W3) + b3
-      z3 = sigmoid(a3)
-      y = identity_fun(z3)
-      return y
-  network = init_network()
-  x = np.array([1.0, 0.5])
-  y = forword(network, x)
-
-  print(y)
-#+END_SRC
-
-#+RESULTS[106886ae666ffcc9b268308a820b4d264592902c]:
-: [0.57855079 0.66736228]
-
-** Backward propagation
-反向傳遞的目的就是利用最後的目標函數(loss/cost function)來進行參數的更新，一般來說都是用誤差均方和(mean square error)當作目標函數。如果誤差值越大，代表參數學得不好，所以需要繼續學習，直到參數或是誤差值收斂[fn:47]。
-回到圖[[fig:ThreeLayerNT]]
-\(x^{(i)}\)為第i筆輸入，其輸出值為
-$$ y^{(i)}=\begin{bmatrix}
-y_1^{(1)} \\
-y_2^{(1)} \\
-\end{bmatrix}$$
-而輸出值與目標的誤差為
-$$
-E^{(i)}=\frac{1}{2}\sum_{j=0}^m(\hat{y}_j^{(i)}-y_j^{(i)})^2
-$$
-目標函數為所有樣本的誤差和
-$$
-E=\sum_{i=0}^nE^{(i)}
-$$
-最佳化的目的就是讓「所有樣本的誤差均方和」越小越好，所以目標是將最小化(微分方程式等於0找解)。
-
-** 輸出層的設計：恆等函數與 softmax 函數
-
+** 神經網路的輸出層
 神經網路可以用來解決分類問題與迴歸問題，端視輸出層所使用的活化函數，解決迴歸問題時使用恆等函數，而分類問題則使用 /softmax 函數/ 。恆等函數對於輸入的內容完全不做任何處理，直接輸出，其神經網路的結構如圖[[fig:ID-Network]]所示。
 #+BEGIN_SRC dot :file images/identity-network.png :cmdline -Kdot -Tpng
   digraph IDNT{
@@ -948,7 +415,7 @@ $$
 
 #+NAME: eqn:softmaxEQ
 \begin{equation}
-y_k = \frac{exp(a_k)}{\sum_{i=1}^{n}exp(a_i)}
+y_k = \frac{exp(a_k)}{\sum\limits_{i=1}^{n}exp(a_i)}
 \end{equation}
 
 #+BEGIN_SRC dot :file ./softmax-network.png :cmdline -Kdot -Tpng
@@ -972,759 +439,81 @@ y_k = \frac{exp(a_k)}{\sum_{i=1}^{n}exp(a_i)}
 #+name: fig:SM-Network
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
+#+ATTR_HTML: :width 400
 #+RESULTS[e3ebde6d480b9ed778ad70f1b20abfa0e10d9c6a]:
 [[file:images/softmax-network.png]]
 
 至於 softmax 的 python 實作則如下程式碼所示，為了避免因矩陣 a 的值過大而導至指數函數運算出現溢位，程式碼第[[(softmax-overflow1)]]行的內容也可以改由第[[(softmax-overflow2)]]行替代。
 #+BEGIN_SRC python -n -r :results output :exports both
-  #python code for softmax funtion
-  import numpy as np
-  def softmax(a):
-      exp_a = np.exp(a)    (ref:softmax-overflow1)
-      #exp_a = np.exp(a - np.max(a)) (ref:softmax-overflow2)
-      sum_exp_a = np.sum(exp_a)
-      y = exp_a / sum_exp_a
-      return(y)
-  a = np.array([0.3, 2.9, 4.0])
-  print(softmax(a))
+#python code for softmax funtion
+import numpy as np
+def softmax(a):
+    exp_a = np.exp(a)    (ref:softmax-overflow1)
+    #exp_a = np.exp(a - np.max(a)) (ref:softmax-overflow2)
+    sum_exp_a = np.sum(exp_a)
+    y = exp_a / sum_exp_a
+    return(y)
+a = np.array([0.3, 2.9, 4.0])
+print(softmax(a))
 #+END_SRC
 #+RESULTS[9b5650732ffe10ce57211c01e6a3b218dc3f4922]:
 : [0.01821127 0.24519181 0.73659691]
 
-** softmax 函數的特色
-
+*** softmax 函數的特色
 softmaxe 的輸出為介於 0 到 1 間的實數，此外，其輸出總和為 1，這個性質使的 softmax 函數的輸出也可解釋為「機率」。例如，前節程式碼的輸出結果為[0.01821127 0.24519181 0.73659691]，從以機率的角度我們可以說：分類的結果有 1.8%的機率為第 0 類；有 24.52%的機率為第 1 類；有 73.66%的機率為第 2 類。換言之，使用 softmax 函數可以針對問題提出對應的機率。
-softmax 函數的另一個特色是其輸出結果仍保持與輸入訊息一致的大小關係，這是因為惷數函數\(y=exp(x)\)為單週函數。一般而言，神經網路會把輸出最大神經元的類別當作辨識結果，然而，因為 softmax 不影響大小順序，所以一般會省略 softmax 函數。
+
+softmax 函數的另一個特色是其輸出結果仍保持與輸入訊息一致的大小關係，這是因為指數函數\(y=exp(x)\)為單週函數。一般而言，神經網路會把輸出最大神經元的類別當作辨識結果，然而，因為 softmax 不影響大小順序，所以一般會省略 softmax 函數。
 
 輸出層的節點數量取決於要解決的問題，例如，如果要解決的問題為「判斷一個手寫數字的結果」，則輸出層會有 10 個節點(分別代表 0~9)，而輸出訊息最大的結點則為最有可能的答案類別。
 
-** 梯度
-
-若要一次計算出\(x_0\)與\(x_1\)的偏微分，可以計算\((\frac{\partial{f}}{\partial{x_0}},\frac{\partial{f}}{\partial{x_1}})\)，這種方式也叫梯度（gradient），對應之計算程式碼如下：
-#+BEGIN_SRC python -r -n :results output :exports both :eval no
-  # f(x0, x1) = x0**2 + x1**2の勾配図を描くサンプルコード実行
-  # cat gradient_2d_save.py
-
-  # coding: utf-8
-  # cf.http://d.hatena.ne.jp/white_wheels/20100327/p3
-  import numpy as np
-  import matplotlib.pylab as plt
-  plt.switch_backend('agg')
-  from mpl_toolkits.mplot3d import Axes3D
-
-  def _numerical_gradient_no_batch(f, x):
-      h = 1e-4 # 0.0001
-      grad = np.zeros_like(x) # 產生和x相同形狀、內容均為0的陣列
-
-      for idx in range(x.size):
-          tmp_val = x[idx]
-          # 計算f(x+h)
-          x[idx] = float(tmp_val) + h
-          fxh1 = f(x) # f(x+h)
-          x[idx] = tmp_val - h
-          fxh2 = f(x) # f(x-h)
-          grad[idx] = (fxh1 - fxh2) / (2*h)
-
-          x[idx] = tmp_val # 恢復原值
-      return grad
-
-  def numerical_gradient(f, X): (ref:NumerGrad)
-      if X.ndim == 1:
-          return _numerical_gradient_no_batch(f, X)
-      else:
-          grad = np.zeros_like(X)
-          for idx, x in enumerate(X):
-              grad[idx] = _numerical_gradient_no_batch(f, x)
-          return grad
-
-  def function_2(x):
-      if x.ndim == 1:
-          return np.sum(x**2)
-      else:
-          return np.sum(x**2, axis=1)
-
-  def tangent_line(f, x):
-      d = numerical_gradient(f, x)
-      print(d)
-      y = f(x) - d*x
-      return lambda t: d*t + y
-
-  x0 = np.arange(-2, 2.5, 0.25)
-  x1 = np.arange(-2, 2.5, 0.25)
-  X, Y = np.meshgrid(x0, x1)
-  X = X.flatten()
-  Y = Y.flatten()
-  grad = numerical_gradient(function_2, np.array([X, Y]) )
-  plt.figure()
-  plt.quiver(X, Y, -grad[0], -grad[1],  angles="xy",color="#666666")
-  #,headwidth=10,scale=40,color="#444444")
-  plt.xlim([-2, 2])
-  plt.ylim([-2, 2])
-  plt.xlabel('x0')
-  plt.ylabel('x1')
-  plt.grid()
-  plt.legend()
-  plt.draw()
-  #plt.show()
-  plt.savefig('gradient_2d.png')
-  print(numerical_gradient(function_2, np.array([3.0, 4.0])))
-  print(numerical_gradient(function_2, np.array([0.0, 2.0])))
-  print(numerical_gradient(function_2, np.array([3.0, 0.0])))
-#+END_SRC
-
-上述程式碼中，函數 numerical_gradient 以函數 function_2 以及陣列 x 為參數（程式碼第[[(NumerGrad)]]行），針對陣列 x 的各元素計算數值微分，計算(3, 4)、(0, 2)、(3, 0)各點的梯度結果如下：
-#+RESULTS:
-: [6. 8.]
-: [0. 4.]
-: [6. 0.]
-如圖[[fig:gradient_2d_plot]]所示，所謂梯度，指的是函數\(f(x0,x1)\)的「最低位置（最小值）」，這裡的箭頭就如同羅盤，離「最低位置」越遠，箭頭越大。雖然圖[[fig:gradient_2d_plot]]中箭頭所指為最低位置，但實際上不一定如此，梯度所指其實為各點之最低方向，其數學意義為：函數值減少最多的方向。
-#+CAPTION: \(f(x_0,x_1)=x_0^2+x_1^2\)之梯度圖形
-#+LABEL:fig:gradient_2d_plot
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-[[file:images/gradient_2d.png]]
-
-*** 梯度法
-神經網路的學習過程在於尋找最佳參數，這裡的意義也可說成：尋找可以讓損失函數為最小值的參數，以梯度來達成此目的的方法即為梯度法（gradient method），而最小值稱為鞍點（saddle point），鞍點是相對意義的存在，即，由某些方向看來是極大，但由其他方向看來為極小值，梯度法目的在找出梯度為 0 的位置，但不見的是極小值，當函數形成複雜扭曲形狀時，可能進入幾乎平坦而無法繼繼續學習的狀態，稱為「停滯期」。
-由此觀之，梯度法的精神即在於「朝著正確的方向前進一段距離、重新計算出正確方向、再前進一段距離....」。同樣的方法可以用來找出極小值（此時為梯度下降法，gradient descent method)，也能用來找出極大值（梯度上升法，gradient ascent method）。
-若以公式來顯示梯度法，其結果如公式[[eqn:GradientMethodFunction]]所示：
-#+NAME: eqn:GradientMethodFunction
-\begin{equation}
-\begin{split}
-&x_0=x_0-\eta\frac{\partial{f}}{\partial{x_0}}\\
-&x_1=x_1-\eta\frac{\partial{f}}{\partial{x_1}}
-\end{split}
-\end{equation}
-公式[[eqn:GradientMethodFunction]]中的\(\eta\)代表更新的量，在神經網路中稱為學習率（learning rate），即，在一次學習中，要學習多少，要更新多少參數。公式[[eqn:GradientMethodFunction]]為一次更新的內容，或者，我們也可以看成「每次朝著正確方向前進的距離」。以 Python 實作的梯度下降法如下：
-#+BEGIN_SRC python -r -n :results output :exports both
-  import numpy as np
-  def numerical_gradient(f, x): #f 為要進行最佳化的目標函數
-      h = 1e-4 # 0.0001
-      grad = np.zeros_like(x)
-      for idx in range(x.size):
-          tmp_val = x[idx]
-          x[idx] = tmp_val + h #  計算f(x+h)
-          fxh1 = f(x)
-          x[idx] = tmp_val - h # 計算(x-h)
-          fxh2 = f(x)
-          grad[idx] = (fxh1 - fxh2) / (2*h)
-          x[idx] = tmp_val # restore original value
-      return grad
-  def gradient_descent(f, init_x, lr=0.01, step_num=100):
-      x = init_x
-      for i in range(step_num):
-          grad = numerical_gradient(f, x)
-          x -= lr * grad
-      return x
-  def function_2(x):
-      return x[0]**2 + x[1]**2
-  init_x = np.array([-3.0, 4.0])
-  print(gradient_descent(function_2, init_x=init_x, lr=0.1, step_num=100))
-  init_x = np.array([20.0, -30.0])
-  print(gradient_descent(function_2, init_x=init_x, lr=0.1, step_num=100))
-  init_x = np.array([220.0, -330.0])
-  print(gradient_descent(function_2, init_x=init_x, lr=0.1, step_num=100))
-  print("學習率設為10.0")
-  init_x = np.array([-3.0, 4.0])
-  print(gradient_descent(function_2, init_x=init_x, lr=10.0, step_num=100))
-  print("學習率設為1e-10")
-  init_x = np.array([-3.0, 4.0])
-  print(gradient_descent(function_2, init_x=init_x, lr=1e-10, step_num=100))
-#+END_SRC
-
-#+RESULTS[14a86186de81177007eadaa8861ae0c1093f63c8]:
-: [-6.11110793e-10  8.14814391e-10]
-: [ 4.07407195e-09 -6.11110793e-09]
-: [ 4.48147915e-08 -6.72221872e-08]
-: 學習率設為 10.0
-: [-2.58983747e+13 -1.29524862e+12]
-: 學習率設為 1e-10
-: [-2.99999994  3.99999992]
-
-上述程式中，init_x 為預設值、lr 代表 learning rate、step_num 為重複次數，梯度由 numerical_gradient(f,x)計算，程式執行結果為函數\(f(x_0,x_1)=x_0^2+x_1^2\)的最小值，預設值為\(x_0=-3,x_1=4\)，以梯度法求最小值，最後結果為(-6.1e-10,-8.1-10)，趨近於真實答案(0,0)，即使以其他預設值做為起點，所找到的最小值仍趨近正確答案, 而學習率太大或太小均無法得到良好的結果（學習率太大則會往大數值擴散；學習率太小則幾乎不更新就結束）。至於學習率這種依靠人工進行設定的值稱為超參數（hyperparameter），其最佳設定有賴以各種測試取得。至於梯度法的學習流程則如圖[[fig:GMP]]所示。
-#+BEGIN_SRC python -r -n :result output :exports file :eval no
-  # cat gradient_method_save.py
-  # coding: utf-8
-  import numpy as np
-  import matplotlib.pylab as plt
-  plt.switch_backend('agg')
-  def numerical_gradient(f, x): #f 為要進行最佳化的目標函數
-      h = 1e-4 # 0.0001
-      grad = np.zeros_like(x)
-      for idx in range(x.size):
-          tmp_val = x[idx]
-          x[idx] = tmp_val + h #  計算f(x+h)
-          fxh1 = f(x)
-          x[idx] = tmp_val - h # 計算(x-h)
-          fxh2 = f(x)
-          grad[idx] = (fxh1 - fxh2) / (2*h)
-          x[idx] = tmp_val # restore original value
-      return grad
-
-
-  def gradient_descent(f, init_x, lr=0.01, step_num=100):
-      x = init_x
-      x_history = []
-
-      for i in range(step_num):
-          x_history.append( x.copy() )
-
-          grad = numerical_gradient(f, x)
-          x -= lr * grad
-
-      return x, np.array(x_history)
-
-
-  def function_2(x):
-      return x[0]**2 + x[1]**2
-
-  init_x = np.array([-3.0, 4.0])
-
-  lr = 0.1
-  step_num = 20
-  x, x_history = gradient_descent(function_2, init_x, lr=lr, step_num=step_num)
-
-  plt.plot( [-5, 5], [0,0], '--b')
-  plt.plot( [0,0], [-5, 5], '--b')
-  plt.plot(x_history[:,0], x_history[:,1], 'o')
-
-  plt.xlim(-3.5, 3.5)
-  plt.ylim(-4.5, 4.5)
-  plt.xlabel("X0")
-  plt.ylabel("X1")
-  #plt.show()
-  plt.savefig('gradient_process_method.png')
-  #return "gradient_process_method.png"
-#+END_SRC
-#+CAPTION: \(f(x_0,x_1)=x_0^2+x_1^2\)的梯度法更新過程
-#+LABEL:fig:GMP
-#+name: fig:GMP
-#+ATTR_LATEX: :width 200
-#+ATTR_ORG: :width 300
-#+RESULTS:
-[[file:images/gradient_process_method.png]]
-
-*** 神經網路的梯度
-
-神經網路的梯度指與權重參數有關的損失函數梯度，若有個形狀為\(2*3\)、權重為\(W\)的神經網路，以\(L\)代表損失函數，則可以用\(\frac{\partial{L}}{\partial{W}}\)來表示梯度，其公式如下：
-#+NAME: eqn:NetworkGradientFunc
-\begin{equation}
-\begin{split}
-W=
- \begin{pmatrix}
-  w_{11} & w_{12} & w_{13} \\
-  w_{21} & w_{22} & w_{23}
- \end{pmatrix} \\
-\frac{\partial{L}}{\partial{W}}=
- \begin{pmatrix}
-  \frac{\partial{L}}{\partial{w_{11}}} & \frac{\partial{L}}{\partial{w_{12}}} & \frac{\partial{L}}{\partial{w_{13}}} \\
-  \frac{\partial{L}}{\partial{w_{21}}} & \frac{\partial{L}}{\partial{w_{22}}} & \frac{\partial{L}}{\partial{w_{23}}}
- \end{pmatrix} \\
-\end{splix}
-\end{equation}
-\(\frac{\partial{L}}{\partial{W}}\)的各元素係由該元素的偏微分構成，如\(\frac{\partial{L}}{\partial{w_{11}}}\)即為在略改變\(w_{11}\)後損失函數所造成的變化，神經網路計算梯度的方式如下：
-#+BEGIN_SRC python -n -r :results output :exports both :eval no
-  import numpy as np
-  def softmax(x):
-      if x.ndim == 2:
-          x = x.T
-          x = x - np.max(x, axis=0)
-          y = np.exp(x) / np.sum(np.exp(x), axis=0)
-          return y.T
-
-      x = x - np.max(x)  # 溢出对策
-      return np.exp(x) / np.sum(np.exp(x))
-
-  def cross_entropy_error(y, t):
-      if y.ndim == 1:
-          t = t.reshape(1, t.size)
-          y = y.reshape(1, y.size)
-
-      # 监督数据是one-hot-vector的情况下，转换为正确解标签的索引
-      if t.size == y.size:
-          t = t.argmax(axis=1)
-
-      batch_size = y.shape[0]
-      return -np.sum(np.log(y[np.arange(batch_size), t] + 1e-7)) / batch_size
-
-  def _numerical_gradient_no_batch(f, x):
-      h = 1e-4 # 0.0001
-      grad = np.zeros_like(x) # 產生和x相同形狀、內容均為0的陣列
-
-      for idx in range(x.size):
-          tmp_val = x[idx]
-          # 計算f(x+h)
-          x[idx] = float(tmp_val) + h
-          fxh1 = f(x) # f(x+h)
-          x[idx] = tmp_val - h
-          fxh2 = f(x) # f(x-h)
-          grad[idx] = (fxh1 - fxh2) / (2*h)
-
-          x[idx] = tmp_val # 恢復原值
-      return grad
-
-  def numerical_gradient(f, X): (ref:NumerGrad)
-      if X.ndim == 1:
-          return _numerical_gradient_no_batch(f, X)
-      else:
-          grad = np.zeros_like(X)
-          for idx, x in enumerate(X):
-              grad[idx] = _numerical_gradient_no_batch(f, x)
-          return grad
-
-  class simpleNet:
-      def __init__(self):
-          self.W = np.random.randn(2, 3)  #以常態分佈初始化權重分配
-
-      def predict(self, x):
-          return np.dot(x, self.W)
-
-      def loss(self, x, t):
-          z = self.predict(x)
-          y = softmax(z)
-          loss = cross_entropy_error(y, t)
-          return loss
-
-  net = simpleNet()
-  print(net.W)
-  x = np.array([0.6, 0.9])
-  p = net.predict(x)
-  print(p)
-  t = np.array([0, 0, 1])
-  print(net.loss(x, t))
-  print("=========================")
-  f = lambda w: net.loss(x,t)
-  dW = numerical_gradient(f, net.W)
-  print(dW)
-#+END_SRC
-
-#+RESULTS:
-: [[-0.17058278  0.11372612 -1.53368818]
-:  [ 0.19931583 -0.60202593  0.07473724]]
-: [ 0.07703458 -0.47358766 -0.85294939]
-: 1.6086010849717751
-: =========================
-: [[ 0.30439054  0.17550882 -0.47989936]
-:  [ 0.45658581  0.26326323 -0.71984904]]
-
-simpleNet 以一個\(2*3\)的陣列做為權重參數 W，x 為輸入資料，t為正確答案標籤，此處我們希望針對 loss 函數進行梯度法取得最小值，所以定義一個函數 f，代入 x 及 t 傳回損失函數，然後將函數 f 做為參數傳給 numerical_gradient 進行梯度下降運算，由運算結果 dW 的陣列內容可以看出，每增加一個\(h\)，\(w_{11}\)就增加 0.45、而\(w_{23}\)則下降 0.72。由此看來，為了要減少損失函數，應該持續增加\(w_{11}\)、減少\(w{23}\)，而且，\(w{23}\)的貢獻最大。
-
-*** 進階閱讀
-- https://www.youtube.com/watch?v=reOgXrNxwV8
-- https://www.youtube.com/watch?v=FPD2fsryGYk
-- https://github.com/Qinbf
-- https://www.youtube.com/channel/UCHbGAYq21PNz9REWNwe8Z-Q/videos
-
-** 梯度下降法
-https://www.youtube.com/watch?v=reOgXrNxwV8
-https://www.youtube.com/watch?v=FPD2fsryGYk
-https://github.com/Qinbf
-https://www.youtube.com/channel/UCHbGAYq21PNz9REWNwe8Z-Q/videos
-
-** 學習演算法
-
-至此，神經網路的學習步驟大致如下：
-1. 小批次: 即從訓練資料中所隨機挑選部份數據
-1. 計算梯度: 然後朝著「減少小批次損失函數」為目標前進
-1. 更新參數: 每前進一步，就更新參數
-1. 回到步驟 1
-
-上述作法稱之為「準確率梯度下降法(/stochastic gradient descent/)」，意味著「針對所選出的資料進行梯度下降」，一般以 SGD 為名。
-
-*** Gradient Descent
-
-**** Watch: https://www.youtube.com/watch?v=yKKNr-QKz2Q
-**** Gradient Descent (GD)
-**** Batch Gradient Descent (BGD)
-**** Mini-Batch Gradient Descent (MBGD)
-**** Stochastic Gradient Descent (SGD): 亂數選一個
-- \( L=\sum_n{(\hat y ^n - (b+\sum {w_ix_i^n)})}^2\)
-- Gradient Descent: \( \theta ^i = \theta ^{i-1} - \eta \triangledown L(\theta {i-1}) \)
-- Stochastic Gradient Descent: \( L^n = (\hat y ^n - (b+\sum {w_ix_i^n)})}^2, \theta ^i=\theta ^{i-1} - \eta \triangledown L(\theta {i-1}) \)
-
-*** 優化器演算法 Optimizer
-
-**** Momentum
-
-主要是用在計算參數更新方向前會考慮前一次參數更新的方向(
-
-**** Adaptive Learning Rates
-
-***** Reduce the learning rate by some factor every few epochs.
-- At the beginning, we are far from the destination, so we use larger learning rate
-- After several epochs, we are close to the destination, so we reduce the learning rate
-- e.g. \(\frac{1}{t}\)decay: \(\eta^t=\frac{\eta}{\sqrt{t+1}} \)
-***** Learning cannot be on-size-fits-all
-- Given different parameters different learning rate
-**** Adaptive Learning Rates 範例
-
-***** Adagrad (John Duchi, JMLR'11)
-- Original: \( w \leftarrow w - \frac{\eta\partial L}{\partial w} \)
-- Adagrad: \( w \leftarrow - \frac{\eta_w\partial L}{\partial w}, where \partial_w = \frac{\eta}{\sqrt{\sum^t_i=0 (g^i)^2}} \), \(g^i\)is \(\frac{\partial L}{\partial w}\)obtained at the i-th update, and \(\partial_w\)means parameter dependent learning rate.
-***** RMSprop
-- https://www.youtube.com/watch?v=O3sxAc4hxZU
-***** Adadelta (Metthew D. Zeiler, arXiv'12)
-***** "No more pesky learning rates" (Tom Schaul, arXiv'12)
-***** AdaSecant (Caglar Gulcehre, arXiv'14)
-***** Adam (Diederik P. Kingma, ICLR'15)
-- Momentum: 計算參數更新方向前會考慮前一次參數更新的方向
-- RMSprop: 在學習率上依據梯度的大小對學習率進行加強或是衰減
-- Adam: 合併上述，各自做偏差的修正
-- Video: [[https://www.youtube.com/watch?v=_JB0AO7QxSA][Standfard: Lecture 7 | Training Neural Networks II]]
-***** Nadam
-- http://cs229.standford.edu/proj2015/054_report.pdf
-
-*** 雙層神經網路的類別
-
-以下以一個雙層神經網路的實作來進行說明：
-#+BEGIN_SRC python -n -r :results output :exports both :eval no
-  # coding: utf-8
-  import sys, os
-  import numpy as np
-  sys.path.append(os.pardir)
-  #from common.functions import *
-  #from common.gradient import numerical_gradient
-
-  def sigmoid(x):
-      return 1 / (1 + np.exp(-x))
-
-  def softmax(a):
-      exp_a = np.exp(a)    (ref:softmax-overflow)
-      #exp_a = np.exp(a - np.max(a)) (ref:softmax-overflow2)
-      sum_exp_a = np.sum(exp_a)
-      y = exp_a / sum_exp_a
-      return(y)
-
-  def cross_entropy_error(y, t):
-      delta = 1e-7
-      return -np.sum(t * np.log(y + delta))
-
-  def numerical_gradient(f, x):
-      h = 1e-4
-      grad = np.zeros_like(x)
-      it = np.nditer(x, flags=['multi_index'], op_flags=['readwrite'])
-      # 數值微分計算參數梯度
-      while not it.finished:
-          idx = it.multi_index
-          tmp_val = x[idx]
-          x[idx] = float(tmp_val) + h
-          fxh1 = f(x)  # f(x+h)
-
-          x[idx] = tmp_val - h
-          fxh2 = f(x)  # f(x-h)
-          grad[idx] = (fxh1 - fxh2) / (2*h)
-
-          x[idx] = tmp_val  # 値を元に戻す
-          it.iternext()
-      return grad
-
-  class TwoLayerNet:
-      def __init__(self, input_size, hidden_size, output_size, weight_init_std=0.01):  (ref:TLN-init)
-          # 隨機分配weight, bias設為0
-          self.params = {}                    (ref:TLN-params)
-          self.params['W1'] = weight_init_std * np.random.randn(input_size, hidden_size)
-          self.params['b1'] = np.zeros(hidden_size)
-          self.params['W2'] = weight_init_std * np.random.randn(hidden_size, output_size)
-          self.params['b2'] = np.zeros(output_size)
-
-      def predict(self, x):              (ref:TLN-pred)
-          W1, W2 = self.params['W1'], self.params['W2']
-          b1, b2 = self.params['b1'], self.params['b2']
-
-          a1 = np.dot(x, W1) + b1
-          z1 = sigmoid(a1)
-          a2 = np.dot(z1, W2) + b2
-          y = softmax(a2)
-          return y
-
-      # x : 輸入資料, t : 訓練資料
-      def loss(self, x, t):        (ref:TLN-loss)
-          y = self.predict(x)
-          return cross_entropy_error(y, t)
-
-      def accuracy(self, x, t):       (ref:TLN-accu)
-          y = self.predict(x)
-          y = np.argmax(y, axis=1)
-          t = np.argmax(t, axis=1)
-          accuracy = np.sum(y == t) / float(x.shape[0])
-          return accuracy
-
-      #計算各參數的梯度
-      def numerical_gradient(self, x, t):    (ref:TLN-numgrad)
-          loss_W = lambda W: self.loss(x, t)
-          grads = {}                          (ref:TLN-grads)
-          grads['W1'] = numerical_gradient(loss_W, self.params['W1'])
-          grads['b1'] = numerical_gradient(loss_W, self.params['b1'])
-          grads['W2'] = numerical_gradient(loss_W, self.params['W2'])
-          grads['b2'] = numerical_gradient(loss_W, self.params['b2'])
-          return grads   (ref:TLN-grad)
-
-  if __name__ == "__main__":
-      net = TwoLayerNet(input_size=784, hidden_size=100, output_size=10)
-      x = np.random.rand(100, 784)  # 產生100張虛擬資料,輸入影像尺吋為28*28
-      y = net.predict(x)
-      t = np.random.rand(100, 10)   # 產生100個虛擬的正確答案標籤,每個標籤有10個類別
-      rands = net.numerical_gradient(x, t) # 計算梯度
-      print(rands['W1'])
-      print(rands['b1'])
-      print(rands['W2'].shape)
-      print(rands['b2'].shape)
-#+END_SRC
-
-#+RESULTS:
-#+begin_example
-[[ 0.0226828   0.02099976  0.0072832  ... -0.01241413  0.01743683
-   0.00993156]
- [ 0.01682113  0.02138894  0.00436742 ... -0.01206379  0.01297583
-   0.01304035]
- [ 0.01799636  0.01291382  0.01139191 ... -0.01196413  0.00845844
-   0.00695222]
- ...
- [ 0.01469396  0.01507025  0.01288363 ... -0.01490424  0.0104561
-   0.01669903]
- [ 0.01329594  0.01683885  0.0005939  ... -0.01176064  0.01377726
-   0.01745393]
- [ 0.00360546  0.02353488  0.00761169 ... -0.01557991  0.00776723
-   0.01624418]]
-[ 0.03290075  0.03490604  0.01284017 -0.01780122 -0.00668078  0.00027693
-  0.07401821  0.02162429  0.03047587  0.02048195  0.01182109 -0.0355056
-  0.02144739 -0.01236585  0.03770265 -0.01983078  0.03263528 -0.02679656
-  0.01665097  0.03983289  0.01158896  0.00058352  0.01279443  0.01702231
-  0.00547242  0.04439308 -0.06806267  0.02272559 -0.01069871 -0.01259218
-  0.00342859 -0.03044122  0.02350026 -0.02573413 -0.00946125  0.00146879
- -0.03312301  0.01705135  0.01477106  0.00567291  0.04036002  0.00070219
- -0.02369712  0.06778704 -0.02958217  0.02881278  0.03482847  0.0426526
- -0.00032182 -0.00342597 -0.03101994  0.006919    0.00050134 -0.0290734
-  0.02713591 -0.0429896  -0.03356116  0.04456035  0.03420876 -0.04981342
- -0.00948666  0.03227471  0.00046413 -0.00104241 -0.03213071 -0.07219453
-  0.01028855 -0.00079787  0.00348281 -0.02041278  0.00601914 -0.00067298
- -0.01878876  0.02557294 -0.02868863 -0.03383165  0.03133762  0.01079506
- -0.02313358  0.02697757  0.01809054  0.03784744 -0.00824714  0.05378442
-  0.01241693  0.03035761  0.00919517 -0.03753735 -0.06883637  0.00995454
-  0.01601707 -0.02033777 -0.02233426  0.00668454  0.0055338  -0.00663979
-  0.00126532 -0.02274279  0.02845813  0.02777448]
-(100, 10)
-(10,)
-#+end_example
-
-上述程式變數補充說明如表[[tbl-TLNVars]]，
-#+NAME: tbl-TLNVars
-#+LABEL:tbl-TLNVars
-#+ATTR_LATEX: :environment longtable :align |p{4cm}|l|p{10cm}|
-#+CAPTION: TwoLayerNet 變數說明
-|-------------------------------------+---------------+----------------------------------------------------------------------|
-| 變數                                | 行數          | 說明                                                                 |
-|-------------------------------------+---------------+----------------------------------------------------------------------|
-| params                              | [[(TLN-params)]]  | 神經網路參數，為字典型態變數                                         |
-|                                     |               | params['W1']為第 1 層權重、params['b1']為第 1 層偏權值               |
-|-------------------------------------+---------------+----------------------------------------------------------------------|
-| grads                               | [[(TLN-grads)]]   | numerical__gradient 函數的傳回值，為字典型態變數     |
-|                                     |               | grads['W1']為第 1 層權重的梯度、grads['b1''為第 1 層偏權值的梯度     |
-|-------------------------------------+---------------+----------------------------------------------------------------------|
-| input_size          | [[(TLN-init)]]    | 輸入層神經元數量                                                     |
-| hidden_size         |               | 隱藏層神經元數量                                                     |
-| output_size         |               | 輸出層神經元數量                                                     |
-|-------------------------------------+---------------+----------------------------------------------------------------------|
-| predict(self, x)                    | [[(TLN-pred)]]    | 傳入輸入資料(x)為參數，進行辨識預測                                  |
-|-------------------------------------+---------------+----------------------------------------------------------------------|
-| loss(self, x, t)                    | [[(TLN-loss)]]    | 傳入影像資料(x)、正確答案標籤(t)為參數，計算損失函數自然不是逐一計算 |
-|-------------------------------------+---------------+----------------------------------------------------------------------|
-| accuracy(self, x, t)                | [[(TLN-accu)]]    | 計算準確度                                                           |
-|-------------------------------------+---------------+----------------------------------------------------------------------|
-| numericalk_gradient | [[(TLN-numgrad)]] | 計算權重值及偏權值梯度                                               |
-|-------------------------------------+---------------+----------------------------------------------------------------------|
-| gradient(self, x, t)                | [[(TLN-grad)]]    | 同上，速度較快                                                       |
-|-------------------------------------+---------------+----------------------------------------------------------------------|
-雙層神經網路則如圖[[fig:TLNet]]所示
-#+CAPTION: 雙層神經網路
-#+LABEL:fig:TLNet
-#+name: fig:TLNet
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+RESULTS:
-[[file:images/tln.png]]
-
-*** 小批次學習
-
-以下以前節之 TwoLayerNet 類別、以小批次學習來解決 MNIST 手寫字母辨識問題。
-#+BEGIN_SRC python -n -r :results output :exports both :eval no
-  import numpy as np
-  import tensorflow as tf
-  from keras.utils import np_utils
-
-  mnist = tf.keras.datasets.mnist
-  (x_train, t_train), (x_test, t_test) = mnist.load_data()
-  # 將圖片轉換為一個60000*784的向量，並且標準化
-  x_train = x_train.reshape(x_train.shape[0], 28*28)
-  x_test = x_test.reshape(x_test.shape[0], 28*28)
-  x_train = x_train.astype('float32')
-  x_test = x_test.astype('float32')
-  x_train = x_train/255
-  x_test = x_test/255
-  # 將y轉換成one-hot encoding
-  t_train = np_utils.to_categorical(t_train, 10)
-  t_test = np_utils.to_categorical(t_test, 10)
-
-  # ========================================================
-  def sigmoid(x):
-      return 1 / (1 + np.exp(-x))
-
-  def softmax(a):
-      exp_a = np.exp(a)    (ref:softmax-overflow)
-      #exp_a = np.exp(a - np.max(a)) (ref:softmax-overflow2)
-      sum_exp_a = np.sum(exp_a)
-      y = exp_a / sum_exp_a
-      return(y)
-
-  def cross_entropy_error(y, t):
-      delta = 1e-7
-      return -np.sum(t * np.log(y + delta))
-
-  def numerical_gradient(f, x):
-      h = 1e-4
-      grad = np.zeros_like(x)
-      it = np.nditer(x, flags=['multi_index'], op_flags=['readwrite'])
-      # 數值微分計算參數梯度
-      while not it.finished:
-          idx = it.multi_index
-          tmp_val = x[idx]
-          x[idx] = float(tmp_val) + h
-          fxh1 = f(x)  # f(x+h)
-
-          x[idx] = tmp_val - h
-          fxh2 = f(x)  # f(x-h)
-          grad[idx] = (fxh1 - fxh2) / (2*h)
-
-          x[idx] = tmp_val  # 値を元に戻す
-          it.iternext()
-      return grad
-
-  class TwoLayerNet:
-      def __init__(self, input_size, hidden_size, output_size, weight_init_std=0.01):  (ref:TLN-init)
-          # 隨機分配weight, bias設為0
-          self.params = {}                    (ref:TLN-params)
-          self.params['W1'] = weight_init_std * np.random.randn(input_size, hidden_size)
-          self.params['b1'] = np.zeros(hidden_size)
-          self.params['W2'] = weight_init_std * np.random.randn(hidden_size, output_size)
-          self.params['b2'] = np.zeros(output_size)
-
-      def predict(self, x):              (ref:TLN-pred)
-          W1, W2 = self.params['W1'], self.params['W2']
-          b1, b2 = self.params['b1'], self.params['b2']
-
-          a1 = np.dot(x, W1) + b1
-          z1 = sigmoid(a1)
-          a2 = np.dot(z1, W2) + b2
-          y = softmax(a2)
-          return y
-
-      # x : 輸入資料, t : 訓練資料
-      def loss(self, x, t):        (ref:TLN-loss)
-          y = self.predict(x)
-          return cross_entropy_error(y, t)
-
-      def accuracy(self, x, t):       (ref:TLN-accu)
-          y = self.predict(x)
-          y = np.argmax(y, axis=1)
-          t = np.argmax(t, axis=1)
-          accuracy = np.sum(y == t) / float(x.shape[0])
-          return accuracy
-
-      #計算各參數的梯度
-      def numerical_gradient(self, x, t):    (ref:TLN-numgrad)
-          loss_W = lambda W: self.loss(x, t)
-          grads = {}                          (ref:TLN-grads)
-          grads['W1'] = numerical_gradient(loss_W, self.params['W1'])
-          grads['b1'] = numerical_gradient(loss_W, self.params['b1'])
-          grads['W2'] = numerical_gradient(loss_W, self.params['W2'])
-          grads['b2'] = numerical_gradient(loss_W, self.params['b2'])
-          return grads
-  #=====================================================================
-  train_loss_list = []
-  # 超參數設定
-  iters_num = 10000
-  train_size = x_train.shape[0]
-  batch_size = 100     (ref:batchSize)
-  learning_rate = 0.1
-
-  network = TwoLayerNet(input_size=784, hidden_size=50, output_size=10)
-
-  #for i in range(iters_num):
-  for i in range(3): (ref:forIters)
-      # 取得小批次
-      batch_mask = np.random.choice(train_size, batch_size) (ref:batchMask)
-      x_batch = x_train[batch_mask]
-      t_batch = t_train[batch_mask]
-      # 計算梯度
-      grad = network.numerical_gradient(x_batch, t_batch) (ref:batchGrad)
-      # 更新參數
-      for key in ('W1', 'b1', 'W2', 'b2'): (ref:updateParams)
-          network.params[key] -= learning_rate + grad[key]
-      # 記錄學習過程
-      loss = network.loss(x_batch, t_batch)
-      train_loss_list.append(loss)
-      # 輸出結果
-      print(train_loss_list)
-#+END_SRC
-
-#+RESULTS:
-: [990.0180885577449]
-: [990.0180885577449, 995.0232568391127]
-: [990.0180885577449, 995.0232568391127, 1150.311320292553]
-
-上述程式碼中，小批次大小為 100（第[[(batchSize)]]行），每次從 60000 個訓練資料中隨機取出 100 筆資料（第[[(batchMask)]]行，包含影像資料與正確答案標籤資料），接下來以此 100 筆資料計算梯度（第[[(batchGrad)]]行），然後利用準確率梯度下降法（SGD）更新參數（第[[(updateParams)]]行）,然後記錄損失函數，如此整個步驟重複執行 10000 次（第[[(forIters)]]行）。
-
-*** 模型成效評估
-
-如何評估
-
-#+latex:\newpage
-
-* 深度神經網路 DNN (Deep Neural Network)
+* 深度神經網路(DNN)
+深度神經網路(Deep Neural Network, DNN)，顧名思義就是有很多層的神經網路。然而，幾層才算是多呢？一般來說有1-2個隱藏層的神經網絡就可以叫做多層，準確的說是(淺層)神經網絡(Shallow Neural Networks)。隨著隱藏層的增多，更深的神經網絡(一般來說超過3層)就都叫做深度神經網路[fn:2]。而那些以深度神經網路為模型的機器學習就是我們耳熟能詳的[[id:20221023T101228.247381][深度學習]]。
 
 ** 學習與參數:以迴歸問題為例
-
 想像一個國中的數學問題：在平面上畫出\(y=2x+3\)的直線，如圖[[fig:findUnknownfx]]左的直線(\(y=ax+b\))，決定這條直線的因素有二：斜率\(a\)與截距\(b\)，這兩項因素即可視為該直線的參數，像這種由已知參數去畫出對映直線的問題稱之為順向問題；反之，如果目前只知道平面上有幾個點，希望能畫出最符合的這些點的線，這種問題就稱為逆向問題。像圖[[fig:findUnknownfx]]右圖的紅線明顯就不是一條最符合的線，而解決這個問題就變成透過「尋找最佳參數」來畫出最理想的迴歸線，神經網路便是希望能藉由網路模型的不斷學習來找出最佳參數。
 #+BEGIN_SRC python -n -r :exports results :results file
-  import numpy as np
-  import matplotlib.pylab as plt
-  def f(x):
-      return 3*x+2
-  x = np.arange(-5.0, 5.0, 0.1)
-  y = f(x)
-  plt.figure(figsize=(10, 5))
-  plt.subplot(1, 2, 1) ## 左圖
-  plt.plot(x, y)
-  plt.ylim(-30, 30)
-  plt.axvline(0, color='k', linestyle='--')
-  plt.axhline(0, color='k', linestyle='--')
-  plt.xlabel('x')
-  plt.ylabel('y')
-  plt.subplot(1, 2, 2) ## 右圖
-  plt.axvline(0, color='k', linestyle='--')
-  plt.axhline(0, color='k', linestyle='--')
-  plt.ylim(-30, 30)
-  plt.plot(2, 8, "o")
-  plt.plot(-2, -7, "o")
-  plt.plot(4, 25, "o")
-  plt.plot(-4, -24, "o")
-  def f1(x):
-      return 12*x+29
-  y1 = f1(x)
-  plt.plot(x, y1, color='r')
-  plt.xlabel('x')
-  plt.ylabel('y')
-  plt.tight_layout()
-  plt.savefig("simplefx-1.png")
-  return "simplefx-1.png"
+import numpy as np
+import matplotlib.pylab as plt
+
+def f(x):
+    return 3*x+2
+
+x = np.arange(-5.0, 5.0, 0.1)
+y = f(x)
+plt.figure(figsize=(10, 5))
+plt.subplot(1, 2, 1) ## 左圖
+plt.plot(x, y)
+plt.ylim(-30, 30)
+plt.axvline(0, color='k', linestyle='--')
+plt.axhline(0, color='k', linestyle='--')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.subplot(1, 2, 2) ## 右圖
+plt.axvline(0, color='k', linestyle='--')
+plt.axhline(0, color='k', linestyle='--')
+plt.ylim(-30, 30)
+plt.plot(2, 8, "o")
+plt.plot(-2, -7, "o")
+plt.plot(4, 25, "o")
+plt.plot(-4, -24, "o")
+
+def f1(x):
+    return 12*x+29
+
+y1 = f1(x)
+plt.plot(x, y1, color='r')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.tight_layout()
+plt.savefig("simplefx-1.png")
+return "images/simplefx-1.png"
 #+END_SRC
 #+CAPTION: 由已知函數畫出直線與由已知點找未知函數
 #+LABEL:fig: 由已知函數畫出直線與由已知點找未知函數
 #+name: fig:findUnknownfx
 #+ATTR_LATEX: :width 400
 #+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 600
+#+ATTR_HTML: :width 500
 #+RESULTS:
 [[file:images/simplefx-1.png]]
 
@@ -1757,7 +546,7 @@ https://www.youtube.com/channel/UCHbGAYq21PNz9REWNwe8Z-Q/videos
 #+name: fig:exam-Network1
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 600
+#+ATTR_HTML: :width 500
 [[file:images/exam-Network1.png]]
 
 然而，上述因素只是一般性的文字描述，畢竟過於模糊而無法對之進行精確計算，所以，我們有必要再對其進行更精確的描述，此處的參數（即影響因素及相對權重）又稱為特徵值。此外，每個因素影響學測結果的程度理應會有所差異，因此也有必要對各因素賦予「加權」（也稱為權重），詳細考慮後的因素及加權列表如下。
@@ -1794,9 +583,9 @@ https://www.youtube.com/channel/UCHbGAYq21PNz9REWNwe8Z-Q/videos
 #+name: fig:exam-Network2
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 600
+#+ATTR_HTML: :width 500
 #+RESULTS:
-[[file:images/exam-network2.png]]
+[[file:images/exam-network2p.png]]
 
 然而，無論我們事前研究分析調查的再如何嚴謹，實際的計算結果與真實分數總會存在誤差，如表[[tbl-diffBtDM]]，分別觀察這些誤差值並不容易看出吻合程度，但如果將個別的誤差平方後加總，則可以得到一個明確的誤差函數=\(3^2+(-3)^2+(-2)^2+(-2)^2...\)，至此，解題的任務便轉為：找出能讓誤差函數最小化的一組參數。
 #+NAME: tbl-diffBtDM
@@ -1804,14 +593,13 @@ https://www.youtube.com/channel/UCHbGAYq21PNz9REWNwe8Z-Q/videos
 #+CAPTION: 誤差的計算
 |------+--------+--------+--------+--------+-----|
 |      | 學生 A | 學生 B | 學生 C | 學生 D | ... |
+| <c>  |  <c>   |  <c>   |  <c>   |  <c>   | <c> |
 |------+--------+--------+--------+--------+-----|
-| 資料 |     70 |     65 |     68 |     50 | ... |
-| 模型 |     67 |     68 |     70 |     52 | ... |
+| 資料 |   70   |   65   |   68   |   50   | ... |
+| 模型 |   67   |   68   |   70   |   52   | ... |
 |------+--------+--------+--------+--------+-----|
-| 誤差 |      3 |     -3 |     -2 |     -2 | ... |
+| 誤差 |   3    |   -3   |   -2   |   -2   | ... |
 |------+--------+--------+--------+--------+-----|
-
-像這種透過比對現有資料不斷調整參數以便將誤差函數減至最小的學習過程稱為「監督式學習」，而至於「非監督式學習」則是藉由找出不同學生在這些特徵值上的相似程度，將學生分群，而同一群組的學生共通之處或許便會直接與學測成績相關，學童在成長過程中的學習就是非監督式學習，透過觀週遭的一切事物，也許有些事情仍不了解，但多少都會從中整理、歸納出一些重要的知識；待到後開始上學，則較接近監督式學習。
 
 ** 如何調整參數
 前節提及，為了能找到最理想的預測函數，我們可以不斷調整權重來把誤差函數降到最低。實務上，我們可以每次以最細微的調幅逐一調整（增加或減少）權重值來試圖減小損失函數，直到其無法再減少為止，此種方式稱為「坡度法」，而這種每次稍微調整一點點再觀察結果變化的手段稱為微分；若是同時微幅調整所有權重以將損失函數降到最低，這種方式則稱為「梯度下降法」。然而類似梯度法並不保證能找到將損失函數降到最小的權重組合，如圖[[fig:dotAB]]所示，以梯度法可能只會找到 A 點這個局部最小值，然而全體的最小值其實發生在 B 點。
@@ -1823,16 +611,20 @@ https://www.youtube.com/channel/UCHbGAYq21PNz9REWNwe8Z-Q/videos
 [[file:images/dotAB.png]]
 
 ** 模型的極限
-在我們透過問卷取得大量的數據後，想像一下我們以這些數據來做為調整模型參數的依據，最後，我們如何評估這個模型的效能呢？一般來說，我們會把數據分成兩部份：一部份做為調整或學習參數的依據，稱做訓練資料；另一部份用來測試或檢驗模型的效能。之所以用不同的數據進行訓練與測試，是為了避免「過擬合」的狀況，即，因為測試資料與訓練資料一致，導致測試結果十分完美，然而，一旦把模型拿來應用到新的數據上（或是實際應用模型到真實世界中）時，反而效果會不如預期。
+在我們透過問卷取得大量的數據後，想像一下我們以這些數據來做為調整模型參數的依據，最後，我們如何評估這個模型的效能呢？一般來說，我們會把數據分成兩部份：
+1. 訓練資料: 用來給模型(神經網路)調整或學習參數
+2. 測試資料: 用來給模型(神經網路)測試或檢驗模型的效能。
+
+之所以用不同的數據進行訓練與測試，是為了避免「過擬合」的狀況，即，因為測試資料與訓練資料一致，導致測試結果十分完美，然而，一旦把模型拿來應用到新的數據上（或是實際應用模型到真實世界中）時，反而效果會不如預期。
 
 過擬合就好比學生在學習時只死記課本的習題，對於其他題型完全不予理會，如果考試也考課本的習題，考試成績自然優異，然而如果考試時題型略做變化，則考試結果就可能十分悲慘。
 
-實際進行測試時，可以將資料分成數組，將其中一組當成測試資料。例如，分為 A、B、C、D4 組，然後輪流拿這 4 組資料中的一組做為測試資料進行 4 次相同的測試，目的在於提升模型的「泛化能力」，也就是減少其過擬合的可能性。
+實際進行測試時，可以將資料分成數組，將其中一組當成測試資料。例如，分為A、B、C、D 4組，然後輪流拿這4組資料中的一組做為測試資料進行 4 次相同的測試，目的在於提升模型的「泛化能力」，也就是減少其過擬合的可能性。
 
 ** 神經網路為什麼要有那麼多層
 前節提及，我們的預測模型就如圖[[fig:exam-Network2]]所示，換言之，是在解一個\(f(x)=x_1*w_1+x_2*w_2+x_3*w_3+...+x_7*w_7\)的函式問題，那麼，為了能找到最理想的預測函數，可否把函數變的更加複雜，例如，將函數變為二次函數或更複雜的函數以提升預測的精準度？實則，這種社會科學的問題並不如自然科學的物理現象可以用明確的公式來解決，神經網路採用的是以組合的方式來將函數複雜化，例如，把圖[[fig:exam-Network2]]變為下圖的樣式，如此藉由改變各因素以及權值的組合，等於建立了許多新的特徵值，也增加了模型的複雜度。
 
-#+BEGIN_SRC dot :exports code :file images/exam-Network3.png :cmdline -Kdot -Tpng
+#+BEGIN_SRC dot :file images/exam-Network3.png :cmdline -Kdot -Tpng
 digraph exam3 {
     rankdir=LR;
     nodesep=.05;
@@ -1856,919 +648,94 @@ digraph exam3 {
 #+NAME:fig:exam-Network3
 #+ATTR_LATEX: :width 400
 #+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 600
+#+ATTR_HTML: :width 500
 #+RESULTS:
-[[file:images/exam-Network3.png]]
+[[file:images/exam-network3p.png]]
 
-然而，如果只是以這種「新增特徵值組合與權重」進而產生新特徵值的方式來改變模型，那麼，再多的層數也能合併為一層，因為這些運算方式均屬於線性轉換，為了有效讓模型更加複雜，此處可以在模型中加入非線性轉換，如圖[[fig:MNIST-NeuralNet]]中的 ReLU 函數。在將類似圖[[fig:ReLUFunction]]這類非線性轉換函數加入模型後，其結果如圖[[fig:exam-Network4]]所示。
+然而，如果只是以這種「新增特徵值組合與權重」進而產生新特徵值的方式來改變模型，那麼，再多的層數也能合併為一層，因為這些運算方式均屬於線性轉換，為了有效讓模型更加複雜，此處可以在模型中加入非線性轉換，如圖[[fig:ReLUFunction]]中的ReLU[[id:d3bcc30a-3d94-4a3c-8e66-baaac7325c75][激勵函數]]，其結果如圖[[fig:exam-Network4]]所示。
 
-#+CAPTION: MNIST-NeuralNet
-#+name: fig:MNIST-NeuralNet
-#+ATTR_LATEX: :width 400px
+#+CAPTION: ReLU 函數圖
+#+LABEL:fig:ReLUFunction
+#+name: fig:ReLUFunction
+#+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
-[[file:images/MNIST-CNN.png]]
+#+ATTR_HTML: :width 500
+[[file:images/ReLUPlot.png]]
 
-#+BEGIN_SRC dot :file ./images/exam-Network4.png :cmdline -Kdot -Tpng
-  digraph exam{
-    rankdir=LR;
-    nodesep=.05;
-    graph[ranksep="3"]
-    subgraph cluster_0{
-             color=orange;
-             o2[label=""]; o3[label=""]; o4[label=""]; o1[label=""];
-             label = "非線性轉換"
-    }
-    z1[label = "輸出"];
-  x3[label = "各科段考平均成績"];
+#+begin_src plantuml :file images/exam-network4p.png
+@startuml
+storage 學測成績
+storage x1
+storage x2
+storage x3
+storage x4
+storage x5
+storage x6
+storage x7
+storage reLU1 as "reLU" #aliceblue;line:blue;line.dotted;text:blue
+storage reLU2 as "reLU" #aliceblue;line:blue;line.dotted;text:blue
+storage reLU3 as "reLU" #aliceblue;line:blue;line.dotted;text:blue
 
-    x4[label = "..."];
-    x1[label = "上課認真聽講時間百分比"];
-    x2[label = "作業平均成績"];
+storage y1
+storage y2
+storage y3
+storage reLU4 as "reLU" #aliceblue;line:blue;line.dotted;text:blue
+storage reLU5 as "reLU" #aliceblue;line:blue;line.dotted;text:blue
+storage reLU6 as "reLU" #aliceblue;line:blue;line.dotted;text:blue
+reLU1 -[dashed]-|> y1
+reLU2 -[dashed]-|> y2
+reLU3 -[dashed]-|> y3
 
+x1 --|> reLU1 : w11
+x2 --|> reLU1 : w21
+x3 --|> reLU1 : w31
+x3 --|> reLU2 : w32
+x4 --|> reLU2 : w42
+x5 --|> reLU2 : w52
+x5 --|> reLU3 : w53
+x6 --|> reLU2 : w62
+x6 --|> reLU3 : w63
+x7 --|> reLU3 : w73
 
-    o4[label = "..."];
+y1 --|> reLU4 : w8
+y2 --|> reLU5 : w9
+y3 --|> reLU6 : w10
 
-    x1 -> o1[label = w11]; x1-> o2[label = w12]; x1 -> o3[label = w13]; x1 -> o4[label = w14];
-    x2 -> o1[label = w21]; x2-> o2[label = w22]; x2 -> o3[label = w23]; x2 -> o4[label = w24];
-    x3 -> o1[label = w31]; x3-> o2[label = w32]; x3 -> o3[label = w33]; x3 -> o4[label = w34];
-    x4 -> o1[label = w41]; x4-> o2[label = w42]; x4 -> o3[label = w43]; x4 -> o4[label = w44];
-    o1 -> z1; o2 -> z1; o3 -> z1; o4 -> z1;
-  }
-#+END_SRC
+reLU4 -[dashed]-|> 學測成績
+reLU5 -[dashed]-|> 學測成績
+reLU6 -[dashed]-|> 學測成績
 
+@enduml
+#+end_src
 #+CAPTION: 學測成績預測模型#4
 #+LABEL:fig:exam-Network4
 #+name: fig:exam-Network4
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 700
-#+RESULTS:
-[[file:./images/exam-Network4.png]]
-
-* CNN 卷積神經網路: :CNN::Keeras:
-
-卷積神經網路(CNN)由Yann LeCun(法國電腦科學家，2018年圖靈獎得主)所提出，此人在機器學習、計算機視覺、計算機神經科學等領域都有很多貢獻。
-
-CNN 也是模仿人類大腦的認知方式，譬如我們辨識一個圖像，會先注意到顏色鮮明的點、線、面，之後將它們構成一個個不同的形狀(眼睛、鼻子、嘴巴...)，這種抽象化的過程就是 CNN 演算法建立模型的方式。卷積層(Convolution Layer) 就是由點的比對轉成局部的比對，透過一塊塊的特徵研判，逐步堆疊綜合比對結果，就可以得到比較好的辨識結果，過程如下圖。[fn:12]
-
-#+CAPTION: CNN 概念
-#+name: fig:CNN-1
 #+ATTR_LATEX: :width 500
-#+ATTR_ORG: :width 500
+#+ATTR_ORG: :width 100
+#+ATTR_HTML: :width 500
 #+RESULTS:
-[[file:images/CNN-1.png]]
-資料來源：[fn:13]
+[[file:images/exam-network4p.png]]
 
-** CNN v.s. MLP
-
-CNN 與前章所述之 MLP 的主要差異可由下圖看出，即，CNN 在輪入層中多了卷積層與池化層，MLP 有兩個缺點[fn:14]：
-1. 需要大量記憶體:在處理 256x256 大小的彩色圖片時，會需要用到 256 * 256 * 3 =196,608 個 Input Neuron，如果中間的隱藏層有 1000 個 Neuron，每個神經元需要一個浮點數的權重值 (8bytes)，那麼總共需要 196,608 * 1000 * 8 = 1.4648GBytes 的記憶體才夠。更何況這還只是個簡單的模型。
-2. 多層感知器只針對圖片中每個單一像素去作判斷，完全捨棄重要的影像特徵。人類在判斷所看到的物體時，會從不同部位的特徵先作個別判斷，例如當你看到一架飛機，會先從機翼、機鼻、機艙體等這些特徵，再跟記憶中的印象來判斷是否為一架飛機，甚至再進一步判斷為客機還是戰鬥機。但是多層感知器沒有利用這些特徵，所以在影像的判讀上準確率就沒有接下來要討論的 CNN 來得好。
-
-與 MLP 相比，CNN 多了卷積層與池化層，卷積層用來強調圖案(資料)特徵，池化層則可以縮減取樣，減少 overfitting 問題。二者架構差異如圖[[fig:CNN-MLP-1]]所示。
-#+CAPTION: CNN 與 MLP 之差異
-#+LABEL:fig:CNN-MLP-1
-#+name: fig:CNN-MLP-1
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+RESULTS:
-[[file:images/CNN-MLP.jpg]]
-#+ATTR_ORG: :width 00
-#+RESULTS:
-[[file:images/CNN-arch-1.jpg]]
-
-*** 影像特徵擷取
-
-透過卷積層及池化層擷取影像特徵，每個 Conv2D 和 MAsxPooling2D 層的輸出都是 shape 為(height, width, channels)的 3D 張量，隨著神經網路進入更深的層、寬度和高度也隨之縮小。
-
-*** 完全連結神經網路
-
-包含平坦層、隠藏層、輸出層所組成的神經網路，由於最後一個 Conv2D 層輸出的 36 個 7*7 必須送到接續的分類器神經網路(也就是 Dense 層)，分類器神經網路能處理的是 1D 向量，但前一層的輸出是 3D 張量，所以要把 3D 張量展平為 1D。
-
-** 卷積運算
-[[https://setosa.io/ev/image-kernels/][Kernel在做什麼?]]
-以全連接層（Affine 層）來處理神經網路的問題在於：全連接層會忽略資料的「形狀」。例如，假設輸入資料為影像，則通常會包含水平、垂直、色版方向的三維形狀，然而當這些資料輸入全連接層時，三維資料就必須變為平面（一維資料），如前述的 MNist 資料集，輸入為(1, 28, 28)，即，一種顏色、28*28 像素，輸入全連接層後會變成一行的 784 個資料。
-
-三維形狀的影像包含了許多重要的空間資料，例如，類似的空間有著相似的象素值、RGB 各色版間有緊密連接的關連性，距離較遠的像素彼此沒有關連...等特質，這些特質會在全連接層中被忽略掉。卷積層（Convolution layer）則能維持這些形狀，我們把 CNN 的卷積層輸出入資料稱作特徵圖（input / output feature map），而在卷積層中執行的處理則稱為卷積運算，若以影像處理來比喻卷積運算，則相當於「濾鏡效果」。卷積層的意義即是將原本一個影像經由卷積運算產生多個影像，每個影像均代表不同特徵。卷積運算方式如下：
-
-典型的卷積運算如圖[[fig:CNN-struct1]]，此處特徵圖為(4,4)，濾鏡為(3,3)，輸出為(2,2)，這裡的濾鏡又稱為「核(kernel)」，其初始值由隨機方式產生。此外，在全連接網路層中，除了權重參數（核）之外，還有偏權值，其結果如圖[[fig:CNN-struct2]]。
-#+BEGIN_SRC dot :file images/CNN-struc1.png :cmdline -Kdot -Tpng
-digraph structs {
-  rankdir=LR;
-	S[label = "⊗" shape=circle size = "1" color=white]
-	struct1 [shape = record label="{1|2|3|0}|{0|1|2|<f1>3}|{3|0|1|2}|{2|3|0|1}"];
-  struct2 [shape = record label="{2|0|1}|{<f21>0|1|<f22>2}|{1|0|2}"];
-  struct3 [shape = record label="{15|16}|{<f3>6|15}"];
-  struct1:f1 -> S;
-  S -> struct2:f21;
-  struct2:f22 -> struct3:f3;
-}
-#+END_SRC
-#+CAPTION: 卷積運算
-#+LABEL:fig:CNN-struct1
-#+name: fig:CNN-struct1
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+RESULTS:
-[[file:images/CNN-struc1.png]]
-
-#+BEGIN_SRC dot :file images/CNN-struc2.png :cmdline -Kdot -Tpng
-digraph structs {
-  nodesep=0.2;
-  ranksep = 0.3;
-  rankdir=LR;
-	S1[label = "⊗" shape=circle size = "1" color=white]
-	S2[label = "+" shape=record size = "1" color=white]
-	S3[label = "3" shape=record size = "1" color=white nodesep = 0.2]
-	struct1 [shape = record label="{1|2|3|0}|{0|1|2|<f1>3}|{3|0|1|2}|{2|3|0|1}"];
-  struct2 [shape = record label="{2|0|1}|{<f21>0|1|<f22>2}|{1|0|2}"];
-  struct3 [shape = record label="{15|16}|{ <f31>6|<f32>15}"];
-  struct5 [shape = record label="{18|19}|{<f5> 9|18}"];
-  struct1:f1 -> S1;
-  S1 -> struct2:f21;
-  struct2:f22 -> struct3:f31;
-  struct3:f32 -> S2 -> S3 -> struct5:f5;
-}
-#+END_SRC
-#+CAPTION: 卷積運算 2
-#+LABEL:fig:CNN-struct2
-#+name: fig:CNN-struct2
-#+ATTR_LATEX: :width 400px
-#+ATTR_ORG: :width 300
-#+RESULTS:
-[[file:images/CNN-struc2.png]]
-
-由圖[[fig:CNN-struct1]]、[[fig:CNN-struct2]]的卷積運算可以看出，輸入特徵值在經過運算後，其大小會縮小，可以預見的結果是，在經過多層神經網路反複進行卷積運算後，輸出特徵值大小很快就會縮小為 1，而無法再進行卷積運算。為了避免這種情況發生，在進行卷積運算前，可以針對輸入資料周圍補上一圈固定的資料（例如 0），這個動作稱為填補(padding)，如果我們對在卷積運算前對於圖[[fig:CNN-struct1]]中的輸入特徵值進行寬度 1 的填補，則其結果如圖[[fig:CNN-struct3]]所示。
-
-#+BEGIN_SRC dot :file images/CNN-struc3.png :cmdline -Kdot -Tpng
-digraph structs {
-  rankdir=LR;
-	S[label = "⊗" shape=circle size = "1" color=white]
-	struct1 [shape = record label="{0|0|0|0|0|0}|{0|1|2|3|0|0}|{0|0|1|2|3|<f3>0}|{0|3|0|1|2|0}|{0|2|3|0|1|0}|{0|0|0|0|0|0}"];
-  struct2 [shape = record label="{2|0|1}|{<f21>0|1|<f22>2}|{1|0|2}"];
-  struct3 [shape = record label="{7|12|10|4}|{<f3>4|15|16|10}|{10|6|15|6}|{8|10|4|3}"];
-  struct1:f1 -> S;
-  S -> struct2:f21;
-  struct2:f22 -> struct3:f3;
-  }
-#+END_SRC
-#+CAPTION: 卷積運算 3
-#+LABEL:fig:CNN-struct3
-#+name: fig:CNN-struct3
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+RESULTS:
-[[file:images/CNN-struc3.png]]
-
-進行上述卷積運算時，每次自左而右、自上而下，自輸入特徵值取出一個與核大小相同的子矩陣與核進行運算，而每個取出的子矩陣的間隔稱為步幅(stride)，上述範例中的 stide 均為 1，若 stride 設為 2，則一個(7,7)的輸入特徵值與一個(3,3)的核進行運算後，其輸出特徵值大小只剩(3,3)。
-
-上述範例中的特徵值均為二維矩陣，亦即，僅能表示水平與垂直方向的單色點陣圖，若輸入中包含色彩資料(RGB)，則輸入特徵圖將升及為三維矩陣（三層二維矩陣，每層表示一種 RGB 值），核的結構也是三維矩陣，但輸出特徵值則為二維矩陣。 以 MNist 資料集為例，將數字 7 的 28*28 影像以隨機產生的 5*5 濾鏡(或稱 filter weight、kernel)對其進行卷積，其結果如圖[[fig:CNN-FW-1]]所示，這種效果有助於提取輸入影像的不同特徵，例如邊緣、線條...等。
-#+CAPTION: 卷積運算 4
-#+LABEL:fig:CNN-FW-1
-#+name: fig:CNN-FW-1
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+RESULTS:
-[[file:images/CNN-FW-1.jpg]]
-
-實際建構模型時，不會只進行單一 kenrel 的卷積，圖[[fig:CNN-FW-2]]即是隨機產生 16 個 kernel 對輸入影像提取不同特徵。
-#+CAPTION: 卷積運算 5
-#+LABEL:fig:CNN-FW-2
-#+name: fig:CNN-FW-2
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+RESULTS:
-[[file:images/CNN-FW-2.jpg]]
-
-密集層和卷積層之間的根本區別在於：密集層會由輸入的特徵空間中學習全域的 pattern，而卷積層則是學習局部的 pattern，以影像辨識為例，convent 會把輸入分解成小小的 2D 窗格，然後從中找出 pattern。這個關鍵特性為 CNN 提供了兩個有趣的特質：
-
-- 學習到的 pattern 具平移不變性(translation invariant)：在影像的右下角學習到的某個 pattern，CNN 可以在任何位置識別這樣的 pattern(如左上角)，相對的，當密集層連接神經網路看到 pattern 出現在新位置時，就必須重新學習。這使的 CNN 可以更有效率地處理影像資料。
-- 學習到 pattern 的空間層次結構(spatial hierarchies of patterns)：第一層卷積層會學習到諸如邊邊角角的小局部圖案，第二層卷積層則會基於第一層學到的特徵(小圖案)來學習較大的圖案，這使得 CNN 能夠有效地學習越來越複雜和抽象的視覺概念。
-
-CNN 所運算的 3D 張量稱為特徵映射圖(feature maps，簡稱特徵圖)，特徵圖有 2 個空間軸(height, width)以及 1 個色深度軸(depth / channel)，對於 RGB 影像來說，depth 值為 3。卷積運算會從輸入特徵中萃取出各種小區塊 pattern，當它對整張影像都做完萃取之後，就會產生輸出特徵映射圖(output feature map)。輸出特徵映射圖仍是 3D 張量，具有寬度和高度，但此時其深度軸已不再代表 RGB 顏色值，此時它代表過濾器(filter)，每一種 filter 會對輸入資料進行特定面向的編碼、萃取出結果，例如，filter 可以萃取到「在輸入資料中出現一張臉」這種高階抽象的概念，將不是臉的都過濾掉。
-
-** 池化層(Pooling Layer)
-
-卷積層之間通常會加一個池化層(Pooling Layer)，它是一個壓縮圖片並保留重要資訊的方法，取樣的方法一樣是採滑動視窗，但是通常取最大值(Max-Pooling)，而非加權總和，若滑動視窗大小設為 2，『滑動步長』(Stride) 也為 2，則資料量就降為原本的四分之一，但因為取最大值，它還是保留局部範圍比對的最大可能性。也就是說，池化後的資訊更專注於圖片中是否存在相符的特徵，而非圖片中『哪裡』存在這些特徵，幫助 CNN 判斷圖片中是否包含某項特徵，而不必關心特徵所在的位置，這樣圖像偏移，一樣可以辨識出來。其架構如圖[[fig:CNN-Pooling-1]]所示。[fn:13]
-#+CAPTION: CNN 之池化層
-#+LABEL:fig:CNN-Pooling-1
-#+name: fig:CNN-Pooling-1
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+RESULTS:
-[[file:images/CNN-Pooling.png]]
-
-池化層以縮減取樣(downsampling)的方式縮小影像可以帶來以下優點：
-
-1. 減少需要處理的資料點：減少後續運算所需時間。
-1. 讓影像位置差異變小：影像要辨識的目標（如 MNist 資料集的數字）可能因為在影像中的位置不同而影響辦識，減小影像可以讓數字的位置差異變小。
-1. 參數的數量程計算量下降：同時也能控制 overfitting。
-
-圖[[fig:CNN-PL-1]]即為使用 Max-Pool 對 16 個卷積影像進行縮減取樣(downsampling)的效果，將 16 個 28*28 個影像縮小為 16 個 14*14 的影像，但仍保持其特徵。MaxPooling 主要是由輸入特徵圖中做採樣並輸出樣本的最大值，它在概念上類似於卷積層操作，但並不是用卷積核(convolution kernel)張量積的方式來轉換局部區塊，而是經由手動編碼的 max 張量操作進行轉換。與卷積層操作的很大區別是 MaxPooling 通常用 2\times2 窗格和步長(strides)2 來完成，以便將特徵圖每一軸的採樣減少到原來的 1/2，而卷積層操作通常使用 3\times3 窗格且不指定步長(即使用預設步長 1)。
-
-#+CAPTION: 池化效果
-#+LABEL:fig:CNN-PL-1
-#+name: fig:CNN-PL-1
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+RESULTS:
-[[file:images/CNN-PL-1.jpg]]
-
-為什麼要採用這種方式來縮小採樣特徵圖而不用原來的特徵圖尺寸一路執行下去？假設一個有不加入 MaxPooling 而是以全卷積層的模型設計如下：
-
-#+BEGIN_SRC python -r -n :results output :exports both :eval no
-  model_no_max_pool = models.Sequential()
-  model_no_max_pool.add(layers.Conv2D(32, (3, 3), activation='relu'),
-                        input_shape=(28, 28, 1))
-  model_no_max_pool.add(layers.Conv2D(64, (3, 3), activation='relu'),)
-  model_no_max_pool.add(layers.Conv2D(64, (3, 3), activation='relu'),)
-#+END_SRC
-
-上述設計的問題可以從以下兩個面向來看：[fn:15]
-
-- 不利於學習特徵的空間層次結構。當 strides=1，第二層的 3\times3 窗格要走過 5\times5 的區域才能包含第一層的 7\times7 區城，進而生成下一層的完整 3\times3 區域，依此類推，第三層的 3\times3 窗格也要走過 5\times5 的區域才能包含第二層的 5\times5 區域。也就是說，第三層的 3\times3 窗格實際上僅包含來自原始輸入的 7\times7 區城的資訊。相對於初始輸入，由卷積神經網路學習的高階 pattern 仍然進展很小，不足以學習分類數字。我們希望的是：最後一個卷積層的輸出特徵已經能提供有關輸入資料的總體訊息。
-- 最終特徵圖的每個樣本總係數為 22\times22\times64=3-976，這是相當巨大的 model，如果要將其展平以在頂部連接大小為 512 的 Dense 層，則該層將會有 1580 萬個參數，這對小 model 而言實在是太大，而且會導致 overfitting。
-
-雖然 MaxPooling 並不是縮小探樣特徵圖的唯一方法（也可以透過卷積層的 strides 來調整，或是使用平均池化而非 MaxPooling）,不過就經驗來看，MaxPooling 往往比這些方案好。主要原因是：特徵通常是源自於空間某些有特色的 pattern，因此要取其最大值才更具訊息性，若採用平均值，則特色就被掩蓋了。
-
-** 以 CNN 實作 MNIST
-
-*** 資料預處理(preprocess)
-#+BEGIN_SRC python -r -n :results output :exports both :eval no
-  ### 1. 匯入所需模組
-  from keras.utils import np_utils # 要將table轉為one-hot encoding
-  import numpy as np
-  np.random.seed(9527) #讓每次產生的亂數一致
-
-  ### 2. 匯入Keras模組以下載MNist資料集'''
-  from keras.datasets import mnist
-  ###  讀取MNist資料集
-  (x_Train, y_Train), (x_Test, y_Test) = mnist.load_data()
-
-  ### 3. 將features轉為4矩陣(6000*28*28*1)
-  x_Train4D = x_Train.reshape(x_Train.shape[0],28,28,1).astype('float32')
-  x_Test4D = x_Test.reshape(x_Test.shape[0],28,28,1).astype('float32')
-
-  ### 3. 將features標準化
-  x_Train4D_normalize = x_Train4D / 255
-  x_Test4D_normalize = x_Test4D / 255
-
-  ### 4. Onehot encoding
-  y_TrainOneHot = np_utils.to_categorical(y_Train)
-  y_TestOneHot = np_utils.to_categorical(y_Test)
-#+END_SRC
-
-*** 建立模型
-#+BEGIN_SRC python -r -n :results output :exports both :eval no
-  ### 1. 匯入所需模組
-  from keras.models import Sequential
-  from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D
-
-  ### 2. 建立keras的Sequential模型
-  model = Sequential()
-
-  ### 3. 卷積層1與池化層1 (一個完整的卷積運算包含一個卷積層與池化層)，濾鏡大小為5*5
-  ###    輸入的影像為28*28，卷積運算後產生16個影像，大小不變(padding=same)
-  ###    因為影像為單色，故影像大小為 28*28*1
-  ###    預設input_shape: image_height, image:width, image_channels
-  model.add(Conv2D(filters=16, kernel_size=(5,5), padding='same',
-                   input_shape(28, 28, 1), activation='relu'))
-  ###    將16個28*28影像轉為16個14*14影像
-  model.add(MaxPooling2D(pool_size=(2, 2)))
-
-  ### 4. 卷積層2與池化層2 (一個完整的卷積運算包含一個卷積層與池化層)，濾鏡大小為5*5
-  ###    將原本16個影像轉換為36個影像
-
-  model.add(Conv2D(filters=36, kernel_size=(5,5), padding='same',
-                   input_shape(28, 28, 1), activation='relu'))
-  ###    將36個14*14影像轉為36個7*7的影像
-  model.add(MaxPooling2D(pool_size=(2, 2)))
-
-  ### 5. 加入Dropout避免overfitting，隨機放棄神經網路中25%的神經元
-  model.add(Dropout(0.25))
-
-  ### 6. 建立神經網路(平坦層、隠藏層、輸出層)
-  ###    隠藏層有128個神經元，並隨機放棄50%的神經元
-  model.add(Flatten())
-  model.add(Dense(128, activation='relu'))
-  model.add(Dropout(0.5))
-  ###   輸出層有0~9共10個神經元，以softmax輸出對映機率
-  model.add(Dense(10, activation='softmax'))
-
-  ### 7. 查看模型摘要
-  print(model.summary())
-#+END_SRC
-
-*** 訓練模型
-#+BEGIN_SRC python -r -n :results output :exports both :eval no
-  ### 1. 定義訓練方式
-  ###    在深度學習中使用cross_entropy交叉熵訓練效果較好
-  ###    使用adam做最佳化可以讓訓練更快收歛，提高準確率
-  ###    最後以accuracy來評估模型準確率
-  model.compile(loss='categorical_crossentropy',
-                optimizer='adam', metrics=['accuracy'])
-  ###    執行10次訓練週期，每一批次算300筆資料
-  ###    因為共有48000筆訓練資料，每批次300筆，約分160批次訓練
-  train_history=model.fit(x=x_Train4D_normalize,
-                          y=y_TrainOneHot, validation_split=0.2,
-                          epochs=10, batch_size=300, verbose=2)
-
-  ### 2. 畫出效果圖及誤差圖
-  show_train_history('acc', 'val_acc')
-  show_train_history('loss', 'val_loss')
-#+END_SRC
-
-*** 評估模型準確率
-#+BEGIN_SRC python -r -n :results output :exports both :eval no
-  scores = model.evaluate(x_Test4D_normalize, y_TestOneHot)
-  print(scores[1])
-#+END_SRC
-
-*** 進行預測
-#+BEGIN_SRC python -r -n :results output :exports both :eval no
-  prediction = model.predict_classes(x_Test4D_normalize)
-  ### 顯示前10筆預測結果
-  print(prediction[:10]
-  plot_images_labels_prediction(x_Test, y_Test, prediction, idx=0)
-  ### 顯示混淆矩陣
-  import pandas as pd
-  pd.crosstab(y_Test, prediction, rownames=['label'], colnames=['predict'])
-#+END_SRC
-
-*** 執行結果
-#+BEGIN_SRC python -r -n :results output :exports both
-  ### define function
-  import os
-  os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
-  import matplotlib.pyplot as plt
-  def plot_images_labels_prediction(imgname, images, labels, prediction, idx, num = 10):
-      fig = plt.gcf()
-      fig.set_size_inches(8,4) # 設定顯示圖形大小
-      if num>25: num=25 # 顯示資料筆數上限
-      for i in range(0, num):
-          ax=plt.subplot(2,5,1+i) # 此處顯示10筆圖形，2*5個
-          ax.imshow(images[idx], cmap='binary') # 畫圖
-          title= "label=" +str(labels[idx]) # 加入子圖形title
-          if len(prediction)>0:
-              title+=",predict="+str(prediction[idx]) # 標題title加入預測結果
-          ax.set_title(title,fontsize=10)
-          ax.set_xticks([]);ax.set_yticks([]) #不顯示刻度
-          idx+=1
-      #plt.show()
-      #plt.plot()
-      plt.savefig(imgname+".png")
-
-  def show_train_history(imgname, train_acc, test_acc):
-      plt.plot(train_history.history[train_acc])
-      plt.plot(train_history.history[test_acc])
-      plt.title('Train History')
-      plt.ylabel('Accuracy')
-      plt.xlabel('Epoch')
-      plt.legend(['train','test'], loc='upper left')
-      plt.savefig(imgname+".png")
-      plt.clf()
-
-  ### 1. 資料預處理(preprocess)
-  from keras.utils import np_utils
-  import numpy as np
-  np.random.seed(9527) #讓每次產生的亂數一致
-
-  from keras.datasets import mnist
-  from keras import layers
-  (x_Train, y_Train), (x_Test, y_Test) = mnist.load_data()
-  x_Train4D = x_Train.reshape(x_Train.shape[0],28,28,1).astype('float32')
-  x_Test4D = x_Test.reshape(x_Test.shape[0],28,28,1).astype('float32')
-  x_Train4D_normalize = x_Train4D / 255
-  x_Test4D_normalize = x_Test4D / 255
-  y_TrainOneHot = np_utils.to_categorical(y_Train)
-  y_TestOneHot = np_utils.to_categorical(y_Test)
-
-  ### 2. 建立模型
-  from keras.models import Sequential
-  from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D
-
-  model = Sequential()
-  # model.add(layers.Conv2D(16, (5,5), activation='relu', input_shape=(28,28,1)))
-  model.add(Conv2D(filters=16, kernel_size=(5,5), padding='same',
-                  input_shape=(28, 28, 1), activation='relu'))  (ref:MNIST-CNN-1)
-  # model.add(layers.MaxPooling2D((2,2)))
-  model.add(MaxPooling2D(pool_size=(2, 2)))
-  # model.add(layers.Conv2D(36, (5,5), activation='relu', input_shape=(28,28,1)))
-  model.add(Conv2D(filters=36, kernel_size=(5,5), padding='same',
-                  input_shape=(28, 28, 1), activation='relu'))
-  # model.add(layers.MaxPooling2D((2,2)))
-  model.add(MaxPooling2D(pool_size=(2, 2)))
-  # model.add(layers.Dropout(0.25))
-  model.add(Dropout(0.25))
-  # model.add(layers.Flatten())
-  model.add(Flatten())
-  # model.add(layers.Dense(128, activation='relu'))
-  model.add(Dense(128, activation='relu'))
-  # model.add(layers.Dropout(0.5))
-  model.add(Dropout(0.5))
-  # model.add(layers.Dense(10, activation='softmax'))
-  model.add(Dense(10, activation='softmax'))
-  print(model.summary())
-
-  ### 3. 訓練模型
-  model.compile(loss='categorical_crossentropy',
-                optimizer='adam', metrics=['accuracy'])
-  train_history=model.fit(x=x_Train4D_normalize,
-                          y=y_TrainOneHot, validation_split=0.2,
-                          epochs=10, batch_size=300, verbose=0)
-  print(train_history)
-  show_train_history("CNN-MNist-acc", 'accuracy', 'val_accuracy')
-  show_train_history("CNN-MNist-loss", 'loss', 'val_loss')
-
-  ### 4. 評估模型準確率
-  scores = model.evaluate(x_Test4D_normalize, y_TestOneHot)
-  print(scores[1])
-
-  ### 5. 進行預測
-  prediction = model.predict_classes(x_Test4D_normalize)
-  print(prediction[:10])
-  plot_images_labels_prediction("CNN_MNist", x_Test, y_Test, prediction, idx=0)
-  import pandas as pd
-  p = pd.crosstab(y_Test, prediction, rownames=['label'], colnames=['predict'])
-  print(p)
-#+END_SRC
-
-#+RESULTS:
-#+begin_example
-Model: "sequential_1"
-_________________________________________________________________
-Layer (type)                 Output Shape              Param #
-=================================================================
-conv2d_1 (Conv2D)            (None, 28, 28, 16)        416
-_________________________________________________________________
-max_pooling2d_1 (MaxPooling2 (None, 14, 14, 16)        0
-_________________________________________________________________
-conv2d_2 (Conv2D)            (None, 14, 14, 36)        14436
-_________________________________________________________________
-max_pooling2d_2 (MaxPooling2 (None, 7, 7, 36)          0
-_________________________________________________________________
-dropout_1 (Dropout)          (None, 7, 7, 36)          0
-_________________________________________________________________
-flatten_1 (Flatten)          (None, 1764)              0
-_________________________________________________________________
-dense_1 (Dense)              (None, 128)               225920
-_________________________________________________________________
-dropout_2 (Dropout)          (None, 128)               0
-_________________________________________________________________
-dense_2 (Dense)              (None, 10)                1290
-=================================================================
-Total params: 242,062
-Trainable params: 242,062
-Non-trainable params: 0
-_________________________________________________________________
-None
-
-0.9930999875068665
-[7 2 1 0 4 1 4 9 5 9]
-predict    0     1     2     3    4    5    6     7    8    9
-label
-0        977     0     0     0    0    0    1     1    1    0
-1          0  1133     2     0    0    0    0     0    0    0
-2          0     0  1031     0    0    0    0     1    0    0
-3          0     0     1  1008    0    0    0     0    1    0
-4          0     0     0     0  974    0    1     0    1    6
-5          2     0     0     9    0  879    1     0    0    1
-6          3     2     0     0    1    4  947     0    1    0
-7          0     1     2     2    0    0    0  1022    1    0
-8          1     0     1     2    0    1    0     2  965    2
-9          2     1     0     3    3    1    0     2    2  995
-#+end_example
-
-#+CAPTION: 訓練精確度
-#+LABEL:fig:CNN-MNist-acc
-#+name: fig:CNN-MNist-acc
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+RESULTS:
-[[file:images/CNN-MNist-acc.png]]
-
-#+CAPTION: 訓練 loss 誤差
-#+LABEL:fig:CNN-MNist-loss
-#+name: fig:CNN-MNist-loss
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+RESULTS:
-[[file:images/CNN-MNist-loss.png]]
-
-#+CAPTION: 前 10 筆預測結果
-#+LABEL:fig:CNN_MNist
-#+name: fig:CNN_MNist
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+RESULTS:
-[[file:images/CNN_MNist.png]]
-
-在上例中，第一個卷積層輸入了大小為(28, 28, 1)(第[[(MNIST-CNN-1)]]行)的特徵圖，輸出了大小為(5, 5, 16)的特徵圖，此處卷積層對輸入資料做了 16 種 filter 運算，在這 16 個輸出 channel 中，每個 channel 都包含了一個 5*5 的網格值，這是每個 filter 對於輸入資料的響應圖(response map)，表示該過濾器在輸入資料(影像)中各個位置(滑動)取得的回應值(經由卷積運算)所組成的影像，這就是特徵圖(feature map)這個術語的含義：深度軸中的每個維度都是一個特徵(filter)，而 2D 輸出張量[:,:,n]是第 n 個 filter 對輸入資料回應的 2D 空間圖(response map)。
-
-卷積層由兩個關鍵參數定義：
-
-- 由輸入採樣的區塊大小(size of the patches extracted from the input): 也就是掃描窗格的大小($windows_{height}$, $window_{width}$，通常是 3*3 或 5*5)，也就是 filter 大小。
-- 輸出特徵圖的深度(depth of the output feature map)：也就是卷積層過濾器數量，在本例中以 16 開頭，以 36 結束。Keras 的 Conv2D 層傳的參數為：
-
-#+BEGIN_SRC python
-Conv2D(output_depth, (window_height, window_width))
-#+END_SRC
-
-卷積層的主要工作就是透過在 3D 輸入特徵圖上滑動(sliding)3\times3 或 5\times5 的小窗格，在該位置上取得特徵($input_{depth}$ 最開始是有 RGB 顏色的，但接下來就變成 filter)；其次，將每個 3D 區塊轉換(即卷積運算)成 shape=($output_{depth}$,)的 1D 向量，然後將所有這些向量依照空間上的位置排列重新組裝成 shape=(height, width, output\under{}output)的 3D 輸出特徵圖。
-
-** 以 Keras 實作 Cifar-10
-#+BEGIN_SRC python -r -n :results output :exports both :eval no
-  ### 1.  Import Library
-  from keras.datasets import cifar10
-  import numpy as np
-  np.random.seed(10)
-
-  ### 2. 資料準備
-  (x_img_train,y_label_train),(x_img_test,y_label_test) = cifar10.load_data()
-  x_img_train_normalize = x_img_train.astype('float32') / 255.0
-  x_img_test_normalize = x_img_test.astype('float32') / 255.0
-  '''正規化'''
-  from keras.utils import np_utils
-  y_label_train_OneHot = np_utils.to_categorical(y_label_train)
-  y_label_test_OneHot = np_utils.to_categorical(y_label_test)
-
-  ### 3. 建立模型
-  from keras.models import Sequential
-  from keras.layers import Dense, Dropout, Activation, Flatten
-  from keras.layers import Conv2D, MaxPooling2D, ZeroPadding2D
-  '''卷積層1與池化層1'''
-  # 隨機產生32個3*3的濾鏡，輸入的影像為32*32*3(RGB)
-  model.add(Conv2D(filters=32,kernel_size=(3,3), input_shape=(32, 32, 3),
-                   activation='relu', padding='same'))
-  model.add(Dropout(rate=0.25)) # 每次訓練迭代時會隨機放棄25%的神經元
-  model.add(Conv2D(filters=32, kernel_size=(3, 3),
-                   activation='relu', padding='same'))
-  # 進行第一次縮減取樣，將影像縮為16*16
-  model.add(MaxPooling2D(pool_size=(2, 2)))
-  '''卷積層2與池化層2'''
-  # 將前一層傳進的32個16*16影像轉為64個16*16影像
-  model.add(Conv2D(filters=64, kernel_size=(3, 3), ### 產生64個影像
-                   activation='relu', padding='same'))
-  model.add(Dropout(0.25))
-  model.add(Conv2D(filters=64, kernel_size=(3, 3),
-                   activation='relu', padding='same'))
-  # 再將64個16*16影像縮減取樣為8*8
-  model.add(MaxPooling2D(pool_size=(2, 2)))
-  '''卷積層3與池化層3'''
-  # 將64個8*8個影像轉為128個
-  model.add(Conv2D(filters=128, kernel_size=(3, 3),
-                   activation='relu', padding='same'))
-  model.add(Dropout(0.3))
-  model.add(Conv2D(filters=128, kernel_size=(3, 3),
-                   activation='relu', padding='same'))
-  # 再將128個8*8影像縮減取樣為4*4
-  model.add(MaxPooling2D(pool_size=(2, 2)))
-  '''建立神經網路(平坦層、隱藏層、輸出層)'''
-  # 將128*4*4的3維矩陣轉為1維(2048個float數字，對應到2048個神經元)
-  model.add(Flatten())
-  model.add(Dropout(0.3))
-  model.add(Dense(2500, activation='relu')) ### 隠藏層1有2500個神經元
-  model.add(Dropout(0.3))
-  model.add(Dense(1500, activation='relu')) ### 隠藏層2有1500神經元
-  model.add(Dropout(0.3))
-  model.add(Dense(10, activation='softmax')) ### 10個label
-  print(model.summary())
-  ### 4. 載入之前訓練的模型
-  try:
-      model.load_weights("SaveModel/cifarCnnModelnew1.h5")
-      print("載入模型成功!繼續訓練模型")
-  except:
-      print("載入模型失敗!開始訓練一個新模型")
-  ### 5. 訓練模型
-  # 訓練前先以compile設定模型, 設定內容包含
-  # 1. 損失函數, 2. 最佳化方法, 3. 評估模型的方法
-  model.compile(loss='categorical_crossentropy',
-                optimizer='adam', metrics=['accuracy'])
-  # 開始訓練, 執行50次訓練週期、每一批次500筆資料
-  # 40000筆資料，每一批次500筆資料, 分為80批次進行訓練
-  # 每個epoch訓練完後會存一筆accuracy和loss記錄到train_history
-  train_history=model.fit(x_img_train_normalize, y_label_train_OneHot,
-                          validation_split=0.2,
-                          epochs=50, batch_size=500, verbose=1)
-  import matplotlib.pyplot as plt
-  def show_train_history(train_acc,test_acc):
-      plt.plot(train_history.history[train_acc])
-      plt.plot(train_history.history[test_acc])
-      plt.title('Train History')
-      plt.ylabel('Accuracy')
-      plt.xlabel('Epoch')
-      plt.legend(['train', 'test'], loc='upper left')
-      plt.show()
-  show_train_history('acc','val_acc')
-  ### 6. 評估模型準確率
-  scores = model.evaluate(x_img_test_normalize,
-                          y_label_test_OneHot, verbose=0)
-  scores[1]
-  ### 7. 進行預測
-  prediction=model.predict_classes(x_img_test_normalize)
-  print(prediction[:10])
-  ### 8. 查看預測結果
-  label_dict={0:"airplane",1:"automobile",2:"bird",3:"cat",4:"deer",
-              5:"dog",6:"frog",7:"horse",8:"ship",9:"truck"}
-  import matplotlib.pyplot as plt
-  def plot_images_labels_prediction(images,labels,prediction,
-                                    idx,num=10):
-      fig = plt.gcf()
-      fig.set_size_inches(12, 14)
-      if num>25: num=25
-      for i in range(0, num):
-          ax=plt.subplot(5,5, 1+i)
-          ax.imshow(images[idx],cmap='binary')
-
-          title=str(i)+','+label_dict[labels[i][0]]
-          if len(prediction)>0:
-              title+='=>'+label_dict[prediction[i]]
-
-          ax.set_title(title,fontsize=10)
-          ax.set_xticks([]);ax.set_yticks([])
-          idx+=1
-      plt.show()
-
-  plot_images_labels_prediction(x_img_test,y_label_test,
-                                prediction,0,10)
-
-  ### 9. 查看預測機率
-  Predicted_Probability=model.predict(x_img_test_normalize)
-  def show_Predicted_Probability(y,prediction,
-                                 x_img,Predicted_Probability,i):
-      print('label:',label_dict[y[i][0]],
-            'predict:',label_dict[prediction[i]])
-      plt.figure(figsize=(2,2))
-      plt.imshow(np.reshape(x_img_test[i],(32, 32,3)))
-      plt.show()
-      for j in range(10):
-          print(label_dict[j]+
-                ' Probability:%1.9f'%(Predicted_Probability[i][j]))
-
-  show_Predicted_Probability(y_label_test,prediction,
-                             x_img_test,Predicted_Probability,0)
-  show_Predicted_Probability(y_label_test,prediction,
-                             x_img_test,Predicted_Probability,3)
-
-  ### 10. confusion matrix
-  import pandas as pd
-  print(label_dict)
-  pd.crosstab(y_label_test.reshape(-1),prediction,
-              rownames=['label'],colnames=['predict'])
-  ### 11. Save model to JSON
-  model_json = model.to_json()
-  with open("SaveModel/cifarCnnModelnew.json", "w") as json_file:
-      json_file.write(model_json)
-
-  ### 12. Save Model to YAML
-  model_yaml = model.to_yaml()
-  with open("SaveModel/cifarCnnModelnew.yaml", "w") as yaml_file:
-      yaml_file.write(model_yaml)
-
-  ### 13. Save Weight to h5
-  model.save_weights("SaveModel/cifarCnnModelnew.h5")
-  print("Saved model to disk")
-#+END_SRC
-
-#+latex:\newpage`
-
-* 辨識手寫數字: MNIST 資料集
-
+* DNN實作: 辨識手寫數字
 使用神經網路解決問題分為兩個步驟：「學習」與「推論」，學習指使用訓練資料進行權重參數的學習；而推論指使用學習過的參數進行資料分類。
-
-** MNIST 資料集
 
 MNIST 是機器學習領域中相當著名的資料集，號稱機器學習領域的「Hello world.」，其重要性不言可喻。MNIST 資料集由 0~9 的數字影像構成(如圖[[fig:MNIST-set]])，共計 60000 張訓練影像、10000 張測試影像。一般的 MMIST 資料集的用法為：使用訓練影像進行學習，再利用學習後的模型預測能否正確分類測試影像。
 #+CAPTION: MNIST 資料集內容範例
 #+name: fig:MNIST-set
 #+ATTR_LATEX: :width 200
 #+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 300
 [[file:images/MNIST.jpg]]
 
-準備資料是訓練模型的第一步，基礎資料可以是網上公開的資料集，也可以是自己的資料集。視覺、語音、語言等各種型別的資料在網上都能找到相應的資料集。
-
-*** 準備 MNIST 資料
-
-MNIST 數據集來自美國國家標準與技術研究所, National Institute of Standards and Technology (NIST). 訓練集 (training set) 由來自 250 個不同人手寫的數字構成, 其中 50% 是高中學生, 50% 來自人口普查局 (the Census Bureau) 的工作人員. 測試集(test set) 也是同樣比例的手寫數字數據。MNIST 數據集可在 http://yann.lecun.com/exdb/mnist/ 獲取, 它包含了四個部分:
-1. Training set images: train-images-idx3-ubyte.gz (9.9 MB, 解壓後 47 MB, 包含 60,000 個樣本)
-1. Training set labels: train-labels-idx1-ubyte.gz (29 KB, 解壓後 60 KB, 包含 60,000 個標籤)
-1. Test set images: t10k-images-idx3-ubyte.gz (1.6 MB, 解壓後 7.8 MB, 包含 10,000 個樣本)
-1. Test set labels: t10k-labels-idx1-ubyte.gz (5KB, 解壓後 10 KB, 包含 10,000 個標籤)
-
-MNIST 資料集是一個適合拿來當作 TensotFlow 的練習素材，在 Tensorflow 的現有套件中，也已經有內建好的 MNIST 資料集，我們只要在安裝好 TensorFlow 的 Python 環境中執行以下程式碼，即可將 MNIST 資料成功讀取進來。.
-#+BEGIN_SRC python -n -r :results output :exports both :eval no
-  import tensorflow as tf
-  mnist = tf.keras.datasets.mnist
-  (x_train, y_train), (x_test, y_test) = mnist.load_data() (ref:get-keras-mnist)
-#+END_SRC
-在訓練模型之前，需要將樣本資料劃分為訓練集、測試集，有些情況下還會劃分為訓練集、測試集、驗證集。由上述程式第[[(get-keras-mnist)]]行可知，下載後的 MNIST 資料分成訓練資料(training data)與測試資料(testing data)，其中 x 為圖片、y為所對應數字。
-#+BEGIN_SRC python -n -r :results output :exports both
-  import tensorflow as tf
-  mnist = tf.keras.datasets.mnist
-  (x_train, y_train), (x_test, y_test) = mnist.load_data()
-  # =====================================
-  # 判斷資料形狀
-  print(x_train.shape)
-  print(x_test.shape)
-  # 第一個label的內容
-  print(y_train[0])
-  # 顯示影像內容
-  import matplotlib.pylab as plt
-  img = x_train[0]
-  plt.imshow(img)
-  plt.savefig("MNIST-Image.png")
-#+END_SRC
-#+RESULTS[301ed277c778e588011f39c44ec8462a701a3a8f]:
-: (60000, 28, 28)
-: (10000, 28, 28)
-: 5
-
-由上述程式輸出結果可以看到載入的 x 為大小為 28*28 的圖片共 60000 張，每一筆 MNIST 資料的照片(x)由 784 個 pixels 組成（28*28），照片內容如圖[[fig:MNIST-Image]]，訓練集的標籤(y)則為其對應的數字(0～9)，此例為 5。
-#+CAPTION: MNIST 影像示例
-#+name: fig:MNIST-Image
-#+ATTR_LATEX: :width 100px
-#+ATTR_ORG: :width 300
-[[file:images/MNIST-Image.png]]
-
-x 的影像資料為灰階影像，每個像素的數值介於 0~255 之間，矩陣裡每一項的資料則是代表每個 pixel 顏色深淺的數值，如下圖[[fig:MNIST-Matrix]]所示：
-#+CAPTION: MNIST 資料矩陣
-#+name: fig:MNIST-Matrix
-#+ATTR_LATEX: :width 200
-#+ATTR_ORG: :width 300
-[[file:images/MNIST-Matrix.png]]
-
-載入的 y 為所對應的數字 0~9，在這我們要運用 keras 中的 np\under{}utils.to\under{}categorical 將 y 轉成 one-hot 的形式，將他轉為一個 10 維的 vector，例如：我們所拿到的資料為 y=3，經過 np_utils.to_categorical，會轉換為 y=[0,0,0,1,0,0,0,0,0,0]。這部份的轉換程式碼如下：
-#+BEGIN_SRC python -n -r :results output :exports both
-  from keras.datasets import mnist
-  from keras.utils import np_utils
-
-  import tensorflow as tf
-  mnist = tf.keras.datasets.mnist
-  (x_train, y_train), (x_test, y_test) = mnist.load_data()
-  # =====================================
-  # 將圖片轉換為一個60000*784的向量，並且標準化
-  x_train = x_train.reshape(x_train.shape[0], 28*28)
-  x_test = x_test.reshape(x_test.shape[0], 28*28)
-  x_train = x_train.astype('float32')
-  x_test = x_test.astype('float32')
-  x_train = x_train/255
-  x_test = x_test/255
-  # 將y轉換成one-hot encoding
-  y_train = np_utils.to_categorical(y_train, 10)
-  y_test = np_utils.to_categorical(y_test, 10)
-  # 回傳處理完的資料
-  print(y_train[0])
-  import numpy as np
-  np.set_printoptions(precision=2)
-  #print(x_train[0])
-#+END_SRC
-
-#+RESULTS[c45bb1bd15ec5aacfdcc5b8fdfd319b4d98b163d]:
-: [0. 0. 0. 0. 0. 1. 0. 0. 0. 0.]
-
-*** MNIST 的推論處理
-
-如圖[[fig:MNIST-NeuralNet]]所示，MNIST 的推論神經網路最前端的輸入層有 784 (\(28*28=784\))個神經元，最後的輸出端有 10 個神經元(\(0~9\)個數字)，至於中間的隠藏層有兩個，第 1 個隱藏層有 50 個神經元，第 2 層有 100 個。此處的 50、100 可以設定為任意數（如，也可以是 128、64）。
-#+CAPTION: MNIST-NeuralNet
-#+name: fig:MNIST-NeuralNet
-#+ATTR_LATEX: :width 400px
-#+ATTR_ORG: :width 300
-[[file:images/MNIST-CNN.png]]
-
-為了完成上述推論，此處定義三個函數：get_data()、init_network()、predict()，其中 init_work()直接讀入作者已經訓練好的網絡權重。在以下這段程式碼中，權重與偏權值的參數會儲存成字典型態的變數。
-#+BEGIN_SRC python -n -r :results output :exports both :eval no
-  from keras.datasets.mnist import load_data
-  import numpy as np
-  import pickle
-  def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
-  # 防止溢出型
-  def softmax(x):
-    c = np.max(x)
-    exp_x = np.exp(x - c)
-    sum_exp_x = np.sum(exp_x)
-    return exp_x / sum_exp_x
-  def get_data():
-    (X_train, y_train), (X_test, y_test) = load_data()
-    return X_test.reshape(10000, 784), y_test
-  def init_network():
-    # https://github.com/Bingyy/deep-learning-from-scratch/blob/master/ch03/sample_weight.pkl
-    with open('/Volumes/Vanessa/MNIST/data/mnist/sample_weight.pkl', 'rb') as f:
-      network = pickle.load(f)
-      return network
-  # 存儲的是網絡參數字典
-  network = init_network()
-
-  # 組合網絡流程，用於預測
-  def predict(network, x):      (ref:MNIST-predict)
-    W1, W2, W3 = network['W1'], network['W2'], network['W3']
-    b1, b2, b3 = network['b1'], network['b2'], network['b3']
-    a1 = np.dot(x,W1) + b1
-    z1 = sigmoid(a1)
-    a2 = np.dot(z1, W2) + b2
-    z2 = sigmoid(a2)
-    a3 = np.dot(z2, W3) + b3
-    y = softmax(a3) # 分類用的最後輸出層的激活函數
-    return y
-  # 使用網絡預測
-  X_test, y_test = get_data() # 得到測試數據
-  network = init_network()
-
-  accuracy_cnt = 0
-  for i in range(len(X_test)):
-    y = predict(network, X_test[i])       (ref:y-predict)
-    p = np.argmax(y)        (ref:np-argmax)
-    np.set_printoptions(precision=4, suppress=True)
-    if p == y_test[i]:
-      accuracy_cnt += 1
-  print('準確率：', str(float(accuracy_cnt) / len(X_test)))
-#+END_SRC
-
-#+RESULTS:
-: 準確率： 0.0002
-
-上述程式中，predict 程序(第[[(MNIST-predict)]])透過矩陣相乘運算完成神經網路的參數傳遞，最後必須進行準確率的評估，程式碼第[[(y-predict)]]行為神經網路針對輸入圖片的預測結果，所傳回的值為各猜測值的機率陣列，如：[0.0004 0.0011 0.9859 0.0065 0.     0.0007 0.0051 0.     0.0003 0.    ]；而程式碼第[[(np-argmax)]]則是該圖片的應對標籤，np.argmax(y)會傳回 y 的最大值所在順序，若 y=[0,0,0,1,0,0,0,0,0,0]，則傳回 3，藉此計算預測正確的百分比。
-
-*** Python 與神經網路運算的批次處理
-
-前節程式碼中最後以 for 迴圈來逐一處理預測結果與比較，輸入(X)為單一圖片，其處理程序如圖[[fig:MNIST-single]]所示：
-#+CAPTION: MNIST-單一處理架構
-#+name: fig:MNIST-single
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-[[file:images/MNIST-single.png]]
-
-事實上，在使用批次處理（如一次處理 100 張圖）反而能大幅縮短每張圖片的處理時間，因為多數處理數值運算的函式庫都會針對大型陣列運算進行最佳化，尤其是透過 GPU 來處理時更是如此，這時，傳送單張圖片反而成為效能瓶頸，以批次處理則可減輕匯流排頻寛負擔。若以每次處理 100 張為例，其處理程序則如圖[[fig:MNIST-batch]]所示。
-#+CAPTION: MNIST-批次處理架構
-#+name: fig:MNIST-batch
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-[[file:images/MNIST-batch.png]]
-
-至於批次運算的程式碼如下。
-#+BEGIN_SRC python -n -r :results output :exports both
-  from keras.datasets.mnist import load_data
-  import numpy as np
-  import pickle
-  def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
-  # 防止溢出型
-  def softmax(x):
-    c = np.max(x)
-    exp_x = np.exp(x - c)
-    sum_exp_x = np.sum(exp_x)
-    return exp_x / sum_exp_x
-  def get_data():
-    (X_train, y_train), (X_test, y_test) = load_data()
-    return X_test.reshape(10000, 784), y_test
-  def init_network():
-    # https://github.com/Bingyy/deep-learning-from-scratch/blob/master/ch03/sample_weight.pkl
-    with open('/Volumes/Vanessa/MNIST/sample_weight.pkl', 'rb') as f:
-      network = pickle.load(f)
-      return network
-  # 存儲的是網絡參數字典
-  network = init_network()
-
-  # 組合網絡流程，用於預測
-  def predict(network, x):
-    W1, W2, W3 = network['W1'], network['W2'], network['W3']
-    b1, b2, b3 = network['b1'], network['b2'], network['b3']
-    a1 = np.dot(x,W1) + b1
-    z1 = sigmoid(a1)
-    a2 = np.dot(z1, W2) + b2
-    z2 = sigmoid(a2)
-    a3 = np.dot(z2, W3) + b3
-    y = softmax(a3) # 分類用的最後輸出層的激活函數
-    return y
-  # 使用網絡預測
-  X_test, y_test = get_data() # 得到測試數據
-  network = init_network()
-
-  # 批次處理架構
-  batch_size = 100
-  accuracy_cnt = 0
-  for i in range(0, len(X_test), batch_size):
-    x_batch = X_test[i:i+batch_size] (ref:b-mnist-x)
-    y_batch = predict(network, x_batch)
-    p = np.argmax(y_batch, axis=1) (ref:b-mnist-p)
-    accuracy_cnt += np.sum(p == y_test[i:i+batch_size])
-  print('準確率：', str(float(accuracy_cnt) / len(X_test)))
-#+END_SRC
-
-#+RESULTS[25f2e5085d5fabe29e148cefb84c982ad7dbfbff]:
-: 準確率： 0.9207
-
-上述程式中，第[[(b-mnist-x)]]行每次取出 100 張圖形檔(X 陣列),第[[(b-mnist-p)]]行則取得這 100 筆資料中各筆資料最大值索引值，若以每次 4 筆資料為例，所得的估計值 p 可能為[7 2 1 0]，相對應的正確標籤值則儲存於 y_test[0:4]中，以此進行準確率的計算。
-
-** MNIST 資料集:以 DNN Sequential 模型為例
-
+** Keras
 此處以最簡單的 DNN (deep neural network) 作為範例。以 Keras 的核心為模型，應用最常使用 Sequential 模型。藉由.add()我們可以一層一層的將神經網路疊起。在每一層之中我們只需要簡單的設定每層的大小(units)與激活函數(activation function)。需要特別記得的是：第一層要記得寫輸入的向量大小、最後一層的 units 要等於輸出的向量大小。在這邊我們最後一層使用的激活函數(activation function)為 softmax。
 相對應程式碼如下：
-#+BEGIN_SRC python -n -r :results output :exports both :eval no
-  # 載入資料
-  from keras.datasets import mnist
-  from keras.utils import np_utils
+#+BEGIN_SRC python -r -n:results output :exports both
+# 載入資料
+from keras.datasets import mnist
+from keras.utils import to_categorical
 
-  def load_data():
+def load_data():
     # 載入minst的資料
     (x_train, y_train), (x_test, y_test) = mnist.load_data()
     # 將圖片轉換為一個60000*784的向量，並且標準化
@@ -2779,17 +746,17 @@ x 的影像資料為灰階影像，每個像素的數值介於 0~255 之間，�
     x_train = x_train/255
     x_test = x_test/255
     # 將y轉換成one-hot encoding
-    y_train = np_utils.to_categorical(y_train, 10)
-    y_test = np_utils.to_categorical(y_test, 10)
+    y_train = to_ctaegorical(y_train, 10)
+    y_test = to_categorical(y_test, 10)
     # 回傳處理完的資料
     return (x_train, y_train), (x_test, y_test)
 
-  import numpy as np
-  from keras.models import Sequential
-  from keras.layers.core import Dense,Activation
-  from keras.optimizers import  Adam
+import numpy as np
+from keras.layers import Dense, Activation, Dropout, Reshape, Permute
+from keras.models import Sequential
+from keras.optimizers import  Adam
 
-  def build_model():#建立模型
+def build_model():#建立模型
     model = Sequential()
     #將模型疊起
     model.add(Dense(input_dim=28*28,units=500,activation='relu'))
@@ -2798,18 +765,17 @@ x 的影像資料為灰階影像，每個像素的數值介於 0~255 之間，�
     model.add(Dense(units=10,activation='softmax'))
     model.summary()
     return model
-
-  # 開始訓練模型，此處使用了Adam做為我們的優化器，loss function選用了categorical_crossentropy。
-  (x_train,y_train),(x_test,y_test)=load_data()
-  model = build_model()
-  #開始訓練模型
-  model.compile(loss='categorical_crossentropy',optimizer="adam",metrics=['accuracy'])
-  model.fit(x_train,y_train,batch_size=100,epochs=20)
-  #顯示訓練結果
-  score = model.evaluate(x_train,y_train)
-  print ('\nTrain Acc:', score[1])
-  score = model.evaluate(x_test,y_test)
-  print ('\nTest Acc:', score[1])
+# 開始訓練模型，此處使用了Adam做為我們的優化器，loss function選用了categorical_crossentropy。
+(x_train, y_train), (x_test, y_test) = load_data()
+model = build_model()
+#開始訓練模型
+model.compile(loss='categorical_crossentropy',optimizer="adam",metrics=['accuracy'])
+model.fit(x_train,y_train,batch_size=1000,epochs=20)
+#顯示訓練結果
+score = model.evaluate(x_train,y_train)
+print ('\nTrain Acc:', score[1])
+score = model.evaluate(x_test,y_test)
+print ('\nTest Acc:', score[1])
 #+END_SRC
 
 #+RESULTS:
@@ -2871,84 +837,1416 @@ Train Acc: 0.9981666666666666
 Test Acc: 0.9823
 #+end_example
 
+** Python手刻
+*** 準備 MNIST 資料
+準備資料是訓練模型的第一步，基礎資料可以是網上公開的資料集，也可以是自己的資料集。視覺、語音、語言等各種型別的資料在網上都能找到相應的資料集。
 
-#+latex:\newpage
+MNIST 數據集來自美國國家標準與技術研究所, National Institute of Standards and Technology (NIST). 訓練集 (training set) 由來自 250 個不同人手寫的數字構成, 其中 50% 是高中學生, 50% 來自人口普查局 (the Census Bureau) 的工作人員. 測試集(test set) 也是同樣比例的手寫數字數據。MNIST 數據集可在 http://yann.lecun.com/exdb/mnist/ 獲取, 它包含了四個部分:
+1. Training set images: train-images-idx3-ubyte.gz (9.9 MB, 解壓後 47 MB, 包含 60,000 個樣本)
+2. Training set labels: train-labels-idx1-ubyte.gz (29 KB, 解壓後 60 KB, 包含 60,000 個標籤)
+3. Test set images: t10k-images-idx3-ubyte.gz (1.6 MB, 解壓後 7.8 MB, 包含 10,000 個樣本)
+4. Test set labels: t10k-labels-idx1-ubyte.gz (5KB, 解壓後 10 KB, 包含 10,000 個標籤)
 
-* 名詞解釋
-本節資料來源: [[https://kknews.cc/zh-tw/tech/b4zkbom.html][主流的深度學習模型有哪些？]]
-- perceptron: 單一神經元，可視為一層的neural network
-- MPL: Multi-layer perceptron: 多層的perceptron，也可視為neural network
-- Shallow neural netwokrs: 一般來說有1-2個隱藏層的neural network就可稱為多層，準確來說叫淺層
-- Deep learning: 隨著隱藏層增加，更深的神經網路(一般來說超過5層)就都叫深度學習
-- 「深度」只是一個商業概念，很多時候工業界把3層隱藏層也叫做「深度學習」
-- 在機器學習領域的約定俗成是，名字中有深度(Deep)的網絡僅代表其有超過5-7層的隱藏層。
+MNIST 資料集是一個適合拿來當作 TensotFlow 的練習素材，在 Tensorflow 的現有套件中，也已經有內建好的 MNIST 資料集，我們只要在安裝好 TensorFlow 的 Python 環境中執行以下程式碼，即可將 MNIST 資料成功讀取進來。.
+#+BEGIN_SRC python -n -r :async :results output :exports both :session pm
+import tensorflow as tf
+mnist = tf.keras.datasets.mnist
+(x_train, y_train), (x_test, y_test) = mnist.load_data() (ref:get-keras-mnist)
+#+END_SRC
 
-** Supervised neural networks
+#+RESULTS:
 
-*** ANN (Artificial Neural Network) / DNN (Deep Neural Networks)
-神經網絡的基礎模型是[[id:20221023T103538.640537][感知器]](Perceptron)，因此神經網絡也可以叫做多層感知機(Multi-layer Perceptron)，簡稱MLP。單層感知機叫做感知機，多層感知機(MLP)≈人工神經網絡(ANN)。
+在訓練模型之前，需要將樣本資料劃分為訓練集、測試集，有些情況下還會劃分為訓練集、測試集、驗證集。由上述程式第[[(get-keras-mnist)]]行可知，下載後的 MNIST 資料分成訓練資料(training data)與測試資料(testing data)，其中 x 為圖片、y為所對應數字。
+#+BEGIN_SRC python -n -r :async :results output :exports both :session pm
+import tensorflow as tf
+mnist = tf.keras.datasets.mnist
+(x_train, y_train), (x_test, y_test) = mnist.load_data()
+# ======================================================
+# 判斷資料形狀
+print(x_train.shape)
+print(x_test.shape)
+# 第一個label的內容
+print(y_train[0])
+# 顯示影像內容
+import matplotlib.pylab as plt
+img = x_train[0]
+plt.imshow(img)
+#plt.savefig("MNIST-Image.png")
+#+END_SRC
+#+RESULTS[301ed277c778e588011f39c44ec8462a701a3a8f]:
+: (60000, 28, 28)
+: (10000, 28, 28)
+: 5
 
-那麼多層到底是幾層？一般來說有1-2個隱藏層的神經網絡就可以叫做多層，準確的說是(淺層)神經網絡(Shallow Neural Networks)。隨著隱藏層的增多，更深的神經網絡(一般來說超過5層)就都叫做深度學習(DNN)。
+由上述程式輸出結果可以看到載入的 x 為大小為 28*28 的圖片共 60000 張，每一筆 MNIST 資料的照片(x)由 784 個 pixels 組成（28*28），照片內容如圖[[fig:MNIST-Image]]，訓練集的標籤(y)則為其對應的數字(0～9)，此例為 5。
+#+CAPTION: MNIST 影像示例
+#+name: fig:MNIST-Image
+#+ATTR_LATEX: :width 100px
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 300
+[[file:images/MNIST-Image.png]]
 
-然而，「深度」只是一個商業概念，很多時候工業界把3層隱藏層也叫做「深度學習」，所以不要在層數上太較真。在機器學習領域的約定俗成是，名字中有深度(Deep)的網絡僅代表其有超過5-7層的隱藏層。
+x 的影像資料為灰階影像，每個像素的數值介於 0~255 之間，矩陣裡每一項的資料則是代表每個 pixel 顏色深淺的數值，如下圖[[fig:MNIST-Matrix]]所示：
+#+CAPTION: MNIST 資料矩陣
+#+name: fig:MNIST-Matrix
+#+ATTR_LATEX: :width 200
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/MNIST-Matrix.png]]
 
-*** RNN: Recurrent Neural Network，Recursive neural networks。
-雖然很多時候我們把這兩種網絡都叫做RNN，但事實上這兩種網路的結構事實上是不同的。而我們常常把兩個網絡放在一起的原因是：它們都可以處理有序列的問題，比如時間序列等。
-  舉個最簡單的例子，我們預測股票走勢用RNN就比普通的DNN效果要好，原因是股票走勢和時間相關，今天的價格和昨天、上周、上個月都有關係。而RNN有「記憶」能力，可以「模擬」數據間的依賴關係(Dependency)。
+載入的 y 為所對應的數字 0~9，在這我們要運用 keras 中的 np\under{}utils.to\under{}categorical 將 y 轉成 one-hot 的形式，將他轉為一個 10 維的 vector，例如：我們所拿到的資料為 y=3，經過 np_utils.to_categorical，會轉換為 y=[0,0,0,1,0,0,0,0,0,0]。這部份的轉換程式碼如下：
+#+BEGIN_SRC python -n -r :async :results output :exports both :session pm
+from keras.datasets import mnist
+from keras.utils import to_categorical
 
-**** LSTM:
-為了加強這種RNN的「記憶能力」，人們開發各種各樣的變形體，如非常著名的Long Short-term Memory(LSTM)，用於解決「長期及遠距離的依賴關係」。如下圖所示，左邊的小圖是最簡單版本的循環網絡，而右邊是人們為了增強記憶能力而開發的LSTM。
-  #+CAPTION: LSTM
-  #+LABEL:fig:LSTM-1
-  #+name: fig:LSTM-1
-  #+ATTR_LATEX: :width 300
-  #+ATTR_ORG: :width 300
-  #+ATTR_HTML: :width 500
-  [[file:images/3r5o0000r126proo7o8q.jpg]]
-**** Bi-directional RNN:
-另一個循環網絡的變種 - 雙向循環網絡(Bi-directional RNN)也是現階段自然語言處理和語音分析中的重要模型。開發雙向循環網絡的原因是語言/語音的構成取決於上下文，即「現在」依託於「過去」和「未來」。單向的循環網絡僅著重於從「過去」推出「現在」，而無法對「未來」的依賴性有效的建模。
+import tensorflow as tf
+mnist = tf.keras.datasets.mnist
+(x_train, y_train), (x_test, y_test) = mnist.load_data()
+# =====================================
+# 將圖片轉換為一個60000*784的向量，並且標準化
+x_train = x_train.reshape(x_train.shape[0], 28*28)
+x_test = x_test.reshape(x_test.shape[0], 28*28)
+x_train = x_train.astype('float32')
+x_test = x_test.astype('float32')
+x_train = x_train/255
+x_test = x_test/255
+# 將y轉換成one-hot encoding
+y_train = to_categorical(y_train, 10)
+y_test = to_categorical(y_test, 10)
+# 回傳處理完的資料
+print(y_train[0])
 
-*** 卷積網絡(Convolutional Neural Networks)
-卷積運算是一種數學計算，和矩陣相乘不同，卷積運算可以實現稀疏相乘和參數共享，可以壓縮輸入端的維度。和普通DNN不同，CNN並不需要為每一個神經元所對應的每一個輸入數據提供單獨的權重。
-#+CAPTION: CNN
-#+LABEL:fig:CNN-01`
-#+name: fig:CNN-01`
+import numpy as np
+np.set_printoptions(precision=2, linewidth=np.inf)
+print(x_train[0].reshape(28, 28))
+#+END_SRC
+
+#+RESULTS[c45bb1bd15ec5aacfdcc5b8fdfd319b4d98b163d]:
+#+begin_example
+[0. 0. 0. 0. 0. 1. 0. 0. 0. 0.]
+[[0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.01 0.07 0.07 0.07 0.49 0.53 0.69 0.1  0.65 1.   0.97 0.5  0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.12 0.14 0.37 0.6  0.67 0.99 0.99 0.99 0.99 0.99 0.88 0.67 0.99 0.95 0.76 0.25 0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.19 0.93 0.99 0.99 0.99 0.99 0.99 0.99 0.99 0.99 0.98 0.36 0.32 0.32 0.22 0.15 0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.07 0.86 0.99 0.99 0.99 0.99 0.99 0.78 0.71 0.97 0.95 0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.31 0.61 0.42 0.99 0.99 0.8  0.04 0.   0.17 0.6  0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.05 0.   0.6  0.99 0.35 0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.55 0.99 0.75 0.01 0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.04 0.75 0.99 0.27 0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.14 0.95 0.88 0.63 0.42 0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.32 0.94 0.99 0.99 0.47 0.1  0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.18 0.73 0.99 0.99 0.59 0.11 0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.06 0.36 0.99 0.99 0.73 0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.98 0.99 0.98 0.25 0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.18 0.51 0.72 0.99 0.99 0.81 0.01 0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.15 0.58 0.9  0.99 0.99 0.99 0.98 0.71 0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.09 0.45 0.87 0.99 0.99 0.99 0.99 0.79 0.31 0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.09 0.26 0.84 0.99 0.99 0.99 0.99 0.78 0.32 0.01 0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.07 0.67 0.86 0.99 0.99 0.99 0.99 0.76 0.31 0.04 0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.22 0.67 0.89 0.99 0.99 0.99 0.99 0.96 0.52 0.04 0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.53 0.99 0.99 0.99 0.83 0.53 0.52 0.06 0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]]
+#+end_example
+#+CAPTION: x_train[0].reshape(28, 28)
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 1000
+[[file:images/DNN實作:_辨識手寫數字/2024-03-17_14-24-50_2024-03-17_14-24-03.png]]
+
+
+*** MNIST 的推論處理
+
+如圖[[fig:MNIST-NeuralNet]]所示，MNIST 的推論神經網路最前端的輸入層有 784 (\(28*28=784\))個神經元，最後的輸出端有 10 個神經元(\(0~9\)個數字)，至於中間的隠藏層有兩個，第 1 個隱藏層有 50 個神經元，第 2 層有 100 個。此處的 50、100 可以設定為任意數（如，也可以是 128、64）。
+#+CAPTION: MNIST-NeuralNet
+#+name: fig:MNIST-NeuralNet
+#+ATTR_LATEX: :width 400px
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/MNIST-CNN.png]]
+
+為了完成上述推論，此處定義三個函數：get_data()、init_network()、predict()，其中 init_work()直接讀入作者已經訓練好的網絡權重。在以下這段程式碼中，權重與偏權值的參數會儲存成字典型態的變數。
+#+BEGIN_SRC python -n -r :async :results output :exports both :session pm
+from keras.datasets.mnist import load_data
+import numpy as np
+import pickle
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+# 防止溢出型
+def softmax(x):
+    c = np.max(x)
+    exp_x = np.exp(x - c)
+    sum_exp_x = np.sum(exp_x)
+    return exp_x / sum_exp_x
+
+def get_data():
+    (X_train, y_train), (X_test, y_test) = load_data()
+    return X_test.reshape(10000, 784), y_test
+
+def init_network():
+    # https://github.com/Bingyy/deep-learning-from-scratch/blob/master/ch03/sample_weight.pkl
+    with open('./Downloads/sample_weight.pkl', 'rb') as f:
+        network = pickle.load(f)
+        return network
+
+# 存儲的是網絡參數字典
+network = init_network()
+
+# 組合網絡流程，用於預測
+def predict(network, x):      (ref:MNIST-predict)
+    W1, W2, W3 = network['W1'], network['W2'], network['W3']
+    b1, b2, b3 = network['b1'], network['b2'], network['b3']
+    a1 = np.dot(x,W1) + b1
+    z1 = sigmoid(a1)
+    a2 = np.dot(z1, W2) + b2
+    z2 = sigmoid(a2)
+    a3 = np.dot(z2, W3) + b3
+    y = softmax(a3) # 分類用的最後輸出層的激活函數
+    return y
+
+# 使用網絡預測
+X_test, y_test = get_data() # 得到測試數據
+network = init_network()
+
+accuracy_cnt = 0
+for i in range(len(X_test)):
+    y = predict(network, X_test[i])       (ref:y-predict)
+    p = np.argmax(y)        (ref:np-argmax)
+    np.set_printoptions(precision=4, suppress=True)
+    if p == y_test[i]:
+        accuracy_cnt += 1
+print('準確率：', str(float(accuracy_cnt) / len(X_test)))
+#+END_SRC
+
+#+RESULTS:
+: 準確率： 0.9207
+
+上述程式中，predict 程序(第[[(MNIST-predict)]])透過矩陣相乘運算完成神經網路的參數傳遞，最後必須進行準確率的評估，程式碼第[[(y-predict)]]行為神經網路針對輸入圖片的預測結果，所傳回的值為各猜測值的機率陣列，如：[0.0004 0.0011 0.9859 0.0065 0.     0.0007 0.0051 0.     0.0003 0.    ]；而程式碼第[[(np-argmax)]]則是該圖片的應對標籤，np.argmax(y)會傳回 y 的最大值所在順序，若 y=[0,0,0,1,0,0,0,0,0,0]，則傳回 3，藉此計算預測正確的百分比。
+*** Python 與神經網路運算的批次處理
+
+前節程式碼中最後以 for 迴圈來逐一處理預測結果與比較，輸入(X)為單一圖片，其處理程序如圖[[fig:MNIST-single]]所示：
+#+CAPTION: MNIST-單一處理架構
+#+name: fig:MNIST-single
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
-[[file:images/CNN-1.png]]
-以上圖為例，卷積、池化的過程將一張圖片的維度進行了壓縮。從圖示上我們不難看出卷積網絡的精髓就是適合處理結構化數據，而該數據在跨區域上依然有關聯。
+[[file:images/MNIST-single.png]]
 
-應用場景：雖然我們一般都把CNN和圖片聯繫在一起，但事實上CNN可以處理大部分格狀結構化數據(Grid-like Data)。舉個例子，圖片的像素是二維的格狀數據，時間序列在等時間上抽取相當於一維的的格狀數據，而視頻數據可以理解為對應視頻幀寬度、高度、時間的三維數據。
+事實上，在使用批次處理（如一次處理 100 張圖）反而能大幅縮短每張圖片的處理時間，因為多數處理數值運算的函式庫都會針對大型陣列運算進行最佳化，尤其是透過 GPU 來處理時更是如此，這時，傳送單張圖片反而成為效能瓶頸，以批次處理則可減輕匯流排頻寛負擔。若以每次處理 100 張為例，其處理程序則如圖[[fig:MNIST-batch]]所示。
+#+CAPTION: MNIST-批次處理架構
+#+name: fig:MNIST-batch
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/MNIST-batch.png]]
 
-** Unsupervised Pre-trained Neural Networks
-*** Deep Generative Models
-**** Boltzmann Machines, Restricted Boltzmann Machines
-**** Deep Belief Neural Networks
-**** Generative Adversarial Networks
-簡單的說，GAN訓練兩個網絡：1. 生成網絡用於生成圖片使其與訓練數據相似 2. 判別式網絡用於判斷生成網絡中得到的圖片是否是真的是訓練數據還是偽裝的數據。生成網絡一般有逆卷積層(deconvolutional layer)而判別網絡一般就是上文介紹的CNN。下圖左邊是生成網絡，右邊是判別網絡，相愛相殺。
+至於批次運算的程式碼如下。
+#+BEGIN_SRC python -n -r :async :results output :exports both :session pm
+# 批次處理架構
+batch_size = 100
+accuracy_cnt = 0
+for i in range(0, len(X_test), batch_size):
+    x_batch = X_test[i:i+batch_size] (ref:b-mnist-x)
+    y_batch = predict(network, x_batch)
+    p = np.argmax(y_batch, axis=1) (ref:b-mnist-p)
+    accuracy_cnt += np.sum(p == y_test[i:i+batch_size])
+print('準確率：', str(float(accuracy_cnt) / len(X_test)))
+#+END_SRC
+
+#+RESULTS[25f2e5085d5fabe29e148cefb84c982ad7dbfbff]:
+: 準確率： 0.9207
+
+上述程式中，第[[(b-mnist-x)]]行每次取出 100 張圖形檔(X 陣列),第[[(b-mnist-p)]]行則取得這 100 筆資料中各筆資料最大值索引值，若以每次 4 筆資料為例，所得的估計值 p 可能為[7 2 1 0]，相對應的正確標籤值則儲存於 y_test[0:4]中，以此進行準確率的計算。
+
+* DNN的進化之路 :Keras:
+這是個比較囉唆且完整的版本，裡面包含詳細的程式說明。
+** 簡介
+此例以Keras套件建立一個深度學習模型，用以解決手寫數字的辨識。Keras 是 Python 的深度學習框架，提供一種便利的方式來定義和訓練幾秬所有類型的深度學習模型。
+*** 優點
+- 相同的程式碼可在 CPU 或 GPU 上執行
+- 內建程式庫支擾了卷積神經網路(用於電腦視覺)、循環神經網路(用於序列資料處理)，以及二者的任何組合。
+- Keras 可以使用最少的程式碼，花最少的時間，就能建立深度學習模型，並進行培訓、評做準確率；相對的，如果使用 TensorFlow，則需要更多程式碼，花費更多時間。
+- 採用寬鬆的 MIT 授權條款，所以可以自由使用在商業專案上。
+
+Keras 是一個 model-level 模型級的深度學習程式庫，Keras 只處理模型的建立、訓練、預測等功能。深度學習程式庫的運作（如張量運算），Keras 必須配合使用「後端引擎」(backend Engine)進行運算。目前 Keras 提供了兩種 backend engine：Theano 與 TensorFlow。其基本架構如下圖所示：
+
+#+BEGIN_SRC ditaa :file KerasArch.png
+  +----------------------------+
+  |            Keras           |
+  +----------------------------+
+  | TensorFlow/Theano/CNTK/... |
+  +------------+---------------+
+  | CUDA/cuDNN |  BLAS, Eigen  |
+  +------------+---------------+
+  |     GPU    |     CPU       |
+  +------------+---------------+
+#+END_SRC
+#+CAPTION: 深度學習軟硬體架構
+#+name: fig:KerasArch
+#+ATTR_LATEX: :width 360
+#+ATTR_HTML: :width 360
+#+ATTR_ORG: :width 360
+[[file:images/KerasArch.png]]
+
+由圖[[fig:KerasArch]]可看出，Keras 並未被綁定在特定張量程式庫中，而是改以模組方式處理，目前可用的後端引擎有 Montreal 大學 MILA 實驗室的 Theano、Google 的 TensorFlow、Microsoft 的 CNTK...等，這些後端引擎在應用不同硬體(CPU/GPU)時則會採用不同的低階程式庫(CUDA/Eigen)。
+
+** 機器學習模型設計模式
+開發一個機器學習模型的流程大致如下：
+1. 定義問題並建立資料集
+2. 選擇一種評量成功的準則(metrics)
+3. 決定驗證(validation)程序
+4. 準備資料：定義訓練資料：即 input tensor 和 target tensors(label tensors)
+5. 開發出優於基準(baseline)的模型：定義神經網路模型的 layers，以便將 input tensor 對應到預測值
+6. 選擇 loss function, optimizer 和監控的評量準則(metrics)來建立學習過程
+7. 呼叫模型中的 fit()方法來迭代訓練資料
+8. 擴大規模：開發一個過度適配的模型
+9. 常規化模型並調整參數
+
+*** 定義問題並建立資料集
+
+進行模型建構之初，我們首先要評估的是：
+- 輸入資料是什麼？想要預測什麼？有什麼樣的訓練資料，就只能學習預測該類問題。例如，手上只有電影評論和情緒標註資料，就只能學習對電影評論的情緒分類。
+- 面臨什麼樣的問題？是二元分類？多類別分類？純量迴歸？向量迴歸？多類別多標籤？分群？生成式學習？增強式學習？不同的問題類型會引導我們如何選擇模型架構與損失函數。
+
+在確認上述兩項問題後，我們是基於以下兩個假設來進行模型的建立：
+
+- 假設機器可以根據給定的輸入資料預測結果
+- 假設手上的資料能提供足夠的資訊，讓機器能學習到輸入與輸出間的關係
+
+在真正建構出一個可用模型之前，上述兩個假設依然只是假設，必須經過驗證後才能確定成立與否。重點是：並非所有的問題都能透過模型來解決，例如：試圖以最近的歷史價格來預測股票市場的走勢就很難成功，因為光是參考歷史價格並不足以提供預測股價所需資訊。
+
+另一種要特別留意的問題類型為非平穩問題(nonstationary problems)，例如分析服裝的消售/推薦，這當中存在的最大問題在於人們購買的衣服種類會隨季節而變化，所以服裝購買在幾個月內是非平穩現象，建立的模型內容會隨著時間而變化。在這種情況下，解決方法有：
+
+- 不斷以最近的資料重新訓練模型，或
+- 在相對平穩的時間區間(具有規律的週期間)收集資料，以購買衣服為例，應該以年為單位進行資料收集才足以補捉到季節變化的規律。
+
+最後，切記：機器學習只能用於學習訓練資料中已存在的模式，也就是只能認出以前見過的模式。通常我們所謂以過去的資料預測未來，是假設未來的行為在過去曾發生過，但實際情況則未必如此。
+*** 選擇一種評量成功的準則(metrics)
+選好評量成功的準則，才有選擇損失函數的依據。在 Keras 中，所謂選擇評量準則，就是在 compile 時選擇適當的 metrics 參數。大概的選擇原則如下：
+- 二元分類問題：accuracy 和 ROC AUC(area under the receiver operating characteristic curve)為兩種常用的度量。
+- 類別不均(class-imbalanced)問題：使用 precision 和 recall 來做度量。
+- 排名問題或多標籤問題：使用平均精度
+- 少問的問題：自行定義指標
+*** 決定驗證(validation)程序
+一旦決定目標，就要決定驗證學習進度的方法，三種常見的驗證方法如下所述，但在大多數情況下，第一個方法就有不錯的效能。
+- Simple hold-out: 資料量大時適用
+- K-fold cross validation: 樣本資料不夠多時用
+- Iterated K-fold validation with shuffling: 資料量非常少時用
+*** 準備資料
+一旦知道要訓練什麼、要優化什麼、以及如評估效能，就可以著手準備建構模型，但首先要把資料整理成可以輸入神經網路的格式（張量），以監督式學習而言，其輸入的訓練資料會有以下兩類：即 input tensor 和 target tensors(label tensors)
+*** 開發優於基準(baseline)的模型
+此階段的目標在於實現統計功效(statistical power)，以 MNIST 資料集為例，任何準確度大於 0.1 的模型都可以說具有統計功效的（因為一共有 10 個答案類鞏）；而在 IMDB 範例中，只要準確度大於 0.5 即算。雖然 baseline 是一個很低的標準，但我們不見得都能實現這個目標，如果在嚐試過多個合理架構後模型表現仍無法優於隨機基準能力，則很有可能問題出在輸入資料，也許輸入資料沒有所需答案。
+
+如果一切順利，則接下來我們要做出三個關鍵選擇來建構第一個模型：
+
+- 選擇最後一層的啟動函數：這將為神經網路建立輸出的形式。例如，IMDB 分類最後使用 sigmoid 分成兩個值、MNIST 則以 softmax 分為 10 類。
+- 損失函數：要配合問題類型，如 IMDB 使用 binary_crossentropy、迴歸則使用 mse。
+- 優化器設定：大多數情況下，rmsprop 可做為預設選項搭配預設學習率
+
+下表為選擇啟動函數與損失函數的參考
+
+| 問題類型                                | 輸出層啟動函數 | 損失函數                          |
+|-----------------------------------------+----------------+-----------------------------------|
+| Binary classification                   | Sigmoid        | binary_crossentropy        |
+| Multiclass, single-label classification | softmax        | categorical_crossentropy   |
+| Multiclass, multi-label classification  | sigmoid        | binary_crossentropy        |
+| Regression to arbitrary values          | None           | mse                               |
+| Regression to values between 0 and 1    | sigmoid        | mse or binary_crossentropy |
+*** 擴大規模：開發一個過度適配的模型
+一旦成功建構了一個超越 baseline 的模型，問題就變成：這個模型夠不夠強大？有沒有足夠的 layer 和參數來正確模擬手上的問題？例如，只有兩個 units 的單隱藏層也許有辨識 MNIST 的統計功效，但不足以很好的解決該問題。而機器學習就是在最佳化和普適性之間做取捨，理想的模型是介於 underfitting 和 overfitting 的交界、介於模型太小(undercapacity)和模型太大(overcapacity)之間，要找出這個位置，勢必要先越過它再回來。所以，要搞清楚需要多大的模型，就要開發一個太大的模型，有幾種方法可以達到這點：
+- 加入更多的 layer
+- 增加每一層的 capacity
+- 訓練更多的週期
+*** 常規化模型並調整參數
+這裡會花掉最多時間：要反覆修改模型、訓練模型、評估驗證資料，然後再次修改，以下有幾種做法：
+
+- 加入 dropout
+- 嘗試不同架構：新增或刪除 layer
+- 添加 L1 或 L2 regularization，或同時使用
+- 嘗試使用不同的超參數，如每一曾的 units 數或優化器的學習率
+- 著重於特徵工程，如加入新特徵、刪除似乎沒用的特徵
+一旦開發出令人滿意的模型配置，就可以在所有可用資料(訓練和驗證)上訓練最終產出的模型，並在測試集上最後一次評估它。
+
+** 基本流程
+在 Keras 定義 model 有兩種方法：
+- Sequential class: 適用於線性堆叠的模型
+- functional API: 適用任何有向無環的神經網路架構
+
+以下為建立 sequential model 的例子：
+*** 建立模型
+#+BEGIN_SRC python -r -n :async :results output :exports both :session pilot-mnist
+from keras import models
+from keras import layers
+
+model = models.Sequential()
+# 新增一個輸入為874維、輸出為32維的Dense layer
+model.add(layers.Dense(32, activation='relu', input_shape=(784,)))
+# 接數來自上層32維的輸入，輸出一個10維的資料
+model.add(layers.Dense(10, activation='softmax'))
+#+END_SRC
+
+#+RESULTS:
+
+若使用 API 來定義相同的模型，其語法如下：
+#+BEGIN_SRC python -r -n :async :results output :exports both :session pilot-mnist
+from keras import models
+from keras import layers
+
+input_tensor = layers.Input(shape=(784,))
+x = layers.Dense(32, activation='relu')(input_tensor)
+output_tensor = layers.Dense(10, activation='softmax')(x)
+model = models.Model(inputs=input_tensor, outputs=output_tensor)
+#+END_SRC
+
+#+RESULTS:
+
+*** 編譯模型
+一旦建立好模型架構，則無論是使用 Sequential 或 API，其餘步驟均相同。神經網路是在編譯(model.compile)時建立的，我們可以在其中指定使用的 optimizer 和 loss function，以及訓練期間監看的評量準則(metrics)，典型的範例如下：
+#+BEGIN_SRC python -r -n :async :results output :exports both :session pilot-mnist
+from keras import optimizers
+model.compile(optimizer=optimizers.RMSprop(learning_rate=0.001), loss='mse', metrics=['accuracy'])
+#+END_SRC
+MacOS系統(M1/M2 CPU)下的加速運算方式(): [[https://stackoverflow.com/questions/77222463/is-there-a-way-to-change-adam-to-legacy-when-using-mac-m1-m2-in-tensorflow][stackoverflow]]
+*** 訓練模型
+最後，整個學習程序經由 fit()將輸入資料以 Numpy 陣列的形式傳給模型：
+#+BEGIN_SRC python -r -n :async :results output :exports both :session pilot-mnist
+model.fit(input_tensor, target_tensor, batch_size=128, ephchs=10)
+#+END_SRC
+
+** 以 Keras 實作 MNist 手寫數字辨識資料集
+*** 讀入資料與預處理
+MNist 手寫數字辨識資料集是由 Yann LeCun 所蒐集，他也是 CNN 的創始人。MNist 資料集共有訓練資料集 60000 筆、測試資料集 10000 筆，每筆資料都由一 28*28 的 image 以及相對應的 label 組成。
+**** 完整程式碼概覽
+#+BEGIN_SRC python -r -n :results output :exports both
+### 1. 下載MNist資料 ###
+### 1.1 滙入Keras及相關所需資源
+import numpy as np # 支援維度陣列之矩陣運算
+import pandas as pf
+from keras.utils import to_categorical # 要將table轉為one-hot encoding
+
+np.random.seed(10) #讓每次產生的亂數一致
+
+### 1.2 匯入Keras模組以下載MNist資料集###
+from keras.datasets import mnist
+### 1.3 讀取MNist資料集###
+(x_train_image, y_train_label), (x_test_image, y_test_label) = mnist.load_data()
+
+### 1.4 查看MNist資料集筆數###
+print('4. 查看MNist資料集筆數')
+print('train data=', len(x_train_image))
+print(' test data=', len(x_test_image))
+
+### 2.  查看訓練資料###
+### 2.1 輸出訓練資料格式###
+print('2.1 查看訓練資料格式')
+print('train image=', x_train_image.shape)
+print(' test image=', y_train_label.shape)
+
+### 2.2 定義plot_image函數顯示數字影像###
+import matplotlib.pyplot as plt
+def plot_image(imgname, image):
+    fig = plt.gcf() #定設圖形大小
+    fig.set_size_inches(2,2)
+    plt.imshow(image, cmap='binary') #cmap參數設定為binary以黑白灰階顯示
+    # plt.show() #for jupyter or colab
+    plt.plot()
+    plt.savefig(imgname+".png")
+
+### 2.3 執行plot_image函數查看第0筆數字影像及對應label###
+plot_image("Keras-mnist-0", x_train_image[0])
+print(y_train_label[0])
+
+### 3. 查看多筆資料###
+### 3.1 建立plot_images_labels_prediction()函式###
+def plot_images_labels_prediction(imgname, images, labels, prediction, idx, num = 10):
+    fig = plt.gcf()
+    fig.set_size_inches(8,4) # 設定顯示圖形大小
+    if num>25: num=25 # 顯示資料筆數上限
+    for i in range(0, num):
+        ax=plt.subplot(2,5,1+i) # 此處顯示10筆圖形，2*5個
+        ax.imshow(images[idx], cmap='binary') # 畫圖
+        title= "label=" +str(labels[idx]) # 加入子圖形title
+        if len(prediction)>0:
+            title+=",predict="+str(prediction[idx]) # 標題title加入預測結果
+        ax.set_title(title,fontsize=10)
+        ax.set_xticks([]);ax.set_yticks([]) #不顯示刻度
+        idx+=1
+    #plt.show()
+    #plt.plot()
+    plt.savefig(imgname+".png")
+
+### 3.2 執行plot_images_labels_prediction函數查看多筆images及labels
+plot_images_labels_prediction("Keras-mnist-1",x_train_image,y_train_label,[],0,10)
+
+### 4. 多層感知器(Multilayer perception, MLP)模型資料預處理###
+### 4.1 以reshape轉換image矩陣
+x_Train = x_train_image.reshape(60000, 784).astype('float32')
+x_Test = x_test_image.reshape(10000, 784).astype('float32')
+print(x_Train.shape)
+print(x_Test.shape)
+
+### 4.2 將影像之數字矩陣正規化###
+x_Train_normalize = x_Train/ 255
+x_Test_normalize = x_Test/ 255
+
+### 4.3 原始label欄位###
+print(y_train_label[:5]) # 輸出前5筆
+
+### 4.4 進行One-hot encoding###
+y_TrainOneHot = to_categorical(y_train_label)
+y_TestOneHot = to_categorical(y_test_label)
+### 4.5 轉換後之label欄位###
+print(y_TrainOneHot[:5]) # 輸出前5筆
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+4. 查看MNist資料集筆數
+train data= 60000
+ test data= 10000
+2.1 查看訓練資料格式
+train image= (60000, 28, 28)
+ test image= (60000,)
+5
+(60000, 784)
+(10000, 784)
+[5 0 4 1 9]
+[[0. 0. 0. 0. 0. 1. 0. 0. 0. 0.]
+ [1. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 1. 0. 0. 0. 0. 0.]
+ [0. 1. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 1.]]
+#+end_example
+#+CAPTION: MNist 第一筆資料影像
+#+LABEL:fig: Keras-mnist-0
+#+name: fig:Keras-mnist-0
+#+ATTR_LATEX: :width 50
+#+ATTR_ORG: :width 150
+#+ATTR_HTML: :width 100
+#+RESULTS:
+[[file:images/Keras-mnist-0.png]]
+
+#+CAPTION: MNist 前十筆資料影像
+#+LABEL:fig: Keras-mnist-1
+#+name: fig:Keras-mnist-1
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 400
+#+ATTR_HTML: :width 300
+#+RESULTS:
+[[file:images/Keras-mnist-1.png]]
+*** Keras MLP 辨識 MNist
+**** 多層感知器模型
+MNist 的初始模型分為輸入、隠藏及輸出三層, 輸入層有 784 個輸入神經元(\(x_1,x_2,...,x_{784}\))，接收被 reshape 為一維矩陣的手寫圖片(28*28)；隠藏層內部有 256 個神經元，隱藏層的層數與每層的神經元各數在神經網路的建構中主要取決於設計者；輸出層共有 10 個神經元，代表預測的結果(0~9)。
+#+CAPTION: MNist MLP 模型
+#+LABEL:fig: MNist-MLP-1
+#+name: fig:MNist-MLP-1
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 400
+#+ATTR_HTML: :width 500
+#+RESULTS:
+[[file:images/MLP-2.jpg]]
+**** 多層感知器的訓練與預測
+多層感知器模型建立後，必須先訓練模型才能夠進行預測(辨識)手寫數字。而這裡所謂的訓練模型，對於神經網路而言，就是學習。
+***** 訓練(Traning)
+MNist 的資料訓練集共 60000 筆，經資料預處理後會產生 features(數字特徵集)與 label(數字的真實值)，然後將這些資料輸入 MLP 模型進行訓練，訓練完成後的模型才能進行預測。
+***** 預測(Predict)
+將測試資料集匯入訓練完成的 MLP 模型，最後產生預測結果(此例中為 0~9 的數字)。
+*** MLP 模型旳建立步驟
+接下來我們逐步來說明上述程式碼的各項步驟
+**** 進行資料預處理(preprocess)
+***** 匯入所需模組
+#+BEGIN_SRC python -r -n:async :results output :exports both :session nddmnist
+from keras.utils import to_categorical
+import numpy as np # 支援維度陣列之矩陣運算
+np.random.seed(10) #讓每次產生的亂數一致
+#+END_SRC
+
+#+RESULTS:
+
+***** 讀取 mnist 資料
+#+BEGIN_SRC python -r -n:async :results output :exports both :session nddmnist
+from keras.datasets import mnist
+(x_train_image, y_train_label), (x_test_image, y_test_label) = mnist.load_data()
+#+END_SRC
+
+#+RESULTS:
+
+***** 利用 reshape 轉換影像特徵值(features)
+#+BEGIN_SRC python -r -n:async :results output :exports both :session nddmnist
+x_Train = x_train_image.reshape(60000, 784).astype('float32')
+x_Test = x_test_image.reshape(10000, 784).astype('float32')
+np.set_printoptions(precision=2, linewidth=np.inf)
+print(x_Train[0].reshape(28, 28))
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+[[  0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   3.  18.  18.  18. 126. 136. 175.  26. 166. 255. 247. 127.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.  30.  36.  94. 154. 170. 253. 253. 253. 253. 253. 225. 172. 253. 242. 195.  64.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.  49. 238. 253. 253. 253. 253. 253. 253. 253. 253. 251.  93.  82.  82.  56.  39.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.  18. 219. 253. 253. 253. 253. 253. 198. 182. 247. 241.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.  80. 156. 107. 253. 253. 205.  11.   0.  43. 154.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.   0.  14.   1. 154. 253.  90.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0. 139. 253. 190.   2.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  11. 190. 253.  70.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  35. 241. 225. 160. 108.   1.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  81. 240. 253. 253. 119.  25.   0.   0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  45. 186. 253. 253. 150.  27.   0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  16.  93. 252. 253. 187.   0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0. 249. 253. 249.  64.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  46. 130. 183. 253. 253. 207.   2.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  39. 148. 229. 253. 253. 253. 250. 182.   0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  24. 114. 221. 253. 253. 253. 253. 201.  78.   0.   0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.  23.  66. 213. 253. 253. 253. 253. 198.  81.   2.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.  18. 171. 219. 253. 253. 253. 253. 195.  80.   9.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.  55. 172. 226. 253. 253. 253. 253. 244. 133.  11.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0. 136. 253. 253. 253. 212. 135. 132.  16.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.]]
+#+end_example
+
+***** 將 feature 標準化
+#+BEGIN_SRC python -r -n:async :results output :exports both :session nddmnist
+x_Train_normalize = x_Train/ 255
+x_Test_normalize = x_Test/ 255
+np.set_printoptions(precision=2, linewidth=np.inf)
+print(x_Train_normalize[0].reshape(28, 28))
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+[[0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.01 0.07 0.07 0.07 0.49 0.53 0.69 0.1  0.65 1.   0.97 0.5  0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.12 0.14 0.37 0.6  0.67 0.99 0.99 0.99 0.99 0.99 0.88 0.67 0.99 0.95 0.76 0.25 0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.19 0.93 0.99 0.99 0.99 0.99 0.99 0.99 0.99 0.99 0.98 0.36 0.32 0.32 0.22 0.15 0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.07 0.86 0.99 0.99 0.99 0.99 0.99 0.78 0.71 0.97 0.95 0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.31 0.61 0.42 0.99 0.99 0.8  0.04 0.   0.17 0.6  0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.05 0.   0.6  0.99 0.35 0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.55 0.99 0.75 0.01 0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.04 0.75 0.99 0.27 0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.14 0.95 0.88 0.63 0.42 0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.32 0.94 0.99 0.99 0.47 0.1  0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.18 0.73 0.99 0.99 0.59 0.11 0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.06 0.36 0.99 0.99 0.73 0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.98 0.99 0.98 0.25 0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.18 0.51 0.72 0.99 0.99 0.81 0.01 0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.15 0.58 0.9  0.99 0.99 0.99 0.98 0.71 0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.09 0.45 0.87 0.99 0.99 0.99 0.99 0.79 0.31 0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.09 0.26 0.84 0.99 0.99 0.99 0.99 0.78 0.32 0.01 0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.07 0.67 0.86 0.99 0.99 0.99 0.99 0.76 0.31 0.04 0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.22 0.67 0.89 0.99 0.99 0.99 0.99 0.96 0.52 0.04 0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.53 0.99 0.99 0.99 0.83 0.53 0.52 0.06 0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]
+ [0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.  ]]
+#+end_example
+
+***** 以 one-hot encoding 轉換數字真實值(label)
+#+BEGIN_SRC python -r -n:async :results output :exports both :session nddmnist
+print(y_train_label[0])
+y_TrainOneHot = to_categorical(y_train_label)
+y_TestOneHot = to_categorical(y_test_label)
+print(y_TrainOneHot[0])
+#+END_SRC
+
+#+RESULTS:
+: 5
+: [0. 0. 0. 0. 0. 1. 0. 0. 0. 0.]
+
+**** 建立模型
+***** 匯入所需模組
+#+BEGIN_SRC python -r -n:async :results output :exports both :session nddmnist
+from keras.models import Sequential
+from keras.layers import Dense
+#+END_SRC
+
+#+RESULTS:
+
+在 Keras 在 Keras 中有兩類主要的模型：Sequential 順序模型 和 使用函數式 API 的 Model 類模型。
+***** 建立 Sequential 模型
+建立一個線性堆叠模型，後續再使用 model.add()方法將各神經網路層加入模型中即可。
+#+BEGIN_SRC python -r -n:async :results output :exports both :session nddmnist
+model = Sequential()
+#+END_SRC
+
+#+RESULTS:
+
+***** 建立「輸入層」與「隠藏層」
+Dense 神經網路層的特色：所有的上一層與下一層的神經元都完全連接。
+#+BEGIN_SRC python -r -n:async :results output :exports both :session nddmnist
+# 以常態分佈的亂數初始化weight和bias
+model.add(Dense(units=256, input_dim=784, kernel_initializer='normal', activation='relu'))
+#+END_SRC
+
+#+RESULTS:
+
+***** 建立「輸出層」
+10 個神經元分別對應 0~9 的答案，softmax 可以將神經元的輸出結果轉換為預測每一個數字的機率。建立這裡的 Dense 網路層時無需設定 input_data，因為 Keras 會自動依照上一層的 units 神經元個數(256)來設定這一層的 input_dim 神經元個數。
+#+BEGIN_SRC python -r -n:async :results output :exports both :session nddmnist
+# 以常態分佈的亂數初始化weight和bias
+model.add(Dense(units=10, kernel_initializer='normal', activation='softmax'))
+#+END_SRC
+
+#+RESULTS:
+
+***** 查看模型摘要
+#+BEGIN_SRC python -r -n:async :results output :exports both :session nddmnist
+print(model.summary())
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+Model: "sequential"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #
+=================================================================
+ dense (Dense)               (None, 256)               200960
+
+ dense_1 (Dense)             (None, 10)                2570
+
+=================================================================
+Total params: 203530 (795.04 KB)
+Trainable params: 203530 (795.04 KB)
+Non-trainable params: 0 (0.00 Byte)
+_________________________________________________________________
+None
+#+end_example
+以上每一層 Param 稱為超參數(Hyper-Parameters)，計算方式為：Param=(上一層神經元數量)\(\times\)(本層的神經元數量)\(+\)(本層的神經元數量)。其中：
+- 隠藏層的 Param 為 200960，即 784(輸入層神經元數量)\(\times\)256(隠藏層神經元數量)+256(隠藏層神經元數量)=200960
+- 輸出層的 Param 為 2570，即 256(隠藏層神經元數量)\(\times\)10(輸出層神經元數量)+10(輸出層神經元數量)=2570
+***** 至此程式小結 :noexport:
+#+BEGIN_SRC python -r -n :results output :exports both
+from keras.utils import to_categorical
+import numpy as np # 支援維度陣列之矩陣運算
+np.random.seed(10) #讓每次產生的亂數一致
+from keras.datasets import mnist
+(x_train_image, y_train_label), (x_test_image, y_test_label) = mnist.load_data()
+x_Train = x_train_image.reshape(60000, 784).astype('float32')
+x_Test = x_test_image.reshape(10000, 784).astype('float32')
+x_Train_normalize = x_Train/ 255
+x_Test_normalize = x_Test/ 255
+y_TrainOneHot = to_categorical(y_train_label)
+y_TestOneHot = to_categorical(y_test_label)
+from keras.models import Sequential
+from keras.layers import Dense
+model = Sequential()
+model.add(Dense(units=256, input_dim=784, kernel_initializer='normal', activation='relu'))
+model.add(Dense(units=10, kernel_initializer='normal', activation='softmax'))
+print(model.summary())
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+Model: "sequential"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #
+=================================================================
+ dense (Dense)               (None, 256)               200960
+
+ dense_1 (Dense)             (None, 10)                2570
+
+=================================================================
+Total params: 203530 (795.04 KB)
+Trainable params: 203530 (795.04 KB)
+Non-trainable params: 0 (0.00 Byte)
+_________________________________________________________________
+None
+#+end_example
+**** 進行訓練
+模型建立後，即可利用 Back Propagation 來進行訓練，其步驟如下：
+***** 定義訓練方式[fn:3]
+在訓練模型前，我們必須使用 compile 方式，設定訓練模式
+#+BEGIN_SRC python -r -n:async :results output :exports both :session nddmnist
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+#+END_SRC
+
+#+RESULTS:
+
+model.compile()接收三個參數：
+- 優化器 optimizer。它可以是現有優化器的字符串標識符，如 rmsprop 或 adagrad，也可以是 Optimizer 類的實例。詳見：optimizers。
+- 損失函數 loss，模型試圖最小化的目標函數。它可以是現有損失函數的字符串標識符，如 categorical_crossentropy 或 mse，也可以是一個目標函數。詳見：losses。
+- 評估標準 metrics。對於任何分類問題，你都希望將其設置為 metrics = ['accuracy']。評估標準可以是現有的標準的字符串標識符，也可以是自定義的評估標準函數。
+#+BEGIN_SRC python -r -n:async :results output :exports both :session nddmnist
+# 多分類問題
+model.compile(optimizer='rmsprop',
+              loss='categorical_crossentropy',
+              metrics=['accuracy'])
+
+# 二分類問題
+model.compile(optimizer='rmsprop',
+              loss='binary_crossentropy',
+              metrics=['accuracy'])
+
+# 均方誤差回歸問題
+model.compile(optimizer='rmsprop',
+              loss='mse')
+
+# 自定義評估標準函數
+import keras.backend as K
+
+def mean_pred(y_true, y_pred):
+    return K.mean(y_pred)
+
+model.compile(optimizer='rmsprop',
+              loss='binary_crossentropy',
+              metrics=['accuracy', mean_pred])
+#+END_SRC
+
+#+RESULTS:
+
+***** 開始訓練
+x,y 分別為輸入之訓練參數資料，split=0.2 表示該批資料的 80%作為訓練用、20%作為驗證用，共執行 10 次訓練週期、verbose=2 則表示要顯示訓練過程。
+#+BEGIN_SRC python -r -n:async :results output :exports both :session nddmnist
+train_history = model.fit(x=x_Train_normalize, y=y_TrainOneHot,
+                            validation_split=0.2, epochs=10, verbose=2)
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+Epoch 1/10
+1500/1500 - 2s - loss: 0.0562 - accuracy: 0.9176 - mean_pred: 0.1000 - val_loss: 0.0293 - val_accuracy: 0.9560 - val_mean_pred: 0.1000 - 2s/epoch - 1ms/step
+...略...
+Epoch 10/10
+1500/1500 - 2s - loss: 0.0068 - accuracy: 0.9926 - mean_pred: 0.1000 - val_loss: 0.0231 - val_accuracy: 0.9793 - val_mean_pred: 0.1000 - 2s/epoch - 1ms/step
+#+end_example
+
+fit 完整語法如下：
+#+BEGIN_SRC python -r -n:async :results output :exports both :session nddmnist
+fit(self, x=None, y=None, batch_size=None,
+      epochs=1, verbose=1, callbacks=None,
+      validation_split=0.0, validation_data=None,
+      shuffle=True, class_weight=None, sample_weight=None,
+      initial_epoch=0, steps_per_epoch=None, validation_steps=None)
+#+END_SRC
+對應參數分別為：[fn:4]
+- x：輸入數據。如果模型只有一個輸入，那麼 x 的類型是 numpy array，如果模型有多個輸入，那麼 x 的類型應當為 list，list 的元素是對應於各個輸入的 numpy array。如果模型的每個輸入都有名字，則可以傳入一個字典，將輸入名與其輸入數據對應起來。
+- y：標籤，numpy array。如果模型有多個輸出，可以傳入一個 numpy array 的 list。如果模型的輸出擁有名字，則可以傳入一個字典，將輸出名與其標籤對應起來。
+- batch_size：整數，指定進行梯度下降時每個 batch 包含的樣本數。訓練時一個 batch 的樣本會被計算一次梯度下降，使目標函數優化一步。
+- epochs：整數，訓練終止時的 epoch 值，訓練將在達到該 epoch 值時停止，當沒有設置 initial_epoch 時，它就是訓練的總輪數，否則訓練的總輪數為 epochs - inital_epoch
+- verbose：日誌顯示，0為不在標準輸出流輸出日誌信息，1為輸出進度條記錄，2為每個 epoch 輸出一行記錄
+- callbacks：list，其中的元素是 keras.callbacks.Callback 的對象。這個 list 中的回調函數將會在訓練過程中的適當時機被調用，參考回調函數
+- validation_split：0~1 之間的浮點數，用來指定訓練集的一定比例數據作為驗證集。驗證集將不參與訓練，並在每個 epoch 結束後測試的模型的指標，如損失函數、精確度等。注意，validation_split 的劃分在 shuffle 之後，因此如果你的數據本身是有序的，需要先手工打亂再指定 validation_split，否則可能會出現驗證集樣本不均勻。
+- validation_data：形式為（X，y）或（X，y，sample_weights）的 tuple，是指定的驗證集。此參數將覆蓋 validation_spilt。
+- shuffle：布爾值，表示是否在訓練過程中每個 epoch 前隨機打亂輸入樣本的順序。
+- class_weight：字典，將不同的類別映射為不同的權值，該參數用來在訓練過程中調整損失函數（只能用於訓練）。該參數在處理非平衡的訓練數據（某些類的訓練樣本數很少）時，可以使得損失函數對樣本數不足的數據更加關注。
+- sample_weight：權值的 numpy array，用於在訓練時調整損失函數（僅用於訓練）。可以傳遞一個 1D 的與樣本等長的向量用於對樣本進行 1 對 1 的加權，或者在面對時序數據時，傳遞一個的形式為（samples，sequence_length）的矩陣來為每個時間步上的樣本賦不同的權。這種情況下請確定在編譯模型時添加了 sample_weight_mode='temporal'。
+- initial_epoch: 從該參數指定的 epoch 開始訓練，在繼續之前的訓練時有用。
+- steps_per_epoch: 一個 epoch 包含的步數（每一步是一個 batch 的數據送入），當使用如 TensorFlow 數據 Tensor 之類的輸入張量進行訓練時，預設的 None 代表自動分割，即數據集樣本數/batch 樣本數。
+- validation_steps: 僅當 steps_per_epoch 被指定時有用，在驗證集上的 step 總數。
+***** 建立、顯示訓練過程：show_train_history
+上述過程包括 accuracy 及 loss 均儲存於 train_history 變數中，可以下列程式碼將其轉變為圖表：
+#+BEGIN_SRC python -r -n:async :results output :exports both :session nddmnist
+import matplotlib.pyplot as plt
+def show_train_history(train_history, train, validation):
+    plt.plot(train_history.history[train])
+    plt.plot(train_history.history[validation])
+    plt.title('Train History')
+    plt.ylabel(train)
+    plt.xlabel('Epoch')
+    plt.legend(['train','validation'], toc='upper left')
+    plt.show()
+#+END_SRC
+
+#+RESULTS:
+
+***** 畫出 accuracy 執行結果
+#+BEGIN_SRC python -r -n:async :results output :exports both :session nddmnist
+# 直接顯示
+show_train_history(train_history, 'accuracy', 'val_accuracy')
+# 另存圖檔
+img = show_train_history(train_history, 'accuracy', 'val_accuracy')
+plt.savefig("images/Keras-MNist-Train-1.png")
+#+END_SRC
+
+***** 完整執行結果
+#+BEGIN_SRC python -r -n:async :results output :exports both :session QQQ
+import warnings
+import tensorflow as tf
+from keras.utils import to_categorical # 要將table轉為one-hot encoding
+
+import numpy as np # 支援維度陣列之矩陣運算
+np.random.seed(10) #讓每次產生的亂數一致
+from keras.datasets import mnist
+(x_train_image, y_train_label), (x_test_image, y_test_label) = mnist.load_data()
+x_Train = x_train_image.reshape(60000, 784).astype('float32')
+x_Test = x_test_image.reshape(10000, 784).astype('float32')
+x_Train_normalize = x_Train/ 255
+x_Test_normalize = x_Test/ 255
+y_TrainOneHot = to_categorical(y_train_label)
+y_TestOneHot = to_categorical(y_test_label)
+from keras.models import Sequential
+from keras.layers import Dense
+model = Sequential()
+model.add(Dense(units=256, input_dim=784, kernel_initializer='normal', activation='relu'))
+model.add(Dense(units=10, kernel_initializer='normal', activation='softmax'))
+#===進行訓練===
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+train_history = model.fit(x=x_Train_normalize, y=y_TrainOneHot,
+                                validation_split=0.2, epochs=20, verbose=2)
+import matplotlib.pyplot as plt
+def show_train_history(train_history, train, validation):
+    plt.plot(train_history.history[train])
+    plt.plot(train_history.history[validation])
+    plt.title('Train History')
+    plt.ylabel(train)
+    plt.xlabel('Epoch')
+    plt.legend(['train','validation'], loc='upper left')
+    #plt.show() # for jupyter notebook
+    # 以下修改for console run
+    img = plt.plot()
+    return img
+
+# 以下的accuracy在Linux/Windows下要改為acc
+# 以下的val_accuracy在Linux/Windows下要改為val_acc
+# show_train_history(train_history, 'accuracy', 'val_accuracy')
+img = show_train_history(train_history, 'accuracy', 'val_accuracy')
+plt.savefig("Keras-MNist-Train-1.png")
+img = show_train_history(train_history, 'loss', 'val_loss')
+plt.savefig("Keras-MNist-Train-2.png") #
+# 以測試資料評估精確率
+# save
+print('test before save model: ', model.predict(x_Test[0:5]))
+
+scores = model.evaluate(x_Test_normalize, y_TestOneHot)
+print('accuracy',scores)
+print('accuracy',scores[1])
+
+model.save('Keras_MNist_model.keras')   # HDF5 file, you have to pip3 install h5py if don't have it
+del model  # deletes the existing model
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+Epoch 1/20
+1500/1500 - 2s - loss: 0.2700 - accuracy: 0.9242 - val_loss: 0.1371 - val_accuracy: 0.9592 - 2s/epoch - 1ms/step
+...略...
+Epoch 20/20
+1500/1500 - 1s - loss: 0.0044 - accuracy: 0.9986 - val_loss: 0.1325 - val_accuracy: 0.9768 - 1s/epoch - 993us/step
+1/1 [==============================] - 0s 15ms/step
+test before save model:  [[0. 0. 0. 0. 0. 0. 0. 1. 0. 0.]
+ [0. 0. 1. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 1. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [1. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 1. 0. 0. 0. 0. 0.]]
+313/313 [==============================] - 0s 447us/step - loss: 0.1032 - accuracy: 0.9802
+accuracy [0.10324574261903763, 0.9801999926567078]
+accuracy 0.9801999926567078
+#+end_example
+
+#+CAPTION: Keras Mnist Model 訓練#1: accuracy
+#+LABEL:fig:Keras-MNist-Train-1
+#+name: fig:Keras-MNist-Train-1
+#+ATTR_LATEX: :width 300
+#+ATTR_HTML: :width 400
+#+ATTR_ORG: :width 300
+#+RESULTS:
+[[file:images/Keras-MNist-Train-1.png]]
+
+圖[[fig:Keras-MNist-Train-1]]為執行 10 次週期後的預測精確度變化，可以看出以下現象：
+1) 訓練與驗證的精確率均隨訓練週期增加而提高
+2) 訓練精確度較驗證精確度高，原因是用來評估訓練精確率的資料已在訓練階段用過了；而用來評做驗證精確率的資料則否；這就類似，考試時考學過的練習題，學生得分較高。
+3) 驗證精確率雖然低，但較符合現實情況，即，考試時考學生沒有做過的題目。
+4) 如果訓練精確率持續增高，但驗證精率卻無法提升，可能是出現過度擬合(overfitting)的現象。,
+#+CAPTION: Keras Mnist Model 訓練#1: lost function
+#+LABEL:fig:Keras-MNist-Train-2
+#+name: fig:Keras-MNist-Train-2
+#+ATTR_LATEX: :width 300
+#+ATTR_HTML: :width 400
+#+ATTR_ORG: :width 300
+#+RESULTS:
+[[file:images/Keras-MNist-Train-2.png]]
+
+由圖[[fig:Keras-MNist-Train-2]]亦可看出，訓練誤差與驗證誤差亦隨週期增加而降低，且訓練襄差最終低於驗證誤差。
+
+訓練完成後，再以測試資料來評估模型準確率。
+**** 進行預測
+模型在訓練、驗證、測試後，即可以此訓練完之模型進行預測，預測方式如下：
+#+BEGIN_SRC python -r -n:async :results output :exports both :session QQQ
+from keras.datasets import mnist
+import matplotlib.pyplot as plt
+from keras.models import load_model
+
+(x_train_image, y_train_label), (x_test_image, y_test_label) = mnist.load_data()
+x_Train = x_train_image.reshape(60000, 784).astype('float32')
+x_Test = x_test_image.reshape(10000, 784).astype('float32')
+# Define func
+def plot_images_labels_prediction(imgname, images, labels, prediction, idx, num = 10):
+      fig = plt.gcf()
+      fig.set_size_inches(8,4) # 設定顯示圖形大小
+      if num>25: num=25 # 顯示資料筆數上限
+      for i in range(0, num):
+          ax=plt.subplot(2,5,1+i) # 此處顯示10筆圖形，2*5個
+          ax.imshow(images[idx], cmap='binary') # 畫圖
+          title= "label=" +str(labels[idx]) # 加入子圖形title
+          if len(prediction)>0:
+              title+="\npredict="+str(prediction[idx]) # 標題title加入預測結果
+          ax.set_title(title,fontsize=10)
+          ax.set_xticks([]);ax.set_yticks([]) #不顯示刻度
+          idx+=1
+      #plt.show()
+      plt.plot()
+      plt.savefig(imgname+".png")
+# 載入儲存之模型
+model = load_model('Keras_MNist_model.keras')
+# 顯示340-349共10筆資料
+predict_x=model.predict(x_Test)
+prediction=np.argmax(predict_x,axis=1)
+
+#prediction = model.predict_classes(x_Test)
+plot_images_labels_prediction('images/Keras-MNist-Train-3',x_test_image, y_test_label, prediction, idx=340)
+#+END_SRC
+
+#+RESULTS:
+: 313/313 [==============================] - 0s 396us/step
+
+#+CAPTION: Keras-MNist-Train-3
+#+LABEL:fig:Keras-MNist-Train-3
+#+name: fig:Keras-MNist-Train-3
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/Keras-MNist-Train-3.png]]
+
+#+RESULTS:
+: 313/313 [==============================] - 0s 397us/step
+
+上述程式碼將訓練好後儲存的模型取出，拿 10 筆記錄去預測，發現第一筆有誤（真實值 label 為 5、預測值為 3）。
+**** 顯示混淆矩陣(confusion matrix)
+
+若想進一步得知哪些數字容易被混淆，可以使用混淆矩陣(confustion matrix, 也稱為誤差矩陣 error matrix)。實務上可以利用 pandas crosstab 來建立，程式碼如下：
+#+BEGIN_SRC python -r -n:async :results output :exports both :session QQQ
+from keras.datasets import mnist
+import matplotlib.pyplot as plt
+from keras.models import load_model
+
+(x_train_image, y_train_label), (x_test_image, y_test_label) = mnist.load_data()
+
+x_Train = x_train_image.reshape(60000, 784).astype('float32')
+x_Test = x_test_image.reshape(10000, 784).astype('float32')
+
+model = load_model('Keras_MNist_model.keras')
+predict_x=model.predict(x_Test)
+prediction=np.argmax(predict_x,axis=1)
+
+import pandas as pd
+confuse = pd.crosstab(y_test_label, prediction, rownames=['label'], colnames=['predict'])
+print(confuse)
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+313/313 [==============================] - 0s 398us/step
+predict    0     1     2    3    4    5    6     7    8    9
+label
+0        971     1     0    0    1    0    3     1    2    1
+1          0  1130     2    0    0    0    0     1    2    0
+2          4     1  1006    3    2    0    3     7    5    1
+3          1     0     6  988    0    6    0     4    3    2
+4          2     2     3    0  954    1    3     1    2   14
+5          3     1     1    6    1  873    3     0    2    2
+6          3     3     1    1    2    4  943     0    1    0
+7          1     7     8    1    1    0    0  1004    2    4
+8          3     0     3    5    3    3    1     3  952    1
+9          3     3     0    2    5    3    0     5    0  988
+#+end_example
+
+由輸出結果可以得知，5很容易被誤判為 3(共 29 次)。若想進一步得知到底有那幾張圖為上述狀況，則可以加入限制條件，程式碼如下：
+#+BEGIN_SRC python -r -n :results output :exports both
+from keras.datasets import mnist
+import matplotlib.pyplot as plt
+from keras.models import load_model
+import pandas as pd
+import numpy as np
+
+(x_train_image, y_train_label), (x_test_image, y_test_label) = mnist.load_data()
+x_Test = x_test_image.reshape(10000, 784).astype('float32')
+
+model = load_model('Keras_MNist_model.keras')
+predict_x=model.predict(x_Test)
+prediction=np.argmax(predict_x,axis=1)
+
+df = pd.DataFrame({'label': y_test_label, 'predict':prediction})
+print(df[(df.label==5)&(df.predict==3)])
+
+def plot_image(imgname, image):
+    fig = plt.gcf() #定設圖形大小
+    fig.set_size_inches(2,2)
+    plt.imshow(image, cmap='binary') #cmap參數設定為binary以黑白灰階顯示
+    # plt.show() #for jupyter or colab
+    plt.plot()
+    plt.savefig(imgname+".png")
+
+# 顯示第340筆資料
+plot_image('images/Keras-MNist-Train-4', x_test_image[340])
+
+#+END_SRC
+
+#+RESULTS:
+: 1/313 [..............................] - ETA: 9s119/313 [==========>...................] - ETA: 0s245/313 [======================>.......] - ETA: 0s313/313 [==============================] - 0s 407us/step
+:       label  predict
+: 340       5        3
+: 1393      5        3
+: 2035      5        3
+: 2597      5        3
+: 4360      5        3
+: 5937      5        3
+#+CAPTION: Keras Mnist Model 訓練#1: error sample
+#+LABEL:fig:Keras-MNist-Train-4
+#+name: fig:Keras-Mnist-Train-4
+#+ATTR_LATEX: :width 100
+#+ATTR_HTML: :width 100
+#+ATTR_ORG: :width 100
+[[file:images/Keras-MNist-Train-4.png]]
+
+** 強化 MLP 辨識 solution #1: 增加隠藏層神經元數
+
+為了增加 MLP 的準確率，其中一種方法可以增加隠藏層的神經元數至 1000 個，程式碼如下：
+#+BEGIN_SRC python -r -n :async :results output :exports both :session QQQ
+from keras.utils import to_categorical
+import keras
+import numpy as np # 支援維度陣列之矩陣運算
+np.random.seed(10) #讓每次產生的亂數一致
+
+from keras.datasets import mnist
+(x_train_image, y_train_label), (x_test_image, y_test_label) = mnist.load_data()
+x_Train = x_train_image.reshape(60000, 784).astype('float32')
+x_Test = x_test_image.reshape(10000, 784).astype('float32')
+x_Train_normalize = x_Train/ 255
+x_Test_normalize = x_Test/ 255
+y_TrainOneHot = to_categorical(y_train_label)
+y_TestOneHot = to_categorical(y_test_label)
+
+from keras.models import Sequential
+from keras.layers import Dense
+model = Sequential()
+#=====增加神經元數
+model.add(Dense(units=1000, input_dim=784, kernel_initializer='normal', activation='relu'))
+model.add(Dense(units=10, kernel_initializer='normal', activation='softmax'))
+print(model.summary())
+#=====查看訓練過程及結果
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+train_history = model.fit(x=x_Train_normalize, y=y_TrainOneHot,
+                                validation_split=0.2, epochs=10, verbose=2)
+import matplotlib.pyplot as plt
+def show_train_history(train_history, train, validation):
+    plt.plot(train_history.history[train])
+    plt.plot(train_history.history[validation])
+    plt.title('Train History')
+    plt.ylabel(train)
+    plt.xlabel('Epoch')
+    plt.legend(['train','validation'], loc='upper left')
+    # plt.show() # for jupyter notebook
+    # 以下修改for console run
+    img = plt.plot()
+    return img
+
+# 以下的accuracy在Linux/Windows下要改為acc
+# 以下的val_accuracy在Linux/Windows下要改為val_acc
+# show_train_history(train_history, 'accuracy', 'val_accuracy')
+img = show_train_history(train_history, 'accuracy', 'val_accuracy')
+plt.savefig("images/Keras-MNist-Train-5.png")
+plt.cla()
+img = show_train_history(train_history, 'loss', 'val_loss')
+plt.savefig("images/Keras-MNist-Train-6.png") #
+# 以測試資料評估精確率
+scores = model.evaluate(x_Test_normalize, y_TestOneHot)
+print('accuracy',scores[1])
+
+model.save('Keras_MNist_model-1.keras')
+del model  # deletes the existing model
+#+END_SRC
+
+#+CAPTION: Keras Mnist Model 訓練#2: accuracy
+#+LABEL:fig:Keras-MNist-Train-5
+#+name: fig:Keras-Mnist-Train-5
+#+ATTR_LATEX: :width 400
+#+ATTR_HTML: :width 400
+#+ATTR_ORG: :width 400
+[[file:images/Keras-MNist-Train-5.png]]
+#+CAPTION: Keras Mnist Model 訓練#2: loss information
+#+LABEL:fig:Keras-MNist-Train-6
+#+name: fig:Keras-Mnist-Train-6
+#+ATTR_LATEX: :width 400
+#+ATTR_HTML: :width 400
+#+ATTR_ORG: :width 400
+[[file:images/Keras-MNist-Train-6.png]]
+
+將神經元數增加至 1000 後，精確率由 0.97 提升至 0.98。但測驗準確率仍未提升，可見 overfitting 仍然嚴重。
+
+** 強化 MLP 辨識 solution #2: 加入 DropOut 以避免 overfitting
+
+為解決 Overfitting 問題，此處再加入 Dropout(0.5)指令，其功能為在每次訓練迭代時，會隨機地在隱藏層中放棄 50%的神經元，以避免 overfitting，程式碼如下：
+#+BEGIN_SRC python -r -n:async :results output :exports both :session QQQ
+from keras.utils import to_categorical
+import numpy as np # 支援維度陣列之矩陣運算
+
+np.random.seed(10) #讓每次產生的亂數一致
+from keras.datasets import mnist
+(x_train_image, y_train_label), (x_test_image, y_test_label) = mnist.load_data()
+x_Train = x_train_image.reshape(60000, 784).astype('float32')
+x_Test = x_test_image.reshape(10000, 784).astype('float32')
+x_Train_normalize = x_Train/ 255
+x_Test_normalize = x_Test/ 255
+y_TrainOneHot = to_categorical(y_train_label)
+y_TestOneHot = to_categorical(y_test_label)
+
+from keras.models import Sequential
+from keras.layers import Dense
+model = Sequential()
+#=====增加神經元數
+model.add(Dense(units=1000, input_dim=784, kernel_initializer='normal', activation='relu'))
+#=====加入Dropout
+from keras.layers import Dropout
+model.add(Dropout(0.5))
+#=====加入輸出層
+model.add(Dense(units=10, kernel_initializer='normal', activation='softmax'))
+print(model.summary())
+#=====訓練模型、查看結果
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+train_history = model.fit(x=x_Train_normalize, y=y_TrainOneHot,
+                              validation_split=0.2, epochs=10, verbose=2)
+import matplotlib.pyplot as plt
+def show_train_history(train_history, train, validation):
+    plt.plot(train_history.history[train])
+    plt.plot(train_history.history[validation])
+    plt.title('Train History')
+    plt.ylabel(train)
+    plt.xlabel('Epoch')
+    plt.legend(['train','validation'], loc='upper left')
+    # plt.show() # for jupyter notebook
+    # 以下修改for console run
+    img = plt.plot()
+    return img
+
+# 以下的accuracy在Linux/Windows下要改為acc
+# 以下的val_accuracy在Linux/Windows下要改為val_acc
+# show_train_history(train_history, 'accuracy', 'val_accuracy')
+img = show_train_history(train_history, 'accuracy', 'val_accuracy')
+plt.savefig("images/Keras-MNist-Train-7.png")
+plt.cla()
+img = show_train_history(train_history, 'loss', 'val_loss')
+plt.savefig("images/Keras-MNist-Train-8.png") #
+# 以測試資料評估精確率
+scores = model.evaluate(x_Test_normalize, y_TestOneHot)
+print('accuracy=',scores[1])
+# 進行預測
+predict_x=model.predict(x_Test)
+prediction=np.argmax(predict_x,axis=1)
+# 輸出confuse mqtrix
+import pandas as pd
+pd.crosstab(y_test_label,prediction,
+            rownames=['label'],colnames=['predict'])
+
+# 儲存訓練好的模式
+model.save('Keras_MNist_model-2.keras')
+del model  # deletes the existing model
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+Model: "sequential_5"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #
+=================================================================
+ dense_10 (Dense)            (None, 1000)              785000
+
+ dropout_1 (Dropout)         (None, 1000)              0
+
+ dense_11 (Dense)            (None, 10)                10010
+
+=================================================================
+Total params: 795010 (3.03 MB)
+Trainable params: 795010 (3.03 MB)
+Non-trainable params: 0 (0.00 Byte)
+_________________________________________________________________
+None
+Epoch 1/10
+1500/1500 - 3s - loss: 0.2691 - accuracy: 0.9188 - val_loss: 0.1277 - val_accuracy: 0.9624 - 3s/epoch - 2ms/step
+...略...
+Epoch 10/10
+1500/1500 - 3s - loss: 0.0506 - accuracy: 0.9836 - val_loss: 0.0848 - val_accuracy: 0.9799 - 3s/epoch - 2ms/step
+313/313 [==============================] - 0s 859us/step - loss: 0.0696 - accuracy: 0.9825
+accuracy= 0.9825000166893005
+313/313 [==============================] - 0s 831us/step
+#+end_example
+
+由訓練過程可以看出，驗證精確率(0.9805)已接近訓練精確率(0.9838)，可見已改善了 overfitting 問題。
+
+#+CAPTION: Keras Mnist Model 訓練#3: accuracy
+#+LABEL:fig:Keras-MNist-Train-7
+#+name: fig:Keras-MNist-Train-7
+#+ATTR_LATEX: :width 400
+#+ATTR_HTML: :width 400
+#+ATTR_ORG: :width 400
+[[file:images/Keras-MNist-Train-7.png]]
+#+CAPTION: Keras Mnist Model 訓練#3: loss information
+#+LABEL:fig:Keras-MNist-Train-8
+#+name: fig:Keras-Mnist-Train-8
+#+ATTR_LATEX: :width 400
+#+ATTR_HTML: :width 400
+#+ATTR_ORG: :width 400
+[[file:images/Keras-MNist-Train-8.png]]
+
+由圖[[fig:Keras-MNist-Train-7]]也可看出，驗證精確率已隨訓練週期提高，驗證誤差也隨訓練週期降低。
+
+** 強化 MLP 辨識 solution #3: 增加隱藏層層數
+
+本例 MLP 模型的預測能力仍有改善空間：增加隠藏層層數。以下程式碼將隠藏層數提高至 2 層：
+
+#+BEGIN_SRC python -r -n:async :results output :exports both :session QQQ
+from keras.utils import to_categorical
+import numpy as np # 支援維度陣列之矩陣運算
+
+np.random.seed(10) #讓每次產生的亂數一致
+from keras.datasets import mnist
+(x_train_image, y_train_label), (x_test_image, y_test_label) = mnist.load_data()
+x_Train = x_train_image.reshape(60000, 784).astype('float32')
+x_Test = x_test_image.reshape(10000, 784).astype('float32')
+x_Train_normalize = x_Train/ 255
+x_Test_normalize = x_Test/ 255
+y_TrainOneHot = to_categorical(y_train_label)
+y_TestOneHot = to_categorical(y_test_label)
+
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.layers import Dropout
+
+model = Sequential()
+#=====增加第1層隱藏層神經元數
+model.add(Dense(units=1000, input_dim=784, kernel_initializer='normal', activation='relu'))
+#=====加入Dropout
+model.add(Dropout(0.5))
+#=====增加第2層隱藏層
+model.add(Dense(units=1000, kernel_initializer='normal', activation='relu'))
+#=====加入第2層Dropout
+model.add(Dropout(0.5))
+#=====加入輸出層
+model.add(Dense(units=10, kernel_initializer='normal', activation='softmax'))
+print(model.summary())
+#=====訓練模型、查看結果
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+train_history = model.fit(x=x_Train_normalize, y=y_TrainOneHot,
+                          validation_split=0.2, epochs=10, verbose=2)
+import matplotlib.pyplot as plt
+def show_train_history(train_history, train, validation):
+    plt.plot(train_history.history[train])
+    plt.plot(train_history.history[validation])
+    plt.title('Train History')
+    plt.ylabel(train)
+    plt.xlabel('Epoch')
+    plt.legend(['train','validation'], loc='upper left')
+    # plt.show() # for jupyter notebook
+    # 以下修改for console run
+    img = plt.plot()
+    return img
+
+# 以下的accuracy在Linux/Windows下要改為acc
+# 以下的val_accuracy在Linux/Windows下要改為val_acc
+# show_train_history(train_history, 'accuracy', 'val_accuracy')
+img = show_train_history(train_history, 'accuracy', 'val_accuracy')
+plt.savefig("images/Keras-MNist-Train-9.png")
+plt.cla()
+img = show_train_history(train_history, 'loss', 'val_loss')
+plt.savefig("images/Keras-MNist-Train-a.png") #
+# 以測試資料評估精確率
+scores = model.evaluate(x_Test_normalize, y_TestOneHot)
+print('accuracy=',scores[1])
+# 進行預測
+predict_x=model.predict(x_Test)
+prediction=np.argmax(predict_x,axis=1)
+
+# 輸出confuse mqtrix
+import pandas as pd
+pd.crosstab(y_test_label,prediction,
+            rownames=['label'],colnames=['predict'])
+# 儲存訓練好的模式
+model.save('Keras_MNist_model-3.keras')
+del model  # deletes the existing model
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+Model: "sequential_6"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #
+=================================================================
+ dense_12 (Dense)            (None, 1000)              785000
+
+ dropout_2 (Dropout)         (None, 1000)              0
+
+ dense_13 (Dense)            (None, 1000)              1001000
+
+ dropout_3 (Dropout)         (None, 1000)              0
+
+ dense_14 (Dense)            (None, 10)                10010
+
+=================================================================
+Total params: 1796010 (6.85 MB)
+Trainable params: 1796010 (6.85 MB)
+Non-trainable params: 0 (0.00 Byte)
+_________________________________________________________________
+None
+Epoch 1/10
+1500/1500 - 6s - loss: 0.3203 - accuracy: 0.9016 - val_loss: 0.1277 - val_accuracy: 0.9622 - 6s/epoch - 4ms/step
+...略...
+Epoch 10/10
+1500/1500 - 6s - loss: 0.1013 - accuracy: 0.9726 - val_loss: 0.0961 - val_accuracy: 0.9758 - 6s/epoch - 4ms/step
+313/313 [==============================] - 1s 2ms/step - loss: 0.0871 - accuracy: 0.9769
+accuracy= 0.9768999814987183
+313/313 [==============================] - 1s 2ms/step
+#+end_example
+
+#+CAPTION: Keras Mnist Model 訓練#3: accuracy
+#+LABEL:fig:Keras-MNist-Train-9
+#+name: fig:Keras-MNist-Train-9
+#+ATTR_LATEX: :width 400
+#+ATTR_HTML: :width 400
+#+ATTR_ORG: :width 400
+[[file:images/Keras-MNist-Train-9.png]]
+#+CAPTION: Keras Mnist Model 訓練#3: loss information
+#+LABEL:fig:Keras-MNist-Train-a
+#+name: fig:Keras-MNist-Train-a
+#+ATTR_LATEX: :width 400
+#+ATTR_HTML: :width 400
+#+ATTR_ORG: :width 400
+[[file:images/Keras-MNist-Train-a.png]]
+
+由訓練成果判斷，雖然精確率並未提升，但是由圖[[fig:Keras-MNist-Train-9]]可以看出驗證精確率已經比訓練精確率高，已確實可以解決 overfitting 的問題。
+
+隨著 MLP 模型的改進，雖然精確率可逐步提升，也可藉由加入 Dropout 解決 overfitting 的問題，但 MLP 仍有其極限，如果要進一步提升準確率，就要使用卷積神經網路 CNN (convolutional neural network)。
 
 * Footnotes
 
-[fn:7] [[http://elmer-storage.blogspot.com/2018/07/cnn-activation-function-feature.html][ CNN筆記 - 激活函數 (Activation Function)與特徵轉換 (Feature Transform) ]]
+[fn:1] [[https://kknews.cc/code/o8m4gpq.html][五分鐘理解深度學習中激活函數以及不同激活函數的使用場景]]
 
-[fn:1] [[https://chih-sheng-huang821.medium.com/%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92-%E7%A5%9E%E7%B6%93%E7%B6%B2%E8%B7%AF-%E5%A4%9A%E5%B1%A4%E6%84%9F%E7%9F%A5%E6%A9%9F-multilayer-perceptron-mlp-%E5%90%AB%E8%A9%B3%E7%B4%B0%E6%8E%A8%E5%B0%8E-ee4f3d5d1b41][機器學習- 神經網路(多層感知機 Multilayer perceptron, MLP) 含倒傳遞( Backward propagation)詳細推導]]
+[fn:2] [[https://kknews.cc/zh-tw/tech/b4zkbom.html][主流的深度學習模型有哪些？]]
 
-[fn:2] [[https://kknews.cc/code/o8m4gpq.html][五分鐘理解深度學習中激活函數以及不同激活函數的使用場景]]
+[fn:3][[https://ithelp.ithome.com.tw/articles/10191820][Day 06：處理影像的利器 -- 卷積神經網路(Convolutional Neural Network)]]
 
-[fn:3] [[https://towardsdatascience.com/what-the-hell-is-perceptron-626217814f53][What the Hell is Perceptron?]]
+[fn:4][[https://medium.com/@syshen/%E5%85%A5%E9%96%80%E6%B7%B1%E5%BA%A6%E5%AD%B8%E7%BF%92-2-d694cad7d1e5][入門深度學習 — 2]]
 
-[fn:4] [[https://kknews.cc/code/o8qaazo.html][機器學習：Python測試線性可分性的方法]]
+[fn:8][[https://www.books.com.tw/products/0010822932][Deep learning 深度學習必讀：Keras 大神帶你用 Python 實作]]
 
-[fn:5] [[https://s-top.github.io/blog/2018-04-19-svm][Support Vector Machine（全面推导）]]
+[fn:7][[https://ujjwalkarn.me/2016/08/11/intuitive-explanation-convnets/][An Intuitive Explanation of Convolutional Neural Networks]]
 
-[fn:6] [[https://chih-sheng-huang821.medium.com/%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92-%E7%A5%9E%E7%B6%93%E7%B6%B2%E8%B7%AF-%E5%A4%9A%E5%B1%A4%E6%84%9F%E7%9F%A5%E6%A9%9F-multilayer-perceptron-mlp-%E9%81%8B%E4%BD%9C%E6%96%B9%E5%BC%8F-f0e108e8b9af][機器學習- 神經網路(多層感知機 Multilayer perceptron, MLP)運作方式]]
+[fn:6][[https://medium.com/@syshen/%E5%85%A5%E9%96%80%E6%B7%B1%E5%BA%A6%E5%AD%B8%E7%BF%92-2-d694cad7d1e5][入門深度學習 — 2]]
 
-[fn:12][[https://ithelp.ithome.com.tw/articles/10191820][Day 06：處理影像的利器 -- 卷積神經網路(Convolutional Neural Network) ]]
-
-[fn:13][[https://ujjwalkarn.me/2016/08/11/intuitive-explanation-convnets/][An Intuitive Explanation of Convolutional Neural Networks]]
-
-[fn:14][[https://medium.com/@syshen/%E5%85%A5%E9%96%80%E6%B7%B1%E5%BA%A6%E5%AD%B8%E7%BF%92-2-d694cad7d1e5][入門深度學習 — 2]]
-
-[fn:15][[https://www.books.com.tw/products/0010822932][Deep learning 深度學習必讀：Keras 大神帶你用 Python 實作]]
-[fn:47] [[https://chih-sheng-huang821.medium.com/%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92-%E7%A5%9E%E7%B6%93%E7%B6%B2%E8%B7%AF-%E5%A4%9A%E5%B1%A4%E6%84%9F%E7%9F%A5%E6%A9%9F-multilayer-perceptron-mlp-%E5%90%AB%E8%A9%B3%E7%B4%B0%E6%8E%A8%E5%B0%8E-ee4f3d5d1b41][機器學習- 神經網路(多層感知機 Multilayer perceptron, MLP) 含倒傳遞( Backward propagation)詳細推導]]
+[fn:5][[https://ithelp.ithome.com.tw/articles/10191820][Day 06：處理影像的利器 -- 卷積神經網路(Convolutional Neural Network)]]

@@ -286,192 +286,139 @@ plt.show()
 - 變更訓練集:測試集比例
 - 增加epoch
 
-* 小組成果
-#+begin_src python -r -n :results output :exports both
-import matplotlib.pyplot as plt
-import numpy as np
-x = ['5/22', '5/23', '5/24','5/25','5/26']
-targ = [30, 29.9, 29.95, 29.4, 29.40]
-gr1 = [29.502, 29.504, 29.398, 29.475, 29.495]
-gr3 = [30.014, 30.093, 30.154, 30.206, 30.254]
-gr4 = [29.271, 28.210, 29.159, 29.112, 29.072]
-gr5 = [29.466, 29.364, 29.200, 29.001, 28.785]
-gr7 = [29.732, 30.182, 30.022, 30.283, 29.476]
-gr8 = [28.651, 28.706, 28.879, 28.867, 28.915]
-gr9 = [29.369, 29.200, 29.027, 28.899, 28.800]
-gra = [28.682, 28.711, 28.708, 28.705, 28.727]
-#plt.cla()
-plt.rcParams['font.sans-serif'] = ['Arial Unicode MS'] # 步驟一（替換系統中的字型，這裡用的是Mac OSX系統）
-plt.rcParams['axes.unicode_minus'] = False  # 步驟二（解決座標軸負數的負號顯示問題）
-
-ax = plt.figure().gca()
-plt.plot(x, targ, color='black',linestyle='-', linewidth=3)
-plt.plot(x, gr1, linestyle='--', linewidth=2)
-plt.plot(x, gr3, linestyle='--', linewidth=2)
-plt.plot(x, gr4, linestyle='--', linewidth=2)
-plt.plot(x, gr5, linestyle='--', linewidth=2)
-plt.plot(x, gr7, linestyle='--', linewidth=2)
-plt.plot(x, gr8, linestyle='--', linewidth=2)
-plt.plot(x, gr9, linestyle='--', linewidth=2)
-plt.plot(x, gra, linestyle='--', linewidth=2)
-#plt.plot(x, targ, color='r', linestyle='--', linewidth=3)
-
-plt.xlabel('日期', fontsize=16)
-plt.ylabel('股價', fontsize=16)
-plt.legend(['實際股價','第1組','第3組','第4組','第5組','第8組','第9組','第10組'])
-#plt.xlim(0,21)
-plt.ylim(27,32)
-ax.set_xticks(x)
-plt.savefig('images/pred-result.png', dpi=300)
-
-diffs = [sum([(x - y)**2 for x, y in zip(targ, gr1)]),
-         sum([(x - y)**2 for x, y in zip(targ, gr3)]),
-         sum([(x - y)**2 for x, y in zip(targ, gr4)]),
-         sum([(x - y)**2 for x, y in zip(targ, gr5)]),
-         sum([(x - y)**2 for x, y in zip(targ, gr7)]),
-         sum([(x - y)**2 for x, y in zip(targ, gr8)]),
-         sum([(x - y)**2 for x, y in zip(targ, gr9)]),
-         sum([(x - y)**2 for x, y in zip(targ, gra)])]
-colors = ['b', 'g', 'r', 'c', 'm','y']
-grps = ('第1組','第3組','第4組','第5組','第7組','第8組','第9組','第10組')
-plt.figure()
-plt.barh(grps, diffs, align='center', color=colors, alpha=0.5)
-plt.xlabel('5日預測差異平方和累計')
-plt.savefig('images/pred-result-1.png', dpi=300)
-
-#+end_src
-
-#+RESULTS:
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
-#+ATTR_LATEX: :width 400
-#+ATTR_ORG: :width 400
-#+ATTR_HTML: :width 500
-[[file:images/pred-result.png]]
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
-#+ATTR_LATEX: :width 400
-#+ATTR_ORG: :width 400
-#+ATTR_HTML: :width 500
-[[file:images/pred-result-1.png]]
-
-* LSTM: 以AI預測股價-隔日漲跌
-[[https://colab.research.google.com/drive/1IehBuskagMTm6RK6WB-dsf3NPZKTNVqs?usp=sharing][當AI遇上股票-LSTM.ipynb]]
-** 安裝相關套件
-#+begin_src shell -r -n :results output :exports both
-pip install yfinance
-#+end_src
-** 下載股價資訊
+* CNN-3 以AI預測股價-後5日漲跌
+為了讓大家都能交出作業，這裡提供一個利用CNN模型的程式參考範例
+- 程式每抓取股票的兩個特徵值
+- 每次預測後5天的股價
+請各組自行修改測試
 #+begin_src python -r -n :results output :exports both
 import yfinance as yf
+df = yf.Ticker('3260.TWO').history(period='10y')
+#挑兩個特徵值
+data = df.filter(['Open', 'Close'])
 
-df = yf.Ticker('2330.TW').history(period='10y')
-print(type(df))
-#+end_src
-*** 查看下載的資料集
-#+begin_src python -r -n :results output :exports both :session stock :async
-df
-#print(df[:5])
-#+end_src
-*** 取出需要的特徵值
-此次將成交量納入考慮
-#+begin_src python -r -n :results output :exports both
-data = df.filter(['Close'])
-data
-#+end_src
-** 觀察原始資料/日K圖
-#+begin_src python -r -n :results output :exports both
-import matplotlib.pyplot as plt
-plt.clf()
-plt.plot(data.Close)
-plt.show()
-#+end_src
-** 將資料標準化
-#+begin_src python -r -n :results output :exports both
 from sklearn.preprocessing import MinMaxScaler
+#資料標法化
 scaler = MinMaxScaler(feature_range=(0, 1))
 sc_data = scaler.fit_transform(data.values)
 
-sc_data #變成numpy array
-#+end_src
-** 建立、分割資料
-*** 建立資料集及標籤
-#+begin_src python -r -n :results output :exports both
 import numpy as np
 
-featureDays = 10
+featureDays = 10 #拿來預測的天數
+days = 5 #要生成的天數
+
 x_data, y_data = [], []
-for i in range(len(sc_data) - featureDays):
-  x = sc_data[i:i+featureDays]
-  y = sc_data[i+featureDays]
+for i in range(len(sc_data) - featureDays - days + 1):
+  x = sc_data[i:i+featureDays, :]
+  y = sc_data[i+featureDays: i+featureDays+days, 1]
   x_data.append(x)
   y_data.append(y)
 
-x_data, y_data = np.array(x_data), np.array(y_data)
+x_data = np.array(x_data).reshape(-1, featureDays, 2, 1)  # 调整形状以适应Conv2D
+y_data = np.array(y_data)
 
-print(x_data.shape)
-print(y_data.shape)
-print(len(x_data)) #全部資料筆數
-#+end_src
-*** 分割訓練集與測試集
-#+begin_src python -r -n :results output :exports both
+#訓練集、測試集比例
 ratio = 0.8
 train_size = round(len(x_data) * ratio)
 print(train_size)
 x_train, y_train = x_data[:train_size], y_data[:train_size]
 x_test, y_test = x_data[train_size:], y_data[train_size:]
 
-print(x_train.shape)
-print(y_train.shape)
-print(x_test.shape)
-print(y_test.shape)
-#+end_src
-** 建立、編譯、訓練模型
-*** 建立模型
-#+begin_src python -r -n :results output :exports both
 import tensorflow as tf
-#建構LSTM模型
+#建構CNN模型
 model = tf.keras.Sequential()
-# LSTM層
-model.add(tf.keras.layers.LSTM(units=64, unroll = False, input_shape=(featureDays,1)))
-# Dense層
-model.add(tf.keras.layers.Dense(units=1))
-#+end_src
-#+begin_src python -r -n :results output :exports both
-model.summary()
-#+end_src
-*** 編譯模型
-#+begin_src python -r -n :results output :exports both
-model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
-#+end_src
-*** 訓練模型
-#+begin_src python -r -n :results output :exports both
-model.fit(x_train, y_train,
-          validation_split=0.2,
-          batch_size=200, epochs=20)
-#+end_src
-** 性能測試
-*** loss
-#+begin_src python -r -n :results output :exports both
+#輸入層/卷積層
+model.add(tf.keras.layers.Conv2D(filters=512, kernel_size=2, activation='relu', input_shape=(featureDays,2,1)))
+#攤平
+model.add(tf.keras.layers.Flatten())
+#全連接層/輸出層
+model.add(tf.keras.layers.Dense(days, activation='sigmoid'))
+
+model.compile(loss='huber_loss', optimizer='RMSprop', metrics=['accuracy'])
+history = model.fit(x_train, y_train, batch_size=100, epochs=20, validation_data=(x_test, y_test))
+
+#評估、預測
 score = model.evaluate(x_test, y_test)
 print('loss:', score[0])
-#+end_src
-*** predict
-#+begin_src python -r -n :results output :exports both
+print('accuracy:', score[1])
+
 predict = model.predict(x_test)
-predict = scaler.inverse_transform(predict)
-predict = np.reshape(predict, (predict.size,))
-ans = scaler.inverse_transform(y_test)
-ans = np.reshape(ans, (ans.size,))
-print(predict[:3])
-print(ans[:3])
+print(predict.shape)
+print(predict)
+
+#還原scale
+predict_expanded = np.zeros((predict.shape[0], predict.shape[1], 2))
+predict_expanded[:, :, 1] = predict
+
+predicted_prices = np.zeros((predict.shape[0], predict.shape[1]))
+for i in range(predict.shape[1]):
+    predicted_prices[:, i] = scaler.inverse_transform(predict_expanded[:, i])[:, 1]
+
+print(predicted_prices.shape)
+print(predicted_prices)
 #+end_src
-*** plot
-#+begin_src python -r -n :results output :exports both
-plt.plot(predict)
-plt.plot(ans)
+
+#+RESULTS:
+
+* LSTM: 以AI預測股價-後5日漲跌
+** 參考程式碼
+#+begin_src shell -r -n :results output :exports both
+import yfinance as yf
+from sklearn.preprocessing import MinMaxScaler
+import numpy as np
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense
+import matplotlib.pyplot as plt
+
+df = yf.Ticker('3260.TWO').history(period='10y')
+
+#挑兩個特徵值
+data = df.filter(['Open', 'Close'])
+sc_data = data.values
+
+featureDays = 10 #拿來預測的天數
+days = 5 #要生成的天數
+#
+x_data, y_data = [], []
+for i in range(len(sc_data) - featureDays - days + 1):
+    x = sc_data[i:(i + featureDays), :]
+    y = sc_data[(i + featureDays):(i + featureDays + days), 1]
+    x_data.append(x)
+    y_data.append(y)
+
+x_data, y_data = np.array(x_data), np.array(y_data)
+
+# 訓練集與測試集
+train_size = int(len(x_data) * 0.8)
+x_train, x_test = x_data[:train_size], x_data[train_size:]
+y_train, y_test = y_data[:train_size], y_data[train_size:]
+
+
+model = Sequential()
+model.add(LSTM(50, return_sequences=True, input_shape=(featureDays, 2)))
+model.add(LSTM(50, return_sequences=False))
+model.add(Dense(25))
+model.add(Dense(days))
+
+model.compile(optimizer='adam', loss='mean_squared_error')
+
+history = model.fit(x_train, y_train, batch_size=32, epochs=20, validation_data=(x_test, y_test))
+
+est_loss = model.evaluate(x_test, y_test)
+print('Test loss:', test_loss)
+
+predictions = model.predict(x_test)
+
+print(predictions)
+
+# 预测与实际价格比较
+plt.figure(figsize=(10, 6))
+plt.plot(np.array(y_test).flatten(), label='Actual Prices')
+plt.plot(np.array(predicted_prices).flatten(), label='Predicted Prices')
+plt.title('Stock Price Prediction')
+plt.xlabel('Time')
+plt.ylabel('Price')
+plt.legend()
 plt.show()
 #+end_src
 ** 能怎麼胡搞

@@ -43,6 +43,7 @@
 #+ATTR_ORG: :width 300
 #+RESULTS:
 [[file:images/ReinforcementLearning.png]]
+
 - 機器為了達成目標，隨著環境的變動，而逐步調整其行為，並評估每一個行動之後所到 的回饋是正向的或負向的，即，在 try-and-error 的過程中一步步從失敗中找出成功的路徑。
 - 強化學習的效果之所以優於監督式學習，主要原因是：監督式學習是人示範給電腦看，電腦照著做，但如果人做的不夠好，電腦再厲害也無法超越(例如，醫師給的 X 光片在判讀上本身就出現誤解 )；而強化學習則是在做中學，進一步脫離人的指導(或人類的經驗限制)，自行發展出更好的規則。
 - 強化學習其實就是訓練一個 AI 可以通過每一次的錯誤來學習，就跟我們小時候學騎腳踏車一樣，一開始學的時候會一直跌倒，然後經過幾次的失敗後，我們就可以上手也不會跌倒了[fn:1]。強化學習在過去曾被長期忽視，但在 Google DeepMind 成功將其應用來玩 Atari 遊戲後，就開始受到許多關注。
@@ -100,6 +101,7 @@ Gym上有許多可用工具，CartPole是其中較為簡單常見的一種，Car
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 400
 [[file:images/cartpole-sys.jpg]]
+
 ** 執行測試與環境變數
 以下是一段最基本的測試程式
 #+begin_src python -r :noeval
@@ -123,6 +125,7 @@ action有0或1兩種可能值，代表將將車子向左或向右控制。
 #+ATTR_ORG: :width 200
 #+ATTR_HTML: :width 300
 [[file:images/cartpole-cycle.jpg]]
+
 就Cartpole來說，action丟入環境執行後，可以得到幾個相關的環境資訊(由step function傳回)，這些變數可由以下方式取得
 #+begin_src python -r :results output :exports both
 import gym
@@ -251,6 +254,7 @@ env.close()
 #+ATTR_ORG: :width 500
 #+ATTR_HTML: :width 500
 [[file:images/hillclimbing.png]]
+
 上圖的實際功能與神經網絡有幾分相似，但比神經網絡要簡單得多。通過加入四個權值，我們可以通過改變權重值來改變決策（policy），即有加權和$$H_{sum} = w_1x+w_2\theta + w_3\dot{x} + w_4\dot\theta + b$$，若\(H_{sum}\)的符號爲正判定輸出爲1，否則爲0。
 
 爬山算法的基本思路是每次迭代時給當前取得的最優權重加上一組隨機值，如果加上這組值使得有效控制倒立擺的持續時間變長了那麼就更新它爲最優權重，如果沒有得到改善就保持原來的值不變，直到迭代結束。在迭代過程中，模型的參數不斷得到優化，最終得到一組最優的權值作爲控制模型的解。
@@ -330,6 +334,7 @@ Q-table 是用 lookup table 來 approximate Q-value function，並用 Q-learning
 #+ATTR_ORG: :width 600
 #+ATTR_HTML: :width 500
 [[file:images/q-learning.png]]
+
 在更新 Q table 時，計算 reward 不只包含採取 action \(a\)獲得的 reward \(r\)r，還包含 \(\gamma max_{a^{'}}Q(s^{'},q^{'})\)。這個概念是，agent 不僅僅看當下採取的行動帶來的好處，他也會估計到達下一個 state \(s^{'}\) 後，最多可以有多少好處（因為在\(s^{'}\)也可以採取各種 action）。
 換句話說，這個 agent 不是一個目光如豆的 agent，他會考慮未來。因為加上了\(\gamma max_{a^{'}}Q(s^{'},q^{'})\)(當然\(\gamma\)不能是 0)，讓我們的 agent 從 會立刻吃掉棉花糖的小朋友，進化成可以晚一點再吃多一點棉花糖的小朋友，是不是很有趣呢！
 ** Q-Table

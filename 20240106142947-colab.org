@@ -11,13 +11,13 @@
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/muse.css" />
 
 #+begin_export html
-<a href="https://hits.sh/letranger.github.io/AI/20240106142947-colab.html.svg?style=plastic"/></a>/"><img alt="Hits" align="right" src="https://hits.sh/letranger.github.io/AI/20240106142947-colab.html.svg?style=plastic"/></a>
+<a href="https://hits.sh/letranger.github.io/AI/20240106142947-colab.html.svg?style=plastic"/></a><img alt="Hits" align="right" src="https://hits.sh/letranger.github.io/AI/20240106142947-colab.html.svg?style=plastic"/></a>
 
 #+end_export
 
 Google Colaboratory 是一個基於雲端的Python開發環境，由Google提供開發者虛擬機，提供免費的GPU和TPU資源，並支援Python程式及機器學習TensorFlow演算法。Google Colab具有強大的協作功能，可以與他人共享和編輯程式碼，支援Jupyter筆記本，並提供預裝的Python套件，方便進行數據分析、機器學習等任務。
 
-#+CAPTION: 標題
+#+CAPTION: Google Colaboratory
 #+LABEL:fig:Labl
 #+name: fig:Name
 #+ATTR_LATEX: :width 300
@@ -26,29 +26,112 @@ Google Colaboratory 是一個基於雲端的Python開發環境，由Google提供
 [[file:images/2024-01-06_14-35-48_2024-01-06_14-35-11.png]]
 
 * Colab編寫環境
+當我們透過瀏覽器連上、登入Colab，Google就幫我們建立了一個虛擬機，我們在上面寫的程式就在Colab的虛擬機上執行。
 - [[https://colab.research.google.com/drive/1IowJ_8ZYdGLCdxCJarYbhR_haic66v30?usp=sharing][20231111專題式程式教學1-Colab環境.ipynb]]
 - 儲存格的類型
 - Text Cell
 - 練習1
 - Code Cell: 輸出
 - Code Cell: 輸入
+** Colab的預設目錄
+Colab的虛擬機有CPU、記憶體、磁碟空間等資源(如圖[[fig:Colab-1]])
+#+CAPTION: Colab虛擬機的系統資源
+#+LABEL:fig:Labl
+#+name: fig:Colab-1
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 300
+[[file:images/Colab編寫環境/2024-01-13_13-44-45_2024-01-13_13-44-09.png]]
 
-* 進階操作
-- Google 提供的 VM
-#+begin_src shell -r -n :results output :exports both
+預設的磁碟所在目錄位置為/content，裡面有一個資料夾sample_data
+#+begin_src python -r -n :results output :exports both
 !pwd
-!cat /proc/meminfo
-!cat  /proc/cpuinfo
+!ls
 #+end_src
-- use colab to mount google drive
-- 同時最多 5 個 session
-- 每個 session 最多 24hr
-- 查看 colab 已安裝了哪些 package
-#+begin_src shell -r -n :results output :exports both
-!pip list
+#+RESULTS:
+: /content
+: sample_data
+
+** 上傳檔案到Colab中
+在Colab中執行AI相關的運算有時需要將你自己的檔案上傳到Colab的雲端磁碟中，這些檔案也許是你想要辨識的圖片、也許是你想進行預測結果的實驗數據。有兩種模式可以將你的檔案儲存到磁碟中：
+*** 有時效的Colab雲端硬碟
+有兩種方式: 網頁模式與程式模式，要留意的是這些上傳的檔案在Colab執行階段被刪除後就會消失，就算我們沒有手動刪除現行的Colab運算，這個運算在12小時後也會被自動刪除。
+**** 網頁模式
+第一種方式是直接點選點圖[[fig:uploadFile]]中的上傳圖案，選取本地端的檔案後上傳至雲端硬碟中
+#+CAPTION: 將檔案上傳至Colab雲端硬碟
+#+LABEL:fig:Labl
+#+name: fig:uploadFile
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 300
+[[file:images/Colab編寫環境/2024-01-13_13-54-39_2024-01-13_13-54-06.png]]
+**** 程式模式
+第二種方式是引入google.colab，使用files.upload()函式來上傳檔案
+#+begin_src python -r -n :results output :exports both
+from google.colab import files
+uploaded = files.upload()
+#+end_src
+#+CAPTION: 使用程式上傳本地端檔案
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/Colab編寫環境/2024-01-13_14-02-39_2024-01-13_14-00-58.png]]
+*** 從Colab連線到自己的Google drive
+前述模式只能儲存臨時的檔案，十分不方便。第二種方式是 *允許* Colab直接存取我們的Google Drive (這個動作在作業系統的世界裡叫做mount)，有兩種方式可以完成此項設定：
+**** 網頁操作
+1. 點選圖[[fig:linkGD1]]中的"掛載雲端硬碟"圖示
+2. 在對話框中點選"連網至Google雲端硬碟"
+完成後，在現行目錄下會多出一個drive的資料夾。
+#+CAPTION: 手動掛載Google Drive
+#+LABEL:fig:Labl
+#+name: fig:linkGD1
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 600
+[[file:images/Colab編寫環境/2024-01-13_14-25-33_2024-01-13_14-15-28 (3).gif]]
+drive資料夾裡還有幾個資料夾，其中MyDrive就是你自己的雲端硬碟，如果有其他人曾經透過Google Drive分享檔案給你，那你還會看到SharedDrives資料夾。
+#+CAPTION: Colab連結Google Drive
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 300
+[[file:images/Colab編寫環境/2024-01-13_14-33-59_2024-01-13_14-29-14.png]]
+**** 程式執行
+第二種連結Google Drive的方式是執行以下程式
+#+begin_src python -r -n :results output :exports both
+from google.colab import drive
+drive.mount('/content/drive')
+#+end_src
+因為是程式執行，其實你也可以自行為這個被mount的資料夾命名，例如叫做GDrive:
+#+begin_src python -r -n :results output :exports both
+from google.colab import drive
+drive.mount('/content/gDrive')
 #+end_src
 
-* 如何確定有在跑 GPU: [[file:TensorFlow.org][Tensorflow 2020]]
+** Colab的notebook存在哪?
+我們在Colab所輸入的指令、程式執行的結果都儲存在一個副檔名為ipynb的筆記本中，這個檔案的預設檔名為UntitledX.ipynb(如圖[[fig:untitled]])，預設的儲存資料夾是在Google Drive裡的Colab Notebooks資料夾裡(如圖[[fig:notebook]])。請養成習慣把這些UntitledXX的檔名修改成符合筆記本內容的名稱，否則以後你會在Colab Notebooks裡看到Untitled0.ipynb、Untitled1.ipynb、Untitled2.ipynb、Untitled3.ipynb.....Untitled30.ipynb這樣的畫面Q八Q。
+
+#+CAPTION: Colab筆記本
+#+LABEL:fig:Labl
+#+name: fig:untitled
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/Colab編寫環境/2024-01-13_15-40-00_2024-01-13_15-39-25.png]]
+
+#+CAPTION: Colab筆記本的儲存位置
+#+LABEL:fig:Labl
+#+name: fig:notebook
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/Colab編寫環境/2024-01-13_15-58-00_2024-01-13_15-48-32.png]]
+
+* GPU執行階段
+** 如何確定有在跑 GPU:
 #+begin_src python -r -n :results output :exports both
 import tensorflow as tf
 gpu_name = tf.test.gpu_device_name()
@@ -57,22 +140,51 @@ if gpu_name != '/device:GPU:0':
 print(f'有 GPU: {gpu_name}')
 #+end_src
 
-#+RESULTS:
+** 在CoLab中使用GPU
+1. 執行階段/變更執行階段類型
+2. 硬體加速器
+#+CAPTION: 標題
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/Footnotes/2024-01-13_11-07-01_2024-01-13_11-04-14.png]]
 
-* 如何 mount google drive
-#+begin_src python -r :results output :exports both :noeval
-from google.colab import drive
-import os
-drive.mount('/content/gdrive')
+#+CAPTION: 標題
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/GPU執行階段/2024-01-13_11-09-56_2024-01-13_11-04-26.png]]
+
+** 查看使用的GPU類型
+*** Colab
+#+begin_src python -r -n :results output :exports both
+!nvidia-smi -L
 #+end_src
-
-* 如何用 python 上傳本機檔案到 colab
-#+begin_src python -r :results output :exports both :noeval
-from google.colab import files
-uploaded = files.upload()
+#+CAPTION: 標題
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/GPU執行階段/2024-01-13_11-11-03_2024-01-13_11-10-41.png]]
+*** Linux
+#+begin_src shell -r -n :results output :exports both
+nvidia-smi -L
 #+end_src
+#+CAPTION: 標題
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/GPU執行階段/2024-01-13_11-15-21_2024-01-13_11-12-47.png]]
 
-* Command Line
+* 進階操作
+** Command Line
  Colab 其中一個厲害的地方就是，你除了可以執行 Python、也能執行 Command Line，只要在 Command Line 指令加上驚嘆號就能做到，像是 !mkdir。你可以在 Colab 裡 Python 程式碼寫到一半的時候，突然加進幾行 Command Line 來操作檔案，完成後，再讓 Python 程式碼接著寫下去，Python 與 Command Line 可以無痛切換。更厲害的是，Colab 甚至讓你在同一段程式碼裡 Python 和 Command Line 能夠 混合使用，例如，可以把 !ls 輸出的內容存進 Python 變數裡[fn:1]。
 
 此外，Colab 還有「魔法」指令（Magic Command），這個指令的寫法是在最前面加上 % 或 %% 符號，例如 %timeit，Magic 為 Colab 補充一些方便的功能。筆者最常用的功能有二：
@@ -80,8 +192,7 @@ uploaded = files.upload()
 - %%timeit：算出你的程式碼區塊花多少時間執行，分析你的演算法效率時很好用
 - %run my_script.py：執行你的另一個 Python 程式，如果你的程式還需要呼叫另一個程式，就需要使用這個 Magic 指令
 
-* 進階操作
-Google 提供的 VM
+** Google 提供的 VM
 #+begin_src shell -r -n :results output :exports both
 !pwd
 !cat /proc/meminfo
@@ -91,6 +202,9 @@ Google 提供的 VM
 - 同時最多 5 個 session
 - 每個 session 最多 24hr
 - 查看 colab 已安裝了哪些 package
+  #+begin_src shell -r -n :results output :exports both
+  !pip list
+  #+end_src
 
 * Footnotes
 

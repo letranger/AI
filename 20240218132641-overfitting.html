@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-02-18 Sun 15:40 -->
+<!-- 2024-02-20 Tue 13:57 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>overfitting</title>
@@ -194,6 +194,38 @@
   .org-svg { }
 </style>
 <link rel="stylesheet" type="text/css" href="../css/muse.css" />
+<script>
+  window.MathJax = {
+    tex: {
+      ams: {
+        multlineWidth: '85%'
+      },
+      tags: 'ams',
+      tagSide: 'right',
+      tagIndent: '.8em'
+    },
+    chtml: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    svg: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    output: {
+      font: 'mathjax-modern',
+      displayOverflow: 'overflow'
+    }
+  };
+</script>
+
+<script
+  id="MathJax-script"
+  async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
 </head>
 <body>
 <div id="content" class="content">
@@ -202,9 +234,15 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org3db952c">1. 縮減神經網路的大小</a></li>
-<li><a href="#org1f205b3">2. 加入權重常規化 (weight regularization)</a></li>
-<li><a href="#org572650b">3. 丟棄法 (dropout)</a></li>
+<li><a href="#org13e6d56">1. 縮減神經網路的大小</a></li>
+<li><a href="#org6fb4a0f">2. 加入權重常規化 (weight regularization)</a>
+<ul>
+<li><a href="#org9f80525">2.1. L1L2 regularzation</a></li>
+</ul>
+</li>
+<li><a href="#org42d4fe5">3. 丟棄法 (dropout)</a></li>
+<li><a href="#orgd2d086d">4. 循序特徵選擇法</a></li>
+<li><a href="#orgc6e36aa">5. 選取有意義的特徵</a></li>
 </ul>
 </div>
 </div>
@@ -226,8 +264,8 @@
 <li>加入權重常規化 (weight regularization)<br /></li>
 <li>丟棄法 (dropout)<br /></li>
 </ul>
-<div id="outline-container-org3db952c" class="outline-2">
-<h2 id="org3db952c"><span class="section-number-2">1.</span> 縮減神經網路的大小</h2>
+<div id="outline-container-org13e6d56" class="outline-2">
+<h2 id="org13e6d56"><span class="section-number-2">1.</span> 縮減神經網路的大小</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 即減少模型可用來學習的參數數量(包含網路的層數和每層的神經元個數)，在深度學習中，模型中可學習參數的數量(權重數量)通常被稱為容量(capacity)。直覺上，有更多參數的模型具有更多的記憶能力(memorization capacity)，因此可以很容易在訓練樣本與其目標之間做出完美的對應，但卻沒有任何適應學習的能力。例如，我們可以建立具有 500000 個參數的模型來輕鬆學習(記憶)MNIST 訓練集中的每個數字所屬類別，但這種模型對於預測新的數字圖案毫無用處。<br />
@@ -270,14 +308,14 @@
 </p>
 
 
-<div id="org8f154c4" class="figure">
+<div id="orgef56345" class="figure">
 <p><img src="images/img-191120103824.jpg" alt="img-191120103824.jpg" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 1: </span>模型容量對驗證損失分數的影響-較小的模型</p>
 </div>
 
 <p>
-相反的，如果我們刻意將神經網路的 capacity 擴大，如下，每一層的神經元數量由原來的 16 增加到 512，則結果如圖<a href="#orgf40ddef">2</a>，擴大版的神經網路幾乎在訓練之初就開始 overfitting，而且越來越嚴重，其驗證損失的表現也較原始版本差。<br />
+相反的，如果我們刻意將神經網路的 capacity 擴大，如下，每一層的神經元數量由原來的 16 增加到 512，則結果如圖<a href="#orge486fb4">2</a>，擴大版的神經網路幾乎在訓練之初就開始 overfitting，而且越來越嚴重，其驗證損失的表現也較原始版本差。<br />
 </p>
 
 <div class="org-src-container">
@@ -289,26 +327,26 @@
 </div>
 
 
-<div id="orgf40ddef" class="figure">
+<div id="orge486fb4" class="figure">
 <p><img src="images/img-191120103825.jpg" alt="img-191120103825.jpg" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 2: </span>模型容量對驗證損失分數的影響-較大的容量</p>
 </div>
 
 <p>
-較大模型的神經網路雖然導致驗證損失的效能下降，但在訓練損失上的表現則否，由圖<a href="#org232a9bc">3</a>的黑點可明顯看出大網路模型在訓練期間的損失極低，然而這種效能在面對新資料（驗證資集）時確無法表現出來。<br />
+較大模型的神經網路雖然導致驗證損失的效能下降，但在訓練損失上的表現則否，由圖<a href="#org405831b">3</a>的黑點可明顯看出大網路模型在訓練期間的損失極低，然而這種效能在面對新資料（驗證資集）時確無法表現出來。<br />
 </p>
 
 
-<div id="org232a9bc" class="figure">
+<div id="org405831b" class="figure">
 <p><img src="images/img-191120103826.jpg" alt="img-191120103826.jpg" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 3: </span>模型容量對訓練損失分數的影響-較大的容量</p>
 </div>
 </div>
 </div>
-<div id="outline-container-org1f205b3" class="outline-2">
-<h2 id="org1f205b3"><span class="section-number-2">2.</span> 加入權重常規化 (weight regularization)</h2>
+<div id="outline-container-org6fb4a0f" class="outline-2">
+<h2 id="org6fb4a0f"><span class="section-number-2">2.</span> 加入權重常規化 (weight regularization)</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 在設計網路模型時，一個原則為：如果兩種模型有同樣的效能表現，則較簡單的模型通常是更好的設計，也更不容易導致 overfitting。這裡所謂的簡單指的是參數值分佈的熵比較小(entropy of distribution of parameter values las less entropy)的模型，或是使用較少參數的模型。因此，降低 overfitting 就是想辦法採用較小的權重值以限制神經網路的複雜性，這會讓權重的分佈更為常規化(regularized)。權重值常規化(weight regularization)在作法上就是對損失函數中較大的權重加上代價(cost)項目，通常有兩種方式：<br />
@@ -336,19 +374,71 @@
 </div>
 
 <p>
-上述程式中 l2(0.001)的意思是表示該層權重矩陣中的每個係數都會加上(0.001*權重係數值)到神經網路的總損失函數上，由圖<a href="#orgfaa1dbd">4</a>的結果可看，加入 L2 regularization 的模組，其驗證損失的表現較佳。<br />
+上述程式中 l2(0.001)的意思是表示該層權重矩陣中的每個係數都會加上(0.001*權重係數值)到神經網路的總損失函數上，由圖<a href="#org36fab02">4</a>的結果可看，加入 L2 regularization 的模組，其驗證損失的表現較佳。<br />
 </p>
 
 
-<div id="orgfaa1dbd" class="figure">
+<div id="org36fab02" class="figure">
 <p><img src="images/img-19112010382A.jpg" alt="img-19112010382A.jpg" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 4: </span>權重正規化對訓練損失分數的影響</p>
 </div>
 </div>
+<div id="outline-container-org9f80525" class="outline-3">
+<h3 id="org9f80525"><span class="section-number-3">2.1.</span> L1L2 regularzation</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+一個典型的解釋<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>如圖<a href="#org72232fa">5</a>，&ldquo;我們知道, 過擬合就是所謂的模型對可見的數據過度自信, 非常完美的擬合上了這些數據, 如果具備過擬合的能力, 那麼這個方程就可能是一個比較複雜的非線性方程 , 正是因為這裡的 x^3 和 x^2 使得這條虛線能夠被彎來彎去, 所以整個模型就會特別努力地去學習作用在 x^3 和 x^2 上的 c, d 參數. 但是我們期望模型要學到的卻是 這條藍色的曲線. 因為它能更有效地概括數據.而且只需要一個 y=a+bx 就能表達出數據的規律. 或者是說, 藍色的線最開始時, 和紅色線同樣也有 c d 兩個參數, 可是最終學出來時, c 和 d 都學成了 0, 雖然藍色方程的誤差要比紅色大, 但是概括起數據來還是藍色好. 那我們如何保證能學出來這樣的參數呢? 這就是 l1 l2 正規化出現的原因啦.&rdquo;<br />
+</p>
+
+
+<div id="org72232fa" class="figure">
+<p><img src="images/L1l2regularization2.png" alt="L1l2regularization2.png" /><br />
+</p>
+<p><span class="figure-number">Figure 5: </span>過擬合問題</p>
 </div>
-<div id="outline-container-org572650b" class="outline-2">
-<h2 id="org572650b"><span class="section-number-2">3.</span> 丟棄法 (dropout)</h2>
+
+<p>
+對於上述訓練出的兩個方程式，我們可以用\((y_{\theta}(x)-y)^2\)來計算模型預測值\(y(x)\)和真實數據\(y\)的誤差，而 L1, L2 就只是在這個誤差公式後加上一些式子來修正這個公式(如圖<a href="#org5f5cd60">6</a>)，其目的在於讓誤差的最佳化不僅取決於訓練數據擬合的優劣，同時也取決於參數值(如 c,d)的大小；L2 正規化以參數平方來做為計算方式，L1 正規化則是計算每個參數的絕對值。<br />
+</p>
+
+<div id="org5f5cd60" class="figure">
+<p><img src="images/L1l2regularization3.png" alt="L1l2regularization3.png" /><br />
+</p>
+<p><span class="figure-number">Figure 6: </span>L1,L2 正規化公式</p>
+</div>
+
+<p>
+進一步以 Tensorflow Playground 的圖示來觀察 L1,L2 正規化的差異<sup><a id="fnr.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup>，如果把正規化(Regularization)設定為 L1，再執行訓練。可以看到很多權重都被設定為 0，特徵輸入與隱藏層的神經元被大大的減少，如圖<a href="#org84221ed">7</a>，整個模型的複雜度簡化很多。L1 正規化確實有助於將我們的複雜模型縮減為更小的泛化模型。添加正規化後，我們看到無用的功能全部變為零，並且連接線變得稀疏並顯示為灰色。倖存下來的唯一特徵是 x_1 平方和 x_2 平方，這是有道理的，因為這 2 個特徵加在一起就構成了一個圓的方程。<br />
+</p>
+
+
+<div id="org84221ed" class="figure">
+<p><img src="images/L1l2regularization4.png" alt="L1l2regularization4.png" /><br />
+</p>
+<p><span class="figure-number">Figure 7: </span>L1 正規化</p>
+</div>
+
+<p>
+反觀 L2 正規化，當我們訓練它時，每個權重與神經元都還是處於活動狀態，但是非常虛弱，如圖<a href="#orgcff4840">8</a>，L1 正規化使用其中一個特徵而將某些拋棄，而 L2 正規化將同時保留特徵並使權重值保持較小。因此，使用 L1，您可以得到一個較小的模型，但預測性可能較低。。所以：<br />
+</p>
+
+<ul class="org-ul">
+<li>L1 正規化：有可能導致零權重，因刪除更多特徵而使模型稀疏。<br /></li>
+<li>L2 正規化：會對更大的權重值造成更大的影響，將使權重值保持較小。<br /></li>
+</ul>
+
+
+<div id="orgcff4840" class="figure">
+<p><img src="images/L1l2regularization5.png" alt="L1l2regularization5.png" /><br />
+</p>
+<p><span class="figure-number">Figure 8: </span>L2 正規化</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org42d4fe5" class="outline-2">
+<h2 id="org42d4fe5"><span class="section-number-2">3.</span> 丟棄法 (dropout)</h2>
 <div class="outline-text-2" id="text-3">
 <p>
 由 Ceoff Hinton 教授和他在多倫多大學的學生所開發出來的常規化技術之一，主要是在訓練期間隨機丟棄(dropping out，即把 feature 值歸零)layer 的一些輸出特徵，假設某層在訓練期間的某一狀態下其正常輸出向量為[0.2, 0.5, 1.3, 0.8, 1.1]，在 dropout 後，某幾個輸輸向量的值會被歸零，如[0, 0.5, 1.3, 0, 1.1]。丟棄率則是指被歸零的特徵值個數佔特徵值總數的比例，以此例而言丟棄率為 2/5=0.4。<br />
@@ -373,21 +463,220 @@
 </div>
 
 <p>
-在加入兩個 Dropout 層後對於降低 overfitting 的效果如圖<a href="#org9c7e7af">5</a>所示。<br />
+在加入兩個 Dropout 層後對於降低 overfitting 的效果如圖<a href="#org7287874">9</a>所示。<br />
 </p>
 
 
-<div id="org9c7e7af" class="figure">
+<div id="org7287874" class="figure">
 <p><img src="images/img-19112010382B.jpg" alt="img-19112010382B.jpg" width="500" /><br />
 </p>
-<p><span class="figure-number">Figure 5: </span>權重正規化對訓練損失分數的影響</p>
+<p><span class="figure-number">Figure 9: </span>權重正規化對訓練損失分數的影響</p>
 </div>
 </div>
 </div>
+<div id="outline-container-orgd2d086d" class="outline-2">
+<h2 id="orgd2d086d"><span class="section-number-2">4.</span> 循序特徵選擇法</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+另一種降低模型複雜度以避免過度擬合的方式是經由「特徵選擇」(feature selection)來做「降維」(dimensionality reduction)，降維的做法有二：<br />
+</p>
+<ul class="org-ul">
+<li>特徵選擇：feature selection, 由原本的特徵中，選出一個子集合<br /></li>
+<li>特徵提取：feature extraction，由原本的特徵中，導出資訊來建構新的特徵<br /></li>
+</ul>
+
+<p>
+循序特徵選擇法(sequential feature selection)為貪婪演算法的一種，目標在移除不相關或相關較低的特徵，以提高計算效率，這對於不支援「正規化」的演算法來說是很有用的。「循序向後選擇」(Sequential Backward Selection, SBS)便是一個典型的循序特徵選擇法，其做法是逐一從特徵空間中移除特徵，直到只剩下所要的特徵個數。為了達到這個目的，我們要定義一個最小化的「準則函數」(criterion function), 這個準則可以簡化為「模型在移除某特徵前/後的效能差異。SBS 的 python 實作如下：<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">  1: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">## Sequential feature selection algorithms</span>
+<span class="linenr">  2: </span>  <span style="color: #51afef;">from</span> sklearn.base <span style="color: #51afef;">import</span> clone
+<span class="linenr">  3: </span>  <span style="color: #51afef;">from</span> sklearn.metrics <span style="color: #51afef;">import</span> accuracy_score
+<span class="linenr">  4: </span>  <span style="color: #51afef;">from</span> itertools <span style="color: #51afef;">import</span> combinations
+<span class="linenr">  5: </span>  <span style="color: #51afef;">class</span> <span style="color: #ECBE7B;">SBS</span>():
+<span class="linenr">  6: </span>      <span style="color: #51afef;">def</span> <span style="color: #c678dd;">__init__</span>(<span style="color: #51afef;">self</span>, estimator, k_features, scoring=accuracy_score,
+<span class="linenr">  7: </span>                   test_size=<span style="color: #da8548; font-weight: bold;">0.25</span>, random_state=<span style="color: #da8548; font-weight: bold;">1</span>):
+<span class="linenr">  8: </span>          <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">scoring</span> = scoring
+<span class="linenr">  9: </span>          <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">estimator</span> = clone(estimator)
+<span class="linenr"> 10: </span>          <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">k_features</span> = k_features
+<span class="linenr"> 11: </span>          <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">test_size</span> = test_size
+<span class="linenr"> 12: </span>          <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">random_state</span> = random_state
+<span class="linenr"> 13: </span>
+<span class="linenr"> 14: </span>      <span style="color: #51afef;">def</span> <span style="color: #c678dd;">fit</span>(<span style="color: #51afef;">self</span>, X, y):
+<span class="linenr"> 15: </span>
+<span class="linenr"> 16: </span>          <span style="color: #dcaeea;">X_train</span>, <span style="color: #dcaeea;">X_test</span>, <span style="color: #dcaeea;">y_train</span>, <span style="color: #dcaeea;">y_test</span> =             train_test_split(X, y, test_size=<span style="color: #51afef;">self</span>.test_size,
+<span class="linenr"> 17: </span>                               random_state=<span style="color: #51afef;">self</span>.random_state)
+<span class="linenr"> 18: </span>
+<span class="linenr"> 19: </span>          <span style="color: #dcaeea;">dim</span> = X_train.shape[<span style="color: #da8548; font-weight: bold;">1</span>]
+<span class="linenr"> 20: </span>          <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">indices_</span> = <span style="color: #c678dd;">tuple</span>(<span style="color: #c678dd;">range</span>(dim))
+<span class="linenr"> 21: </span>          <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">subsets_</span> = [<span style="color: #51afef;">self</span>.indices_]
+<span class="linenr"> 22: </span>          <span style="color: #dcaeea;">score</span> = <span style="color: #51afef;">self</span>._calc_score(X_train, y_train,
+<span class="linenr"> 23: </span>                                   X_test, y_test, <span style="color: #51afef;">self</span>.indices_)
+<span class="linenr"> 24: </span>          <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">scores_</span> = [score]
+<span class="linenr"> 25: </span>
+<span id="coderef-fitWhile" class="coderef-off"><span class="linenr"> 26: </span>          <span style="color: #51afef;">while</span> dim &gt; <span style="color: #51afef;">self</span>.k_features:</span>
+<span class="linenr"> 27: </span>              <span style="color: #dcaeea;">scores</span> = []
+<span class="linenr"> 28: </span>              <span style="color: #dcaeea;">subsets</span> = []
+<span class="linenr"> 29: </span>
+<span class="linenr"> 30: </span>              <span style="color: #51afef;">for</span> p <span style="color: #51afef;">in</span> combinations(<span style="color: #51afef;">self</span>.indices_, r=dim - <span style="color: #da8548; font-weight: bold;">1</span>):
+<span class="linenr"> 31: </span>                  <span style="color: #dcaeea;">score</span> = <span style="color: #51afef;">self</span>._calc_score(X_train, y_train,
+<span id="coderef-scoreXtest" class="coderef-off"><span class="linenr"> 32: </span>                                           X_test, y_test, p)</span>
+<span class="linenr"> 33: </span>                  scores.append(score)
+<span class="linenr"> 34: </span>                  subsets.append(p)
+<span class="linenr"> 35: </span>
+<span class="linenr"> 36: </span>              <span style="color: #dcaeea;">best</span> = np.argmax(scores)
+<span class="linenr"> 37: </span>              <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">indices_</span> = subsets[best]
+<span class="linenr"> 38: </span>              <span style="color: #51afef;">self</span>.subsets_.append(<span style="color: #51afef;">self</span>.indices_)
+<span class="linenr"> 39: </span>              <span style="color: #dcaeea;">dim</span> -= <span style="color: #da8548; font-weight: bold;">1</span>
+<span class="linenr"> 40: </span>
+<span id="coderef-bestScore" class="coderef-off"><span class="linenr"> 41: </span>              <span style="color: #51afef;">self</span>.scores_.append(scores[best])</span>
+<span class="linenr"> 42: </span>          <span style="color: #51afef;">self</span>.<span style="color: #dcaeea;">k_score_</span> = <span style="color: #51afef;">self</span>.scores_[-<span style="color: #da8548; font-weight: bold;">1</span>]
+<span class="linenr"> 43: </span>
+<span class="linenr"> 44: </span>          <span style="color: #51afef;">return</span> <span style="color: #51afef;">self</span>
+<span class="linenr"> 45: </span>
+<span class="linenr"> 46: </span>      <span style="color: #51afef;">def</span> <span style="color: #c678dd;">transform</span>(<span style="color: #51afef;">self</span>, X):
+<span class="linenr"> 47: </span>          <span style="color: #51afef;">return</span> X[:, <span style="color: #51afef;">self</span>.indices_]
+<span class="linenr"> 48: </span>
+<span class="linenr"> 49: </span>      <span style="color: #51afef;">def</span> <span style="color: #c678dd;">_calc_score</span>(<span style="color: #51afef;">self</span>, X_train, y_train, X_test, y_test, indices):
+<span class="linenr"> 50: </span>          <span style="color: #51afef;">self</span>.estimator.fit(X_train[:, indices], y_train)
+<span class="linenr"> 51: </span>          <span style="color: #dcaeea;">y_pred</span> = <span style="color: #51afef;">self</span>.estimator.predict(X_test[:, indices])
+<span class="linenr"> 52: </span>          <span style="color: #dcaeea;">score</span> = <span style="color: #51afef;">self</span>.scoring(y_test, y_pred)
+<span class="linenr"> 53: </span>          <span style="color: #51afef;">return</span> score
+<span class="linenr"> 54: </span>
+<span class="linenr"> 55: </span>  <span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
+<span class="linenr"> 56: </span>  <span style="color: #51afef;">from</span> sklearn.neighbors <span style="color: #51afef;">import</span> KNeighborsClassifier
+<span class="linenr"> 57: </span>
+<span class="linenr"> 58: </span>  <span style="color: #dcaeea;">knn</span> = KNeighborsClassifier(n_neighbors=<span style="color: #da8548; font-weight: bold;">5</span>)
+<span class="linenr"> 59: </span>
+<span class="linenr"> 60: </span>  <span style="color: #5B6268;">##</span><span style="color: #5B6268;">========</span>
+<span class="linenr"> 61: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35712;&#20837;&#36039;&#26009;</span>
+<span class="linenr"> 62: </span>  <span style="color: #51afef;">from</span> sklearn <span style="color: #51afef;">import</span> datasets
+<span class="linenr"> 63: </span>  <span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 64: </span>  <span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
+<span class="linenr"> 65: </span>  <span style="color: #dcaeea;">df_wine</span> = pd.read_csv(<span style="color: #98be65;">'https://archive.ics.uci.edu/'</span>
+<span class="linenr"> 66: </span>                      <span style="color: #98be65;">'ml/machine-learning-databases/wine/wine.data'</span>,
+<span class="linenr"> 67: </span>                      header=<span style="color: #a9a1e1;">None</span>)
+<span class="linenr"> 68: </span>  df_wine.<span style="color: #dcaeea;">columns</span> = [<span style="color: #98be65;">'Class label'</span>, <span style="color: #98be65;">'Alcohol'</span>, <span style="color: #98be65;">'Malic acid'</span>, <span style="color: #98be65;">'Ash'</span>,
+<span class="linenr"> 69: </span>                     <span style="color: #98be65;">'Alcalinity of ash'</span>, <span style="color: #98be65;">'Magnesium'</span>, <span style="color: #98be65;">'Total phenols'</span>,
+<span class="linenr"> 70: </span>                     <span style="color: #98be65;">'Flavanoids'</span>, <span style="color: #98be65;">'Nonflavanoid phenols'</span>, <span style="color: #98be65;">'Proanthocyanins'</span>,
+<span class="linenr"> 71: </span>                     <span style="color: #98be65;">'Color intensity'</span>, <span style="color: #98be65;">'Hue'</span>, <span style="color: #98be65;">'OD280/OD315 of diluted wines'</span>,
+<span class="linenr"> 72: </span>                     <span style="color: #98be65;">'Proline'</span>]
+<span class="linenr"> 73: </span>  <span style="color: #dcaeea;">X</span>, <span style="color: #dcaeea;">y</span> = df_wine.iloc[:, <span style="color: #da8548; font-weight: bold;">1</span>:].values, df_wine.iloc[:, <span style="color: #da8548; font-weight: bold;">0</span>].values
+<span class="linenr"> 74: </span>  <span style="color: #51afef;">from</span> sklearn.model_selection <span style="color: #51afef;">import</span> train_test_split
+<span class="linenr"> 75: </span>  <span style="color: #dcaeea;">X_train</span>, <span style="color: #dcaeea;">X_test</span>, <span style="color: #dcaeea;">y_train</span>, <span style="color: #dcaeea;">y_test</span> =    train_test_split(X, y,
+<span class="linenr"> 76: </span>                       test_size=<span style="color: #da8548; font-weight: bold;">0.3</span>,
+<span class="linenr"> 77: </span>                       random_state=<span style="color: #da8548; font-weight: bold;">0</span>,
+<span class="linenr"> 78: </span>                       stratify=y)
+<span class="linenr"> 79: </span>
+<span class="linenr"> 80: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23559;&#36039;&#26009;&#27161;&#28310;&#21270;: &#21033;&#29992;preprocessing&#27169;&#32068;&#35041;&#30340;StandardScaler&#39006;&#21029;</span>
+<span class="linenr"> 81: </span>  <span style="color: #51afef;">from</span> sklearn.preprocessing <span style="color: #51afef;">import</span> StandardScaler
+<span class="linenr"> 82: </span>  <span style="color: #dcaeea;">sc</span> = StandardScaler() <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23526;&#20363;&#21270;&#19968;&#20491;StandardScaler&#29289;&#20214;</span>
+<span class="linenr"> 83: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21033;&#29992;fit&#26041;&#27861;&#65292;&#23565;X_train&#20013;&#27599;&#20491;&#29305;&#24501;&#20540;&#20272;&#24179;&#22343;&#25976;&#21644;&#27161;&#28310;&#24046;</span>
+<span class="linenr"> 84: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#28982;&#24460;&#23565;&#27599;&#20491;&#29305;&#24501;&#20540;&#36914;&#34892;&#27161;&#28310;&#21270;(train&#21644;test&#37117;&#35201;&#20570;)</span>
+<span class="linenr"> 85: </span>  sc.fit(X_train)
+<span class="linenr"> 86: </span>  <span style="color: #dcaeea;">X_train_std</span> = sc.transform(X_train)
+<span class="linenr"> 87: </span>  <span style="color: #dcaeea;">X_test_std</span> = sc.transform(X_test)
+<span class="linenr"> 88: </span>
+<span class="linenr"> 89: </span>  <span style="color: #5B6268;">##</span><span style="color: #5B6268;">===</span>
+<span class="linenr"> 90: </span>
+<span class="linenr"> 91: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">selecting features</span>
+<span id="coderef-kFeatures" class="coderef-off"><span class="linenr"> 92: </span>  <span style="color: #dcaeea;">sbs</span> = SBS(knn, k_features=<span style="color: #da8548; font-weight: bold;">1</span>)</span>
+<span class="linenr"> 93: </span>  sbs.fit(X_train_std, y_train)
+<span class="linenr"> 94: </span>
+<span class="linenr"> 95: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">plotting performance of feature subsets</span>
+<span class="linenr"> 96: </span>  <span style="color: #dcaeea;">k_feat</span> = [<span style="color: #c678dd;">len</span>(k) <span style="color: #51afef;">for</span> k <span style="color: #51afef;">in</span> sbs.subsets_]
+<span class="linenr"> 97: </span>
+<span id="coderef-accuracyScore" class="coderef-off"><span class="linenr"> 98: </span>  plt.plot(k_feat, sbs.scores_, marker=<span style="color: #98be65;">'o'</span>)</span>
+<span class="linenr"> 99: </span>  plt.ylim([<span style="color: #da8548; font-weight: bold;">0.7</span>, <span style="color: #da8548; font-weight: bold;">1.02</span>])
+<span class="linenr">100: </span>  plt.ylabel(<span style="color: #98be65;">'Accuracy'</span>)
+<span class="linenr">101: </span>  plt.xlabel(<span style="color: #98be65;">'Number of features'</span>)
+<span class="linenr">102: </span>  plt.grid()
+<span class="linenr">103: </span>  plt.tight_layout()
+<span class="linenr">104: </span>  plt.savefig(<span style="color: #98be65;">'04_08.png'</span>, dpi=<span style="color: #da8548; font-weight: bold;">300</span>)
+<span class="linenr">105: </span>  <span style="color: #5B6268;">#</span><span style="color: #5B6268;">plt.show()</span>
+<span id="coderef-sbsSubsets" class="coderef-off"><span class="linenr">106: </span>  <span style="color: #c678dd;">print</span>(sbs.subsets_) <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20840;&#37096;&#21015;&#20986;&#65292;&#25214;&#21040;3&#20491;&#29305;&#24501;&#20540;&#26159;&#22312;&#31532;&#24190;&#20491;&#20301;&#32622;</span></span>
+<span class="linenr">107: </span>  <span style="color: #c678dd;">print</span>(<span style="color: #c678dd;">list</span>(sbs.subsets_[<span style="color: #da8548; font-weight: bold;">10</span>]))
+<span class="linenr">108: </span>  <span style="color: #dcaeea;">k3</span> = <span style="color: #c678dd;">list</span>(sbs.subsets_[<span style="color: #da8548; font-weight: bold;">10</span>])
+<span class="linenr">109: </span>  <span style="color: #c678dd;">print</span>(df_wine.columns[<span style="color: #da8548; font-weight: bold;">1</span>:][k3])
+<span class="linenr">110: </span>  <span style="color: #5B6268;">## </span><span style="color: #5B6268;">&#27604;&#36611;&#20840;&#37096;&#29305;&#24501;&#20540;&#33287;&#19977;&#20491;&#29305;&#24501;&#20540;&#30340;&#25928;&#33021;</span>
+<span class="linenr">111: </span>  knn.fit(X_train_std, y_train)
+<span class="linenr">112: </span>  <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'Training accuracy (FULL):'</span>, knn.score(X_train_std, y_train))
+<span class="linenr">113: </span>  <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'Test accuracy (FULL):'</span>, knn.score(X_test_std, y_test))
+<span class="linenr">114: </span>  knn.fit(X_train_std[:, k3], y_train)
+<span class="linenr">115: </span>  <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'Training accuracy (K3):'</span>, knn.score(X_train_std[:,k3], y_train))
+<span class="linenr">116: </span>  <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'Test accuracy (K3):'</span>, knn.score(X_test_std[:,k3], y_test))
+<span class="linenr">117: </span>
+</pre>
 </div>
+
+<pre class="example">
+[(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12), (0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12), (0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11), (0, 1, 2, 3, 4, 5, 6, 7, 9, 11), (0, 1, 2, 3, 4, 5, 7, 9, 11), (0, 1, 2, 3, 5, 7, 9, 11), (0, 1, 2, 3, 5, 7, 11), (0, 1, 2, 3, 5, 11), (0, 1, 2, 3, 11), (0, 1, 2, 11), (0, 1, 11), (0, 11), (0,)]
+[0, 1, 11]
+Index(['Alcohol', 'Malic acid', 'OD280/OD315 of diluted wines'], dtype='object')
+Training accuracy (FULL): 0.967741935483871
+Test accuracy (FULL): 0.9629629629629629
+Training accuracy (K3): 0.9516129032258065
+Test accuracy (K3): 0.9259259259259259
+</pre>
+
+
+
+<div id="org052f97b" class="figure">
+<p><img src="images/04_08.png" alt="04_08.png" width="500" /><br />
+</p>
+<p><span class="figure-number">Figure 10: </span>SBS</p>
+</div>
+
+<p>
+前述實作中，k_features 參數(程式第<a href="#coderef-kFeatures" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-kFeatures');" onmouseout="CodeHighlightOff(this, 'coderef-kFeatures');">92</a>行)定義了我們希望演算法「最後要保留多少特徵」，在預設情況下，以 accuracy_score(程式第<a href="#coderef-accuracyScore" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-accuracyScore');" onmouseout="CodeHighlightOff(this, 'coderef-accuracyScore');">98</a>行)來評估模型效能。在 fit 的 while 迴圈中(<a href="#coderef-fitWhile" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-fitWhile');" onmouseout="CodeHighlightOff(this, 'coderef-fitWhile');">26</a>行)，由 itertools 模組的 combinations 方法所產生的特徵子集合會被評估並降維，直到只剩下所要的特徵個數。<br />
+</p>
+
+<p>
+在每次迭代中，演算法使用內部創建的測試數據集 X_test(第<a href="#coderef-scoreXtest" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-scoreXtest');" onmouseout="CodeHighlightOff(this, 'coderef-scoreXtest');">32</a>行)來評估特徵子集合，然後留下精確度最佳的特徵子集合所得分數，加入串列 self.scores_中(第<a href="#coderef-bestScore" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-bestScore');" onmouseout="CodeHighlightOff(this, 'coderef-bestScore');">41</a>行)，之後再以這些分數來評估結果。最後的特徵子集合「行索引」會被分派到變數 self.indices_中，然後以 transform 將這些所選定的特徵轉為新的數據陣列。<br />
+</p>
+
+<p>
+由圖<a href="#org052f97b">10</a>可以看到，當特徵數 k={3, 7, 8, 9, 10, 11, 12}時，KNN 分類器的準確率為 100%。若進一步想確定當 k=3 時，是哪三個特徵，則可以由 sbs.subset_中逐步探索出來(程式第<a href="#coderef-sbsSubsets" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-sbsSubsets');" onmouseout="CodeHighlightOff(this, 'coderef-sbsSubsets');">106</a>行)。<br />
+</p>
+
+<p>
+進一步比較「全部特徵值」以及「三個特徵值」所得出的模型效能，可以看到即使只留下三個特徵值，模型的效能仍相去不遠，更重要的是，透過降低維度，可以有效的提升運算效能。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgc6e36aa" class="outline-2">
+<h2 id="orgc6e36aa"><span class="section-number-2">5.</span> 選取有意義的特徵</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+overfitting 的產生原因是模型過度遷就於訓練數據，導致面對新數據(測試集)時成效不彰，我們稱這種模型具有較高變異性(high variance)，一般的解決策略有：<br />
+</p>
+<ul class="org-ul">
+<li>收集更多的訓練數據集<br /></li>
+<li>經由正規化，對於過度複雜的模型引進一個「懲罰」(penalty)<br /></li>
+<li>以較少的參數做出較簡單的模型(使用更簡單的模型)<br /></li>
+<li>減少數據維度<br /></li>
+</ul>
+</div>
+</div>
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://morvanzhou.github.io/tutorials/machine-learning/ML-intro/3-09-l1l2regularization/">L1 / L2 正規化</a><br />
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.2" class="footnum" href="#fnr.2" role="doc-backlink">2</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://ithelp.ithome.com.tw/articles/10219648?sc=rss.iron">Google ML課程筆記 - Overfitting 與 L1 /L2 Regularization </a><br />
+</p></div></div>
+
+
+</div>
+</div></div>
 <div id="postamble" class="status">
 <p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2024-02-18 Sun 15:40</p>
+<p class="date">Created: 2024-02-20 Tue 13:57</p>
 </div>
 </body>
 </html>

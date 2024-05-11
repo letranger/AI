@@ -7,6 +7,7 @@
 #+INCLUDE: ../pdf.org
 #+TAGS: AI, Machine Learning
 #+OPTIONS: toc:2 ^:nil num:5
+#+OPTIONS: H:4
 #+PROPERTY: header-args :eval never-export
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/muse.css" />
 #+EXCLUDE_TAGS: noexport
@@ -63,7 +64,7 @@
 ** 傳統程式設計
 假設有一個用來描述直線的函數(模型): $y=wx+b$，直線上的每個點都可以用 $x$ 值乘以$w$(權重值)再加上$b$(偏差值)，得到相應的 $y$ 值。
 現在假設直線上有兩個點，分別是 $x=2, y=3$ 和 $x=3, y=5$ (如圖[[fig:LinearQuestion]])，那麼，請問當 $x=10$ 時，$y$ 的值是多少呢？
-#+begin_src python -r -n :results output :exports both
+#+begin_src python -r -n :results output :exports none
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -72,10 +73,16 @@ y = [3, 5]
 plt.plot(x, y, '-*')
 plt.xlim(0, 5)
 plt.ylim(0, 7)
-plt.text(2.1, 3-0.1, '(2, 3)')
-plt.text(3.1, 5-0.1, '(3, 5)')
+plt.xlabel('$x$', fontsize=15)
+plt.ylabel('$y$', fontsize=15)
+
+plt.text(2.1, 3-0.1, '(2, 3)', fontsize=15)
+plt.text(3.1, 5-0.1, '(3, 5)', fontsize=15)
 plt.savefig('images/TrandPlot.png', dpi=300)
 #+end_src
+
+#+RESULTS:
+
 #+CAPTION: 一個直線函數問題
 #+LABEL: fig:Labl
 #+name: fig:LinearQuestion
@@ -85,9 +92,9 @@ plt.savefig('images/TrandPlot.png', dpi=300)
 [[file:images/TrandPlot.png]]
 
 以下是傳統的程式設計模式，受了十數年高深數學教育的你，第一反應大概是會想先求出連接這兩個點的直線所相應的 $w$ 值與 $b$ 值(也就是模型中的兩個參數)。
-*** 解法1: class版
+*** 解法2: class版 :noexport:
 看不懂的可以看底下的tuple版
-#+begin_src python -r:results output :exports both
+#+begin_src python -r -n :results output :exports both
 def get_slope(p1, p2):
     w = (p2.y - p1.y) / (p2.x - p1.x)
     return w
@@ -121,8 +128,8 @@ print(f'當x=10時，y={w}*10+{b}={w*10+b}')
 : Bias: -1.0
 : 當x=10時，y=2.0*10+-1.0=19.0
 
-*** 解法2: tuple版
-#+begin_src python -r :results output :exports both
+*** 解法
+#+begin_src python -r -n:results output :exports both
 def get_slope(p1, p2):
     p1x, p1y = p1 #取出tuple中的(x, y)
     p2x, p2y = p2 #取出tuple中的(x, y)
@@ -195,10 +202,37 @@ print(f'當x=10時，y={w}*10+{b}={w*10+b}')
 [[file:images/MLProg.png]]
 
 ** 實作1
-#+begin_src shell -r :results output :exports both
+#+begin_src plantuml :file images/mldemo-1.png
+@startuml
+ left to right direction
+ state x: 10
+ state 已訓練模型 {
+ state 訓練資料 {
+ state Xs #palegreen : [2.0, 3.0]
+ state Ys #palegreen : [3.0, 5.0]
+ }
+ state 模型 {
+ state l0 #lightgray : 黑盒子
+ }
+ Xs --> l0
+ Ys --> l0
+ }
+ state 預測結果 {
+ state y #lightyellow: 14.709847
+ }
+ x --> 已訓練模型
+ 已訓練模型 --> y
+ note top of 預測結果: 正確答案:19
+@endum
+#+end_src
+
+#+RESULTS:
+[[file:images/mldemo-1.png]]
+
+#+begin_src shell -r -n:results output :exports both
 pip3 install tensorflow
 #+end_src
-#+begin_src python -r :results output :exports both
+#+begin_src python -r -n:results output :exports both
 import tensorflow as tf
 import numpy as np
 from tensorflow.keras import Sequential
@@ -226,7 +260,34 @@ print("模型的兩個參數w,b: {}".format(l0.get_weights()))
 
 ** 實作2
 如果我們向上帝偷偷多要一個模型的參照點(4, 7)，以三點當成標準答案來進行預測，結果會不會好一點呢?
-#+begin_src python -r  :results output :exports both
+#+begin_src plantuml :file images/mldemo-2.png
+@startuml
+ left to right direction
+ state x: 10
+ state 已訓練模型 {
+ state 訓練資料 {
+ state Xs #palegreen : [2.0, 3.0, 4.0]
+ state Ys #palegreen : [3.0, 5.0, 7.0]
+ }
+ state 模型 {
+ state l0 #lightgray : 黑盒子
+ }
+ Xs --> l0
+ Ys --> l0
+ }
+ state 預測結果 {
+ state y #lightyellow: 17.07221
+ }
+ x --> 已訓練模型
+ 已訓練模型 --> y
+ note top of 預測結果: 正確答案:19
+@endum
+#+end_src
+
+#+RESULTS:
+[[file:images/mldemo-2.png]]
+
+#+begin_src python -r -n :results output :exports both
 import tensorflow as tf
 import numpy as np
 from tensorflow.keras import Sequential
@@ -252,8 +313,43 @@ print("模型的兩個參數w,b: {}".format(l0.get_weights()))
 預測結果y的值為17.072221，而正確答案為19，好像也不怎麼樣....-_-
 兩個參數的值為(1.7164488, -0.9227743)，與正確答案(2, -1)相近。
 
+** 程式解說
+1. 上述程式使用tensorflow這個模組為主要預測工具，建立了一個模型(第[[(model)]]行)，這個模型中只有一層、裡面有一個神經元(第[[(neuron)]]行)
+2. 定義好模型後，我們以SGD(隨機梯度下降法)為優化器、用它來找出最佳參數；以MSE(均方差)做為損失函數，計算模型訓練過程中生成的參數優劣判斷標準(第[[(modelCompile)]]行)，並編譯此模型
+3. 編譯好模型，我們就拿手僅有的5組資料來訓練模型，訓練500回(第[[(modelFit)]]行)
+4. 訓練好的模型就能拿來預測了，我們拿 $x=10$ 當成預測資料，要求模型給出預測的結果 $y$ (第[[(modelPredict)]]行)
+5. 偷偷看一下這個模型給出答案的關鍵、也就是模型的兩個參數(Weight)(第[[(modelWeights)]]行)
+#+latex:\newpage
+
 ** 實作3
 讓我們壯起膽子再跟上帝多要兩個線上的點:(-1, -3)、(0, -1)，以五點當成標準答案來進行預測，其實作的程式碼為：
+#+begin_src plantuml :file images/mldemo-3.png
+@startuml
+ left to right direction
+ state x: 10
+ state 已訓練模型 {
+ state 訓練資料 {
+ state Xs #palegreen : [-1.0, 0.0, 2.0, 3.0, 4.0]
+ state Ys #palegreen : [-3.0, -1.0, 3.0, 5.0, 7.0]
+ }
+ state 模型 {
+ state l0 #lightgray : 黑盒子
+ }
+ Xs --> l0
+ Ys --> l0
+ }
+ state 預測結果 {
+ state y #lightyellow: 18.979391
+ }
+ x --> 已訓練模型
+ 已訓練模型 --> y
+ note top of 預測結果: 正確答案:19
+@endum
+#+end_src
+
+#+RESULTS:
+[[file:images/mldemo-3.png]]
+
 #+begin_src python -r -n :results output :exports both
 import tensorflow as tf
 import numpy as np
@@ -278,14 +374,6 @@ print("模型的兩個參數w,b: {}".format(l0.get_weights())) (ref:modelWeights
 : 模型的兩個參數w,b: [array([[1.9970131]], dtype=float32), array([-0.99074], dtype=float32)]
 
 模型對 $y$ 的預測結果為18.979391，與正確答案19已經十分相近。
-
-** 程式解說
-1. 上述程式使用tensorflow這個模組為主要預測工具，建立了一個模型(第[[(model)]]行)，這個模型中只有一層、裡面有一個神經元(第[[(neuron)]]行)
-2. 定義好模型後，我們以SGD(隨機梯度下降法)為優化器、用它來找出最佳參數；以MSE(均方差)做為損失函數，計算模型訓練過程中生成的參數優劣判斷標準(第[[(modelCompile)]]行)，並編譯此模型
-3. 編譯好模型，我們就拿手僅有的5組資料來訓練模型，訓練500回(第[[(modelFit)]]行)
-4. 訓練好的模型就能拿來預測了，我們拿 $x=10$ 當成預測資料，要求模型給出預測的結果 $y$ (第[[(modelPredict)]]行)
-5. 偷偷看一下這個模型給出答案的關鍵、也就是模型的兩個參數(Weight)(第[[(modelWeights)]]行)
-#+latex:\newpage
 
 * 機器學習概念釐清 :noexport:
 ** Machine Learning v.s. Statistics
@@ -356,6 +444,14 @@ Inference Phase
 :PROPERTIES:
 :ID:       20221023T110646.714031
 :END:
+#+CAPTION: AI, Machine Learning與Deep Learning
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/AI,_Machine_Learning與Deep_Learning/2024-02-19_16-24-48_2024-02-19_16-23-09.png]]
+
 #+CAPTION: 機器學習的類型
 #+LABEL:fig:Labl
 #+name: fig:Name
@@ -435,7 +531,7 @@ Inference Phase
 #+ATTR_HTML: :width 400
 [[file:images/機器學習的類型/2024-01-31_13-03-24_2024-01-31_13-03-07.png]]
 
-支援向量機是一種基於統計學習理論基礎的機器學習模型，針對小樣本、非線性、高維度與局部最小點等問題具有相對的優勢，主要用來處理分類問題。除了在文字分類、圖像分類及醫學中分類蛋白質等領域有不錯的成效外，因具有計算速度快且空間成本低等優勢，在工業界也有廣泛的應用[fn:4]。
+支援向量機是一種基於統計學習理論基礎的機器學習模型，針對小樣本、非線性、高維度與局部最小點等問題具有相對的優勢，主要用來處理分類問題。除了在文字分類、圖像分類及醫學中分類蛋白質等領域有不錯的成效外，因具有計算速度快且空間成本低等優勢，在工業界也有廣泛的應用[fn:2]。
 
 #+CAPTION: SVM超平面
 #+LABEL:fig:Labl
@@ -453,7 +549,7 @@ Inference Phase
 #+ATTR_HTML: :width 400
 [[file:images/機器學習的類型/2024-01-31_13-07-55_2024-01-31_13-07-31.png]]
 
-SVM不僅能將數據分門別類，甚至還可以找到最大化的「分離超平面」（類似於三維以上空間中的一個平面）[fn:4]，會最大化每個樣本點與該「超平面」的差。此外，當數據是「不可線性分離」時，支援向量機還可以透過「軟邊界」(soft margin)和「核技巧」(kernel trick)來處理。
+SVM不僅能將數據分門別類，甚至還可以找到最大化的「分離超平面」（類似於三維以上空間中的一個平面）[fn:2]，會最大化每個樣本點與該「超平面」的差。此外，當數據是「不可線性分離」時，支援向量機還可以透過「軟邊界」(soft margin)和「核技巧」(kernel trick)來處理。
 
 ** [[id:20221023T101716.467694][非監督式學習]](Unsupervised learning)
 #+CAPTION: 資料分群
@@ -464,14 +560,14 @@ SVM不僅能將數據分門別類，甚至還可以找到最大化的「分離�
 #+ATTR_HTML: :width 400
 [[file:images/機器學習的類型/2024-01-31_21-19-35_2024-01-31_21-18-52.png]]
 
-- 非監督式學習只有觀測值，單純給電腦大量觀測資料，然後從這些資料找出潛在規則。例如：將 10 萬張照片依據電腦自己歸納的規則分為數個不同的群組(如圖[[fig:knn-10]]左[fn:5])或是分成5群(如圖[[fig:knn-10]]右)。
+- 非監督式學習只有觀測值，單純給電腦大量觀測資料，然後從這些資料找出潛在規則。例如：將 10 萬張照片依據電腦自己歸納的規則分為數個不同的群組(如圖[[fig:knn-10]]左[fn:3])或是分成5群(如圖[[fig:knn-10]]右)。
 - 在[[id:20221023T101626.420918][監督式學習]]中，我們事先會知道訓練集數據的正確答案(label)，並依此訓練我們的模型；在[[id:0a5c37c0-741a-4a1a-bec7-f98074830132][強化學習]]的環境中，我們會為代理人定義如何度量特定行動的奬勵；然而，在「非監督式學習」的環境中，我們面對的是未標記類別的數據或未知結構的數據，目的是讓演算法導出結論。最典型的例子就是「集群」(clustering)，即，讓演算法自己根據數據的特性把它們依某種特質分類為不同子集合，這裡的子集合不一定要是有限集合，也可能是無界子集(unbounded subsets)。「受限玻爾茲曼機」以及「深度信念網路」(deep belief networks, DBN)都屬此類。
 - 非監督式學習經常被運用於資料分析的前置階段，用來先將資料分群或降低維度(減少變數量)，以利後續的分析或監督式學習的進行。
 *** 方法：
 - 群集(Clustering): K平均法(K-means)、階層式分群
-  cluster analysis 是一種精簡資料的方法，主要目的是將一大筆資料依據樣本之間的共同屬性精簡成少數幾個同質性次群體 homogeneous subgroups ，即以相似性 similarity 衡量，形成集群(cluster)，以便從雜亂無章的一大堆原始資料中，做到分類、分群的目標。而所謂的相似性通常是以「距離」作為衡量，相對距離愈近，相似程度愈高，分群之後可以使得群內差異小、群間差異大[fn:7]。
+  cluster analysis 是一種精簡資料的方法，主要目的是將一大筆資料依據樣本之間的共同屬性精簡成少數幾個同質性次群體 homogeneous subgroups ，即以相似性 similarity 衡量，形成集群(cluster)，以便從雜亂無章的一大堆原始資料中，做到分類、分群的目標。而所謂的相似性通常是以「距離」作為衡量，相對距離愈近，相似程度愈高，分群之後可以使得群內差異小、群間差異大[fn:4]。
 - 階層式分群​​(Hierarchical Clustering​​)
-  將資料在一個階層式的樹狀上，反覆的利用拆分以及聚合的方式建立出一個分類系統。階層式分群的優勢在於它使用上的簡單性以及能夠在小數據上操作，然而卻非常難處理大型的資料[fn:6]。
+  將資料在一個階層式的樹狀上，反覆的利用拆分以及聚合的方式建立出一個分類系統。階層式分群的優勢在於它使用上的簡單性以及能夠在小數據上操作，然而卻非常難處理大型的資料[fn:5]。
   各群組間的距離計算方式有以下三種：Single linkage、Maximum linkage、Average Linkage
 - 自動編碼器(Autoencoder)
   由編碼器(encoder)與解碼器(decoder)構成，
@@ -480,7 +576,6 @@ SVM不僅能將數據分門別類，甚至還可以找到最大化的「分離�
 - K-means: 將數據集中的每個樣本分類到 k 個不同的子集合中，它隨機選擇 k 個點，這些點稱為「質心」(centroid)，代表這 k 個不同子集合的中心點，然後對於每個「質心」，我們選擇最接近它的一點，群組起來。
 
 ** 半監督式學習
-
 #+CAPTION: 半監督式學習
 #+LABEL:fig:Labl
 #+name: fig:semi-1
@@ -489,7 +584,7 @@ SVM不僅能將數據分門別類，甚至還可以找到最大化的「分離�
 #+ATTR_HTML: :width 300
 [[file:images/機器學習的類型/2024-02-01_19-46-27_2024-02-01_19-45-17.png]]
 
-Semi-Supervised Learning如圖[[fig:semi-1]]所示，只有部分的data有label，而其他的data則是未標註的(unlabeled)。半監督學習的目標與監督學習完全相同，差別在資料集中存在部分的標注缺失[fn:8]。
+Semi-Supervised Learning如圖[[fig:semi-1]]所示，只有部分的data有label，而其他的data則是未標註的(unlabeled)。半監督學習的目標與監督學習完全相同，差別在資料集中存在部分的標注缺失[fn:6]。
 
 ** [[id:0a5c37c0-741a-4a1a-bec7-f98074830132][增強式學習]]
 - 機器為了達成目標，隨著環境的變動，而逐步調整其行為，並評估每一個行動之後所到 的回饋是正向的或負向的，即，在 try-and-error 的過程中一步步從失敗中找出成功的路徑。
@@ -537,7 +632,7 @@ Semi-Supervised Learning如圖[[fig:semi-1]]所示，只有部分的data有label
 #+RESULTS:
 [[file:images/ReinforceLearningGame.jpg]]
 
-** 依據AI模型是否能由即時資料流進行增量學習來區分[fn:2]
+** 依據AI模型是否能由即時資料流進行增量學習來區分[fn:7]
 *** Offline (Batch) learning:
 In /batch learning/, the system is incapable of learning incrementally; it must be trained using all the available data.
 *** Online learning:
@@ -554,7 +649,7 @@ In /batch learning/, the system is incapable of learning incrementally; it must 
 - 訓練模型
 - 評估、 修正模型
 ** 機器學習的資料呈現方式
-How can we represent data (images, text, user preferences, etc.) in a way that computers can understand? -> Organize information into a vector[fn:3].
+How can we represent data (images, text, user preferences, etc.) in a way that computers can understand? -> Organize information into a vector[fn:8].
 - A vector is a 1-dimensional array of numbers. It has both a magnitude(length) and a direction.
 - A feature vector is a vector whose entries represent the "features" of some object.
   #+CAPTION: Feature Vector
@@ -610,7 +705,7 @@ Assign to each word a vector with one 1 and 0s elsewhere. This is called a one-h
 - One-hot encodings are never "similar."
 - Similarity is measured by the *dot product.*
 
-* 機器學習的主要挑戰[fn:2]
+* 機器學習的主要挑戰[fn:7]
 ** Insufficient quantity of training data
 Even for very simple problems you typically need thousands of examples, and for complex problems such as image or speech recognition you may need millions of examples. The idea that data matters more than algorithms for complex problems was further popularized by Peter norvig et al. in a paper titled "The Unreasonable Effectiveness of Data", published in 2009.
 
@@ -644,7 +739,7 @@ As the saying goes: garbage in, garbage out. Your system will only be capable of
 Underfitting occurs when your model is too simple to learn the underlying structure of the data.
 
 * 典型的機器學習MODEL Training[實作]
-以"rock, paper, and scissors"辨識為例[fn:3]:
+以"rock, paper, and scissors"辨識為例[fn:8]:
 1. 將三種圖案的image讀入model中
 2. 於model中建立神經元(可視為function)，學習不同image的特徵
 3. 根據上述神經元讀取的特徵值(features)，配合該image之答案(label)，進行學習
@@ -766,16 +861,19 @@ Neuron
 [[file:images/compile_phase.jpg]]
 
 * Footnotes
-[fn:8] [[https://u9534056.medium.com/%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92%E4%BB%BB%E5%8B%99-%E7%9B%A3%E7%9D%A3%E5%AD%B8%E7%BF%92-%E5%8D%8A%E7%9B%A3%E7%9D%A3%E5%AD%B8%E7%BF%92-%E7%84%A1%E7%9B%A3%E7%9D%A3%E5%AD%B8%E7%BF%92-9b75972f91d6][機器學習任務：監督學習/半監督學習/無監督學習]]
-
-[fn:7] [[https://ithelp.ithome.com.tw/articles/10291318][Day 19 聚類（集群）分析 Cluster Analysis]]
-[fn:6] [[https://zh.oosga.com/docs/unsupervised-learning/][非監督式學習（Unsupervised Learning）的定義為何？
-]]
-[fn:5] [[https://alankrantas.medium.com/kmeans-%E8%83%BD%E5%BE%9E%E8%B3%87%E6%96%99%E4%B8%AD%E6%89%BE%E5%87%BA-k-%E5%80%8B%E5%88%86%E9%A1%9E%E7%9A%84%E9%9D%9E%E7%9B%A3%E7%9D%A3%E5%BC%8F%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92%E6%BC%94%E7%AE%97%E6%B3%95-%E6%89%80%E4%BB%A5%E5%AE%83%E5%88%B0%E5%BA%95%E6%9C%89%E5%95%A5%E7%94%A8-%E4%BD%BF%E7%94%A8-scikit-learn-%E8%88%87-python-5dd8c0c8b167][KMeans：能從資料中找出 K 個分類的非監督式機器學習演算法 — — 所以它到底有啥用？]]
-[fn:4] [[https://pyecontech.com/2020/03/24/svm/][[機器學習首部曲] 支援向量機 SVM]]
 
 [fn:1] [[https://github.com/rasbt/python-machine-learning-book-2nd-edition][python-machine-learning-book-2nd-edition]]
 
-[fn:2] [[https://www.books.com.tw/products/F014278520][Hands-On Machine Learning with Scikit-Learn, Keras, and Tensorflow: Concepts, Tools, and Techniques to Build Intelligent Systems]]
+[fn:2] [[https://pyecontech.com/2020/03/24/svm/][[機器學習首部曲] 支援向量機 SVM]]
 
-[fn:3] [[https://youtu.be/LlKAna21fLE][A friendly introduction to linear algebra for ML (ML Tech Talks)]]
+[fn:3] [[https://alankrantas.medium.com/kmeans-%E8%83%BD%E5%BE%9E%E8%B3%87%E6%96%99%E4%B8%AD%E6%89%BE%E5%87%BA-k-%E5%80%8B%E5%88%86%E9%A1%9E%E7%9A%84%E9%9D%9E%E7%9B%A3%E7%9D%A3%E5%BC%8F%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92%E6%BC%94%E7%AE%97%E6%B3%95-%E6%89%80%E4%BB%A5%E5%AE%83%E5%88%B0%E5%BA%95%E6%9C%89%E5%95%A5%E7%94%A8-%E4%BD%BF%E7%94%A8-scikit-learn-%E8%88%87-python-5dd8c0c8b167][KMeans：能從資料中找出 K 個分類的非監督式機器學習演算法 — — 所以它到底有啥用？]]
+
+[fn:4] [[https://ithelp.ithome.com.tw/articles/10291318][Day 19 聚類（集群）分析 Cluster Analysis]]
+
+[fn:5] [[https://zh.oosga.com/docs/unsupervised-learning/][非監督式學習（Unsupervised Learning）的定義為何?
+]]
+[fn:6] [[https://u9534056.medium.com/%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92%E4%BB%BB%E5%8B%99-%E7%9B%A3%E7%9D%A3%E5%AD%B8%E7%BF%92-%E5%8D%8A%E7%9B%A3%E7%9D%A3%E5%AD%B8%E7%BF%92-%E7%84%A1%E7%9B%A3%E7%9D%A3%E5%AD%B8%E7%BF%92-9b75972f91d6][機器學習任務：監督學習/半監督學習/無監督學習]]
+
+[fn:7] [[https://www.books.com.tw/products/F014278520][Hands-On Machine Learning with Scikit-Learn, Keras, and Tensorflow: Concetsp, Tools, and Techniques to Build Intelligent Systems]]
+
+[fn:8] [[https://youtu.be/LlKAna21fLE][A friendly introduction to linear algebra for ML (ML Tech Talks)]]

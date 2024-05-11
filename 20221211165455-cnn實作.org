@@ -13,7 +13,10 @@
 <a href="https://hits.sh/letranger.github.io/working/%E7%A7%91%E6%8A%80%E5%8A%9B%E6%94%AF%E6%8C%81%E9%9B%99%E8%AA%9E%E8%B7%A8%E5%9F%9F.html/"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/working/%E7%A7%91%E6%8A%80%E5%8A%9B%E6%94%AF%E6%8C%81%E9%9B%99%E8%AA%9E%E8%B7%A8%E5%9F%9F.html.svg?style=plastic"/></a>
 #+end_export
 
-* 實作1
+* CNN-Feshion-MNIST實作1
+:PROPERTIES:
+:ID:       faad1625-50cf-4dc6-aab2-9fa5a7967a0d
+:END:
 ** 任務說明(資料集簡介)
 *** 資料集
 Fashion-MNIST是一個替代MNIST手寫數字集的圖像資料集。 它是由Zalando（一家德國的時尚科技公司）旗下的研究部門提供。其涵蓋了來自10種類別的共7萬個不同商品的正面圖片。Fashion-MNIST的大小、格式和訓練集/測試集劃分與原始的MNIST完全一致。60000/10000的訓練測試資料劃分，28x28的灰度圖片。你可以直接用它來測試你的機器學習和深度學習演算法性能，且不需要改動任何的程式碼[fn:1]。
@@ -57,6 +60,7 @@ Fashion-MNIST是一個替代MNIST手寫數字集的圖像資料集。 它是由Z
 有很多函式庫和模組可以用來建立卷積神經網路 (CNN) 模型。一些受歡迎的選項包括 TensorFlow、Keras、PyTorch 和 scikit-learn。這些函式庫每個都有自己的優點和缺點，你選擇哪一個取決於你的特定需求和喜好。一般來說，TensorFlow 和 Keras 是初學者的好選擇，而 PyTorch 是一個更進階的選項，適合用於研發。scikit-learn 是一個機器學習函式庫，包含了許多用於訓練和評估機器學習模型（包括 CNN）的有用工具。你可以閱讀更多關於這些函式庫及其功能的信息，幫助你選擇適合你項目的選項。
 
 在這個例子中我們將使用Python + TensorFlow函式庫來打造模型，雖然Python是在人工智慧領域應用最廣的語言，但其實只要上述介紹的函式庫支援，使用其他語言一樣可行，例如C/C++、Java、Go、R、Ruby以及Swift等等。
+
 ** 下載資料集/分割資料集
 要使用TensorFlow函式庫，TensorFlow函式庫提供了十分方便的資料集下載函式(load_data())，只需一行指令便可下載Fashion-MNIST的60000張訓練集圖片和10000張測試集圖片。
 
@@ -335,6 +339,7 @@ model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=
 #+RESULTS:
 
 Keras中可用的損失函數可以從官網[[https://keras.io/api/losses/][Keras API reference / Losses]]找到、可用的優化器也可以從官網[[https://keras.io/api/optimizers/][Keras API reference / Optimizers]]查到，至於可用的模型效能指標則在[[https://keras.io/api/metrics/][Keras API reference / Metrics]]。
+
 ** 模型訓練
 建立完模型架構後就可以開始訓練，所謂訓練就是將資料丟進模型中，讓模型(透過優化器)找出模型中每個參數（上面的Trainable params，共有54,250個)的最佳數值。Keras使用fit函式來進行訓練，訓練時要宣告以下兩個參數值：
 - epochs: 所有的資料全都被用來訓練模型一次稱為1個epoch，如果一個資料集很小（只有100張圖)，那麼把這100張圖全部丟進模型訓練就完成了一個epoch的訓練。至於這整個流程應該重複幾次則沒有一定標準，一個簡單的判斷標準是：如果損失函數已經無法隨著epoch的重複而降低，則重複再多次也是罔然。
@@ -463,7 +468,10 @@ evaluate()會傳回loss與accuracy兩個值[fn:10]:
 
 那麼，為了提升最後的考核目標，這個老師應該怎麼做呢？很顯然，首先看看所有學生中，哪些同學已經及格了，及格的同學先不管他們，而針對不及格的同學進行補課加強，這樣一來，原則上來說有很多不及格的同學都能考上60分了，也有可能一些本來及格的同學考不夠60分了，但這個過程可以迭代，最終使得大家都在60分以上，當然，最終的平均分不一定很高，但沒辦法，誰叫考核目標是及格率呢？
 
-* 實作2
+* CNN-Feshion-MNIST實作2
+:PROPERTIES:
+:ID:       511b9ae8-81bb-4bcd-a50c-a0cf96719a77
+:END:
 在實作1中我們以卷積層、池化層、激活函數與全連接層建構出最簡單的模型，同時評估了一下整體的效能。
 但是，這個模型到底夠不夠好？實際上線時效能如何？這些才是我們真正關心的，這也是在實作2這個單元中我們要探究的問題。
 在實作2裡，我們要再進一步詳細的評估模型的效能，接下來變更模型的架構，最後再次評估模型的成效，看看我們重新設計的架構是否有助於優化模型。

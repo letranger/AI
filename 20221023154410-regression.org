@@ -5,40 +5,108 @@
 
 #+TITLE: 迴歸
 # -*- org-export-babel-evaluate: nil -*-
-#+TAGS: AI
-#+OPTIONS: toc:2 ^:nil num:5
+#+INCLUDE: ../pdf.org
 #+PROPERTY: header-args :eval never-export
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/muse.css" />
+#+TAGS: AI, Python
 #+EXCLUDE_TAGS: noexport
-#+latex:\newpage
+#+OPTIONS: toc:2 ^:nil num:3
+#+OPTIONS: H:4
+#+LATEX:\newpage
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/muse.css" />
 #+begin_export html
 <a href="https://letranger.github.io/AI/20221023154410-regression.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20221023154410-regression.html.svg"/></a>
 #+end_export
 
-* 簡介
-** 迴歸類型
-即，根據一組預測特徵（predictor，如里程數、車齡、品牌）來預測目標數值（如二手車車價）[fn:1]，這個目標數值也叫label。
+* 關於迴歸
+即，根據一組預測特徵（predictor，如里程數、車齡、品牌）來預測目標數值（如二手車車價）[fn:1]、根據歷史股價來預測明天股價、根據路況來預測方向盤轉向及車速。
 
 部份迴歸演算法也可以用來分類，例如Logistic，它可以輸出一個數值，以這個數值來表示對應到特定類別的機率，例如，某封email為垃圾郵件的機率為20%、某張圖片為狗的機率為70%。
 
+** 迴歸類型
 迴歸問題可分為兩類：
 - Linear regression:
-  * 假設輸入變量(x)與單一輸出變量(y)間存在線性關係，並以此建立模型。
-  * 優點: 簡單、容易解釋
-  * 缺點: 輸入與輸出變量關係為線性時會導致低度擬合
-  * 例: 身高與體重間的關係
 - Logistic regression
+*** Linear regression:
+- 假設輸入變量(x)與單一輸出變量(y)間存在線性關係，並以此建立模型。
+- 優點: 簡單、容易解釋
+- 缺點: 輸入與輸出變量關係為線性時會導致低度擬合
+- 例: 身高與體重間的關係
+Linear regression可再細分為
+**** Simple Linear regression (簡單線性迴歸):
+***** 迴歸
+討論兩個變數間的關係(輸入變量(x)與單一輸出變量(y)間)的關係
+#+begin_src plantuml :file images/regvsml1.png
+@startuml
+package "迴歸"{
+    輸入變項x -> 輸出變項y
+}
+#+end_src
+#+RESULTS:
+[[file:images/regvsml1.png]]
+***** 在統計中:
+- x為Independent Variables: 自變數
+- y為Dependent Variables: 應變數
+#+begin_src plantuml :file images/regvsml2.png
+@startuml
+package "統計"{
+    自變項 -> 依變項
+}
+#+end_src
+
+#+RESULTS:
+[[file:images/regvsml2.png]]
+***** 在機器學習中
+- x叫Features: 特徵值
+- y叫Label: 標籤
+#+begin_src plantuml :file images/regvsml3.png
+@startuml
+package "機器學習"{
+    特徵值 -> 標籤
+}
+#+end_src
+
+#+RESULTS:
+[[file:images/regvsml3.png]]
+**** Multiple Linear regression (複線性迴歸)
+討論多個變數間的關係
+*** Logistic regression
   * 也是線性方法，但使用logist function轉換輸出的預測結果，其輸出結果為類別機率(class probabilities)
   * 優點: 簡單、容易解釋
   * 缺點: 輸入與輸出變量關係為線性時無法處理分類問題
+*** 迴歸的目的
+建立迴歸的目的在於從現有資料中找出規則，然後依此規則來對後續的新進資料進行預測。如圖[[fig:reg-1]]中有一些資料分佈，x、y軸為資料的兩個特徵值。
+#+CAPTION: 原始資料分佈
+#+LABEL:fig:Labl
+#+name: fig:reg-1
+#+ATTR_LATEX: :width 200
+#+ATTR_ORG: :width 200
+#+ATTR_HTML: :width 400
+[[file:images/關於迴歸/2024-02-07_15-18-38_2024-02-07_15-18-19.png]]
+
+我們可以畫出幾條直線來代表這些資料的趨勢，問題是：
+- 怎麼畫
+- 怎麼知道哪一條最有代表性
+#+CAPTION: 根據原始資料畫出的幾條迴歸線
+#+LABEL:fig:Labl
+#+name: fig:reg-2
+#+ATTR_LATEX: :width 200
+#+ATTR_ORG: :width 200
+#+ATTR_HTML: :width 400
+[[file:images/關於迴歸/2024-02-07_15-19-44_2024-02-07_15-18-27.png]]
 
 典型迴歸案例: Boston Housing Data
 
-** 迴歸原理
-*** Step 1
+* 迴歸原理
+練習投藍的時後，我們需要知道籃筐位置，誤差多少，做出丟球的修正。
+做 Machine Learning 也是一樣道理，我們需要 :
+- 建立模型
+- 計算誤差: 在[[id:20221023T101456.955364][機器學習]]中，我們用loss function來計算
+- 做出修正: 在[[id:20221023T101456.955364][機器學習]]中，我們用optimizer來不斷對模型進行修正
+
+** Step 1: Model, Data
 1. Model: $y = w*x+b$
 2. Data: 找一堆現成的資料
-*** Step 2: Goodness of Function
+** Step 2: Goodness of Function
 1. Training Data
 2. Loss function L: 越小越好
    input: a function / output: how bad it is
@@ -50,13 +118,13 @@
 ** 迴歸預測流程(以波士頓房價預測為例)
 1. Import the required module
 1. Load and configure the Boston housing data set
-1. Chekc the relation between the variable, using pairplot and correlation graph
+1. Check the relation between the variable, using pairplot and correlation graph
 1. Descriptive statistics: central tendency and dispersion
 1. Select the required columns
 1. Train the test split
 1. Normalize the data
 1. Build the input pipeline for the TensorFlow model
-1. Model tranining
+1. Model training
 1. Predictions
 1. Validation
 
@@ -64,11 +132,11 @@
 <<datagen>>
 ** 資料生成
 這是當初上帝創造人類時決定人類身高的規則，我們也可以將之視為這組資料的模型，這個規則或模型是很神祕的，等一下我們要假裝我們不知道這個模型的存在，而迴歸的目的就在於想辦法猜出這個規則或模型。
-#+begin_src ipython -r :results output :exports both :session test
+#+begin_src python -r -n :results output :exports both :session test
 import numpy as np
 import matplotlib.pyplot as plt
 
-n = 10                               # 資料筆數
+n = 10                             # 資料筆數
 year = 5 + 25 * np.random.rand(n)  # 年紀
 height = 170 - 108 * np.exp(-0.2 * year) + 4 * np.random.randn(n)
 print(year)
@@ -79,7 +147,7 @@ print(height)
 
 ** 查看資料
 對於平凡的人類而言，他們只能看到身邊的人們隨著年齡增長而出現身高的變化，也就是由神袐模型所生成的數字：年齡和身高(如圖[[fig:yearHeight]])。
-#+begin_src python -r :results output :exports none
+#+begin_src python -r -n :results output :exports none
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -110,7 +178,7 @@ plt.savefig("images/yearHeight.png")
 
 但那些一身反骨的數學家則不甘於當平凡人，他們想透過統計、分析、思考、通靈等方式對這個既有現象進行逆向工程，去推估這個現象背後的神祕規則，藉此窺探上帝的意志。
 這些規則也許是如圖[[fig:yearHeightModel]]中的各種線段。一但找到了規則，我們就能根據這些規則進行 *預測* ，例如，由某人的年齡來合理推估他的身高。
-#+begin_src python -r :results output :exports none
+#+begin_src python -r -n :results output :exports none
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -149,12 +217,17 @@ plt.savefig("images/yearHeightModel.png")
 
 首先，既然我們想以 *直線* 來表示我們想找的模型或規則，那我們就先把這條直線以下列數學示表示出來:
 $$y=ax+b$$ 或 $$f(x)=ax+b$$
-這樣的直線 $y$ 或函數 $f(x)$ 有無限多個，迴歸的目的就是要為函數 $f(x)$ 找出一組最好的參數 $a,b$，或是為直線 $y$ 找到最適合的斜率 $a$ 和截距 $b$。這也是現今許多AI模型的基本精神：找到一組最好的參數，或者說：從無數個可能的模型中挑出最好的一個。
+這樣的直線 $y$ 或函數 $f(x)$ 有無限多個，例如：
+- \(f_1(x)=3x+2\)
+- \(f_2(x)=4.5x-3.12\)
+- \(...\)
+- \(f_n(x)=-3x+50\)
+迴歸的目的就是要從上述無限多個函數中找出一個最好的 $f_?(x)$ ，這組函數擁有最好的參數 $a,b$(你也可以看成為直線 $y$ 找到最適合的斜率 $a$ 和截距 $b$)。這也是現今許多[[id:20221023T101456.955364][機器學習]]模型的基本精神：找到一個擁有最佳參數的函數，或者說：從無數個可能的模型中挑出最好的一個。
 
 為了從無限多個備選模型中找出最佳的，我們需要有一個評估機制。
 
 ** 損失函數
-#+begin_src python -r :results output :exports none
+#+begin_src python -r -n :results output :exports none
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -221,8 +294,8 @@ $$ MSE = \frac{1}{n}\sum_{i=1}^{n}(\hat{y_i}-y_i)^2 $$
 
 如何讓RSS/MSE最小化呢？
 
-** 窮舉所有的可能性
-#+begin_src python -r :results output :exports none
+** 方法一：暴力求解
+#+begin_src python -r -n :results output :exports none
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -291,7 +364,7 @@ plt.savefig('images/SSELossA.png', dpi=300)
 
 讓我們回憶一下等高線這個東西，如果我們把圖[[fig:SSELossA]]當成某個山谷的地形圖(z軸為高度)，那我們就可以畫出這個區域的等高線圖[[fig:SSELossB]](先別管我是怎麼畫出來的)，從等高線圖[[fig:SSELossB]]就能大概看出來當a的值約等於0、b的值約等於150時會有最低的SSE(如圖[[fig:SSELossB]]中的紅點，這是我透過觀落陰得到的訊息)。
 
-#+begin_src python -r :results output :exports none
+#+begin_src python -r -n :results output :exports none
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -349,7 +422,7 @@ plt.savefig('images/SSELossB.png', dpi=300)
 
 總之，看起來是有辦法找到最佳的模型的(只是有點麻煩)，這個方法稱為梯度下降，在這裡我們先知道有這麼個方法、知道這個方法可以找出最佳模型就好，至於深入探討這個方法是如何運作這件事，等我搞清楚了再說吧(或是等你們上大學再自己去研究)...
 
-** 快速求出最佳解
+** 方法二: 站在巨人的頭頂
 雖然從無數組 $(a,b)$ 中找出最好的一組看似困難，不過其實許多現成的相關模組已經有了這些功能，例如[[https://scikit-learn.org/stable/][scikit-learn]]。以底下的程式為例：
 #+begin_src python -r -n :results output :exports both
 import numpy as np
@@ -374,8 +447,9 @@ print('截距/Intercept:', intercept)
 : 截距/Intercept: 152.74006747354875
 
 在上述程式碼中，真正與計算迴歸有關的只有第[[(modelRegression)]]行(利用scikit-learn建立一個線性迴歸模型)與第[[(modelFit)]]行(把手上的10組 $(a,b)$ 資料丟進模型訓練)，
-夠簡單吧，這樣我們就能畫出一條斜率約為0.58、截距約為152.74的最佳迴歸線(如圖[[fig:bestRegressionLine]]):
-#+begin_src python -r -n :results output :exports none
+夠簡單吧，這樣我們就能畫出一條斜率約為0.58、截距約為152.74的最佳迴歸線(如圖[[fig:bestRegressionLine]])，其模型為
+\(f(x)=0.58x+152.74\)
+#+begin_src python -r -n :async :results output :exports none :session yh
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
@@ -408,9 +482,19 @@ plt.savefig("images/yearHeightModelHat.png")
 #+ATTR_HTML: :width 500
 [[file:images/yearHeightModelHat.png]]
 
+根據這個模型，一個18歲的人，我們可以預測其身高為
+#+begin_src python -r -n :results output :exports both
+year = 18
+height = 0.58*year+152.74
+print(f'根據模型預測，一個18歲的人其身高為:{height}公分')
+#+end_src
+
+#+RESULTS:
+: 根據模型預測，一個18歲的人其身高為:163.18公分
+
 ** 逐步找出最佳解
 <<sec:sbs>>
-#+begin_src python -r :results output :exports none
+#+begin_src python -r -n :results output :exports none
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -498,6 +582,9 @@ plt.savefig('images/SSELossC.png', dpi=300)
 好吧，我也不知道。不如我們先跳過這個看起來太複雜的問題，先換個簡單點的來強化自信。
 
 * 保持距離以測安全
+:PROPERTIES:
+:ID:       e02d602e-c9a4-4a8b-8e5b-336dcac6cc63
+:END:
 讓我們先來看一個更簡單的例子。
 
 這是一組從[[https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/00Index.html][R語言資料集]]偷來的資料，這個資料集有七百多組教學用的資料集，其中有一組簡單的資料集cars，裡面有50筆資料，每筆資料只有兩個欄位：
@@ -581,10 +668,10 @@ plt.savefig("images/carsLoss.png", dpi=300)
 #+ATTR_HTML: :width 500
 [[file:images/carsLoss.png]]
 
-現在我們來想辦法找出最好的 $w$ 在哪裡。
+從圖[[fig:carLoss]]可以看出來，最低的loss值應該是介於20到-20沒錯的，現在我們來想辦法找出最好的 $w$ 在哪裡。
 
 ** 沿著曲線上下爬
-雖然我們從圖[[fig:carLoss]]大概可以看出來模型大概在參數 $w$ 介於0和5之間會有最小的Loss，也就是模型會最準確，但身為嚴謹的學術研究者，我們不能這樣蠻幹，這是土匪的行為，我們要用最科學的方法：既然不知道從哪裡著手，就閉著眼睛隨意給個 $w$ 好了，例如：-15，如圖[[fig:carLoss1]]。
+雖然我們從圖[[fig:carLoss]]大概可以看出來模型大概在參數 $w$ 介於0和5之間會有最小的Loss，也就是模型會最準確，但身為嚴謹的學術研究者，我們不能這樣蠻幹，這是土匪的行徑。面對未知的困難，我們要有嚴格的解題SOP，也就是要遵循「科學、理性、務實」的精神：閉著眼睛隨便給個 $w$。例如：-15，如圖[[fig:carLoss1]]。
 
 你看，我們這不就邁出成功的第一步了?
 
@@ -1003,7 +1090,7 @@ plt.savefig("images/carsLoss4.png", dpi=300)
 :ID:       5dc9ce02-13b4-4a1c-b5fd-813820407adb
 :END:
 為什麼 *找出曲線上各點的斜率* 這件事如此重要呢？原因有二
-- 在第[[sec:move]]中，我們據以移動 $w$ 值的依據是 " *每次往右邊加0.5、直到Loss開始變大(因為越過了曲線最低點)*" ，其實我們有另一種更方便的判斷方式：在曲線最低點左側所有點的斜率均為負、在曲線最低點右側所有點的斜率均為正，知道了某點的斜率為正或負，我們就知道該往左側或右側去移動，找出最低點的位置。理解這件事，我們可以用程式來求出接近的最低點。
+- 在第[[sec:move]]中，我們據以移動 $w$ 值的依據是 *「每次往右邊加0.5、直到Loss開始變大(因為越過了曲線最低點)」* ，其實我們有另一種更方便的判斷方式：在曲線最低點左側所有點的斜率均為負、在曲線最低點右側所有點的斜率均為正，知道了某點的斜率為正或負，我們就知道該往左側或右側去移動，找出最低點的位置。理解這件事，我們可以用程式來求出接近的最低點。
 - 曲線最低點的斜率為0，我們只要能找到斜率為0的這一點，就能找到模型的最佳參數。理解這件事，我們就能用數學的方式求出最低點的位置。 事實上，如果我們知道曲線 $y=f(x)$ 的實際內容，我們就能用[[id:3ce884c1-cd16-4310-b757-37cdd1ddcdef][微分]]來找到曲線上的最低點。
 
 *** 頂點公式求函數解
@@ -1019,8 +1106,10 @@ Loss=\frac{1}{n}\sum_{i=1}^{n}(\hat{y_i}-y_i)^2 \\
 =\frac{1}{n}\sum_{i=1}^{n}(w^2x_i^2 -2wx_iy_i + y_i^2) \\
 =\frac{1}{n}(w^2\sum_{i=1}^{n}x_i^2 -2w\sum_{i=1}^{n}x_iy_i + ny_i^2) \\
 \end{align}
+現在我們就得到一個一元二次方程式:\(ax^2+bx+c\)
+
 雖然可以用微分來解，但是這個一元二次函數也可以用頂點公式來找出曲線頂點(模型最小值)，求出的最小Loss會出現在
-$$ w=\frac{\sum_{i=1}^{n}x_iy_i}{\sum_{i=1}^{n}x_i^2} $$
+$$ w=\frac{\sum\limits_{i=1}^{n}x_iy_i}{\sum\limits_{i=1}^{n}x_i^2} $$
 因為當 $a>0$
 $$ ax^2+bx+c = a(x+\frac{b}{2a})+\frac{4ac-b^2}{4a} $$
 故 函數在 $x=\frac{-b}{2a}$ 時有最小值
@@ -1078,7 +1167,7 @@ $$2ax+b=0$$
 \end{bmatrix}^T
 \)
 
-#+begin_src python -r :results output :exports none
+#+begin_src python -r -n :results output :exports none
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -1592,7 +1681,7 @@ print('rm:',reg.coef_[1])
 
 * [作業]依據期中考成績預測期末考成績 :TNFSH:
 ** Data
-- 線上資料: [[https://letranger.github.io/AI/2023A-CS-Data.csv][https://letranger.github.io/AI/PythonScores.csv]]
+- 線上資料: [[https://letranger.github.io/AI/2023A-CS-Data.csv][https://letranger.github.io/AI/Downloads/PythonScores.csv]]
 - 資料中有424筆記錄，每筆記錄分別為學生的
   1. id: 學號
   2. class: 平時成績
@@ -2401,7 +2490,9 @@ plt.savefig('images/pizza-1.png', dpi=300)
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/pizza-1.png]]
+
 We can see from the plot of the training data that there is a positive relationship between the diameter of a pizza and its price, which should be corroborated by our own pizza-eating experience.
+
 ** 建模: LinearRegression
 The following pizza price predictor program models this relationship using simple linear regression.
 #+begin_src python -r -n :results output :exports both
@@ -2473,21 +2564,21 @@ X = np.array([[6], [8], [10], [14], [18]]).reshape(-1, 1)
 y = [7, 9, 13, 17.5 , 18]
 print()
 print(y)
-#from sklearn.linear_model import LinearRegression
-#model = LinearRegression()
-## Create an instance of the estimator
-#model.fit(X, y)
-## Fit the model on the training data
-#
-#from matplotlib import pyplot as plt
-#plt.scatter(X, y, color = 'k')
-#plt.plot(X, model.predict(X), color='g')
-#plt.plot(X, model.predict(X)+.5, color='c', linestyle='--')
-#plt.plot(X, model.predict(X)*.9, color='m', linestyle='-.')
-#plt.title('Pizza price plotted against diameter')
-#plt.xlabel('Diameter in inches')
-#plt.ylabel('Price in dollars')
-#plt.savefig('images/pizza-3.png', dpi=300)
+from sklearn.linear_model import LinearRegression
+model = LinearRegression()
+# Create an instance of the estimator
+model.fit(X, y)
+# Fit the model on the training data
+
+from matplotlib import pyplot as plt
+plt.scatter(X, y, color = 'k')
+plt.plot(X, model.predict(X), color='g')
+plt.plot(X, model.predict(X)+.5, color='c', linestyle='--')
+plt.plot(X, model.predict(X)*.9, color='m', linestyle='-.')
+plt.title('Pizza price plotted against diameter')
+plt.xlabel('Diameter in inches')
+plt.ylabel('Price in dollars')
+plt.savefig('images/pizza-3.png', dpi=300)
 
 #+end_src
 
@@ -2559,33 +2650,8 @@ This measure of the model's fitness is called the residual sum of squares (RSS) 
 #+RESULTS:
 : ((gnu . https://elpa.gnu.org/packages/) (melpa . https://melpa.org/packages/) (org . https://orgmode.org/elpa/))
 
-* TNFSH作業
-
-- 線上資料: [[https://letranger.github.io/AI/2023A-CS-Data.csv][https://letranger.github.io/AI/2023A-CS-Data.csv]]
-
-** Solution
-#+begin_src python -r -n :results output :exports both
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-
-docURL = 'https://letranger.github.io/AI/2023A-CS-Data.csv'
-df = pd.read_csv(docURL)
-print(type(df))
-df = df.to_numpy()
-print(type(df))
-print(df[:5])
-#+end_src
-
-#+RESULTS:
-: <class 'pandas.core.frame.DataFrame'>
-: <class 'numpy.ndarray'>
-: [['期中考' '期末成績']
-:  ['105.0' '99']
-:  ['33.0' '66']
-:  ['24.0' '75']
-:  ['40.0' '67']]
-
 * Footnotes
 
 [fn:1] Hands-On Machine Learning with Scikit-Learn: Aurelien Geron
+
+[fn:2] [[https://medium.com/li-ting-liao-tiffany/python-%E5%BF%AB%E9%80%9F%E8%B3%87%E6%96%99%E5%88%86%E6%9E%90-boston-housing%E6%B3%A2%E5%A3%AB%E9%A0%93%E6%88%BF%E5%83%B9-9c535fb7ceb7][What impacts Boston Housing Prices]]
