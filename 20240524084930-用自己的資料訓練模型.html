@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-05-24 Fri 09:53 -->
+<!-- 2024-05-24 Fri 10:45 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>用自己的資料訓練模型</title>
@@ -202,29 +202,29 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org35a2e22">1. 資料</a>
+<li><a href="#orgf545235">1. 資料</a>
 <ul>
-<li><a href="#org2c66335">1.1. 本地端電腦</a></li>
-<li><a href="#org116cfdc">1.2. colab</a></li>
+<li><a href="#org63a6a53">1.1. 本地端電腦</a></li>
+<li><a href="#orgc841a8a">1.2. colab</a></li>
 </ul>
 </li>
-<li><a href="#org44cb796">2. 讀訓練集圖片並設定label</a></li>
-<li><a href="#orgf685ada">3. 轉成numpy</a></li>
-<li><a href="#orgb55265e">4. 分割訓練集與測試集</a></li>
-<li><a href="#org7101913">5. 建模型</a></li>
-<li><a href="#org8c5c705">6. 訓媡</a></li>
-<li><a href="#orgecfb6ba">7. 評估</a>
+<li><a href="#org799ef3e">2. 讀訓練集圖片並設定label</a></li>
+<li><a href="#orgdfe8049">3. 轉成numpy</a></li>
+<li><a href="#org710b68e">4. 分割訓練集與測試集</a></li>
+<li><a href="#org0cebc0c">5. 建模型</a></li>
+<li><a href="#org2e86fc4">6. 訓媡</a></li>
+<li><a href="#org5603716">7. 評估</a>
 <ul>
-<li><a href="#org8bde2a8">7.1. loss</a></li>
-<li><a href="#org5d1100b">7.2. accuracy</a></li>
+<li><a href="#org86e3003">7.1. loss</a></li>
+<li><a href="#org590a63c">7.2. accuracy</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 <a href="https://letranger.github.io/AI/20240524084930-用自己的資料訓練模型.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20240524084930-用自己的資料訓練模型.html.svg"/></a>
-<div id="outline-container-org35a2e22" class="outline-2">
-<h2 id="org35a2e22"><span class="section-number-2">1.</span> 資料</h2>
+<div id="outline-container-orgf545235" class="outline-2">
+<h2 id="orgf545235"><span class="section-number-2">1.</span> 資料</h2>
 <div class="outline-text-2" id="text-1">
 <ul class="org-ul">
 <li>假設資料夾(cats_and_dogs)位罝在~/Downloads<br /></li>
@@ -233,15 +233,15 @@
 <li>你可以<a href="images/cats_and_dogs.zip">點這裡將兩種動物圖片下載到你的電腦中</a><br /></li>
 </ul>
 </div>
-<div id="outline-container-org2c66335" class="outline-3">
-<h3 id="org2c66335"><span class="section-number-3">1.1.</span> 本地端電腦</h3>
+<div id="outline-container-org63a6a53" class="outline-3">
+<h3 id="org63a6a53"><span class="section-number-3">1.1.</span> 本地端電腦</h3>
 <div class="outline-text-3" id="text-1-1">
 <div class="org-src-container">
 <pre class="src src-shell"><span class="linenr">1: </span>tree ~/Downloads/cats_and_dogs
 </pre>
 </div>
 
-<pre class="example" id="orgc8d0425">
+<pre class="example" id="org2638e15">
 /Users/letranger/Downloads/cats_and_dogs
 ├── cats
 │   ├── cat.0.jpg
@@ -250,15 +250,15 @@
 │   ├── cat.98.jpg
 │   └── cat.99.jpg
 └── dogs
-├── dog.0.jpg
+    ├── dog.0.jpg
     ├── dog.1.jpg
     ├── ...略...
     ├── dog.98.jpg
     └── dog.99.jpg
 </pre>
 </div>
-<div id="outline-container-orgc640394" class="outline-4">
-<h4 id="orgc640394"><span class="section-number-4">1.1.1.</span> 試讀目錄</h4>
+<div id="outline-container-org6889c4e" class="outline-4">
+<h4 id="org6889c4e"><span class="section-number-4">1.1.1.</span> 試讀目錄</h4>
 <div class="outline-text-4" id="text-1-1-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35712;&#21462;&#30446;&#37636;</span>
@@ -278,32 +278,31 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org116cfdc" class="outline-3">
-<h3 id="org116cfdc"><span class="section-number-3">1.2.</span> colab</h3>
+<div id="outline-container-orgc841a8a" class="outline-3">
+<h3 id="orgc841a8a"><span class="section-number-3">1.2.</span> colab</h3>
 <div class="outline-text-3" id="text-1-2">
 <p>
 先將資料夾上傳到自己的google drive<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25499;&#36617;&#33258;&#24049;&#30340; Google Drive</span>
-<span class="linenr">2: </span>
-<span class="linenr">3: </span><span style="color: #51afef;">import</span> cv2
-<span class="linenr">4: </span><span style="color: #51afef;">from</span> google.colab <span style="color: #51afef;">import</span> drive
-<span class="linenr">5: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23559;&#33258;&#24049;&#30340;&#38642;&#31471;&#30828;&#30879;&#25499;&#36617;&#19978;&#21435;</span>
-<span class="linenr">6: </span>drive.mount(<span style="color: #98be65;">'/content/gdrive'</span>)
-<span class="linenr">7: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36879;&#36942; gdrive/My Drive/... &#20358;&#23384;&#21462;&#27284;&#26696;</span>
-<span class="linenr">8: </span><span style="color: #dcaeea;">img</span> = cv2.imread(<span style="color: #98be65;">'gdrive/My Drive/cats_and_dogs/train/cats/cat.991.jpg'</span>)
+<span class="linenr">2: </span><span style="color: #51afef;">import</span> cv2
+<span class="linenr">3: </span><span style="color: #51afef;">from</span> google.colab <span style="color: #51afef;">import</span> drive
+<span class="linenr">4: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23559;&#33258;&#24049;&#30340;&#38642;&#31471;&#30828;&#30879;&#25499;&#36617;&#19978;&#21435;</span>
+<span class="linenr">5: </span>drive.mount(<span style="color: #98be65;">'/content/gdrive'</span>)
+<span class="linenr">6: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36879;&#36942; gdrive/My Drive/... &#20358;&#23384;&#21462;&#27284;&#26696;</span>
+<span class="linenr">7: </span><span style="color: #dcaeea;">img</span> = cv2.imread(<span style="color: #98be65;">'gdrive/My Drive/cats_and_dogs/cats/cat.991.jpg'</span>)
 </pre>
 </div>
 </div>
-<div id="outline-container-org93ed27b" class="outline-4">
-<h4 id="org93ed27b"><span class="section-number-4">1.2.1.</span> 試讀目錄</h4>
+<div id="outline-container-org71e85d2" class="outline-4">
+<h4 id="org71e85d2"><span class="section-number-4">1.2.1.</span> 試讀目錄</h4>
 <div class="outline-text-4" id="text-1-2-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35712;&#21462;&#30446;&#37636;</span>
 <span class="linenr"> 2: </span>
 <span class="linenr"> 3: </span><span style="color: #51afef;">import</span> os
-<span class="linenr"> 4: </span><span style="color: #dcaeea;">train_dir</span> = <span style="color: #98be65;">'/content/gdrive/My Drive/cats_and_dogs/train'</span>
+<span class="linenr"> 4: </span><span style="color: #dcaeea;">train_dir</span> = <span style="color: #98be65;">'/content/gdrive/My Drive/cats_and_dogs'</span>
 <span class="linenr"> 5: </span><span style="color: #dcaeea;">cats_dir</span> = train_dir + <span style="color: #98be65;">'/cats'</span>
 <span class="linenr"> 6: </span><span style="color: #dcaeea;">dogs_dir</span> = train_dir + <span style="color: #98be65;">'/dogs'</span>
 <span class="linenr"> 7: </span>
@@ -318,8 +317,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org44cb796" class="outline-2">
-<h2 id="org44cb796"><span class="section-number-2">2.</span> 讀訓練集圖片並設定label</h2>
+<div id="outline-container-org799ef3e" class="outline-2">
+<h2 id="org799ef3e"><span class="section-number-2">2.</span> 讀訓練集圖片並設定label</h2>
 <div class="outline-text-2" id="text-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> cv2
@@ -343,8 +342,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-orgf685ada" class="outline-2">
-<h2 id="orgf685ada"><span class="section-number-2">3.</span> 轉成numpy</h2>
+<div id="outline-container-orgdfe8049" class="outline-2">
+<h2 id="orgdfe8049"><span class="section-number-2">3.</span> 轉成numpy</h2>
 <div class="outline-text-2" id="text-3">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #dcaeea;">data</span> = np.array(data)
@@ -361,8 +360,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-orgb55265e" class="outline-2">
-<h2 id="orgb55265e"><span class="section-number-2">4.</span> 分割訓練集與測試集</h2>
+<div id="outline-container-org710b68e" class="outline-2">
+<h2 id="org710b68e"><span class="section-number-2">4.</span> 分割訓練集與測試集</h2>
 <div class="outline-text-2" id="text-4">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20999;&#35347;&#32244;&#21644;&#28204;&#35430;&#36039;&#26009;</span>
@@ -377,8 +376,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org7101913" class="outline-2">
-<h2 id="org7101913"><span class="section-number-2">5.</span> 建模型</h2>
+<div id="outline-container-org0cebc0c" class="outline-2">
+<h2 id="org0cebc0c"><span class="section-number-2">5.</span> 建模型</h2>
 <div class="outline-text-2" id="text-5">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;model</span>
@@ -400,8 +399,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org8c5c705" class="outline-2">
-<h2 id="org8c5c705"><span class="section-number-2">6.</span> 訓媡</h2>
+<div id="outline-container-org2e86fc4" class="outline-2">
+<h2 id="org2e86fc4"><span class="section-number-2">6.</span> 訓媡</h2>
 <div class="outline-text-2" id="text-6">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35347;&#32244;</span>
@@ -413,8 +412,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-orgecfb6ba" class="outline-2">
-<h2 id="orgecfb6ba"><span class="section-number-2">7.</span> 評估</h2>
+<div id="outline-container-org5603716" class="outline-2">
+<h2 id="org5603716"><span class="section-number-2">7.</span> 評估</h2>
 <div class="outline-text-2" id="text-7">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35413;&#20272;</span>
@@ -424,8 +423,8 @@
 </pre>
 </div>
 </div>
-<div id="outline-container-org8bde2a8" class="outline-3">
-<h3 id="org8bde2a8"><span class="section-number-3">7.1.</span> loss</h3>
+<div id="outline-container-org86e3003" class="outline-3">
+<h3 id="org86e3003"><span class="section-number-3">7.1.</span> loss</h3>
 <div class="outline-text-3" id="text-7-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #dcaeea;">train_loss</span> = history.history[<span style="color: #98be65;">'loss'</span>]
@@ -444,8 +443,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org5d1100b" class="outline-3">
-<h3 id="org5d1100b"><span class="section-number-3">7.2.</span> accuracy</h3>
+<div id="outline-container-org590a63c" class="outline-3">
+<h3 id="org590a63c"><span class="section-number-3">7.2.</span> accuracy</h3>
 <div class="outline-text-3" id="text-7-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span>plt.cla()
@@ -463,7 +462,7 @@
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2024-05-24 Fri 09:53</p>
+<p class="date">Created: 2024-05-24 Fri 10:45</p>
 </div>
 </body>
 </html>
