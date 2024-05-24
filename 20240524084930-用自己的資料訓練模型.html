@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-05-24 Fri 09:53 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>用自己的資料訓練模型</title>
+<meta name="author" content="Yung-Chin Yen" />
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<link rel="stylesheet" type="text/css" href="../css/muse.css" />
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">用自己的資料訓練模型</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org35a2e22">1. 資料</a>
+<ul>
+<li><a href="#org2c66335">1.1. 本地端電腦</a></li>
+<li><a href="#org116cfdc">1.2. colab</a></li>
+</ul>
+</li>
+<li><a href="#org44cb796">2. 讀訓練集圖片並設定label</a></li>
+<li><a href="#orgf685ada">3. 轉成numpy</a></li>
+<li><a href="#orgb55265e">4. 分割訓練集與測試集</a></li>
+<li><a href="#org7101913">5. 建模型</a></li>
+<li><a href="#org8c5c705">6. 訓媡</a></li>
+<li><a href="#orgecfb6ba">7. 評估</a>
+<ul>
+<li><a href="#org8bde2a8">7.1. loss</a></li>
+<li><a href="#org5d1100b">7.2. accuracy</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<a href="https://letranger.github.io/AI/20240524084930-用自己的資料訓練模型.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20240524084930-用自己的資料訓練模型.html.svg"/></a>
+<div id="outline-container-org35a2e22" class="outline-2">
+<h2 id="org35a2e22"><span class="section-number-2">1.</span> 資料</h2>
+<div class="outline-text-2" id="text-1">
+<ul class="org-ul">
+<li>假設資料夾(cats_and_dogs)位罝在~/Downloads<br /></li>
+<li>裡面都有兩個資料夾(cats, dogs)<br /></li>
+<li>兩種動物各200張<br /></li>
+<li>你可以<a href="images/cats_and_dogs.zip">點這裡將兩種動物圖片下載到你的電腦中</a><br /></li>
+</ul>
+</div>
+<div id="outline-container-org2c66335" class="outline-3">
+<h3 id="org2c66335"><span class="section-number-3">1.1.</span> 本地端電腦</h3>
+<div class="outline-text-3" id="text-1-1">
+<div class="org-src-container">
+<pre class="src src-shell"><span class="linenr">1: </span>tree ~/Downloads/cats_and_dogs
+</pre>
+</div>
+
+<pre class="example" id="orgc8d0425">
+/Users/letranger/Downloads/cats_and_dogs
+├── cats
+│   ├── cat.0.jpg
+│   ├── cat.1.jpg
+│   ├── ...略...
+│   ├── cat.98.jpg
+│   └── cat.99.jpg
+└── dogs
+├── dog.0.jpg
+    ├── dog.1.jpg
+    ├── ...略...
+    ├── dog.98.jpg
+    └── dog.99.jpg
+</pre>
+</div>
+<div id="outline-container-orgc640394" class="outline-4">
+<h4 id="orgc640394"><span class="section-number-4">1.1.1.</span> 試讀目錄</h4>
+<div class="outline-text-4" id="text-1-1-1">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35712;&#21462;&#30446;&#37636;</span>
+<span class="linenr"> 2: </span><span style="color: #51afef;">import</span> os
+<span class="linenr"> 3: </span><span style="color: #dcaeea;">train_dir</span> = <span style="color: #98be65;">'/Users/letranger/Downloads/cats_and_dogs'</span>
+<span class="linenr"> 4: </span><span style="color: #dcaeea;">cats_dir</span> = train_dir + <span style="color: #98be65;">'/cats'</span>
+<span class="linenr"> 5: </span><span style="color: #dcaeea;">dogs_dir</span> = train_dir + <span style="color: #98be65;">'/dogs'</span>
+<span class="linenr"> 6: </span>
+<span class="linenr"> 7: </span><span style="color: #dcaeea;">cat_fnames</span> = os.listdir(cats_dir)
+<span class="linenr"> 8: </span><span style="color: #dcaeea;">dog_fnames</span> = os.listdir(dogs_dir)
+<span class="linenr"> 9: </span><span style="color: #c678dd;">print</span>(<span style="color: #c678dd;">len</span>(cat_fnames))
+<span class="linenr">10: </span><span style="color: #c678dd;">print</span>(<span style="color: #c678dd;">len</span>(dog_fnames))
+<span class="linenr">11: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">+end_#+begin_src</span>
+<span class="linenr">12: </span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org116cfdc" class="outline-3">
+<h3 id="org116cfdc"><span class="section-number-3">1.2.</span> colab</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+先將資料夾上傳到自己的google drive<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25499;&#36617;&#33258;&#24049;&#30340; Google Drive</span>
+<span class="linenr">2: </span>
+<span class="linenr">3: </span><span style="color: #51afef;">import</span> cv2
+<span class="linenr">4: </span><span style="color: #51afef;">from</span> google.colab <span style="color: #51afef;">import</span> drive
+<span class="linenr">5: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23559;&#33258;&#24049;&#30340;&#38642;&#31471;&#30828;&#30879;&#25499;&#36617;&#19978;&#21435;</span>
+<span class="linenr">6: </span>drive.mount(<span style="color: #98be65;">'/content/gdrive'</span>)
+<span class="linenr">7: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36879;&#36942; gdrive/My Drive/... &#20358;&#23384;&#21462;&#27284;&#26696;</span>
+<span class="linenr">8: </span><span style="color: #dcaeea;">img</span> = cv2.imread(<span style="color: #98be65;">'gdrive/My Drive/cats_and_dogs/train/cats/cat.991.jpg'</span>)
+</pre>
+</div>
+</div>
+<div id="outline-container-org93ed27b" class="outline-4">
+<h4 id="org93ed27b"><span class="section-number-4">1.2.1.</span> 試讀目錄</h4>
+<div class="outline-text-4" id="text-1-2-1">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35712;&#21462;&#30446;&#37636;</span>
+<span class="linenr"> 2: </span>
+<span class="linenr"> 3: </span><span style="color: #51afef;">import</span> os
+<span class="linenr"> 4: </span><span style="color: #dcaeea;">train_dir</span> = <span style="color: #98be65;">'/content/gdrive/My Drive/cats_and_dogs/train'</span>
+<span class="linenr"> 5: </span><span style="color: #dcaeea;">cats_dir</span> = train_dir + <span style="color: #98be65;">'/cats'</span>
+<span class="linenr"> 6: </span><span style="color: #dcaeea;">dogs_dir</span> = train_dir + <span style="color: #98be65;">'/dogs'</span>
+<span class="linenr"> 7: </span>
+<span class="linenr"> 8: </span><span style="color: #dcaeea;">cat_fnames</span> = os.listdir(cats_dir)
+<span class="linenr"> 9: </span><span style="color: #dcaeea;">dog_fnames</span> = os.listdir(dogs_dir)
+<span class="linenr">10: </span><span style="color: #c678dd;">print</span>(cat_fnames)
+<span class="linenr">11: </span><span style="color: #c678dd;">print</span>(<span style="color: #c678dd;">len</span>(cat_fnames))
+<span class="linenr">12: </span><span style="color: #c678dd;">print</span>(<span style="color: #c678dd;">len</span>(dog_fnames))
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org44cb796" class="outline-2">
+<h2 id="org44cb796"><span class="section-number-2">2.</span> 讀訓練集圖片並設定label</h2>
+<div class="outline-text-2" id="text-2">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> cv2
+<span class="linenr"> 2: </span><span style="color: #51afef;">from</span> tensorflow.keras.preprocessing.image <span style="color: #51afef;">import</span> load_img, img_to_array
+<span class="linenr"> 3: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 4: </span>
+<span class="linenr"> 5: </span><span style="color: #dcaeea;">data</span> = []
+<span class="linenr"> 6: </span><span style="color: #dcaeea;">target</span> = []
+<span class="linenr"> 7: </span>
+<span class="linenr"> 8: </span><span style="color: #51afef;">for</span> cat <span style="color: #51afef;">in</span> cat_fnames:
+<span class="linenr"> 9: </span>    <span style="color: #dcaeea;">img</span> = load_img(cats_dir + <span style="color: #98be65;">'/'</span> + cat, target_size = (<span style="color: #da8548; font-weight: bold;">224</span>,<span style="color: #da8548; font-weight: bold;">224</span>))
+<span class="linenr">10: </span>    <span style="color: #dcaeea;">x</span> = np.array(img)
+<span class="linenr">11: </span>    data.append(x)
+<span class="linenr">12: </span>    target.append(<span style="color: #da8548; font-weight: bold;">0</span>)
+<span class="linenr">13: </span><span style="color: #51afef;">for</span> dog <span style="color: #51afef;">in</span> dog_fnames:
+<span class="linenr">14: </span>    <span style="color: #dcaeea;">img</span> = load_img(dogs_dir + <span style="color: #98be65;">'/'</span> + dog, target_size = (<span style="color: #da8548; font-weight: bold;">224</span>,<span style="color: #da8548; font-weight: bold;">224</span>))
+<span class="linenr">15: </span>    <span style="color: #dcaeea;">x</span> = np.array(img)
+<span class="linenr">16: </span>    data.append(x)
+<span class="linenr">17: </span>    target.append(<span style="color: #da8548; font-weight: bold;">1</span>)
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf685ada" class="outline-2">
+<h2 id="orgf685ada"><span class="section-number-2">3.</span> 轉成numpy</h2>
+<div class="outline-text-2" id="text-3">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #dcaeea;">data</span> = np.array(data)
+<span class="linenr"> 2: </span><span style="color: #dcaeea;">target</span> = np.array(target)
+<span class="linenr"> 3: </span><span style="color: #c678dd;">print</span>(data.shape)
+<span class="linenr"> 4: </span><span style="color: #c678dd;">print</span>(target.shape)
+<span class="linenr"> 5: </span>
+<span class="linenr"> 6: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23559;target&#36681;&#25563;&#25104;one-hot encoding</span>
+<span class="linenr"> 7: </span><span style="color: #51afef;">from</span> tensorflow.keras.utils <span style="color: #51afef;">import</span> to_categorical
+<span class="linenr"> 8: </span><span style="color: #c678dd;">print</span>(target[<span style="color: #da8548; font-weight: bold;">0</span>])
+<span class="linenr"> 9: </span><span style="color: #dcaeea;">target</span> = to_categorical(target, <span style="color: #da8548; font-weight: bold;">2</span>)
+<span class="linenr">10: </span><span style="color: #c678dd;">print</span>(target[<span style="color: #da8548; font-weight: bold;">0</span>])
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb55265e" class="outline-2">
+<h2 id="orgb55265e"><span class="section-number-2">4.</span> 分割訓練集與測試集</h2>
+<div class="outline-text-2" id="text-4">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20999;&#35347;&#32244;&#21644;&#28204;&#35430;&#36039;&#26009;</span>
+<span class="linenr">2: </span>
+<span class="linenr">3: </span><span style="color: #51afef;">from</span> sklearn.model_selection <span style="color: #51afef;">import</span> train_test_split
+<span class="linenr">4: </span><span style="color: #dcaeea;">x_train</span>, <span style="color: #dcaeea;">x_test</span>, <span style="color: #dcaeea;">y_train</span>, <span style="color: #dcaeea;">y_test</span> = train_test_split(data, target,
+<span class="linenr">5: </span>                                                    test_size=<span style="color: #da8548; font-weight: bold;">0.2</span>,
+<span class="linenr">6: </span>                                                    random_state=<span style="color: #da8548; font-weight: bold;">0</span>)
+<span class="linenr">7: </span><span style="color: #c678dd;">print</span>(x_train.shape)
+<span class="linenr">8: </span><span style="color: #c678dd;">print</span>(y_train.shape)
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org7101913" class="outline-2">
+<h2 id="org7101913"><span class="section-number-2">5.</span> 建模型</h2>
+<div class="outline-text-2" id="text-5">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;model</span>
+<span class="linenr"> 2: </span><span style="color: #51afef;">from</span> keras <span style="color: #51afef;">import</span> layers
+<span class="linenr"> 3: </span><span style="color: #51afef;">from</span> keras <span style="color: #51afef;">import</span> models
+<span class="linenr"> 4: </span><span style="color: #dcaeea;">model</span> = models.Sequential()
+<span class="linenr"> 5: </span>model.add(layers.Conv2D(<span style="color: #da8548; font-weight: bold;">32</span>, (<span style="color: #da8548; font-weight: bold;">3</span>, <span style="color: #da8548; font-weight: bold;">3</span>), activation=<span style="color: #98be65;">'relu'</span>, input_shape=(<span style="color: #da8548; font-weight: bold;">224</span>, <span style="color: #da8548; font-weight: bold;">224</span>, <span style="color: #da8548; font-weight: bold;">3</span>)))
+<span class="linenr"> 6: </span>model.add(layers.MaxPooling2D((<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">2</span>)))
+<span class="linenr"> 7: </span>model.add(layers.Conv2D(<span style="color: #da8548; font-weight: bold;">64</span>, (<span style="color: #da8548; font-weight: bold;">3</span>, <span style="color: #da8548; font-weight: bold;">3</span>), activation=<span style="color: #98be65;">'relu'</span>))
+<span class="linenr"> 8: </span>model.add(layers.MaxPooling2D((<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">2</span>)))
+<span class="linenr"> 9: </span>model.add(layers.Flatten())
+<span class="linenr">10: </span>model.add(layers.Dense(<span style="color: #da8548; font-weight: bold;">2</span>, activation=<span style="color: #98be65;">'softmax'</span>))
+<span class="linenr">11: </span>model.summary()  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#26597;&#30475;&#27169;&#22411;&#25688;&#35201;</span>
+<span class="linenr">12: </span>
+<span class="linenr">13: </span>model.<span style="color: #c678dd;">compile</span>(loss=<span style="color: #98be65;">'binary_crossentropy'</span>,
+<span class="linenr">14: </span>              optimizer=<span style="color: #98be65;">'adam'</span>,
+<span class="linenr">15: </span>              metrics=[<span style="color: #98be65;">'accuracy'</span>])
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org8c5c705" class="outline-2">
+<h2 id="org8c5c705"><span class="section-number-2">6.</span> 訓媡</h2>
+<div class="outline-text-2" id="text-6">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35347;&#32244;</span>
+<span class="linenr">2: </span><span style="color: #dcaeea;">history</span> = model.fit(x_train, y_train,  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35757;&#32451;&#25968;&#25454;&#21644;&#26631;&#31614;</span>
+<span class="linenr">3: </span>                    batch_size=<span style="color: #da8548; font-weight: bold;">50</span>,     <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25209;&#27425;&#22823;&#23567;</span>
+<span class="linenr">4: </span>                    epochs=<span style="color: #da8548; font-weight: bold;">5</span>,          <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35757;&#32451;&#36718;&#25968;</span>
+<span class="linenr">5: </span>                    validation_split=<span style="color: #da8548; font-weight: bold;">0.2</span>)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39564;&#35777;&#38598;&#27604;&#20363;&#65288;&#21487;&#36873;&#65289;</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgecfb6ba" class="outline-2">
+<h2 id="orgecfb6ba"><span class="section-number-2">7.</span> 評估</h2>
+<div class="outline-text-2" id="text-7">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35413;&#20272;</span>
+<span class="linenr">2: </span><span style="color: #dcaeea;">loss</span>, <span style="color: #dcaeea;">acc</span> = model.evaluate(x_test, y_test)
+<span class="linenr">3: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#28204;&#35430;&#36039;&#26009;&#30340; loss &#28858;: </span>{loss:.4f}<span style="color: #98be65;">"</span>)
+<span class="linenr">4: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#28204;&#35430;&#36039;&#26009;&#30340;&#27491;&#30906;&#29575;&#28858;: </span>{acc*100:.2f}<span style="color: #98be65;">%"</span>)
+</pre>
+</div>
+</div>
+<div id="outline-container-org8bde2a8" class="outline-3">
+<h3 id="org8bde2a8"><span class="section-number-3">7.1.</span> loss</h3>
+<div class="outline-text-3" id="text-7-1">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #dcaeea;">train_loss</span> = history.history[<span style="color: #98be65;">'loss'</span>]
+<span class="linenr"> 2: </span><span style="color: #dcaeea;">val_loss</span> = history.history[<span style="color: #98be65;">'val_loss'</span>]
+<span class="linenr"> 3: </span><span style="color: #dcaeea;">train_accuracy</span> = history.history[<span style="color: #98be65;">'accuracy'</span>]
+<span class="linenr"> 4: </span><span style="color: #dcaeea;">val_accuracy</span> = history.history[<span style="color: #98be65;">'val_accuracy'</span>]
+<span class="linenr"> 5: </span>
+<span class="linenr"> 6: </span>plt.cla()
+<span class="linenr"> 7: </span>plt.plot(train_loss, label=<span style="color: #98be65;">'Training Loss'</span>)
+<span class="linenr"> 8: </span>plt.plot(val_loss, label=<span style="color: #98be65;">'Validation Loss'</span>)
+<span class="linenr"> 9: </span>plt.title(<span style="color: #98be65;">'Training and Validation Loss'</span>)
+<span class="linenr">10: </span>plt.xlabel(<span style="color: #98be65;">'Epoch'</span>)
+<span class="linenr">11: </span>plt.ylabel(<span style="color: #98be65;">'Loss'</span>)
+<span class="linenr">12: </span>plt.legend()
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org5d1100b" class="outline-3">
+<h3 id="org5d1100b"><span class="section-number-3">7.2.</span> accuracy</h3>
+<div class="outline-text-3" id="text-7-2">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>plt.cla()
+<span class="linenr">2: </span>plt.plot(train_accuracy, label=<span style="color: #98be65;">'Training Accuracy'</span>)
+<span class="linenr">3: </span>plt.plot(val_accuracy, label=<span style="color: #98be65;">'Validation Accuracy'</span>)
+<span class="linenr">4: </span>plt.title(<span style="color: #98be65;">'Training and Validation Accuracy'</span>)
+<span class="linenr">5: </span>plt.xlabel(<span style="color: #98be65;">'Epoch'</span>)
+<span class="linenr">6: </span>plt.ylabel(<span style="color: #98be65;">'Accuracy'</span>)
+<span class="linenr">7: </span>plt.legend()
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Yung-Chin Yen</p>
+<p class="date">Created: 2024-05-24 Fri 09:53</p>
+</div>
+</body>
+</html>
