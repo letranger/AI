@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-05-24 Fri 10:45 -->
+<!-- 2024-05-25 Sat 14:05 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>用自己的資料訓練模型</title>
@@ -202,29 +202,29 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgf545235">1. 資料</a>
+<li><a href="#org82818f4">1. 資料</a>
 <ul>
-<li><a href="#org63a6a53">1.1. 本地端電腦</a></li>
-<li><a href="#orgc841a8a">1.2. colab</a></li>
+<li><a href="#org777e292">1.1. 本地端電腦</a></li>
+<li><a href="#org4d0b845">1.2. for colab</a></li>
+<li><a href="#org0e529bd">1.3. 資料擴增/資料增強(Data Augmentation)</a></li>
 </ul>
 </li>
-<li><a href="#org799ef3e">2. 讀訓練集圖片並設定label</a></li>
-<li><a href="#orgdfe8049">3. 轉成numpy</a></li>
-<li><a href="#org710b68e">4. 分割訓練集與測試集</a></li>
-<li><a href="#org0cebc0c">5. 建模型</a></li>
-<li><a href="#org2e86fc4">6. 訓媡</a></li>
-<li><a href="#org5603716">7. 評估</a>
+<li><a href="#orgd800bb6">2. 轉成numpy</a></li>
+<li><a href="#orgaca8335">3. 分割訓練集與測試集</a></li>
+<li><a href="#org38152cb">4. 建模型</a></li>
+<li><a href="#org138aac4">5. 訓練</a></li>
+<li><a href="#orgbc5e0dc">6. 評估</a>
 <ul>
-<li><a href="#org86e3003">7.1. loss</a></li>
-<li><a href="#org590a63c">7.2. accuracy</a></li>
+<li><a href="#org9e8c74d">6.1. loss</a></li>
+<li><a href="#org3d8ca72">6.2. accuracy</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 <a href="https://letranger.github.io/AI/20240524084930-用自己的資料訓練模型.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20240524084930-用自己的資料訓練模型.html.svg"/></a>
-<div id="outline-container-orgf545235" class="outline-2">
-<h2 id="orgf545235"><span class="section-number-2">1.</span> 資料</h2>
+<div id="outline-container-org82818f4" class="outline-2">
+<h2 id="org82818f4"><span class="section-number-2">1.</span> 資料</h2>
 <div class="outline-text-2" id="text-1">
 <ul class="org-ul">
 <li>假設資料夾(cats_and_dogs)位罝在~/Downloads<br /></li>
@@ -233,15 +233,15 @@
 <li>你可以<a href="images/cats_and_dogs.zip">點這裡將兩種動物圖片下載到你的電腦中</a><br /></li>
 </ul>
 </div>
-<div id="outline-container-org63a6a53" class="outline-3">
-<h3 id="org63a6a53"><span class="section-number-3">1.1.</span> 本地端電腦</h3>
+<div id="outline-container-org777e292" class="outline-3">
+<h3 id="org777e292"><span class="section-number-3">1.1.</span> 本地端電腦</h3>
 <div class="outline-text-3" id="text-1-1">
 <div class="org-src-container">
 <pre class="src src-shell"><span class="linenr">1: </span>tree ~/Downloads/cats_and_dogs
 </pre>
 </div>
 
-<pre class="example" id="org2638e15">
+<pre class="example" id="org5f0d942">
 /Users/letranger/Downloads/cats_and_dogs
 ├── cats
 │   ├── cat.0.jpg
@@ -257,29 +257,56 @@
     └── dog.99.jpg
 </pre>
 </div>
-<div id="outline-container-org6889c4e" class="outline-4">
-<h4 id="org6889c4e"><span class="section-number-4">1.1.1.</span> 試讀目錄</h4>
+<div id="outline-container-orgd3922f0" class="outline-4">
+<h4 id="orgd3922f0"><span class="section-number-4">1.1.1.</span> 試讀目錄</h4>
 <div class="outline-text-4" id="text-1-1-1">
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35712;&#21462;&#30446;&#37636;</span>
-<span class="linenr"> 2: </span><span style="color: #51afef;">import</span> os
-<span class="linenr"> 3: </span><span style="color: #dcaeea;">train_dir</span> = <span style="color: #98be65;">'/Users/letranger/Downloads/cats_and_dogs'</span>
-<span class="linenr"> 4: </span><span style="color: #dcaeea;">cats_dir</span> = train_dir + <span style="color: #98be65;">'/cats'</span>
-<span class="linenr"> 5: </span><span style="color: #dcaeea;">dogs_dir</span> = train_dir + <span style="color: #98be65;">'/dogs'</span>
-<span class="linenr"> 6: </span>
-<span class="linenr"> 7: </span><span style="color: #dcaeea;">cat_fnames</span> = os.listdir(cats_dir)
-<span class="linenr"> 8: </span><span style="color: #dcaeea;">dog_fnames</span> = os.listdir(dogs_dir)
-<span class="linenr"> 9: </span><span style="color: #c678dd;">print</span>(<span style="color: #c678dd;">len</span>(cat_fnames))
-<span class="linenr">10: </span><span style="color: #c678dd;">print</span>(<span style="color: #c678dd;">len</span>(dog_fnames))
-<span class="linenr">11: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">+end_#+begin_src</span>
-<span class="linenr">12: </span>
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> os
+<span class="linenr">2: </span><span style="color: #dcaeea;">img_dir</span> = <span style="color: #98be65;">'/Users/letranger/Downloads/cats_and_dogs'</span>
+<span class="linenr">3: </span><span style="color: #dcaeea;">cats_dir</span> = img_dir + <span style="color: #98be65;">'/cats'</span>
+<span class="linenr">4: </span><span style="color: #dcaeea;">dogs_dir</span> = img_dir + <span style="color: #98be65;">'/dogs'</span>
+<span class="linenr">5: </span>
+<span class="linenr">6: </span><span style="color: #dcaeea;">cat_fnames</span> = os.listdir(cats_dir)
+<span class="linenr">7: </span><span style="color: #dcaeea;">dog_fnames</span> = os.listdir(dogs_dir)
+<span class="linenr">8: </span><span style="color: #c678dd;">print</span>(<span style="color: #c678dd;">len</span>(cat_fnames))
+<span class="linenr">9: </span><span style="color: #c678dd;">print</span>(<span style="color: #c678dd;">len</span>(dog_fnames))
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf6b9558" class="outline-4">
+<h4 id="orgf6b9558"><span class="section-number-4">1.1.2.</span> 讀訓練集圖片並設定label</h4>
+<div class="outline-text-4" id="text-1-1-2">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> cv2
+<span class="linenr"> 2: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 3: </span><span style="color: #51afef;">from</span> tensorflow.keras.preprocessing.image <span style="color: #51afef;">import</span> img_to_array
+<span class="linenr"> 4: </span>
+<span class="linenr"> 5: </span><span style="color: #dcaeea;">data</span> = []
+<span class="linenr"> 6: </span><span style="color: #dcaeea;">target</span> = []
+<span class="linenr"> 7: </span>
+<span class="linenr"> 8: </span><span style="color: #51afef;">for</span> cat <span style="color: #51afef;">in</span> cat_fnames:
+<span class="linenr"> 9: </span>    <span style="color: #dcaeea;">img</span> = cv2.imread(cats_dir + <span style="color: #98be65;">'/'</span> + cat)
+<span class="linenr">10: </span>    <span style="color: #51afef;">if</span> img <span style="color: #51afef;">is</span> <span style="color: #51afef;">not</span> <span style="color: #a9a1e1;">None</span>:
+<span class="linenr">11: </span>        <span style="color: #dcaeea;">img</span> = cv2.resize(img, (<span style="color: #da8548; font-weight: bold;">224</span>, <span style="color: #da8548; font-weight: bold;">224</span>))
+<span class="linenr">12: </span>        <span style="color: #dcaeea;">img</span> = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+<span class="linenr">13: </span>        data.append(img)
+<span class="linenr">14: </span>        target.append(<span style="color: #da8548; font-weight: bold;">0</span>)
+<span class="linenr">15: </span>    
+<span class="linenr">16: </span><span style="color: #51afef;">for</span> dog <span style="color: #51afef;">in</span> dog_fnames:
+<span class="linenr">17: </span>    <span style="color: #dcaeea;">img</span> = cv2.imread(dogs_dir + <span style="color: #98be65;">'/'</span> + dog)
+<span class="linenr">18: </span>    <span style="color: #51afef;">if</span> img <span style="color: #51afef;">is</span> <span style="color: #51afef;">not</span> <span style="color: #a9a1e1;">None</span>:
+<span class="linenr">19: </span>        <span style="color: #dcaeea;">img</span> = cv2.resize(img, (<span style="color: #da8548; font-weight: bold;">224</span>, <span style="color: #da8548; font-weight: bold;">224</span>))
+<span class="linenr">20: </span>        <span style="color: #dcaeea;">img</span> = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+<span class="linenr">21: </span>        data.append(img)
+<span class="linenr">22: </span>        target.append(<span style="color: #da8548; font-weight: bold;">1</span>)
 </pre>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-orgc841a8a" class="outline-3">
-<h3 id="orgc841a8a"><span class="section-number-3">1.2.</span> colab</h3>
+<div id="outline-container-org4d0b845" class="outline-3">
+<h3 id="org4d0b845"><span class="section-number-3">1.2.</span> for colab</h3>
 <div class="outline-text-3" id="text-1-2">
 <p>
 先將資料夾上傳到自己的google drive<br />
@@ -295,16 +322,16 @@
 </pre>
 </div>
 </div>
-<div id="outline-container-org71e85d2" class="outline-4">
-<h4 id="org71e85d2"><span class="section-number-4">1.2.1.</span> 試讀目錄</h4>
+<div id="outline-container-org7f7a4e1" class="outline-4">
+<h4 id="org7f7a4e1"><span class="section-number-4">1.2.1.</span> 試讀目錄</h4>
 <div class="outline-text-4" id="text-1-2-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35712;&#21462;&#30446;&#37636;</span>
 <span class="linenr"> 2: </span>
 <span class="linenr"> 3: </span><span style="color: #51afef;">import</span> os
-<span class="linenr"> 4: </span><span style="color: #dcaeea;">train_dir</span> = <span style="color: #98be65;">'/content/gdrive/My Drive/cats_and_dogs'</span>
-<span class="linenr"> 5: </span><span style="color: #dcaeea;">cats_dir</span> = train_dir + <span style="color: #98be65;">'/cats'</span>
-<span class="linenr"> 6: </span><span style="color: #dcaeea;">dogs_dir</span> = train_dir + <span style="color: #98be65;">'/dogs'</span>
+<span class="linenr"> 4: </span><span style="color: #dcaeea;">img_dir</span> = <span style="color: #98be65;">'/content/gdrive/My Drive/cats_and_dogs'</span>
+<span class="linenr"> 5: </span><span style="color: #dcaeea;">cats_dir</span> = img_dir + <span style="color: #98be65;">'/cats'</span>
+<span class="linenr"> 6: </span><span style="color: #dcaeea;">dogs_dir</span> = img_dir + <span style="color: #98be65;">'/dogs'</span>
 <span class="linenr"> 7: </span>
 <span class="linenr"> 8: </span><span style="color: #dcaeea;">cat_fnames</span> = os.listdir(cats_dir)
 <span class="linenr"> 9: </span><span style="color: #dcaeea;">dog_fnames</span> = os.listdir(dogs_dir)
@@ -315,11 +342,9 @@
 </div>
 </div>
 </div>
-</div>
-</div>
-<div id="outline-container-org799ef3e" class="outline-2">
-<h2 id="org799ef3e"><span class="section-number-2">2.</span> 讀訓練集圖片並設定label</h2>
-<div class="outline-text-2" id="text-2">
+<div id="outline-container-orgfc6c710" class="outline-4">
+<h4 id="orgfc6c710"><span class="section-number-4">1.2.2.</span> 讀訓練集圖片並設定label</h4>
+<div class="outline-text-4" id="text-1-2-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> cv2
 <span class="linenr"> 2: </span><span style="color: #51afef;">from</span> tensorflow.keras.preprocessing.image <span style="color: #51afef;">import</span> load_img, img_to_array
@@ -342,9 +367,23 @@
 </div>
 </div>
 </div>
-<div id="outline-container-orgdfe8049" class="outline-2">
-<h2 id="orgdfe8049"><span class="section-number-2">3.</span> 轉成numpy</h2>
-<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-org0e529bd" class="outline-3">
+<h3 id="org0e529bd"><span class="section-number-3">1.3.</span> 資料擴增/資料增強(Data Augmentation)</h3>
+<div class="outline-text-3" id="text-1-3">
+<p>
+如果你的資料是自己準備的，你大概無法生成太多資料庫，這時就是善用資料擴增的好時機了，詳細的技巧請參考以下的連結或自行google。<br />
+</p>
+<ul class="org-ul">
+<li><a href="https://cynthiachuang.github.io/Augmentor-Image-Augmentation-Library-in-Python/">Augmentor：影像資料增強工具庫</a><br /></li>
+<li><a href="https://chtseng.wordpress.com/2017/11/11/data-augmentation-%E8%B3%87%E6%96%99%E5%A2%9E%E5%BC%B7/">Data Augmentation 資料增強</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgd800bb6" class="outline-2">
+<h2 id="orgd800bb6"><span class="section-number-2">2.</span> 轉成numpy</h2>
+<div class="outline-text-2" id="text-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #dcaeea;">data</span> = np.array(data)
 <span class="linenr"> 2: </span><span style="color: #dcaeea;">target</span> = np.array(target)
@@ -360,9 +399,9 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org710b68e" class="outline-2">
-<h2 id="org710b68e"><span class="section-number-2">4.</span> 分割訓練集與測試集</h2>
-<div class="outline-text-2" id="text-4">
+<div id="outline-container-orgaca8335" class="outline-2">
+<h2 id="orgaca8335"><span class="section-number-2">3.</span> 分割訓練集與測試集</h2>
+<div class="outline-text-2" id="text-3">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20999;&#35347;&#32244;&#21644;&#28204;&#35430;&#36039;&#26009;</span>
 <span class="linenr">2: </span>
@@ -376,9 +415,9 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org0cebc0c" class="outline-2">
-<h2 id="org0cebc0c"><span class="section-number-2">5.</span> 建模型</h2>
-<div class="outline-text-2" id="text-5">
+<div id="outline-container-org38152cb" class="outline-2">
+<h2 id="org38152cb"><span class="section-number-2">4.</span> 建模型</h2>
+<div class="outline-text-2" id="text-4">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;model</span>
 <span class="linenr"> 2: </span><span style="color: #51afef;">from</span> keras <span style="color: #51afef;">import</span> layers
@@ -393,28 +432,25 @@
 <span class="linenr">11: </span>model.summary()  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#26597;&#30475;&#27169;&#22411;&#25688;&#35201;</span>
 <span class="linenr">12: </span>
 <span class="linenr">13: </span>model.<span style="color: #c678dd;">compile</span>(loss=<span style="color: #98be65;">'binary_crossentropy'</span>,
-<span class="linenr">14: </span>              optimizer=<span style="color: #98be65;">'adam'</span>,
-<span class="linenr">15: </span>              metrics=[<span style="color: #98be65;">'accuracy'</span>])
+<span class="linenr">14: </span>              optimizer=<span style="color: #98be65;">'adam'</span>, metrics=[<span style="color: #98be65;">'accuracy'</span>])
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-org2e86fc4" class="outline-2">
-<h2 id="org2e86fc4"><span class="section-number-2">6.</span> 訓媡</h2>
-<div class="outline-text-2" id="text-6">
+<div id="outline-container-org138aac4" class="outline-2">
+<h2 id="org138aac4"><span class="section-number-2">5.</span> 訓練</h2>
+<div class="outline-text-2" id="text-5">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35347;&#32244;</span>
-<span class="linenr">2: </span><span style="color: #dcaeea;">history</span> = model.fit(x_train, y_train,  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35757;&#32451;&#25968;&#25454;&#21644;&#26631;&#31614;</span>
-<span class="linenr">3: </span>                    batch_size=<span style="color: #da8548; font-weight: bold;">50</span>,     <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25209;&#27425;&#22823;&#23567;</span>
-<span class="linenr">4: </span>                    epochs=<span style="color: #da8548; font-weight: bold;">5</span>,          <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35757;&#32451;&#36718;&#25968;</span>
-<span class="linenr">5: </span>                    validation_split=<span style="color: #da8548; font-weight: bold;">0.2</span>)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39564;&#35777;&#38598;&#27604;&#20363;&#65288;&#21487;&#36873;&#65289;</span>
+<span class="linenr">2: </span><span style="color: #dcaeea;">history</span> = model.fit(x_train, y_train, batch_size=<span style="color: #da8548; font-weight: bold;">50</span>,
+<span class="linenr">3: </span>                    epochs=<span style="color: #da8548; font-weight: bold;">5</span>, validation_split=<span style="color: #da8548; font-weight: bold;">0.2</span>)
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-org5603716" class="outline-2">
-<h2 id="org5603716"><span class="section-number-2">7.</span> 評估</h2>
-<div class="outline-text-2" id="text-7">
+<div id="outline-container-orgbc5e0dc" class="outline-2">
+<h2 id="orgbc5e0dc"><span class="section-number-2">6.</span> 評估</h2>
+<div class="outline-text-2" id="text-6">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35413;&#20272;</span>
 <span class="linenr">2: </span><span style="color: #dcaeea;">loss</span>, <span style="color: #dcaeea;">acc</span> = model.evaluate(x_test, y_test)
@@ -422,30 +458,42 @@
 <span class="linenr">4: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#28204;&#35430;&#36039;&#26009;&#30340;&#27491;&#30906;&#29575;&#28858;: </span>{acc*100:.2f}<span style="color: #98be65;">%"</span>)
 </pre>
 </div>
+<pre class="example">
+測試資料的 loss 為: 1.0741
+測試資料的正確率為: 53.75%
+</pre>
 </div>
-<div id="outline-container-org86e3003" class="outline-3">
-<h3 id="org86e3003"><span class="section-number-3">7.1.</span> loss</h3>
-<div class="outline-text-3" id="text-7-1">
+<div id="outline-container-org9e8c74d" class="outline-3">
+<h3 id="org9e8c74d"><span class="section-number-3">6.1.</span> loss</h3>
+<div class="outline-text-3" id="text-6-1">
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #dcaeea;">train_loss</span> = history.history[<span style="color: #98be65;">'loss'</span>]
-<span class="linenr"> 2: </span><span style="color: #dcaeea;">val_loss</span> = history.history[<span style="color: #98be65;">'val_loss'</span>]
-<span class="linenr"> 3: </span><span style="color: #dcaeea;">train_accuracy</span> = history.history[<span style="color: #98be65;">'accuracy'</span>]
-<span class="linenr"> 4: </span><span style="color: #dcaeea;">val_accuracy</span> = history.history[<span style="color: #98be65;">'val_accuracy'</span>]
-<span class="linenr"> 5: </span>
-<span class="linenr"> 6: </span>plt.cla()
-<span class="linenr"> 7: </span>plt.plot(train_loss, label=<span style="color: #98be65;">'Training Loss'</span>)
-<span class="linenr"> 8: </span>plt.plot(val_loss, label=<span style="color: #98be65;">'Validation Loss'</span>)
-<span class="linenr"> 9: </span>plt.title(<span style="color: #98be65;">'Training and Validation Loss'</span>)
-<span class="linenr">10: </span>plt.xlabel(<span style="color: #98be65;">'Epoch'</span>)
-<span class="linenr">11: </span>plt.ylabel(<span style="color: #98be65;">'Loss'</span>)
-<span class="linenr">12: </span>plt.legend()
+<pre class="src src-shell"><span class="linenr">1: </span>pip3 install matplotlib
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
+<span class="linenr"> 2: </span>
+<span class="linenr"> 3: </span><span style="color: #dcaeea;">train_loss</span> = history.history[<span style="color: #98be65;">'loss'</span>]
+<span class="linenr"> 4: </span><span style="color: #dcaeea;">val_loss</span> = history.history[<span style="color: #98be65;">'val_loss'</span>]
+<span class="linenr"> 5: </span><span style="color: #dcaeea;">train_accuracy</span> = history.history[<span style="color: #98be65;">'accuracy'</span>]
+<span class="linenr"> 6: </span><span style="color: #dcaeea;">val_accuracy</span> = history.history[<span style="color: #98be65;">'val_accuracy'</span>]
+<span class="linenr"> 7: </span>
+<span class="linenr"> 8: </span>plt.cla()
+<span class="linenr"> 9: </span>plt.plot(train_loss, label=<span style="color: #98be65;">'Training Loss'</span>)
+<span class="linenr">10: </span>plt.plot(val_loss, label=<span style="color: #98be65;">'Validation Loss'</span>)
+<span class="linenr">11: </span>plt.title(<span style="color: #98be65;">'Training and Validation Loss'</span>)
+<span class="linenr">12: </span>plt.xlabel(<span style="color: #98be65;">'Epoch'</span>)
+<span class="linenr">13: </span>plt.ylabel(<span style="color: #98be65;">'Loss'</span>)
+<span class="linenr">14: </span>plt.legend()
+<span class="linenr">15: </span>plt.show()
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-org590a63c" class="outline-3">
-<h3 id="org590a63c"><span class="section-number-3">7.2.</span> accuracy</h3>
-<div class="outline-text-3" id="text-7-2">
+<div id="outline-container-org3d8ca72" class="outline-3">
+<h3 id="org3d8ca72"><span class="section-number-3">6.2.</span> accuracy</h3>
+<div class="outline-text-3" id="text-6-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span>plt.cla()
 <span class="linenr">2: </span>plt.plot(train_accuracy, label=<span style="color: #98be65;">'Training Accuracy'</span>)
@@ -454,15 +502,20 @@
 <span class="linenr">5: </span>plt.xlabel(<span style="color: #98be65;">'Epoch'</span>)
 <span class="linenr">6: </span>plt.ylabel(<span style="color: #98be65;">'Accuracy'</span>)
 <span class="linenr">7: </span>plt.legend()
+<span class="linenr">8: </span>plt.show()
 </pre>
 </div>
+
+<p>
+*<br />
+</p>
 </div>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2024-05-24 Fri 10:45</p>
+<p class="date">Created: 2024-05-25 Sat 14:05</p>
 </div>
 </body>
 </html>
