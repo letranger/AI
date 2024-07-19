@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-07-19 Fri 14:52 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Activation Function</title>
+<meta name="author" content="Yung-Chin Yen" />
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<link rel="stylesheet" type="text/css" href="../css/muse.css" />
+<script>
+  window.MathJax = {
+    tex: {
+      ams: {
+        multlineWidth: '85%'
+      },
+      tags: 'ams',
+      tagSide: 'right',
+      tagIndent: '.8em'
+    },
+    chtml: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    svg: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    output: {
+      font: 'mathjax-modern',
+      displayOverflow: 'overflow'
+    }
+  };
+</script>
+
+<script
+  id="MathJax-script"
+  async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">Activation Function</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org9ac3953">1. 簡介</a></li>
+<li><a href="#org9d08f81">2. 重要性</a></li>
+<li><a href="#org4e6f4ba">3. 類型</a>
+<ul>
+<li><a href="#org65ccb73">3.1. Step function</a></li>
+<li><a href="#org70882eb">3.2. Sigmoid</a></li>
+<li><a href="#org27a833a">3.3. ReLU</a></li>
+<li><a href="#orgda69b06">3.4. Softmax</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<a href="https://hits.sh/letranger.github.io/PythonCourse/20240215153606-activationfunction.html/"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/PythonCourse/20240215153606-activationfunction.html.svg?style=plastic"/></a>
+<div id="outline-container-org9ac3953" class="outline-2">
+<h2 id="org9ac3953"><span class="section-number-2">1.</span> 簡介</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+Activation function有許多中譯方式：
+</p>
+<ul class="org-ul">
+<li>啟動函數</li>
+<li>激勵函數</li>
+<li>激發函數</li>
+<li>激活函數</li>
+</ul>
+
+<p>
+Activation function是神經網絡中極其重要的概念。它們決定了某個神經元是否被activate，這個神經元接受到的信息是否是有用的，是否該留下或者是該拋棄。
+Activation) function的形式如下<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>：
+</p>
+<ul class="org-ul">
+<li>在神經元裡定義一些權重(weight)，經過計算之後，判斷結果是否超過一個閾值(threshold)，如果超過，神經元輸出為 1；反之，則輸出 0。</li>
+<li>如果不用Activation function，每一層output都是上層input的線性函數，無論神經網絡有多少層，輸出都是輸入的線性組合。</li>
+<li>加入非線性的function就能改變線性問題</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org9d08f81" class="outline-2">
+<h2 id="org9d08f81"><span class="section-number-2">2.</span> 重要性</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+由沒有Activation Function的perceptron所組成的神網網路都只是linear model，linear model無法處理複雜的問題。
+</p>
+
+<p>
+思考下方堆疊兩層感知器的例子(這裡我們捨棄偏權值b，使問題單純化)：
+</p>
+
+<div id="org55009a3" class="figure">
+<p><img src="images/2perceptrons.png" alt="2perceptrons.png" width="500" />
+</p>
+<p><span class="figure-number">Figure 1: </span>Stacked perceptrons</p>
+</div>
+
+<p>
+其中
+\[
+y_1 = w_1^1x_1 + w_2^1x_2 \\
+y_2 = w_3^1x_1 + w_4^1x_2 \\
+\hat{y} = w_1^2y_1 + w_2^2y_2
+\]
+若將\(y_1\)與\(y_2\)代入\(\hat{y}\)，可以發現仍然是原始數據的線性組合，代表即使堆疊多層的感知器時，若沒有使用激活函數，本質上可以被單層感知器取代，如下<sup><a id="fnr.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup>：
+\[\hat{y} = w_1^2y_1 + w_2^2y_2  = (w_1^1w_1^2 + w_2^1x_2^2)x_1 + (w_3^1w_1^2 + w_4^1x_2^2)x_2\]
+</p>
+
+<p>
+激活函數最重要的功能在於引入神經網路非線性，因為若未加入激活函數，卷積層與全連接層只是單純的線性運算，只是將上層的數據經過線性地組合成下層數據而已，對於線性不可分的問題仍然是無解的<sup><a id="fnr.3" class="footref" href="#fn.3" role="doc-backlink">3</a></sup>。
+</p>
+
+<p>
+舉個常見的例子，如果輸入的資料如下圖(這是互斥或閘XOR的例子)，圈圈與叉叉分別是兩種不同的類別，我們的目標就是利用一條直線將兩類別切開，但實際上根本無法利用一條直線切割開，因此需要對輸入資料做特徵轉換(feature transform)，將其從x1-x2特徵平面映射其他線性可分的特徵平面(可單純利用一條直線切分)<sup><a id="fnr.3.100" class="footref" href="#fn.3" role="doc-backlink">3</a></sup>。
+</p>
+</div>
+</div>
+<div id="outline-container-org4e6f4ba" class="outline-2">
+<h2 id="org4e6f4ba"><span class="section-number-2">3.</span> 類型</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-org65ccb73" class="outline-3">
+<h3 id="org65ccb73"><span class="section-number-3">3.1.</span> Step function</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+Step function，若輸入超過 0，則輸出 1；若輪入小於等於 0，則輸出 0，如公式\eqref{orgb78cceb}所示，其函數圖形則如圖<a href="#org1582082">2</a>所示。
+</p>
+\begin{equation}
+\label{orgb78cceb}
+h(x) = \begin{cases}
+1 & \text{if } x > 0 \\
+0 & \text{if } x\leq 0
+\end{cases}
+\end{equation}
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 2: </span><span style="color: #51afef;">import</span> matplotlib.pylab <span style="color: #51afef;">as</span> plt
+<span class="linenr"> 3: </span>
+<span class="linenr"> 4: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">step_function</span>(x):
+<span id="coderef-why" class="coderef-off"><span class="linenr"> 5: </span>    <span style="color: #51afef;">return</span> np.array(x&gt;<span style="color: #da8548; font-weight: bold;">0</span>, dtype=np.<span style="color: #c678dd;">int</span>)</span>
+<span class="linenr"> 6: </span>
+<span class="linenr"> 7: </span><span style="color: #dcaeea;">x</span> = np.arange(-<span style="color: #da8548; font-weight: bold;">5.0</span>, <span style="color: #da8548; font-weight: bold;">5.0</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>)
+<span class="linenr"> 8: </span><span style="color: #dcaeea;">y</span> = step_function(x)
+<span class="linenr"> 9: </span>plt.figure(figsize=(<span style="color: #da8548; font-weight: bold;">4</span>,<span style="color: #da8548; font-weight: bold;">3</span>))
+<span class="linenr">10: </span>plt.plot(x, y)
+<span class="linenr">11: </span>plt.ylim(-<span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">1.1</span>)
+<span class="linenr">12: </span>plt.savefig(<span style="color: #98be65;">"images/stepFuncPlot.png"</span>)
+<span class="linenr">13: </span><span style="color: #51afef;">return</span> <span style="color: #98be65;">"images/stepFuncPlot.png"</span>
+</pre>
+</div>
+
+<div id="org1582082" class="figure">
+<p><img src="images/stepFuncPlot.png" alt="stepFuncPlot.png" width="300" />
+</p>
+<p><span class="figure-number">Figure 2: </span>階梯函數圖</p>
+</div>
+
+<ul class="org-ul">
+<li>為什麼第<a href="#coderef-why" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-why');" onmouseout="CodeHighlightOff(this, 'coderef-why');">5</a>行(np.array(x&gt;0, dtype=np.int))這樣寫會變成0/1</li>
+<li>當調整參數時，節點輸出的值在 0 和 1 之間躍遷，對調整參數造成很大不便。</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org70882eb" class="outline-3">
+<h3 id="org70882eb"><span class="section-number-3">3.2.</span> Sigmoid</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+公式\eqref{org28a49b1}即為 sigmoid 函數(sigmoid function)，其中的\(exp(-x)\)代表\(e^{-x}\)，\(e\)為納皮爾常數(Napier&rsquo;s constant)2.71828&#x2026;的實數。
+</p>
+\begin{equation}
+\label{org28a49b1}
+h(x) = \frac{1}{1+exp(-x)} = \frac{1}{1+e^{-x}}
+\end{equation}
+
+<p>
+sigmoid 函數的 python 實作如下所述，而其圖形結果為平滑曲線(圖<a href="#orgc508faf">3</a>)，針對輸入產生連續性的輸出，但仍與階梯函數相同，以 0 為界線，這種平滑度對於神經網路有相當重要的意義。此外，step function只能回傳 0 或 1，而 sigmoid 函數可以回傳實數。
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 2: </span><span style="color: #51afef;">import</span> matplotlib.pylab <span style="color: #51afef;">as</span> plt
+<span class="linenr"> 3: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">sigmoid</span>(x):
+<span class="linenr"> 4: </span>    <span style="color: #51afef;">return</span> <span style="color: #da8548; font-weight: bold;">1</span> / (<span style="color: #da8548; font-weight: bold;">1</span> + np.exp(-x))
+<span class="linenr"> 5: </span><span style="color: #dcaeea;">x</span> = np.arange(-<span style="color: #da8548; font-weight: bold;">5.0</span>, <span style="color: #da8548; font-weight: bold;">5.0</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>)
+<span class="linenr"> 6: </span><span style="color: #dcaeea;">y</span> = sigmoid(x)
+<span class="linenr"> 7: </span><span style="color: #c678dd;">print</span>(y)
+<span class="linenr"> 8: </span>plt.figure(figsize=(<span style="color: #da8548; font-weight: bold;">4</span>,<span style="color: #da8548; font-weight: bold;">3</span>))
+<span class="linenr"> 9: </span>plt.plot(x, y)
+<span class="linenr">10: </span>plt.ylim(-<span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">1.1</span>)
+<span class="linenr">11: </span>plt.savefig(<span style="color: #98be65;">"images/sigmoidplot2.png"</span>)
+<span class="linenr">12: </span><span style="color: #51afef;">return</span> <span style="color: #98be65;">"images/sigmoidplot2.png"</span>
+</pre>
+</div>
+
+<div id="orgc508faf" class="figure">
+<p><img src="images/sigmoidplot2.png" alt="sigmoidplot2.png" width="300" />
+</p>
+<p><span class="figure-number">Figure 3: </span>sigmoid 函數圖</p>
+</div>
+
+<ul class="org-ul">
+<li>非線性功能</li>
+<li>輸出：（0,1）</li>
+<li>處理極端值</li>
+<li>常用於隱藏層和輸出層</li>
+<li>常用於二元分類</li>
+<li>梯度消失問題</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org27a833a" class="outline-3">
+<h3 id="org27a833a"><span class="section-number-3">3.3.</span> ReLU</h3>
+<div class="outline-text-3" id="text-3-3">
+<p>
+神經網路感知器使用的活化函數多為非線性函數，如階梯函數與 sigmoid 函數，其主要原因在於，若在神經網路中使用線性函數，則不論加深多少層，這些函數都能合併為一個單一函數。例如，一個以\(h(x)=cx\)為活化函數的三層網路，其執行結果便相當於\(y(x)=h(h(h(x)))\)，亦即，其執行網果就如同一個以\(y(h)=ax\)為活化函數的一層網路，其中\(a=c^{3}\)。
+</p>
+
+<p>
+雖然 sigmoid 函數很早就應用於神經網路中，但最近較常使用的為 ReLU (Rectified Linear Unit)函數，若輸入超過 0，則直接輸出；若輪入小於 0，則輸出 0，如公式\eqref{org172acd9}所示，其函數圖形則如圖<a href="#org0ebd073">4</a>所示。
+</p>
+\begin{equation}
+\label{org172acd9}
+h(x) = \begin{cases} x & \text{if } x > 0
+\\ 0 & \text{if } x\leq 0 \end{cases}
+\end{equation}
+<p>
+or
+\[h(x) = max(0,x)\]
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 2: </span><span style="color: #51afef;">import</span> matplotlib.pylab <span style="color: #51afef;">as</span> plt
+<span class="linenr"> 3: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">relu</span>(x):
+<span class="linenr"> 4: </span>    <span style="color: #51afef;">return</span> np.maximum(<span style="color: #da8548; font-weight: bold;">0</span>, x)
+<span class="linenr"> 5: </span><span style="color: #dcaeea;">x</span> = np.arange(-<span style="color: #da8548; font-weight: bold;">5.0</span>, <span style="color: #da8548; font-weight: bold;">5.0</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>)
+<span class="linenr"> 6: </span><span style="color: #dcaeea;">y</span> = relu(x)
+<span class="linenr"> 7: </span><span style="color: #c678dd;">print</span>(y)
+<span class="linenr"> 8: </span>plt.figure(figsize=(<span style="color: #da8548; font-weight: bold;">4</span>,<span style="color: #da8548; font-weight: bold;">3</span>))
+<span class="linenr"> 9: </span>plt.plot(x, y)
+<span class="linenr">10: </span>plt.ylim(-<span style="color: #da8548; font-weight: bold;">0.5</span>, <span style="color: #da8548; font-weight: bold;">5</span>)
+<span class="linenr">11: </span>plt.savefig(<span style="color: #98be65;">"images/ReLUPlot.png"</span>)
+<span class="linenr">12: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">return "ReLUPlot.png"</span>
+</pre>
+</div>
+
+<div id="org0ebd073" class="figure">
+<p><img src="images/ReLUPlot.png" alt="ReLUPlot.png" width="300" />
+</p>
+<p><span class="figure-number">Figure 4: </span>ReLU 函數圖</p>
+</div>
+<ul class="org-ul">
+<li>非線性功能</li>
+<li>輸出範圍：（0，\(\infty\)）</li>
+<li>捨棄一些信息</li>
+<li>常用於隱藏層</li>
+<li>梯度爆炸問題</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgda69b06" class="outline-3">
+<h3 id="orgda69b06"><span class="section-number-3">3.4.</span> Softmax</h3>
+<div class="outline-text-3" id="text-3-4">
+</div>
+<div id="outline-container-orgade1463" class="outline-4">
+<h4 id="orgade1463"><span class="section-number-4">3.4.1.</span> 特色</h4>
+<div class="outline-text-4" id="text-3-4-1">
+<p>
+softmaxe 的輸出為介於 0 到 1 間的實數，此外，其輸出總和為 1，這個性質使的 softmax 函數的輸出也可解釋為「機率」。例如，前節程式碼的輸出結果為[0.01821127 0.24519181 0.73659691]，從以機率的角度我們可以說：分類的結果有 1.8%的機率為第 0 類；有 24.52%的機率為第 1 類；有 73.66%的機率為第 2 類。換言之，使用 softmax 函數可以針對問題提出對應的機率。
+softmax 函數的另一個特色是其輸出結果仍保持與輸入訊息一致的大小關係，這是因為惷數函數\(y=exp(x)\)為單週函數。一般而言，神經網路會把輸出最大神經元的類別當作辨識結果，然而，因為 softmax 不影響大小順序，所以一般會省略 softmax 函數。
+</p>
+
+<p>
+輸出層的節點數量取決於要解決的問題，例如，如果要解決的問題為「判斷一個手寫數字的結果」，則輸出層會有 10 個節點(分別代表 0~9)，而輸出訊息最大的結點則為最有可能的答案類別。
+</p>
+</div>
+</div>
+<div id="outline-container-org4591701" class="outline-4">
+<h4 id="org4591701"><span class="section-number-4">3.4.2.</span> 公式</h4>
+<div class="outline-text-4" id="text-3-4-2">
+\begin{equation}
+\label{org17a56a8}
+y_k = \frac{exp(a_k)}{\sum_{i=1}^{n}exp(a_i)}
+\end{equation}
+</div>
+</div>
+<div id="outline-container-orgaef5864" class="outline-4">
+<h4 id="orgaef5864"><span class="section-number-4">3.4.3.</span> 實作</h4>
+<div class="outline-text-4" id="text-3-4-3">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">python code for softmax funtion</span>
+<span class="linenr"> 2: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 3: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">softmax</span>(a):
+<span id="coderef-softmax-overflow1" class="coderef-off"><span class="linenr"> 4: </span>    <span style="color: #dcaeea;">exp_a</span> = np.exp(a)</span>
+<span id="coderef-softmax-overflow2" class="coderef-off"><span class="linenr"> 5: </span>    <span style="color: #5B6268;">#</span><span style="color: #5B6268;">exp_a = np.exp(a - np.max(a))</span></span>
+<span class="linenr"> 6: </span>    <span style="color: #dcaeea;">sum_exp_a</span> = np.<span style="color: #c678dd;">sum</span>(exp_a)
+<span class="linenr"> 7: </span>    <span style="color: #dcaeea;">y</span> = exp_a / sum_exp_a
+<span class="linenr"> 8: </span>    <span style="color: #51afef;">return</span>(y)
+<span class="linenr"> 9: </span><span style="color: #dcaeea;">a</span> = np.array([<span style="color: #da8548; font-weight: bold;">0.3</span>, <span style="color: #da8548; font-weight: bold;">2.9</span>, <span style="color: #da8548; font-weight: bold;">4.0</span>])
+<span class="linenr">10: </span><span style="color: #c678dd;">print</span>(softmax(a))
+</pre>
+</div>
+<pre class="example">
+[0.01821127 0.24519181 0.73659691]
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://kknews.cc/code/o8m4gpq.html">五分鐘理解深度學習中激活函數以及不同激活函數的使用場景</a>
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.2" class="footnum" href="#fnr.2" role="doc-backlink">2</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://chih-sheng-huang821.medium.com/%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92-%E7%A5%9E%E7%B6%93%E7%B6%B2%E8%B7%AF-%E5%A4%9A%E5%B1%A4%E6%84%9F%E7%9F%A5%E6%A9%9F-multilayer-perceptron-mlp-%E9%81%8B%E4%BD%9C%E6%96%B9%E5%BC%8F-f0e108e8b9af">機器學習- 神經網路(多層感知機 Multilayer perceptron, MLP)運作方式</a>
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.3" class="footnum" href="#fnr.3" role="doc-backlink">3</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="http://elmer-storage.blogspot.com/2018/07/cnn-activation-function-feature.html">CNN筆記 - 激活函數 (Activation Function)與特徵轉換 (Feature Transform) </a>
+</p></div></div>
+
+
+</div>
+</div></div>
+<div id="postamble" class="status">
+<p class="author">Author: Yung-Chin Yen</p>
+<p class="date">Created: 2024-07-19 Fri 14:52</p>
+</div>
+</body>
+</html>
