@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-07-20 Sat 16:34 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>佈署模型</title>
+<meta name="author" content="Yung-Chin Yen" />
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<link rel="stylesheet" type="text/css" href="../css/muse.css" />
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">佈署模型</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org610365f">1. Streamlit</a></li>
+<li><a href="#org2426450">2. 簡易的Streamlit範例</a>
+<ul>
+<li><a href="#orge2e9841">2.1. 下載範例程式</a></li>
+<li><a href="#org483795d">2.2. 範例</a></li>
+<li><a href="#org0738614">2.3. 佈署成果</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<a href="https://letranger.github.io/AI/20240720151350-佈署模型.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20240720151350-佈署模型.html.svg"/></a>
+<div id="outline-container-org610365f" class="outline-2">
+<h2 id="org610365f"><span class="section-number-2">1.</span> Streamlit</h2>
+<div class="outline-text-2" id="text-1">
+
+<div id="orgddf13ac" class="figure">
+<p><img src="images/Streamlit/2024-07-20_16-19-40_image27_frqkzv.png" alt="2024-07-20_16-19-40_image27_frqkzv.png" width="300" /><br />
+</p>
+<p><span class="figure-number">Figure 1: </span>Streamlit</p>
+</div>
+
+<p>
+<a href="https://streamlit.io/">Streamlit</a> 是一個開源的 Python 框架，讓開發者可以簡單快速地構建和分享資料分析應用程式。無論是機器學習模型的部署、客製化的視覺化儀表板，還是軟體設計的原型展示，Streamlit 都能輕鬆應對。<br />
+</p>
+
+<p>
+Streamlit的優點:<br />
+</p>
+<ol class="org-ol">
+<li>簡單易用：<br />
+只需少量的 Python 代碼，就能創建出功能強大的應用程式。Streamlit 的 API 設計直觀，讓你可以專注於數據和邏輯，而不用擔心前端開發。<br /></li>
+<li>即時預覽：<br />
+在開發過程中，每次保存代碼變更後，應用會自動重新加載，快速看到修改效果。這大大提高了開發效率，讓你能夠即時調整和優化你的應用。<br /></li>
+<li>豐富的元件庫：<br />
+<ul class="org-ul">
+<li>Streamlit 提供了豐富的元件，如圖表、表格、文件上傳、滑動條、選擇框等，讓你可以輕鬆構建各種互動式的用戶界面。<br /></li>
+<li>支持與各種視覺化庫（如 Matplotlib、Plotly、Altair）的集成，讓你能夠創建精美的圖表和數據可視化。<br /></li>
+</ul></li>
+<li>支持機器學習和數據科學：<br />
+<ul class="org-ul">
+<li>Streamlit 非常適合用來展示和部署機器學習模型。你可以輕鬆地將模型輸出嵌入到應用中，並提供交互式的界面來調整參數和查看結果。<br /></li>
+<li>支持各種機器學習框架，如 TensorFlow、PyTorch、Scikit-learn 等，讓你能夠快速將訓練好的模型應用到實際場景中。<br /></li>
+</ul></li>
+<li>客製化儀表板：<br />
+<ul class="org-ul">
+<li>通過 Streamlit，你可以創建高度客製化的數據儀表板，實時顯示和更新數據分析結果，適合用於商業分析、研究報告等多種場景。<br /></li>
+<li>儀表板可以與數據庫或 API 集成，實現數據的實時更新和監控。<br /></li>
+</ul></li>
+<li>輕鬆部署和分享：<br />
+<ul class="org-ul">
+<li>Streamlit 應用可以很方便地部署到本地或雲端服務器，甚至可以使用 Streamlit 提供的分享平台來發佈你的應用，讓全球用戶都能訪問。<br /></li>
+<li>支持 Docker 化部署，讓你可以在不同環境中快速上線應用。<br /></li>
+</ul></li>
+<li>原型設計和展示：<br />
+Streamlit 是展示軟體設計原型的理想工具。你可以快速搭建原型，進行用戶測試和反饋收集，從而加速產品開發流程。<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-org2426450" class="outline-2">
+<h2 id="org2426450"><span class="section-number-2">2.</span> 簡易的Streamlit範例</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-orge2e9841" class="outline-3">
+<h3 id="orge2e9841"><span class="section-number-3">2.1.</span> 下載範例程式</h3>
+<div class="outline-text-3" id="text-2-1">
+<ul class="org-ul">
+<li>底下的檔案可以透過以下方式下載(於終端機執行)<br /></li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-shell"><span class="linenr">1: </span><span style="color: #ECBE7B;">git</span> clone <span style="color: #ECBE7B;">git</span>@github.com:letranger/modelDeploy.git
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org483795d" class="outline-3">
+<h3 id="org483795d"><span class="section-number-3">2.2.</span> 範例</h3>
+<div class="outline-text-3" id="text-2-2">
+</div>
+<div id="outline-container-org2e49926" class="outline-4">
+<h4 id="org2e49926"><span class="section-number-4">2.2.1.</span> 安裝所需套件</h4>
+<div class="outline-text-4" id="text-2-2-1">
+<div class="org-src-container">
+<pre class="src src-shell"><span class="linenr">1: </span><span style="color: #ECBE7B;">cd</span> modelDeploy
+<span class="linenr">2: </span>pip3 install -r requirements.txt
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc1146e9" class="outline-4">
+<h4 id="orgc1146e9"><span class="section-number-4">2.2.2.</span> 下載訓練好的模型</h4>
+<div class="outline-text-4" id="text-2-2-2">
+<p>
+請自行訓練好你的模型<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orge8e1fc7" class="outline-4">
+<h4 id="orge8e1fc7"><span class="section-number-4">2.2.3.</span> 簡易的參考程式</h4>
+<div class="outline-text-4" id="text-2-2-3">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> tensorflow <span style="color: #51afef;">as</span> tf
+<span class="linenr"> 2: </span><span style="color: #51afef;">from</span> tensorflow.keras.models <span style="color: #51afef;">import</span> Sequential
+<span class="linenr"> 3: </span><span style="color: #51afef;">from</span> tensorflow.keras.layers <span style="color: #51afef;">import</span> Conv2D, MaxPooling2D, Flatten, Dense
+<span class="linenr"> 4: </span><span style="color: #51afef;">import</span> streamlit <span style="color: #51afef;">as</span> st
+<span class="linenr"> 5: </span><span style="color: #51afef;">from</span> PIL <span style="color: #51afef;">import</span> Image, ImageOps
+<span class="linenr"> 6: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 7: </span>
+<span class="linenr"> 8: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23450;&#32681;&#39006;&#21029;&#27161;&#31844;</span>
+<span class="linenr"> 9: </span><span style="color: #dcaeea;">class_labels</span> = [
+<span class="linenr">10: </span>    <span style="color: #98be65;">'T-shirt/top'</span>, <span style="color: #98be65;">'Trouser'</span>, <span style="color: #98be65;">'Pullover'</span>, <span style="color: #98be65;">'Dress'</span>, <span style="color: #98be65;">'Coat'</span>,
+<span class="linenr">11: </span>    <span style="color: #98be65;">'Sandal'</span>, <span style="color: #98be65;">'Shirt'</span>, <span style="color: #98be65;">'Sneaker'</span>, <span style="color: #98be65;">'Bag'</span>, <span style="color: #98be65;">'Ankle boot'</span>
+<span class="linenr">12: </span>]
+<span class="linenr">13: </span>
+<span class="linenr">14: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#37325;&#24314;&#27169;&#22411;&#26550;&#27083;</span>
+<span class="linenr">15: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">build_model</span>():
+<span class="linenr">16: </span>    <span style="color: #dcaeea;">model</span> = Sequential()
+<span class="linenr">17: </span>    model.add(Conv2D(filters=<span style="color: #da8548; font-weight: bold;">32</span>, kernel_size=<span style="color: #da8548; font-weight: bold;">2</span>, activation=<span style="color: #98be65;">'relu'</span>, input_shape=(<span style="color: #da8548; font-weight: bold;">28</span>,<span style="color: #da8548; font-weight: bold;">28</span>,<span style="color: #da8548; font-weight: bold;">1</span>)))
+<span class="linenr">18: </span>    model.add(MaxPooling2D(pool_size=<span style="color: #da8548; font-weight: bold;">2</span>))
+<span class="linenr">19: </span>    model.add(Flatten())
+<span class="linenr">20: </span>    model.add(Dense(<span style="color: #da8548; font-weight: bold;">10</span>, activation=<span style="color: #98be65;">'softmax'</span>))
+<span class="linenr">21: </span>    <span style="color: #51afef;">return</span> model
+<span class="linenr">22: </span>
+<span class="linenr">23: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21109;&#24314;&#20006;&#21152;&#36617;&#27402;&#37325;</span>
+<span class="linenr">24: </span><span style="color: #dcaeea;">model</span> = tf.keras.models.load_model(<span style="color: #98be65;">'/Users/letranger/Downloads/fm_model.h5'</span>)
+<span class="linenr">25: </span>model.<span style="color: #c678dd;">compile</span>(optimizer=<span style="color: #98be65;">'adam'</span>, loss=<span style="color: #98be65;">'sparse_categorical_crossentropy'</span>, metrics=[<span style="color: #98be65;">'accuracy'</span>])
+<span class="linenr">26: </span>
+<span class="linenr">27: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23450;&#32681;&#22294;&#20687;&#38928;&#34389;&#29702;&#21644;&#38928;&#28204;&#20989;&#25976;</span>
+<span class="linenr">28: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">preprocess_and_predict</span>(image):
+<span class="linenr">29: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36681;&#25563;&#22294;&#20687;&#28858;&#28784;&#24230;&#22294;</span>
+<span class="linenr">30: </span>    <span style="color: #dcaeea;">gray_image</span> = ImageOps.grayscale(image)
+<span class="linenr">31: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35519;&#25972;&#22294;&#20687;&#22823;&#23567;&#28858; 28x28</span>
+<span class="linenr">32: </span>    <span style="color: #dcaeea;">resized_image</span> = gray_image.resize((<span style="color: #da8548; font-weight: bold;">28</span>, <span style="color: #da8548; font-weight: bold;">28</span>))
+<span class="linenr">33: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23559;&#22294;&#20687;&#36681;&#25563;&#28858;&#25976;&#32068;</span>
+<span class="linenr">34: </span>    <span style="color: #dcaeea;">image_array</span> = np.array(resized_image)
+<span class="linenr">35: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27491;&#35215;&#21270;&#20687;&#32032;&#20540;</span>
+<span class="linenr">36: </span>    <span style="color: #dcaeea;">image_array</span> = image_array / <span style="color: #da8548; font-weight: bold;">255.0</span>
+<span class="linenr">37: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#28155;&#21152;&#25209;&#27425;&#32173;&#24230;</span>
+<span class="linenr">38: </span>    <span style="color: #dcaeea;">image_array</span> = np.expand_dims(image_array, axis=<span style="color: #da8548; font-weight: bold;">0</span>)
+<span class="linenr">39: </span>    <span style="color: #dcaeea;">image_array</span> = np.expand_dims(image_array, axis=-<span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr">40: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20351;&#29992;&#27169;&#22411;&#36914;&#34892;&#38928;&#28204;</span>
+<span class="linenr">41: </span>    <span style="color: #dcaeea;">predictions</span> = model.predict(image_array)
+<span class="linenr">42: </span>    <span style="color: #dcaeea;">predicted_class</span> = np.argmax(predictions, axis=<span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr">43: </span>    <span style="color: #51afef;">return</span> class_labels[predicted_class[<span style="color: #da8548; font-weight: bold;">0</span>]], gray_image, resized_image
+<span class="linenr">44: </span>
+<span class="linenr">45: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">Streamlit &#25033;&#29992;</span>
+<span class="linenr">46: </span>st.title(<span style="color: #98be65;">'Fashion MNIST &#22294;&#20687;&#20998;&#39006;'</span>)
+<span class="linenr">47: </span>st.write(<span style="color: #98be65;">'&#19978;&#20659;&#19968;&#24373;&#22294;&#29255;&#65292;&#27169;&#22411;&#23559;&#38928;&#28204;&#22294;&#29255;&#30340;&#39006;&#22411;'</span>)
+<span class="linenr">48: </span>
+<span class="linenr">49: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#19978;&#20659;&#22294;&#29255;</span>
+<span class="linenr">50: </span><span style="color: #dcaeea;">uploaded_file</span> = st.file_uploader(<span style="color: #98be65;">"&#36984;&#25799;&#19968;&#24373;&#22294;&#29255;..."</span>, <span style="color: #c678dd;">type</span>=[<span style="color: #98be65;">"jpg"</span>, <span style="color: #98be65;">"jpeg"</span>, <span style="color: #98be65;">"png"</span>])
+<span class="linenr">51: </span>
+<span class="linenr">52: </span><span style="color: #51afef;">if</span> uploaded_file <span style="color: #51afef;">is</span> <span style="color: #51afef;">not</span> <span style="color: #a9a1e1;">None</span>:
+<span class="linenr">53: </span>    <span style="color: #dcaeea;">image</span> = Image.<span style="color: #c678dd;">open</span>(uploaded_file)
+<span class="linenr">54: </span>    st.image(image, caption=<span style="color: #98be65;">'&#19978;&#20659;&#30340;&#22294;&#29255;'</span>, use_column_width=<span style="color: #a9a1e1;">True</span>)
+<span class="linenr">55: </span>    st.write(<span style="color: #98be65;">""</span>)
+<span class="linenr">56: </span>
+<span class="linenr">57: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#22294;&#20687;&#38928;&#34389;&#29702;&#21644;&#38928;&#28204;</span>
+<span class="linenr">58: </span>    <span style="color: #dcaeea;">label</span>, <span style="color: #dcaeea;">gray_image</span>, <span style="color: #dcaeea;">resized_image</span> = preprocess_and_predict(image)
+<span class="linenr">59: </span>
+<span class="linenr">60: </span>    st.write(<span style="color: #98be65;">"&#28784;&#38542;&#22294;&#20687;:"</span>)
+<span class="linenr">61: </span>    st.image(gray_image, caption=<span style="color: #98be65;">'&#28784;&#38542;&#22294;&#20687;'</span>, use_column_width=<span style="color: #a9a1e1;">True</span>)
+<span class="linenr">62: </span>
+<span class="linenr">63: </span>    st.write(<span style="color: #98be65;">"&#35519;&#25972;&#22823;&#23567;&#30340;&#22294;&#20687; (28x28):"</span>)
+<span class="linenr">64: </span>    st.image(resized_image, caption=<span style="color: #98be65;">'&#35519;&#25972;&#22823;&#23567;&#30340;&#22294;&#20687;'</span>, use_column_width=<span style="color: #a9a1e1;">False</span>)
+<span class="linenr">65: </span>
+<span class="linenr">66: </span>    st.write(f<span style="color: #98be65;">'&#38928;&#28204;&#32080;&#26524;: </span>{label}<span style="color: #98be65;">'</span>)
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org0738614" class="outline-3">
+<h3 id="org0738614"><span class="section-number-3">2.3.</span> 佈署成果</h3>
+<div class="outline-text-3" id="text-2-3">
+
+<div id="org90e0708" class="figure">
+<p><img src="images/簡易的Streamlit範例/2024-07-20_16-34-04_2024-07-20_16-32-37.gif" alt="2024-07-20_16-34-04_2024-07-20_16-32-37.gif" width="500" /><br />
+</p>
+<p><span class="figure-number">Figure 2: </span>超廢圖像分類系統</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Yung-Chin Yen</p>
+<p class="date">Created: 2024-07-20 Sat 16:34</p>
+</div>
+</body>
+</html>
