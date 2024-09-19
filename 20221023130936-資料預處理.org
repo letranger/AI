@@ -9,6 +9,7 @@
 #+OPTIONS: H:4
 #+PROPERTY: header-args :eval never-export
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/muse.css" />
+#+HTML_HEAD_EXTRA: <script src="../css/copy_code.js"></script>
 #+begin_export html
 <a href="https://hits.sh/letranger.github.io/AI/20221023130936-資料預處理.html"><img alt="Hits" align="right" src="https://hits.sh/letranger.github.io/AI/20221023130936-資料預處理.html.svg"/></a>
 #+end_export
@@ -30,18 +31,57 @@
 
 以下的程式碼都是簡單的pandas應用，如果你看不懂，表示你自已要惡補一下Pandas的課程，可以參看:
 - [[https://letranger.github.io/PythonCourse/Pandas.html][Pandas教學]]
-- [[https://leemeng.tw/practical-pandas-tutorial-for-aspiring-data-scientists.html][資料科學家的 pandas 實戰手冊：掌握 40 個實用數據技巧]]
+- [[https://leemeng.tw/practical-pandas-tutorial-for-aspiring-data-scientists.html][資料科學家的 pandas實戰手冊:掌握40個實用數據技巧]]
 - 其他的自己[[https://www.google.com/][Google]]
 
+** 讀檔
+- [[file:images/資料預處理/CatDog.csv][按這裡下載測試檔案]]
+*** Colab
+**** 檔案在/content裡
+***** 先把下載的檔案拉到
+#+CAPTION: 將檔案上傳至Colab雲端硬碟
+#+LABEL:fig:Labl
+#+name: fig:uploadFile
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 300
+[[file:images/Colab編寫環境/2024-01-13_13-54-39_2024-01-13_13-54-06.png]]
+***** 讀取檔案
+#+begin_src python -r -n :results output :exports both
+import pandas as pd
+
+origdf = pd.read_csv("/content/CatDog.csv")
+
+#+end_src
+**** 檔案在你的Google Drive
+先連結Google Drive
+#+begin_src python -r -n :results output :exports both
+import pandas as pd
+# import Google Drive 套件
+from google.colab import drive
+# 將自己的雲端硬碟掛載上去
+drive.mount('/content/gdrive')
+# 透過 gdrive/My Drive/... 來存取檔案
+test = pd.read_csv('gdrive/My Drive/CatDog.csv')
+test
+#+end_src
 ** 刪除遺漏值
 現實世界中可能會因各種原因導致數據缺失或遺漏(如問卷被刻意留白)，這些部份通常會以「空白」、「NaN」或「NULL」來取代。
+*** Emacs Baabel Virtual Environment for Python :noexport:
+虛擬環境名稱設定: venv
+#+BEGIN_SRC elisp :session venv
+(pyvenv-activate "~/Dropbox/notes/roam/.venv")
+(setq org-babel-python-command "~/Dropbox/notes/roam/.venv/bin/python")
+(pyvenv-workon "venv")
+#+END_SRC
 *** 查看資料集內容
-#+BEGIN_SRC python -r -n :async :results output :exports both :session dpp
-csv_data = '''A,X,B,C,D
-1.0,,2.0,3.0,4.0
-5.0,,6.0,,8.0
-10.0,,11.0,12.0
-,,,,'''
+#+BEGIN_SRC python -r -n :async :results  output :exports both :session venv
+csv_data ="""A,B,C,D,E
+ 1.0,,  2.0,  3.0, 4.0
+ 5.0,,  6.0,, 8.0
+10.0,, 11.0, 12.0, 5.0
+9.9,,8.0, 12.0"""
+
 import sys
 import pandas as pd
 # python 2.7需進行unicode轉碼
@@ -54,86 +94,102 @@ print(df)
 #+END_SRC
 
 #+RESULTS:
-:       A   X     B     C    D
+:       A   B     C     D    E
 : 0   1.0 NaN   2.0   3.0  4.0
 : 1   5.0 NaN   6.0   NaN  8.0
-: 2  10.0 NaN  11.0  12.0  NaN
-: 3   NaN NaN   NaN   NaN  NaN
+: 2  10.0 NaN  11.0  12.0  5.0
+: 3   9.9 NaN   8.0  12.0  NaN
 
-雖然pd.read_csv是用來讀取網路上或本機端的csv檔，此處為了省去大家讀取，我們以直接以字串模擬一個檔案出來，所以在讀取時要以以下的方式來讀：
+雖然pd.read_csv是用來讀取網路上或本機端的csv檔，此處為了省去大家讀取d檔案的工作，我們以直接以字串模擬一個檔案出來，所以在讀取時要以以下的方式來讀：
 #+begin_src python -r -n :results output :exports both
 pd.read_csv)StringIO(字串變數名稱)
 #+end_src
 *** 遺漏值的識別
 現在可以大概統計一下遺漏值
-#+BEGIN_SRC python -r -n :async :results output :exports both :session dpp
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
 # 列出每行有的null個數
 print(df.isnull().sum())
-# access the underlying NumPy array
-# via the `values` attribute
-df.values
-#+END_SRC
-
-#+RESULTS:
-
-: A    1
-: X    4
-: B    1
-: C    2
-: D    2
-: dtype: int64
-*** 刪除有遺漏值的記錄
-雖然刪除包含遺漏值的數據似乎是個方便的方法，但終究可能會刪除過多的樣本，導致分析的結果並不可靠；或是因為刪除了特徵的時候，卻失去了重要的資訊。
-#+BEGIN_SRC python -r -n :async :results output :exports both :session dpp
-# 剛除有遺失值的資料列
-print('刪掉有遺失值的列:df.dropna(axis=1)')
-print(df.dropna(axis=0))
-# 剛除有遺失值的資料行
-print('刪掉有遺失值的行:df.dropna(axis=1)')
-print(df.dropna(axis=1))
-# 剛除整列為NaN者
-print('剛除整行為NaN者:df.dropna(how=\'all\')')
-print(df.dropna(how='all') )
-# 刪除有值個數低於thresh的列
-print('刪除有值個數低於thresh的列:df.dropna(thresh=4)')
-print(df.dropna(thresh=4))
-# 刪除特定行(如第C行)中有NaN之列
-print('刪除特定行(如第C行)中有NaN之列:df.dropna(subset=[\'C\'])')
-print(df.dropna(subset=['C']))
+print(df.isnull().sum(axis=1))
 #+END_SRC
 
 #+RESULTS:
 #+begin_example
-刪掉有遺失值的列:df.dropna(axis=1)
-Empty DataFrame
-Columns: [A, X, B, C, D]
-Index: []
-刪掉有遺失值的行:df.dropna(axis=1)
-Empty DataFrame
-Columns: []
-Index: [0, 1, 2, 3]
-剛除整行為NaN者:df.dropna(how='all')
-      A   X     B     C    D
-0   1.0 NaN   2.0   3.0  4.0
-1   5.0 NaN   6.0   NaN  8.0
-2  10.0 NaN  11.0  12.0  NaN
-刪除有值個數低於thresh的列:df.dropna(thresh=4)
-     A   X    B    C    D
-0  1.0 NaN  2.0  3.0  4.0
-刪除特定行(如第C行)中有NaN之列:df.dropna(subset=['C'])
-      A   X     B     C    D
-0   1.0 NaN   2.0   3.0  4.0
-2  10.0 NaN  11.0  12.0  NaN
+A    0
+B    4
+C    0
+D    1
+E    1
+dtype: int64
+0    1
+1    2
+2    1
+3    2
+dtype: int64
 #+end_example
 
-** 填補遺遺漏值
-最常見的「插補技術」之一為「平均插補」(mean imputation)，即，以整個特徵行的平均值來代替遺漏值。
-#+BEGIN_SRC python -r -n :results output :exports both
-csv_data = '''A,X,B,C,D
-1.0,,2.0,3.0,4.0
-5.0,,6.0,,8.0
-10.0,,11.0,12.0
-,,,,'''
+*** 刪除有遺漏值的記錄
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
+# 剛除有遺失值的資料列
+print('====刪掉有遺失值的列:df.dropna(axis=1)====')
+tmpDf = df.dropna(axis=0)
+print(tmpDf)
+# 剛除有遺失值的資料行
+print('====刪掉有遺失值的欄:df.dropna(axis=1)====')
+tmpDf = df.dropna(axis=1)
+print(tmpDf)
+# 剛除整列為NaN者
+print('====剛除整欄為NaN者:df.dropna(how=\'all\')====')
+tmpDf = df.dropna(axis=1, how='all')
+print(tmpDf)
+# 刪除有值個數低於thresh的列
+print('====刪除有值個數低於thresh的列:df.dropna(thresh=4)====')
+tmpDf = df.dropna(thresh=4)
+print(tmpDf)
+# 刪除特定行(如第C行)中有NaN之列
+print('====刪除特定行(如第C行)中有NaN之列:df.dropna(columns=[\'C\'])====')
+tmpDf=df.drop(columns=['C'])
+print(tmpDf)
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+====刪掉有遺失值的列:df.dropna(axis=1)====
+Empty DataFrame
+Columns: [A, B, C, D, E]
+Index: []
+====刪掉有遺失值的欄:df.dropna(axis=1)====
+      A     C
+0   1.0   2.0
+1   5.0   6.0
+2  10.0  11.0
+3   9.9   8.0
+====剛除整欄為NaN者:df.dropna(how='all')====
+      A     C     D    E
+0   1.0   2.0   3.0  4.0
+1   5.0   6.0   NaN  8.0
+2  10.0  11.0  12.0  5.0
+3   9.9   8.0  12.0  NaN
+====刪除有值個數低於thresh的列:df.dropna(thresh=4)====
+      A   B     C     D    E
+0   1.0 NaN   2.0   3.0  4.0
+2  10.0 NaN  11.0  12.0  5.0
+====刪除特定行(如第C行)中有NaN之列:df.dropna(columns=['C'])====
+      A   B     D    E
+0   1.0 NaN   3.0  4.0
+1   5.0 NaN   NaN  8.0
+2  10.0 NaN  12.0  5.0
+3   9.9 NaN  12.0  NaN
+#+end_example
+雖然刪除包含遺漏值的數據似乎是個方便的方法，但終究可能會刪除過多的樣本，導致分析的結果並不可靠；或是因為刪除了特徵的時候，卻失去了重要的資訊。
+** 填補遺漏值
+*** 直接填零
+#+BEGIN_SRC python -r -n :async :results  output :exports both :session venv
+csv_data ="""A,B,C,D,E
+ 1.0,7.7, 2.0,  3.0, 4.0
+ 5.0,,  6.0,, 8.0
+10.0,, 11.0, 12.0, 5.0
+9.9,8.8,8.0, 12.0"""
+
 import sys
 import pandas as pd
 # python 2.7需進行unicode轉碼
@@ -143,13 +199,44 @@ if (sys.version_info < (3, 0)):
 from io import StringIO
 df = pd.read_csv(StringIO(csv_data))
 
+tmpDf = df.fillna(0)
+print(tmpDf)
+#+end_src
+
+#+RESULTS:
+:       A    B     C     D    E
+: 0   1.0  7.7   2.0   3.0  4.0
+: 1   5.0  0.0   6.0   0.0  8.0
+: 2  10.0  0.0  11.0  12.0  5.0
+: 3   9.9  8.8   8.0  12.0  0.0
+*** 以平均值填補
+**** Python手動填補
+#+BEGIN_SRC python -r -n :async :results  output :exports both :session venv
+print(df)
+df['D'] = df['D'].fillna(df['D'].mean())
+print(df)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+      A    B     C     D    E
+0   1.0  7.7   2.0   3.0  4.0
+1   5.0  NaN   6.0   NaN  8.0
+2  10.0  NaN  11.0  12.0  5.0
+3   9.9  8.8   8.0  12.0  NaN
+      A    B     C     D    E
+0   1.0  7.7   2.0   3.0  4.0
+1   5.0  NaN   6.0   9.0  8.0
+2  10.0  NaN  11.0  12.0  5.0
+3   9.9  8.8   8.0  12.0  NaN
+#+end_example
+**** 以scikit-learn的impute填補
+最常見的「插補技術」之一為「平均插補」(mean imputation)，即，以整個特徵行的平均值來代替遺漏值。
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
 # impute missing values via the column mean
 from sklearn.impute import SimpleImputer
 import numpy as np
-# axis=0: 以行的平均值來補
-# axis=1: 以列的平均值來補
-# strategy的選項有: median(中位數)、most_freqent(最頻繁出現者)
-# most_freqent在做為分類特徵時很有用
+
 imr = SimpleImputer(missing_values=np.nan, strategy='mean')
 imr = imr.fit(df.values)
 imputed_data = imr.transform(df.values)
@@ -158,20 +245,19 @@ print(imputed_data)
 #+END_SRC
 
 #+RESULTS:
-:       A   X     B     C    D
-: 0   1.0 NaN   2.0   3.0  4.0
-: 1   5.0 NaN   6.0   NaN  8.0
-: 2  10.0 NaN  11.0  12.0  NaN
-: 3   NaN NaN   NaN   NaN  NaN
-: [[ 1.          2.          3.          4.        ]
-:  [ 5.          6.          7.5         8.        ]
-:  [10.         11.         12.          6.        ]
-:  [ 5.33333333  6.33333333  7.5         6.        ]]
+:       A    B     C     D    E
+: 0   1.0  7.7   2.0   3.0  4.0
+: 1   5.0  NaN   6.0   9.0  8.0
+: 2  10.0  NaN  11.0  12.0  5.0
+: 3   9.9  8.8   8.0  12.0  NaN
+: [[ 1.          7.7         2.          3.          4.        ]
+:  [ 5.          8.25        6.          9.          8.        ]
+:  [10.          8.25       11.         12.          5.        ]
+:  [ 9.9         8.8         8.         12.          5.66666667]]
 
-scikit-learn早期版本的填補類別為Imputer，屬於 transformer 類別，主要的工作是做「數據轉換」，這些 estimator 有兩種基本方法：fit 與 transform，fit 方法是用來進行參數學習。在目前的版本中，SimpleImputer 已經被拿來取代以前的 sklearn.preprocessing.Imputer
+scikit-learn早期版本的填補類別為Imputer，屬於 transformer 類別，主要的工作是做「數據轉換」，這些 estimator 有兩種基本方法：fit 與 transform，fit 方法是用來進行參數學習。在目前的版本中，SimpleImputer 已經被拿來取代以前的 sklearn.preprocessing.Imputer，預設的strategy為mean，其他strategy請參關[[https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html][scikit-learn官網]]。
 
 更詳細的使用教學請閱讀[[https://ithelp.ithome.com.tw/articles/10293386?sc=pt][[Day03] 拾起武器- Data Preprocessing(02)]]
-
 ** [作業]資料預處理 :TNFSH:
 *** 題目
 南一中網路書店即將開張，為了處理龐大的書單資料，資訊科教師們很無恥的把書籍資料登錄工作當成作業分派給一年級的修課學生，所謂團結力量大，一份不太可靠的[[file:Downloads/403books.csv][書目資料]]就這麼完成了。
@@ -205,7 +291,7 @@ scikit-learn早期版本的填補類別為Imputer，屬於 transformer 類別，
 **** 輸出
 最後輸出以下內容
 1. 列出原始資料筆數
-1. 列出條正(刪除缺失值)後的資料筆數
+1. 列出修正(刪除缺失值)後的資料筆數
 1. 列出2000年出版的書籍數量
 1. 列出作者中有Bruce的書籍數量
 1. 列出 500<=書價<=800 的書籍數量
@@ -333,399 +419,6 @@ min            1376.000000     100.000000
 max            2024.000000    1000.000000
 #+end_example
 
-* 資料集分類特徵編碼
-** categorical feature
-真實世界的數據集往往包含各種「類別特徵」(categorical feature)，類別特徵可再分為
-- nominal feature: 名義特徵
-- ordinal feature: 次序特徵
-#+BEGIN_SRC python -r -n :async :results output :exports both :session dpp3
-import pandas as pd
-df = pd.DataFrame([['green', 'M', 10.1, 'class2'],
-                   ['red', 'L', 13.5, 'class1'],
-                   ['blue', 'XL', 15.3, 'class2']])
-
-df.columns = ['color', 'size', 'price', 'classlabel']
-print(df)
-#+END_SRC
-
-#+RESULTS:
-:    color size  price classlabel
-: 0  green    M   10.1     class2
-: 1    red    L   13.5     class1
-: 2   blue   XL   15.3     class2
-
-** ordinal feature
-4個欄位中只有size算是ordinal feature(有順序性)，此處自定一個 mapping dictionary，即 size_mapping，然後將 classlabel 對應到 size_mapping 中的鍵值(程式第[[(sizeMapping)]]行)。
-#+BEGIN_SRC python -r -n :async :results output :exports both :session dpp3
-### Mapping ordinal features
-size_mapping = {'XL': 3,
-                'L': 2,
-                'M': 1}
-df['size'] = df['size'].map(size_mapping)   (ref:sizeMapping)
-print(df)
-#+END_SRC
-
-#+RESULTS:
-:    color  size  price classlabel
-: 0  green     1   10.1     class2
-: 1    red     2   13.5     class1
-: 2   blue     3   15.3     class2
-
-** nominal feature
-接下來要處理兩個nominal feature: color, classlabel。
-*** classlabel
-許多機器學習的函式庫需要將「類別標籤」編碼為整數值。方法之一是以列舉方式為這些 nominal features 自 0 開始編號，先以 enumerate 方式建立一個 mapping dictionary: class_mapping(程式第[[(classMapping)]]行)，然後利用這個字典將類別特徵轉換為整數值。
-#+BEGIN_SRC python -r -n :async :results output :exports both :session dpp3
-class_mapping = {
-    label: idx for idx, label in enumerate(np.unique(df['classlabel'])) (ref:classMapping)
-}
-print(class_mapping)
-# 將類別特徵轉換為整數值
-df['classlabel'] = df['classlabel'].map(class_mapping)
-print(df)
-#+end_src
-
-#+RESULTS:
-: {'class1': 0, 'class2': 1}
-:    color  size  price  classlabel
-: 0  green     1   10.1           1
-: 1    red     2   13.5           0
-: 2   blue     3   15.3           1
-
-能將類別轉成整數，也要能將整數轉回類別。此處可以利用已產生的對應字典，藉由借調 key-value 來產生「反轉字典」(第[[(invClassMapping)]]行)，將對調產生的整數還原回原始類別特徵。
-
-#+BEGIN_SRC python -r -n :async :results output :exports both :session dpp3
-# 產生反轉字典，將整數還原至原始的類別標籤
-inv_class_mapping = {v: k for k, v in class_mapping.items()} (ref:invClassMapping)
-df['classlabel'] = df['classlabel'].map(inv_class_mapping)
-print(df)
-#+end_src
-
-#+RESULTS:
-:    color  size  price classlabel
-: 0  green     1   10.1     class2
-: 1    red     2   13.5     class1
-: 2   blue     3   15.3     class2
-*** scikit-learn LabelEncoder
-事實上，scikit-learn 中有一個更為方便的 LabelEncoder 類別則可以直接完成上述工作(第[[(labelEncoder)]]行)。
-#+BEGIN_SRC python -r -n :async :results output :exports both :session dpp3
-# Label encoding with sklearn's LabelEncoder
-from sklearn.preprocessing import LabelEncoder
-le = LabelEncoder()
-y = le.fit_transform(df['classlabel'].values) (ref:labelEncoder)
-print(y)
-df['classlabel'] = y
-print(df) # 類別與數字的對應不一定與自訂字典一致
-#+END_SRC
-
-#+RESULTS:
-: [1 0 1]
-:    color  size  price  classlabel
-: 0  green     1   10.1           1
-: 1    red     2   13.5           0
-: 2   blue     3   15.3           1
-
-你有看出這樣轉換會有什麼問題嗎?
-
-** One-Hot Encoding
-scikit-learn 的 LabelENcoder 類別可以用來將「類別特徵」編碼為整數值，但這樣會引發另一個問題，如果我們將上述資料中的 color 特徵轉換為整數值，如下：
-#+BEGIN_SRC python -r -n :async :results output :exports both :session dpp3
-X = df[['color', 'size', 'price', 'classlabel']].values
-
-# 以LabelEncoder轉換
-from sklearn.preprocessing import LabelEncoder
-color_le = LabelEncoder()
-print(X[:,0])
-X[:,0] = color_le.fit_transform(X[:,0])
-print(X[:,0])
-#+END_SRC
-
-#+RESULTS:
-: ['green' 'red' 'blue']
-: [1 2 0]
-
-由輸出結果可以發現，經過類別編碼後的顏色特徵，由原本不具次序的特徵變成存在大小關係(red>green>blue)，這明顯會影響 model 運算的結果。
-
-針對此一問題，常見的解決方案是 one-hot encoding，其原理是：對特徵值中的每個值，建立一個新的「虛擬特徵」(dummy feature)。
-*** 以pandas get_dummies()進行One Hot Encoding
-利用 Pandas 套件的 get_dummies 類別，直接將類別資料轉成二進位類型，即One-Hot encoding。這種轉換只有字串數據會被轉換，其他內容則否。
-#+BEGIN_SRC python -r -n :async :results output :exports both :session dpp3
-print('===原始資料===')
-print(df)
-
-OheDf = pd.get_dummies(df, columns=['color'])
-print('===轉換後資料===')
-print(OheDf)
-#+end_src
-
-#+RESULTS:
-#+begin_example
-===原始資料===
-   color  size  price  classlabel
-0  green     1   10.1           1
-1    red     2   13.5           0
-2   blue     3   15.3           1
-===轉換後資料===
-   size  price  classlabel  color_blue  color_green  color_red
-0     1   10.1           1       False         True      False
-1     2   13.5           0       False        False       True
-2     3   15.3           1        True        False      False
-#+end_example
-*** ColumnTransformer
-- 利用 ColumnTransformer 函式庫的 ColumnTransformer 類別，將特徵值轉換 One-Hot Encoding 的對應矩陣，如程式第[[(FitTransform)]]行。
-
-#+BEGIN_SRC python -r -n :async :results output :exports both :session dpp3
-from sklearn.preprocessing import OneHotEncoder
-print('===原始資料===')
-print(df)
-
-from sklearn.compose import ColumnTransformer
-
-X = df[['color', 'size', 'price']].values
-ct = ColumnTransformer(
-    # The column numbers to be transformed (here is [0] but can be [0, 1, 3])
-    # Leave the rest of the columns untouched
-    [('OneHot', OneHotEncoder(), [0])], remainder='passthrough'
-)
-print('===轉換後資料===')
-print(ct.fit_transform(X)) (ref:FitTransform)
-#+END_SRC
-
-#+RESULTS:
-: ===轉換後資料===
-: [[0.0 1.0 0.0 1 10.1]
-:  [0.0 0.0 1.0 2 13.5]
-:  [1.0 0.0 0.0 3 15.3]]
-*** scikit learn OneHotEncoder()
-#+BEGIN_SRC python -r -n :async :results output :exports both :session dpp3
-# 初始化 OneHotEncoder
-encoder = OneHotEncoder()
-
-# 将 color 列进行 one-hot 编码
-encoded_colors = encoder.fit_transform(df[['color']])
-
-# 将转换后的结果转换为 DataFrame
-encoded_df = pd.DataFrame(encoded_colors.toarray(), columns=encoder.get_feature_names_out(['color']))
-
-# 将原始数据框中的其他列和转换后的 one-hot 编码合并
-df_encoded = pd.concat([df.drop(columns=['color']), encoded_df], axis=1)
-
-print(df_encoded)
-#+END_SRC
-
-#+RESULTS:
-:    size  price  classlabel  color_blue  color_green  color_red
-: 0     1   10.1           1         0.0          1.0        0.0
-: 1     2   13.5           0         0.0          0.0        1.0
-: 2     3   15.3           1         1.0          0.0        0.0
-
-* 資料正規化
-當我們在比較分析兩組數據資料時，可能會遭遇因單位的不同(例如：身高與體重)，或數字大小的代表性不同(例如：粉專1萬人與滿足感0.8)，造成各自變化的程度不一，進而影響統計分析的結果；為解決此類的問題，我們可利用資料的正規化(Normalization
-)與標準化(Standardization)，藉由將原始資料轉換成無量綱(Dimensionless)的純量後，來進行數據的比較及分析[fn:2]。
-
-「特徵縮放」(Feature scaling)是資料預處理的一個關鍵，「決策樹」和「隨機森林」是極少數無需進行 feature scaling 的分類技術；對多數機器學習演算法而言，若特徵值經過適當的縮放，都能有更佳成效。
-
-Feature scaling 的重要性可以以下例子看出，假設有兩個特徵值(a, b)，其中 a 的測量範圍為 1 到 10，b 的測量值範圍為 1 到 100000，以典型分類演算法的做法，一定是忙於最佳化特徵值 b；若以 KNN 的演算法，也會被特徵值 b 所技配。
-
-正規化有兩種常用的方法，可以將不同規模的特徵轉化為相同的規模：常態化(normalization)和標準化(standardization)：
-
-** Normalization
-資料的正規化(Normalization)是將原始資料的數據按比例縮放於 [0, 1] 區間中，且不改變其原本分佈。舉例來說，若我們現有兩組數據資料，分別表示 500 項商品的銷售量 Sample 1 及銷售額 Sample 2，如下圖所示，很明顯地，此兩組資料的單位不同，且數字上有著懸殊的差異，分別透過資料正規化後，兩組資料將同時轉換成純量縮放於 [0,1] 區間中，如下右圖所示；這樣的資料轉換，能排除資料單位的限制，提供我們一個相同的基準來進行後續比較分析。
-#+CAPTION: 原始資料v.s.正規化資料
-#+LABEL:fig:Labl
-#+name: fig:Name
-#+ATTR_LATEX: :width 400
-#+ATTR_ORG: :width 400
-#+ATTR_HTML: :width 500
-[[file:images/Normalization01.png]]
-
-** Standardization
-資料的標準化(Standardization)可運用在機器學習演算法中，它能帶給模型下面兩個好處：
-*** 提升模型的收斂速度
-在建構機器學習模型時，我們會利用梯度下降法(Gradient Descent)來計算成本函數(Cost Function)的最佳解；假設我們現有兩個特徵值 x1 in [0,1] 與 x2 in [0,10000]，則在 x1-x2 平面上成本函數的等高線會呈窄長型，導致需較多的迭代步驟，另外也可能導致無法收斂的情況發生。因此，若將資料標準化，則能減少梯度下降法的收斂時間。
-*** 提高模型的精準度
-將特徵值 x1 及 x2 餵入一些需計算樣本彼此的距離(例如:歐氏距離)分類器演算法中，則 x2 的影響很可能將遠大於 x1，若實際上 x1 的指標意義及重要性高於 x2，這將導致我們分析的結果失真。因此，資料的標準化是有必要的，可讓每個特徵值對結果做出相近程度的貢獻。
-*** 常見的標準化及正規化方法
-**** Z分數標準化(Z-Score Standardization)
-$$ Z=\frac{X-\mu}{\delta}\sim N(0,1)$$
-**** 最小值最大值正規化(Min-Max Normalization)
-$$ X_{nom} = \frac{X-X_{min}}{X_{max}-X_{min}} \in [0,1] $$
-「特徵縮放」(Feature scaling)是資料預處理的一個關鍵，「決策樹」和「隨機森林」是極少數無需進行 feature scaling 的分類技術；對多數機器學習演算法而言，若特徵值經過適當的縮放，都能有更佳成效。
-
-Feature scaling 的重要性可以以下例子看出，假設有兩個特徵值(a, b)，其中 a 的測量範圍為 1 到 10，b 的測量值範圍為 1 到 100000，以典型分類演算法的做法，一定是忙於最佳化特徵值 b；若以 KNN 的演算法，也會被特徵值 b 所技配。
-
-正規化有兩種常用的方法，可以將不同規模的特徵轉化為相同的規模：常態化(normalization)和標準化(standardization)：
-
-** 常態化
-將特徵值縮化為 0~1 間，這是「最小最大縮放」(min-max scaling)的一個特例，某一特徵值的常態化做法如下：
-$$x_{norm}^i = \frac{x^i-x_{min}}{x_{max}-x_{min}}$$
-若以 scikit-learn 套件來完成實作，其程式碼如下：
-#+BEGIN_SRC python -r -n :async :results output :exports both :session wine
-from sklearn.preprocessing import MinMaxScaler
-mms = MinMaxScaler()
-X_train_norm = mms.fit_transform(X_train)
-X_test_norm = mms.fit_transform(X_test)
-print(X_train_norm[0])
-#+END_SRC
-
-#+RESULTS:
-: [0.64619883 0.83201581 0.4248366  0.46236559 0.27160494 0.35172414
-:  0.09704641 0.68       0.18987342 0.23623446 0.45744681 0.28571429
-:  0.19400856]
-
-** 標準化
-雖說常態化簡單實用，但對許多機器學習演算法來說(特別是梯度下降法的最佳化)，標準化則更為實際，我們可令標準化後的特徵值其平均數為 0、標準差為 1，這樣一來，特徵值會滿足常態分佈，進而使演算法對於離群值不那麼敏感。標準化的公式如下：
-$$x_{std}^i = \frac{x^i-\mu_x}{\sigma_x}$$
-若以 scikit-learn 套件來完成實作，其程式碼如下：
-#+BEGIN_SRC python -r -n :async :results output :exports both :session wine
-from sklearn.preprocessing import StandardScaler
-stdsc = StandardScaler()
-X_train_std = stdsc.fit_transform(X_train)
-X_test_std = stdsc.transform(X_test)
-print(X_train_std[0])
-#+END_SRC
-
-#+RESULTS:
-: [ 0.71225893  2.22048673 -0.13025864  0.05962872 -0.50432733 -0.52831584
-:  -1.24000033  0.84118003 -1.05215112 -0.29218864 -0.20017028 -0.82164144
-:  -0.62946362]
-
-* 資料分割
-#+begin_src plantuml :file images/datapreprocessing.png
-@startuml
- left to right direction
- state 已訓練模型 {
- state 訓練集 #palegreen
- state 未訓練模型 #lightgray : 黑盒子
- 訓練集 --> 未訓練模型
- }
- state 測試集 #palegreen
- 測試集 --> 已訓練模型
- state 預測結果
- 已訓練模型 --> 預測結果
-@endum
-#+end_src
-
-#+RESULTS:
-[[file:images/datapreprocessing.png]]
-
-** 為什麼要分割資料
-- 訓練集（training): 舉例來說就是上課學習。主要用在訓練階段，用於模型擬合，直接參與了模型參數調整的過程[fn:1]。
-- 驗證集（validation）: 舉例來說就是模擬考，你會根據模擬考的成績繼續學習、或調整學習方式重新學習。在訓練過程中，用於評估模型的初步能力與超參數調整的依據。不過驗證集是非必需的，不像訓練集和測試集。如果不需要調整超參數，就可以不使用驗證集[fn:1]。
-- 測試集（test）就像是學測，用來評估你最終的學習結果。用來評估模型最終的泛化能力。為了能評估模型真正的能力，測試集不應該為參數調整、選擇特徵等依據[fn:1]。
-使用學測來比喻，是因為測試集不應該做為參數調整、選擇特徵等依據。這些選擇與調整可以想像成學習方式的調整，但學測已經考完，你不能時光倒轉回到最初調整學習方式[fn:1]。
-
-** 資料分割實作
-訓練集與測試集的分割可以自行以Python進行分割，也可以直接呼叫函式進行分割
-*** 手動分割
-#+BEGIN_SRC python -r -n :results output :exports both
-import pandas as pd
-import numpy as np
-import random
-
-df_wine = pd.read_csv('https://archive.ics.uci.edu/'
-                      'ml/machine-learning-databases/wine/wine.data',
-                      header=None)
-
-df_wine.columns = ['Class label', 'Alcohol', 'Malic acid', 'Ash',
-                   'Alcalinity of ash', 'Magnesium', 'Total phenols',
-                   'Flavanoids', 'Nonflavanoid phenols', 'Proanthocyanins',
-                   'Color intensity', 'Hue', 'OD280/OD315 of diluted wines',
-                   'Proline']
-
-train_len = int(len(df_wine) * 0.7)
-
-# 打亂資料集順序
-idx = list(df_wine.index)
-random.shuffle(idx)
-
-# 分割資料集
-TrainSet = df_wine.loc[idx[:train_len]]
-TestSet = df_wine.loc[idx[train_len:]]
-print(len(TrainSet))
-print(len(TestSet))
-X_train, y_train = TrainSet.iloc[:, 1:].values, TrainSet.iloc[:, 0].values
-X_test, y_test = TestSet.iloc[:, 1:].values, TestSet.iloc[:, 0].values
-
-print('==========訓練集==========')
-print(X_train[:2])
-print(y_train[:2])
-print('==========測試集==========')
-print(X_test[:2])
-print(y_test[:2])
-#+END_SRC
-
-#+RESULTS:
-#+begin_example
-124
-54
-==========訓練集==========
-[[1.229e+01 2.830e+00 2.220e+00 1.800e+01 8.800e+01 2.450e+00 2.250e+00
-  2.500e-01 1.990e+00 2.150e+00 1.150e+00 3.300e+00 2.900e+02]
- [1.340e+01 4.600e+00 2.860e+00 2.500e+01 1.120e+02 1.980e+00 9.600e-01
-  2.700e-01 1.110e+00 8.500e+00 6.700e-01 1.920e+00 6.300e+02]]
-[2 3]
-==========測試集==========
-[[1.394e+01 1.730e+00 2.270e+00 1.740e+01 1.080e+02 2.880e+00 3.540e+00
-  3.200e-01 2.080e+00 8.900e+00 1.120e+00 3.100e+00 1.260e+03]
- [1.402e+01 1.680e+00 2.210e+00 1.600e+01 9.600e+01 2.650e+00 2.330e+00
-  2.600e-01 1.980e+00 4.700e+00 1.040e+00 3.590e+00 1.035e+03]]
-[1 1]
-#+end_example
-*** 呼叫scikit learn的function
-#+BEGIN_SRC python -r -n :results output :exports both
-import pandas as pd
-import numpy as np
-from sklearn.model_selection import train_test_split
-
-df_wine = pd.read_csv('https://archive.ics.uci.edu/'
-                      'ml/machine-learning-databases/wine/wine.data',
-                      header=None)
-
-df_wine.columns = ['Class label', 'Alcohol', 'Malic acid', 'Ash',
-                   'Alcalinity of ash', 'Magnesium', 'Total phenols',
-                   'Flavanoids', 'Nonflavanoid phenols', 'Proanthocyanins',
-                   'Color intensity', 'Hue', 'OD280/OD315 of diluted wines',
-                   'Proline']
-
-print('Class labels', np.unique(df_wine['Class label']))
-
-X, y = df_wine.iloc[:, 1:].values, df_wine.iloc[:, 0].values
-
-from sklearn.model_selection import train_test_split
-X_train, X_test, y_train, y_test = train_test_split(X, y,
-                     test_size=0.3, random_state=0, stratify=y)
-
-print(len(X_train))
-print(len(y_test))
-
-print('==========訓練集==========')
-print(X_train[:2])
-print(y_train[:2])
-print('==========測試集==========')
-print(X_test[:2])
-print(y_test[:2])
-#+END_SRC
-
-#+RESULTS:
-#+begin_example
-Class labels [1 2 3]
-124
-54
-==========訓練集==========
-[[1.362e+01 4.950e+00 2.350e+00 2.000e+01 9.200e+01 2.000e+00 8.000e-01
-  4.700e-01 1.020e+00 4.400e+00 9.100e-01 2.050e+00 5.500e+02]
- [1.376e+01 1.530e+00 2.700e+00 1.950e+01 1.320e+02 2.950e+00 2.740e+00
-  5.000e-01 1.350e+00 5.400e+00 1.250e+00 3.000e+00 1.235e+03]]
-[3 1]
-==========測試集==========
-[[1.377e+01 1.900e+00 2.680e+00 1.710e+01 1.150e+02 3.000e+00 2.790e+00
-  3.900e-01 1.680e+00 6.300e+00 1.130e+00 2.930e+00 1.375e+03]
- [1.217e+01 1.450e+00 2.530e+00 1.900e+01 1.040e+02 1.890e+00 1.750e+00
-  4.500e-01 1.030e+00 2.950e+00 1.450e+00 2.230e+00 3.550e+02]]
-[1 2]
-#+end_example
-
 * 資料間的關係
 找出特徵值間的差異與相似性是機器學習中非常重要的工作。
 ** 兩點間的距離
@@ -754,6 +447,90 @@ $$ \sum_{i=1}^n|x_i-y_i| $$
 
 如果我們肯花美金499[fn:4]買到[[https://cinereplicas.com/products/harry-potter-nimbus-2000-broom-2019-edition][Nimbus 2000]]，那我們就能實踐「直線是兩點間最短距離」這個法則，此時圖[[fig:feature-distance]]中由點(1,1)到點(7,7)的矩離就變成\( \sqrt{(1-7)^2+(1-7)^2} \)，公式為
 $$ \sqrt{\sum_{i=1}^n(x_i-y_i)^2 } $$
+*** [課堂練習]能力相似度 :TNFSH:
+上述計算方式貌似沒什麼問題，但如果今天的問題不是二維地圖中的兩個點，而是：
+- 計算兩個人身材的相似度:特徵值為身高、體重、體脂率[fn:5]
+- 計算兩個學生程式設計能力的差異: 特徵值為APCS觀念題分數、APCS實作題分數[fn:6]、一年級程式設計學期分數
+
+我們還能用同樣的方式來計算嗎？
+
+以下是5位學生的程式設計能力資料(特徵值為APCS觀念題分數、APCS實作題分數、一年級程式設計學期分數)，請問那一位學生與你的能力(50, 300, 86)最為接近?
+- A: 70, 340, 84
+- B: 60, 310, 89
+- C: 50, 280, 90
+- D: 40, 320, 78
+- E: 91, 310, 99
+**** solution :noexport:
+***** 原始資料
+#+begin_src python -r -n :results output :exports both
+import numpy as np
+orig = [[70, 340, 84], [58, 318, 76], [54, 279, 85], [40, 320, 78], [91, 310, 99]]
+sc = np.array(orig)
+me = np.array([50, 300, 86])
+for s in sc:
+    dist = np.sqrt(np.sum(np.square(s - me)))
+    print('ED:',dist)
+for s in sc:
+    dist = np.sqrt(np.sum(abs(s - me)))
+    print('MD:',dist)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+ED: 44.76605857119878
+ED: 22.090722034374522
+ED: 21.400934559032695
+ED: 23.748684174075834
+ED: 44.15880433163923
+MD: 7.874007874011811
+MD: 6.0
+MD: 5.0990195135927845
+MD: 6.164414002968976
+MD: 8.0
+#+end_example
+***** 標準化
+#+begin_src python -r -n :results output :exports both
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import MinMaxScaler
+
+orig = [[70, 340, 84], [58, 318, 76], [54, 279, 85], [40, 320, 78], [91, 310, 99]]
+me = [50, 300, 86]
+orig.append(me)
+scalsc = []
+sc = np.array(orig)
+stdsc = StandardScaler()
+for i in range(len(sc[0])):
+    scalsc.append(stdsc.fit_transform(sc)[:,i])
+scalsc = np.array(scalsc).transpose()
+
+for s in scalsc:
+    dist = np.sqrt(np.sum(np.square(s - scalsc[5, :])))
+    print(s, 'ED:',dist)
+for s in scalsc:
+    dist = np.sqrt(np.sum(abs(s - scalsc[5:,])))
+    print('MD:',dist)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+ED: 2.4716117475041277
+ED: 1.729572721531174
+ED: 1.1525315662800393
+ED: 1.6376819924249435
+ED: 3.1123821199274815
+ED: 0.0
+MD: 1.9040179292551567
+MD: 1.6739662071123351
+MD: 1.224091723377491
+MD: 1.6614327764060297
+MD: 2.1917020067767887
+MD: 0.0
+#+end_example
+
+*** 進階閱讀
+- [[https://kknews.cc/zh-tw/code/v3laxal.html][python 各類距離公式實現]]
+- [[https://www.pinecone.io/learn/vector-similarity/][Vector Similarity Explained]]
 
 ** 兩個向量間的距離
 以下為三個學生的國文、數學、英文三科成績，哪兩個學生的學業能力較為接近?
@@ -851,8 +628,59 @@ plt.savefig('images/healthCondition.png', dpi=300)
 - \( a: (a_1, a_2, \dots , a_n)\)
 - \( b: (b_1, b_2, \dots , b_n)\)
 計算兩向量a, b歐幾里得距離的方式為: \( d(a,b) = \sqrt{(a_1-b_1)^2 + (a_2-b_2)^2 + \dots + (a_n-b_n)^2}\)
+**** Python手刻 :noexport:
+#+begin_src python -r -n :results output :exports both
+import math
 
-*** Cosine Similarity
+# 定義三個人的分數
+James = [80, 90, 70]
+Ruby = [90, 80, 60]
+Vanessa = [90, 70, 90]
+
+# 計算歐幾里得距離的函數
+def euclidean_distance(a, b):
+    #sum_squared_diff = sum((x - y) ** 2 for x, y in zip(a, b))
+    sum_squared_diff = 0
+    for x, y in zip(a, b):
+        sum_squared_diff += (x - y) ** 2
+    return math.sqrt(sum_squared_diff)
+
+# 計算每對之間的距離
+distance_James_Ruby = euclidean_distance(James, Ruby)
+distance_James_Vanessa = euclidean_distance(James, Vanessa)
+distance_Ruby_Vanessa = euclidean_distance(Ruby, Vanessa)
+
+# 輸出結果
+print(f"James 和 Ruby 之間的歐幾里得距離: {distance_James_Ruby}")
+print(f"James 和 Vanessa 之間的歐幾里得距離: {distance_James_Vanessa}")
+print(f"Ruby 和 Vanessa 之間的歐幾里得距離: {distance_Ruby_Vanessa}")
+#+end_src
+
+**** Numpy :noexport:
+#+begin_src python -r -n :results output :exports both
+import numpy as np
+
+# 定義三個人的分數
+James = np.array([80, 90, 70])
+Ruby = np.array([90, 80, 60])
+Vanessa = np.array([90, 70, 90])
+
+# 計算歐幾里得距離的函數
+def euclidean_distance(a, b):
+    return np.sqrt(np.sum((a - b) ** 2))
+
+# 計算每對之間的距離
+distance_James_Ruby = euclidean_distance(James, Ruby)
+distance_James_Vanessa = euclidean_distance(James, Vanessa)
+distance_Ruby_Vanessa = euclidean_distance(Ruby, Vanessa)
+
+# 輸出結果
+print(f"James 和 Ruby 之間的歐幾里得距離: {distance_James_Ruby}")
+print(f"James 和 Vanessa 之間的歐幾里得距離: {distance_James_Vanessa}")
+print(f"Ruby 和 Vanessa 之間的歐幾里得距離: {distance_Ruby_Vanessa}")
+#+end_src
+
+*** 餘弦相似度(Cosine Similarity)
 #+CAPTION: 餘弦相似度
 #+LABEL:fig:Labl
 #+name: fig:Name
@@ -866,7 +694,24 @@ plt.savefig('images/healthCondition.png', dpi=300)
 - \( a: (a_1, a_2, \dots , a_n)\)
 - \( b: (b_1, b_2, \dots , b_n)\)
 計算兩向量a, b餘弦相似度的方式為: \( sim(a,b) = \frac{a \cdot b}{||a| \cdot |b||} = \frac{ \sum\limits_{i=1}^n a_i \times b_i}{\sqrt{\sum\limits_{i=1}^na_i^2} \times \sqrt{\sum\limits_{i=1}^nb_i^2}} \)
+**** Dot Product
+#+CAPTION: 向量內積
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 200
+#+ATTR_ORG: :width 200
+#+ATTR_HTML: :width 300
+[[file:images/資料間的關係/2024-02-03_17-49-28_2024-02-03_17-49-09.png]]
 
+一種計算向量之間相似度的度量演算法，它計算兩個向量之間的點積（內積），所得值越大越與搜尋值相似[fn:8]。
+
+- \( a: (a_1, a_2, \dots , a_n)\)
+- \( b: (b_1, b_2, \dots , b_n)\)
+計算兩向量a, b內積的方式為: \( a \cdot b =  a_1b_1 + a_2b_2 + \dots + a_nb_n \)
+或是
+$$ a \cdot b = |a||b| \cos \alpha $$
+
+*** 歐幾里得距離實作
 有了公式就可以自己用你苦學了半年的Python+高一數學來手刻程式，或是呼叫其他函式庫來計算。
 **** Python手刻
 :PROPERTIES:
@@ -876,7 +721,6 @@ plt.savefig('images/healthCondition.png', dpi=300)
 import math
 
 def cosine_similarity(v1,v2):
-    "compute cosine similarity of v1 to v2: (v1 dot v2)/{||v1||*||v2||)"
     sumxx, sumxy, sumyy = 0, 0, 0
     for i in range(len(v1)):
         x = v1[i]; y = v2[i]
@@ -923,8 +767,8 @@ print('James v.s. Vanessa:', JV_sim)
 : James v.s. Ruby: 0.9925966195847841
 : Ruby v.s. Vanessa: 0.9773561546452569
 : James v.s. Vanessa: 0.9786403040324858
-
-**** Scipy
+*** 餘弦相似度實作
+**** SciPy
 #+begin_src python -r -n :results output :exports both
 from scipy import spatial
 
@@ -945,23 +789,40 @@ print('James v.s. Vanessa:', JV_sim)
 : Ruby v.s. Vanessa: 0.977356154645257
 : James v.s. Vanessa: 0.978640304032486
 
-*** Dot Product
-#+CAPTION: 向量內積
-#+LABEL:fig:Labl
-#+name: fig:Name
-#+ATTR_LATEX: :width 200
-#+ATTR_ORG: :width 200
-#+ATTR_HTML: :width 300
-[[file:images/資料間的關係/2024-02-03_17-49-28_2024-02-03_17-49-09.png]]
+** [課堂作業]曼哈頓距離
+- 參考前節[歐幾里得距離實作]
+- 自行Google曼哈頓距離的定義
+- 計算以下三人兩兩間的距離，找出能力最接近的2人
+#+begin_src python -r -n :results output :exports both
+# 定義三個人的分數
+James = [80, 90, 70]
+Ruby = [90, 80, 60]
+Vanessa = [90, 70, 90]
+#+end_src
+*** solution :noexport:
+#+begin_src python -r -n :results output :exports both
+import math
 
-一種計算向量之間相似度的度量演算法，它計算兩個向量之間的點積（內積），所得值越大越與搜尋值相似[fn:8]。
+def cosine_similarity(v1,v2):
+    sumxx, sumxy, sumyy = 0, 0, 0
+    for i in range(len(v1)):
+        x = v1[i]; y = v2[i]
+        sumxx += x*x
+        sumyy += y*y
+        sumxy += x*y
+    return sumxy/math.sqrt(sumxx*sumyy)
 
-- \( a: (a_1, a_2, \dots , a_n)\)
-- \( b: (b_1, b_2, \dots , b_n)\)
-計算兩向量a, b內積的方式為: \( a \cdot b =  a_1b_1 + a_2b_2 + \dots + a_nb_n \)
-或是
-$$ a \cdot b = |a||b| \cos \alpha $$
+James = [80, 90, 70]
+Ruby = [90, 80, 60]
+Vanessa = [90, 70, 90]
+JR_sim = cosine_similarity(James, Ruby)
+RV_sim = cosine_similarity(Ruby, Vanessa)
+JV_sim = cosine_similarity(James, Vanessa)
 
+print('James v.s. Ruby:', JR_sim)
+print('Ruby v.s. Vanessa:', RV_sim)
+print('James v.s. Vanessa:', JV_sim)
+#+end_src
 ** 其他應用
 計算向量間的距離不僅可以比較上述以數值呈現的特徵，也能比較看起來並不是數值的特徵，例如：文字。例如，如何比較這幾個單字間的相似性：lion, dog, cat, love, apple, NYC[fn:9]。
 
@@ -975,94 +836,733 @@ $$ a \cdot b = |a||b| \cos \alpha $$
 #+ATTR_HTML: :width 400
 [[file:images/資料間的關係/2024-02-03_19-07-07_2024-02-03_19-07-00.png]]
 
-** 進階閱讀
-- [[https://kknews.cc/zh-tw/code/v3laxal.html][python 各類距離公式實現]]
-- [[https://www.pinecone.io/learn/vector-similarity/][Vector Similarity Explained]]
 
-** [作業]能力相似度 :TNFSH:
-上述計算方式貌似沒什麼問題，但如果今天的問題不是二維地圖中的兩個點，而是：
-- 計算兩個人身材的相似度:特徵值為身高、體重、體脂率[fn:5]
-- 計算兩個學生程式設計能力的差異: 特徵值為APCS觀念題分數、APCS實作題分數[fn:6]、一年級程式設計學期分數
-我們還能用同樣的方式來計算嗎？
-以下是5位學生的程式設計能力資料(特徵值為APCS觀念題分數、APCS實作題分數、一年級程式設計學期分數)，請問那一位學生與你的能力(50, 300, 86)最為接近?
-- A: 70, 340, 84
-- B: 60, 310, 89
-- C: 50, 280, 90
-- D: 40, 320, 78
-- E: 91, 310, 99
-*** solution :noexport:
-**** 原始資料
-#+begin_src python -r -n :results output :exports both
-import numpy as np
-orig = [[70, 340, 84], [58, 318, 76], [54, 279, 85], [40, 320, 78], [91, 310, 99]]
-sc = np.array(orig)
-me = np.array([50, 300, 86])
-for s in sc:
-    dist = np.sqrt(np.sum(np.square(s - me)))
-    print('ED:',dist)
-for s in sc:
-    dist = np.sqrt(np.sum(abs(s - me)))
-    print('MD:',dist)
+* 資料集分類特徵編碼
+** 讀檔
+真實世界的數據集往往包含各種「類別特徵」(categorical feature)，類別特徵可再分為
+- nominal feature: 名義特徵
+- ordinal feature: 次序特徵
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
+import pandas as pd
+df = pd.DataFrame([['東區',150,25.3,45.49,'華廈(10層含以下有電梯)',30,'四層/九層','住家用','文教區'],
+['北區',321,16.8,78.66,'住宅大樓(11層含以上有電梯)',32,'十三層/十四層','商業用','行政區'],
+['東區',900,29.2,30.87,'華廈(10層含以下有電梯)',28,'三層/九層','住商用','倉庫區'],
+['新市區',460,13.4,34.35,'華廈(10層含以下有電梯)',43,'五層/五層','住家用','文教區'],
+['安南區',350,32.00,11,'透天厝',57,'全/二層','住家用','農業區'],
+['歸仁區',950,22.9,41.49,'住宅大樓(11層含以上有電梯)',29,'四層/二十層','住家用','保護區'],
+['東區',390,24.7,56.38,'住宅大樓(11層含以上有電梯)',27,'十三層/十四層','住商用','行政區'],
+['新化區',482,15.3,31.59,'公寓(5樓含以下無電梯)',42,'三層/五層','住家用','倉庫區']])
+df.columns = ['地段', '總價', '單價', '總面積', '型態', '屋齡', '樓別', '用途', '地區別']
+print(df)
+#+END_SRC
+
+#+RESULTS:
+:     地段   總價    單價    總面積               型態  屋齡       樓別   用途  地區別
+: 0   東區  150  25.3  45.49    華廈(10層含以下有電梯)  30    四層/九層  住家用  文教區
+: 1   北區  321  16.8  78.66  住宅大樓(11層含以上有電梯)  32  十三層/十四層  商業用  行政區
+: 2   東區  900  29.2  30.87    華廈(10層含以下有電梯)  28    三層/九層  住商用  倉庫區
+: 3  新市區  460  13.4  34.35    華廈(10層含以下有電梯)  43    五層/五層  住家用  文教區
+: 4  安南區  350  32.0  11.00              透天厝  57     全/二層  住家用  農業區
+: 5  歸仁區  950  22.9  41.49  住宅大樓(11層含以上有電梯)  29   四層/二十層  住家用  保護區
+: 6   東區  390  24.7  56.38  住宅大樓(11層含以上有電梯)  27  十三層/十四層  住商用  行政區
+: 7  新化區  482  15.3  31.59     公寓(5樓含以下無電梯)  42    三層/五層  住家用  倉庫區
+** 次序變項
+目前的土地使用區分大致有行政區、文教區、倉庫區、風景區、農業區、河川區...等不同型態，這裡主觀的以上述順序做為土地價值順序，也就是把'土地區分'這個欄位視為ordinal feature。此處自定一個 mapping dictionary，即 land_mapping，然後將 land_mapping 對應到 land_mapping 中的鍵值(程式第[[(sizeMapping)]]行)。
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
+### Mapping ordinal features
+land_mapping = {
+    '行政區': 7,
+    '文教區': 6,
+    '倉庫區': 5,
+    '風景區': 4,
+    '農業區': 3,
+    '保護區': 2,
+    '河川區': 1}
+df['地區別'] = df['地區別'].map(land_mapping)   (ref:sizeMapping)
+print(df)
+#+END_SRC
+
+#+RESULTS:
+:     地段   總價    單價    總面積               型態  屋齡       樓別   用途  地區別
+: 0   東區  150  25.3  45.49    華廈(10層含以下有電梯)  30    四層/九層  住家用    6
+: 1   北區  321  16.8  78.66  住宅大樓(11層含以上有電梯)  32  十三層/十四層  商業用    7
+: 2   東區  900  29.2  30.87    華廈(10層含以下有電梯)  28    三層/九層  住商用    5
+: 3  新市區  460  13.4  34.35    華廈(10層含以下有電梯)  43    五層/五層  住家用    6
+: 4  安南區  350  32.0  11.00              透天厝  57     全/二層  住家用    3
+: 5  歸仁區  950  22.9  41.49  住宅大樓(11層含以上有電梯)  29   四層/二十層  住家用    2
+: 6   東區  390  24.7  56.38  住宅大樓(11層含以上有電梯)  27  十三層/十四層  住商用    7
+: 7  新化區  482  15.3  31.59     公寓(5樓含以下無電梯)  42    三層/五層  住家用    5
+** 名義變項
+接下來我們試著處理一個nominal feature: 用途
+*** classlabel
+許多機器學習的函式庫需要將「類別標籤」編碼為整數值。方法之一是以列舉方式為這些 nominal features 自 0 開始編號，先以 enumerate 方式建立一個 mapping dictionary: class_mapping(程式第[[(classMapping)]]行)，然後利用這個字典將類別特徵轉換為整數值。
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
+class_mapping = {
+    label: idx for idx, label in enumerate(np.unique(df['用途'])) (ref:classMapping)
+}
+print(class_mapping)
+# 將類別特徵轉換為整數值
+df['用途'] = df['用途'].map(class_mapping)
+print(df)
 #+end_src
 
 #+RESULTS:
 #+begin_example
-ED: 44.76605857119878
-ED: 22.090722034374522
-ED: 21.400934559032695
-ED: 23.748684174075834
-ED: 44.15880433163923
-MD: 7.874007874011811
-MD: 6.0
-MD: 5.0990195135927845
-MD: 6.164414002968976
-MD: 8.0
+{'住商用': 0, '住家用': 1, '商業用': 2}
+    地段   總價    單價    總面積               型態  屋齡       樓別  用途  地區別
+0   東區  150  25.3  45.49    華廈(10層含以下有電梯)  30    四層/九層   1    6
+1   北區  321  16.8  78.66  住宅大樓(11層含以上有電梯)  32  十三層/十四層   2    7
+2   東區  900  29.2  30.87    華廈(10層含以下有電梯)  28    三層/九層   0    5
+3  新市區  460  13.4  34.35    華廈(10層含以下有電梯)  43    五層/五層   1    6
+4  安南區  350  32.0  11.00              透天厝  57     全/二層   1    3
+5  歸仁區  950  22.9  41.49  住宅大樓(11層含以上有電梯)  29   四層/二十層   1    2
+6   東區  390  24.7  56.38  住宅大樓(11層含以上有電梯)  27  十三層/十四層   0    7
+7  新化區  482  15.3  31.59     公寓(5樓含以下無電梯)  42    三層/五層   1    5
 #+end_example
-**** 標準化
-#+begin_src python -r -n :results output :exports both
-import numpy as np
-from sklearn.preprocessing import StandardScaler
+
+能將類別轉成整數，也要能將整數轉回類別。此處可以利用已產生的對應字典，藉由借調 key-value 來產生「反轉字典」(第[[(invClassMapping)]]行)，將對調產生的整數還原回原始類別特徵。
+
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
+# 產生反轉字典，將整數還原至原始的類別標籤
+inv_class_mapping = {v: k for k, v in class_mapping.items()} (ref:invClassMapping)
+print(inv_class_mapping)
+df['用途'] = df['用途'].map(inv_class_mapping)
+print(df)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+{0: '住商用', 1: '住家用', 2: '商業用'}
+    地段   總價    單價    總面積               型態  屋齡       樓別   用途  地區別
+0   東區  150  25.3  45.49    華廈(10層含以下有電梯)  30    四層/九層  住家用    6
+1   北區  321  16.8  78.66  住宅大樓(11層含以上有電梯)  32  十三層/十四層  商業用    7
+2   東區  900  29.2  30.87    華廈(10層含以下有電梯)  28    三層/九層  住商用    5
+3  新市區  460  13.4  34.35    華廈(10層含以下有電梯)  43    五層/五層  住家用    6
+4  安南區  350  32.0  11.00              透天厝  57     全/二層  住家用    3
+5  歸仁區  950  22.9  41.49  住宅大樓(11層含以上有電梯)  29   四層/二十層  住家用    2
+6   東區  390  24.7  56.38  住宅大樓(11層含以上有電梯)  27  十三層/十四層  住商用    7
+7  新化區  482  15.3  31.59     公寓(5樓含以下無電梯)  42    三層/五層  住家用    5
+#+end_example
+*** scikit-learn LabelEncoder
+事實上，scikit-learn 中有一個更為方便的 LabelEncoder 類別則可以直接完成上述工作(第[[(labelEncoder)]]行)。
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
+# Label encoding with sklearn's LabelEncoder
+from sklearn.preprocessing import LabelEncoder
+le = LabelEncoder()
+y = le.fit_transform(df['用途'].values) (ref:labelEncoder)
+print(y)
+df['用途'] = y
+print(df) # 類別與數字的對應不一定與自訂字典一致
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+[1 2 0 1 1 1 0 1]
+    地段   總價    單價    總面積               型態  屋齡       樓別  用途  地區別
+0   東區  150  25.3  45.49    華廈(10層含以下有電梯)  30    四層/九層   1    6
+1   北區  321  16.8  78.66  住宅大樓(11層含以上有電梯)  32  十三層/十四層   2    7
+2   東區  900  29.2  30.87    華廈(10層含以下有電梯)  28    三層/九層   0    5
+3  新市區  460  13.4  34.35    華廈(10層含以下有電梯)  43    五層/五層   1    6
+4  安南區  350  32.0  11.00              透天厝  57     全/二層   1    3
+5  歸仁區  950  22.9  41.49  住宅大樓(11層含以上有電梯)  29   四層/二十層   1    2
+6   東區  390  24.7  56.38  住宅大樓(11層含以上有電梯)  27  十三層/十四層   0    7
+7  新化區  482  15.3  31.59     公寓(5樓含以下無電梯)  42    三層/五層   1    5
+#+end_example
+
+反向編碼
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
+# 反向编碼，將數值編碼轉換回原始類別
+original_labels = le.inverse_transform(y)
+print("反轉編碼:", original_labels)
+
+df['原來的用途欄'] = original_labels
+print(df)
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+反轉编碼: ['住家用' '商業用' '住商用' '住家用' '住家用' '住家用' '住商用' '住家用']
+    地段   總價    單價    總面積               型態  屋齡       樓別  用途  地區別 原來的用途欄
+0   東區  150  25.3  45.49    華廈(10層含以下有電梯)  30    四層/九層   1    6    住家用
+1   北區  321  16.8  78.66  住宅大樓(11層含以上有電梯)  32  十三層/十四層   2    7    商業用
+2   東區  900  29.2  30.87    華廈(10層含以下有電梯)  28    三層/九層   0    5    住商用
+3  新市區  460  13.4  34.35    華廈(10層含以下有電梯)  43    五層/五層   1    6    住家用
+4  安南區  350  32.0  11.00              透天厝  57     全/二層   1    3    住家用
+5  歸仁區  950  22.9  41.49  住宅大樓(11層含以上有電梯)  29   四層/二十層   1    2    住家用
+6   東區  390  24.7  56.38  住宅大樓(11層含以上有電梯)  27  十三層/十四層   0    7    住商用
+7  新化區  482  15.3  31.59     公寓(5樓含以下無電梯)  42    三層/五層   1    5    住家用
+#+end_example
+
+你有看出這樣轉換會有什麼問題嗎?
+** One-Hot Encoding
+在上面的例子中，我們以scikit-learn 的 LabelEncoder 類別將「類別特徵」編碼為整數值，但這樣會引發另一個問題:原本無序的類別變項就變成有序變項了。如果我們將上述資料中的 *地段* 特徵轉換為整數值，如下：
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
+X = df[['地段']].values
+# 以LabelEncoder轉換
+from sklearn.preprocessing import LabelEncoder
+le = LabelEncoder()
+print(X)
+print(le.fit_transform(X[:,0]))
+#+END_SRC
+
+#+RESULTS:
+: [['東區']
+:  ['北區']
+:  ['東區']
+:  ['新市區']
+:  ['安南區']
+:  ['歸仁區']
+:  ['東區']
+:  ['新化區']]
+: [4 0 4 3 1 5 4 2]
+
+由輸出結果可以發現，經過類別編碼後的地段特徵，由原本不具次序的特徵變成存在大小關係(歸仁區>東區>新市區...)，這明顯會影響 model 運算的結果。
+
+針對此一問題，常見的解決方案是 one-hot encoding(獨熱編碼--真是直白的翻譯啊啊啊....)，其原理是：對特徵值中的每個值，建立一個新的「虛擬特徵」(dummy feature)。
+*** 以pandas get_dummies()進行One Hot Encoding
+利用 Pandas 套件的 get_dummies 類別，直接將類別資料轉成二進位類型，即One-Hot encoding。這種轉換只有字串數據會被轉換，其他內容則否。
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
+print('===原始資料===')
+print(df)
+
+OheDf = pd.get_dummies(df, columns=['地段'])
+print('===轉換後資料===')
+print(OheDf)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+===原始資料===
+    地段   總價    單價    總面積               型態  屋齡       樓別  用途  地區別 原來的用途欄
+0   東區  150  25.3  45.49    華廈(10層含以下有電梯)  30    四層/九層   1    6    住家用
+1   北區  321  16.8  78.66  住宅大樓(11層含以上有電梯)  32  十三層/十四層   2    7    商業用
+2   東區  900  29.2  30.87    華廈(10層含以下有電梯)  28    三層/九層   0    5    住商用
+3  新市區  460  13.4  34.35    華廈(10層含以下有電梯)  43    五層/五層   1    6    住家用
+4  安南區  350  32.0  11.00              透天厝  57     全/二層   1    3    住家用
+5  歸仁區  950  22.9  41.49  住宅大樓(11層含以上有電梯)  29   四層/二十層   1    2    住家用
+6   東區  390  24.7  56.38  住宅大樓(11層含以上有電梯)  27  十三層/十四層   0    7    住商用
+7  新化區  482  15.3  31.59     公寓(5樓含以下無電梯)  42    三層/五層   1    5    住家用
+===轉換後資料===
+    總價    單價    總面積               型態  屋齡  ... 地段_安南區  地段_新化區  地段_新市區  地段_東區  地段_歸仁區
+0  150  25.3  45.49    華廈(10層含以下有電梯)  30  ...  False   False   False   True   False
+1  321  16.8  78.66  住宅大樓(11層含以上有電梯)  32  ...  False   False   False  False   False
+2  900  29.2  30.87    華廈(10層含以下有電梯)  28  ...  False   False   False   True   False
+3  460  13.4  34.35    華廈(10層含以下有電梯)  43  ...  False   False    True  False   False
+4  350  32.0  11.00              透天厝  57  ...   True   False   False  False   False
+5  950  22.9  41.49  住宅大樓(11層含以上有電梯)  29  ...  False   False   False  False    True
+6  390  24.7  56.38  住宅大樓(11層含以上有電梯)  27  ...  False   False   False   True   False
+7  482  15.3  31.59     公寓(5樓含以下無電梯)  42  ...  False    True   False  False   False
+
+[8 rows x 15 columns]
+#+end_example
+*** 以scikit-learn ColumnTransformer 進行One-Hot Encoding
+利用 ColumnTransformer 函式庫的 ColumnTransformer 類別，將特徵值轉換 One-Hot Encoding 的對應矩陣，如程式第[[(FitTransform)]]行。
+
+#+BEGIN_SRC python -r -n :async :results table output :exports both :session venv
+from sklearn.preprocessing import OneHotEncoder
+import pandas as pd
+
+df = pd.DataFrame([['東區',150,25.3,45.49,'華廈(10層含以下有電梯)',30,'四層/九層','住家用','文教區'],
+['北區',321,16.8,78.66,'住宅大樓(11層含以上有電梯)',32,'十三層/十四層','商業用','行政區'],
+['東區',900,29.2,30.87,'華廈(10層含以下有電梯)',28,'三層/九層','住商用','倉庫區'],
+['新市區',460,13.4,34.35,'華廈(10層含以下有電梯)',43,'五層/五層','住家用','文教區'],
+['安南區',350,32.00,11,'透天厝',57,'全/二層','住家用','農業區'],
+['歸仁區',950,22.9,41.49,'住宅大樓(11層含以上有電梯)',29,'四層/二十層','住家用','保護區'],
+['東區',390,24.7,56.38,'住宅大樓(11層含以上有電梯)',27,'十三層/十四層','住商用','行政區'],
+['新化區',482,15.3,31.59,'公寓(5樓含以下無電梯)',42,'三層/五層','住家用','倉庫區']])
+df.columns = ['地段', '總價', '單價', '總面積', '型態', '屋齡', '樓別', '用途', '地區別']
+
+print('===原始資料===')
+print(df[['地段']])
+
+from sklearn.compose import ColumnTransformer
+
+X = df[['地段']].values
+ct = ColumnTransformer(
+    # The column numbers to be transformed (here is [0] but can be [0, 1, 3])
+    # Leave the rest of the columns untouched
+    [('OneHot', OneHotEncoder(), [0])], remainder='passthrough'
+)
+print('===轉換後的one-hot encoding資料===')
+X_transformed = ct.fit_transform(X)
+print(ct.fit_transform(X)) (ref:FitTransform)
+
+# 將稀疏矩陣還原為密集矩陣(非必須，只是讓我們容易看一下結果)
+X_dense = X_transformed.toarray()
+# 轉為dataframe、加入column name
+encoded_columns = ct.named_transformers_['OneHot'].get_feature_names_out(['地段'])
+df_encoded = pd.DataFrame(X_dense, columns=encoded_columns)
+
+print('===One-Hot结果===')
+print(df_encoded)
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+===原始資料===
+    地段
+0   東區
+1   北區
+2   東區
+3  新市區
+4  安南區
+5  歸仁區
+6   東區
+7  新化區
+===轉換後的one-hot encoding資料===
+  (0, 4)	1.0
+  (1, 0)	1.0
+  (2, 4)	1.0
+  (3, 3)	1.0
+  (4, 1)	1.0
+  (5, 5)	1.0
+  (6, 4)	1.0
+  (7, 2)	1.0
+===One-Hot结果===
+   地段_北區  地段_安南區  地段_新化區  地段_新市區  地段_東區  地段_歸仁區
+0    0.0     0.0     0.0     0.0    1.0     0.0
+1    1.0     0.0     0.0     0.0    0.0     0.0
+2    0.0     0.0     0.0     0.0    1.0     0.0
+3    0.0     0.0     0.0     1.0    0.0     0.0
+4    0.0     1.0     0.0     0.0    0.0     0.0
+5    0.0     0.0     0.0     0.0    0.0     1.0
+6    0.0     0.0     0.0     0.0    1.0     0.0
+7    0.0     0.0     1.0     0.0    0.0     0.0
+#+end_example
+*** scikit learn OneHotEncoder()
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
+# 初始化 OneHotEncoder
+encoder = OneHotEncoder()
+encoded_colors = encoder.fit_transform(df[['地段']])
+encoded_df = pd.DataFrame(encoded_colors.toarray(), columns=encoder.get_feature_names_out(['地段']))
+
+df_encoded = pd.concat([df.drop(columns=['地段']), encoded_df], axis=1)
+print(df_encoded)
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+    總價    單價    總面積               型態  屋齡  ... 地段_安南區 地段_新化區 地段_新市區  地段_東區  地段_歸仁區
+0  150  25.3  45.49    華廈(10層含以下有電梯)  30  ...    0.0    0.0    0.0    1.0     0.0
+1  321  16.8  78.66  住宅大樓(11層含以上有電梯)  32  ...    0.0    0.0    0.0    0.0     0.0
+2  900  29.2  30.87    華廈(10層含以下有電梯)  28  ...    0.0    0.0    0.0    1.0     0.0
+3  460  13.4  34.35    華廈(10層含以下有電梯)  43  ...    0.0    0.0    1.0    0.0     0.0
+4  350  32.0  11.00              透天厝  57  ...    1.0    0.0    0.0    0.0     0.0
+5  950  22.9  41.49  住宅大樓(11層含以上有電梯)  29  ...    0.0    0.0    0.0    0.0     1.0
+6  390  24.7  56.38  住宅大樓(11層含以上有電梯)  27  ...    0.0    0.0    0.0    1.0     0.0
+7  482  15.3  31.59     公寓(5樓含以下無電梯)  42  ...    0.0    1.0    0.0    0.0     0.0
+
+[8 rows x 14 columns]
+#+end_example
+
+* 特徵縮放(Feature scaling)
+當我們在比較分析兩組數據資料時，可能會遭遇因單位的不同(例如：身高與體重)，或數字大小的代表性不同(例如：粉專1萬人與滿足感0.8)，造成各自變化的程度不一，進而影響統計分析的結果；為解決此類的問題，我們可利用資料的正規化(Normalization, 或譯為常態化)與標準化(Standardization)來進行數據的比較及分析[fn:2]。
+
+「特徵縮放」(Feature scaling)是資料預處理的一個關鍵，「決策樹」和「隨機森林」是極少數無需進行 feature scaling 的分類技術；對多數機器學習演算法而言，若特徵值經過適當的縮放，都能有更佳成效。Feature scaling 的重要性可以以下例子看出，假設有兩個特徵值(a, b)，其中 a 的測量範圍為 1 到 10，b 的測量值範圍為 1 到 100000，以典型分類演算法的做法，一定是忙於最佳化特徵值 b；若以 KNN 的演算法，也會被特徵值 b 所支配。
+
+在機器學習演算法中，將數值縮放到同一scale能帶給模型下面兩個好處：
+1. 提升模型的收斂速度
+   在建構機器學習模型時，我們會利用梯度下降法(Gradient Descent)來計算成本函數(Cost Function)的最佳解；假設我們現有兩個特徵值 x1 in [0,1] 與 x2 in [0,10000]，則在 x1-x2 平面上成本函數的等高線會呈窄長型，導致需較多的迭代步驟，另外也可能導致無法收斂的情況發生。因此，若將資料標準化，則能減少梯度下降法的收斂時間。
+2. 提高模型的精準度
+   將特徵值 x1 及 x2 餵入一些需計算樣本彼此的距離(例如:歐氏距離)分類器演算法中，則 x2 的影響很可能將遠大於 x1，若實際上 x1 的指標意義及重要性高於 x2，這將導致我們分析的結果失真。因此，資料的標準化是有必要的，可讓每個特徵值對結果做出相近程度的貢獻。
+
+** 常態化(Normalization)
+正規化的目的是將資料縮放到固定的範圍內，通常是 [0, 1] 或 [-1, 1]，這樣可以避免因為特徵值範圍過大或過小而影響模型的表現。這種方法特別適合那些依賴距離的模型，比如 k 最近鄰演算法（KNN）和神經網路。
+
+以「將特徵值縮化為 0~1 間」為例，這是「最小最大縮放」(min-max scaling)的一個特例，做法如下：
+$$x_{norm}^i = \frac{x^i-x_{min}}{x_{max}-x_{min}}$$
+若以 scikit-learn 套件來完成實作，其程式碼如下：
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
 from sklearn.preprocessing import MinMaxScaler
+import pandas as pd
+df = pd.DataFrame([['東區',150,25.3,45.49,'華廈(10層含以下有電梯)',30,'四層/九層','住家用','文教區'],
+['北區',321,16.8,78.66,'住宅大樓(11層含以上有電梯)',32,'十三層/十四層','商業用','行政區'],
+['東區',900,29.2,30.87,'華廈(10層含以下有電梯)',28,'三層/九層','住商用','倉庫區'],
+['新市區',460,13.4,34.35,'華廈(10層含以下有電梯)',43,'五層/五層','住家用','文教區'],
+['安南區',350,32.00,11,'透天厝',57,'全/二層','住家用','農業區'],
+['歸仁區',950,22.9,41.49,'住宅大樓(11層含以上有電梯)',29,'四層/二十層','住家用','保護區'],
+['東區',390,24.7,56.38,'住宅大樓(11層含以上有電梯)',27,'十三層/十四層','住商用','行政區'],
+['新化區',482,15.3,31.59,'公寓(5樓含以下無電梯)',42,'三層/五層','住家用','倉庫區']])
+df.columns = ['地段', '總價', '單價', '總面積', '型態', '屋齡', '樓別', '用途', '地區別']
+print(df)
 
-orig = [[70, 340, 84], [58, 318, 76], [54, 279, 85], [40, 320, 78], [91, 310, 99]]
-me = [50, 300, 86]
-orig.append(me)
-scalsc = []
-sc = np.array(orig)
-stdsc = StandardScaler()
-for i in range(len(sc[0])):
-    scalsc.append(stdsc.fit_transform(sc)[:,i])
-scalsc = np.array(scalsc).transpose()
+mmScaler = MinMaxScaler()
+print('===Normalization後的資料===')
+df[['總價', '單價']] = mmScaler.fit_transform(df[['總價', '單價']])
+print(df[['總價', '單價']])
 
-for s in scalsc:
-    dist = np.sqrt(np.sum(np.square(s - scalsc[5, :])))
-    print('ED:',dist)
-for s in scalsc:
-    dist = np.sqrt(np.sum(abs(s - scalsc[5:,])))
-    print('MD:',dist)
-#+end_src
+# 將數據還原到原始範圍
+print('===還原後的資料===')
+df[['總價', '單價']] = mmScaler.inverse_transform(df[['總價', '單價']])
+print(df[['總價', '單價']])
+#+END_SRC
 
 #+RESULTS:
 #+begin_example
-ED: 2.4716117475041277
-ED: 1.729572721531174
-ED: 1.1525315662800393
-ED: 1.6376819924249435
-ED: 3.1123821199274815
-ED: 0.0
-MD: 1.9040179292551567
-MD: 1.6739662071123351
-MD: 1.224091723377491
-MD: 1.6614327764060297
-MD: 2.1917020067767887
-MD: 0.0
+    地段   總價    單價    總面積               型態  屋齡       樓別   用途  地區別
+0   東區  150  25.3  45.49    華廈(10層含以下有電梯)  30    四層/九層  住家用  文教區
+1   北區  321  16.8  78.66  住宅大樓(11層含以上有電梯)  32  十三層/十四層  商業用  行政區
+2   東區  900  29.2  30.87    華廈(10層含以下有電梯)  28    三層/九層  住商用  倉庫區
+3  新市區  460  13.4  34.35    華廈(10層含以下有電梯)  43    五層/五層  住家用  文教區
+4  安南區  350  32.0  11.00              透天厝  57     全/二層  住家用  農業區
+5  歸仁區  950  22.9  41.49  住宅大樓(11層含以上有電梯)  29   四層/二十層  住家用  保護區
+6   東區  390  24.7  56.38  住宅大樓(11層含以上有電梯)  27  十三層/十四層  住商用  行政區
+7  新化區  482  15.3  31.59     公寓(5樓含以下無電梯)  42    三層/五層  住家用  倉庫區
+===Normalization後的資料===
+        總價        單價
+0  0.00000  0.639785
+1  0.21375  0.182796
+2  0.93750  0.849462
+3  0.38750  0.000000
+4  0.25000  1.000000
+5  1.00000  0.510753
+6  0.30000  0.607527
+7  0.41500  0.102151
+===還原後的資料===
+      總價    單價
+0  150.0  25.3
+1  321.0  16.8
+2  900.0  29.2
+3  460.0  13.4
+4  350.0  32.0
+5  950.0  22.9
+6  390.0  24.7
+7  482.0  15.3
 #+end_example
 
-* 資料擴增/資料增強(Data Augmentation)
+** 標準化(Standardization)
+標準化則是將資料轉換為具有零均值和單位方差(說人話就是平均數為0、標準差為1)的分佈，這意味著數據被中心化並且具有相同的尺度。這種技術適合資料呈現常態分佈或近似常態分佈的情況，並且適合大多數機器學習模型（如線性回歸、支持向量機等）。
+
+雖說常態化簡單實用，但對許多機器學習演算法來說(特別是梯度下降法的最佳化)，標準化則更為實際，我們可令標準化後的特徵值其平均數為 0、標準差為 1，這樣一來，特徵值會滿足常態分佈，進而使演算法對於離群值不那麼敏感。標準化的公式如下：
+$$x_{std}^i = \frac{x^i-\mu_x}{\sigma_x}$$
+若以 scikit-learn 套件來完成實作，其程式碼如下：
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
+from sklearn.preprocessing import StandardScaler
+sdScaler = StandardScaler()
+df[['總價', '單價']] = sdScaler.fit_transform(df[['總價', '單價']])
+print('===標準化後的資料===')
+print(df[['總價', '單價']])
+
+df[['總價', '單價']] = sdScaler.inverse_transform(df[['總價', '單價']])
+print('===還原後的資料===')
+print(df[['總價', '單價']])
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+===標準化後的資料===
+         總價        單價
+0 -1.331969  0.454115
+1 -0.681904 -0.900263
+2  1.519196  1.075535
+3 -0.153488 -1.442014
+4 -0.571659  1.521683
+5  1.709274  0.071702
+6 -0.419596  0.358512
+7 -0.069854 -1.139270
+===還原後的資料===
+      總價    單價
+0  150.0  25.3
+1  321.0  16.8
+2  900.0  29.2
+3  460.0  13.4
+4  350.0  32.0
+5  950.0  22.9
+6  390.0  24.7
+7  482.0  15.3
+#+end_example
+
+* 資料擴增
+** 下載範例程式
+- 底下的檔案可以透過以下方式下載(於終端機執行)
+- 要記得修改main.py裡的資料夾路徑
+#+begin_src shell -r -n :results output :exports both
+git clone git@github.com:letranger/DataAugmentationDemo.git
+#+end_src
+** 範例
+安裝opencv
+#+begin_src shell -r -n :results output :exports both
+pip3 install opencv-python
+#+end_src
+資料夾位置 ~/Downloads
+資料夾架構
+#+begin_src shell -r -n :results output :exports both
+tree ~/Downloads/aug -d
+#+end_src
+
+#+RESULTS:
+: /Users/letranger/Downloads/aug
+: ├── augImages
+: │   ├── cats
+: │   └── dogs
+: └── images
+:     ├── cats
+:     └── dogs
+:
+: 7 directories
+
+#+begin_src python -r :async :results output :exports both :session venv
+import cv2
+import os
+import numpy as np
+
+def augment_image(image):
+    """對輸入圖像進行數據增強並返回增強後的圖像列表"""
+    augmented_images = []
+
+    # 原圖
+    augmented_images.append(image)
+
+    # 翻轉圖像
+    flip1 = cv2.flip(image, 0)  # 垂直翻轉
+    flip2 = cv2.flip(image, 1)  # 水平翻轉
+    flip3 = cv2.flip(image, -1) # 垂直和水平翻轉
+    augmented_images.extend([flip1, flip2, flip3])
+
+    # 旋轉圖像
+    for angle in [90, 180, 270]:
+        M = cv2.getRotationMatrix2D((image.shape[1] // 2, image.shape[0] // 2), angle, 1)
+        rotated = cv2.warpAffine(image, M, (image.shape[1], image.shape[0]))
+        augmented_images.append(rotated)
+
+    # 縮放圖像
+    for scale in [0.9, 1.1]:
+        scaled = cv2.resize(image, None, fx=scale, fy=scale)
+        augmented_images.append(scaled)
+
+    return augmented_images
+
+def process_directory(input_dir, output_dir):
+    """處理輸入目錄中的所有圖像，並將增強後的圖像保存到輸出目錄"""
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    categories = ['dogs', 'cats']
+    for category in categories:
+        category_input_dir = os.path.join(input_dir, category)
+        category_output_dir = os.path.join(output_dir, category)
+
+        for filename in os.listdir(category_input_dir):
+            image_path = os.path.join(category_input_dir, filename)
+            image = cv2.imread(image_path)
+            augmented_images = augment_image(image)
+
+            for i, augmented_image in enumerate(augmented_images):
+                output_filename = f"{os.path.splitext(filename)[0]}_aug_{i}.jpg"
+                output_path = os.path.join(category_output_dir, output_filename)
+                cv2.imwrite(output_path, augmented_image)
+
+# 輸入和輸出目錄
+input_directory = '/Users/letranger/Downloads/aug/images'
+output_directory = '/Users/letranger/Downloads/aug/augImages'
+
+# 處理圖像
+process_directory(input_directory, output_directory)
+#+end_src
+
+** 其他擴增方法
+其他資料擴增方式還有:濾波、銳化、去噪、旋轉、縮放、裁剪和增加人工噪聲....，至於資料擴增對於模型有何助益請[[https://blog.toright.com/posts/7144/keras-tutorial-cnn-data-augmentation-training][參閱這篇]]。其他資料擴增方式請看:
 - [[https://cynthiachuang.github.io/Augmentor-Image-Augmentation-Library-in-Python/][Augmentor：影像資料增強工具庫]]
 - [[https://chtseng.wordpress.com/2017/11/11/data-augmentation-%E8%B3%87%E6%96%99%E5%A2%9E%E5%BC%B7/][Data Augmentation 資料增強]]
 
-* 選取有意義的特徵
+* 資料集與資料分割
+** 常用資料集
+當你使用 Python 學習人工智慧（AI）和機器學習（ML）時，以下是一些常用的資料集及其簡單介紹：
+*** MNIST
+簡介：MNIST（Modified National Institute of Standards and Technology database）是一個大型手寫數字資料集，包含 0 到 9 的手寫數字圖像。
+- 用途：常用於圖像分類和計算機視覺的入門練習。
+- 特徵：包含 60,000 張訓練圖像和 10,000 張測試圖像，每張圖像大小為 28x28 像素。
+- 來源：可以從 tensorflow 或 keras 中直接獲取。
+#+begin_src python -r -n :async :results output :exports both :session venv
+from tensorflow.keras.datasets import mnist
+(x_train, y_train), (x_test, y_test) = mnist.load_data()
+#+end_src
+*** Iris
+- 簡介：Iris 資料集包含 3 種鰹魚花（Setosa、Versicolour 和 Virginica）的 150 個樣本，每個樣本有 4 個特徵（花萼長度、花萼寬度、花瓣長度、花瓣寬度）。
+- 用途：常用於分類和聚類算法的入門練習。
+- 特徵：每個樣本包含 4 個特徵和 1 個標籤。
+- 來源：可以從 sklearn 中直接獲取。
+#+begin_src python -r -n :results output :exports both
+from sklearn.datasets import load_iris
+iris = load_iris()
+X, y = iris.data, iris.target
+#+end_src
+*** Boston 房價
+- 簡介：Boston 房價資料集包含 506 個房屋的特徵和價格信息，用於回歸問題。
+- 用途：常用於回歸算法的入門練習。
+- 特徵：每個樣本包含 13 個特徵，如犯罪率、房間數、房產稅等。
+- 來源：可以從 sklearn 中直接獲取。
+#+begin_src python -r -n :results output :exports both
+import matplotlib.pyplot as plt
+from tensorflow.keras.datasets import boston_housing
+
+(train_x, train_y), (test_x, test_y) = boston_housing.load_data()
+#+end_src
+*** CIFAR-10
+- 簡介：CIFAR-10 是一個影像資料集，包含 10 個類別的 60,000 張彩色圖片，每個類別有 6,000 張圖片。
+- 用途：常用於圖像分類和深度學習的入門練習。
+- 特徵：每張圖像大小為 32x32 像素。
+- 來源：可以從 tensorflow 或 keras 中直接獲取。
+#+begin_src python -r -n :results output :exports both
+from tensorflow.keras.datasets import cifar10
+(x_train, y_train), (x_test, y_test) = cifar10.load_data()
+#+end_src
+***  Wine
+- 簡介：Wine 資料集包含 178 個樣本，記錄了 3 種不同葡萄酒的 13 個化學成分。
+- 用途：常用於分類問題。
+- 特徵：每個樣本包含 13 個特徵和 1 個標籤。
+- 來源：可以從 sklearn 中直接獲取。
+#+begin_src python -r -n :results output :exports both
+from sklearn.datasets import load_wine
+wine = load_wine()
+X, y = wine.data, wine.target
+#+end_src
+*** Breast Cancer Wisconsin
+- 簡介：Breast Cancer Wisconsin 資料集包含 569 個乳腺癌樣本的特徵，目的是預測腫瘤是良性還是惡性。
+- 用途：常用於二元分類問題。
+- 特徵：每個樣本包含 30 個特徵。
+- 來源：可以從 sklearn 中直接獲取。
+#+begin_src python -r -n :results output :exports both
+from sklearn.datasets import load_breast_cancer
+breast_cancer = load_breast_cancer()
+X, y = breast_cancer.data, breast_cancer.target
+#+end_src
+** 資料分割
+#+begin_src plantuml :file images/datapreprocessing.png
+@startuml
+ left to right direction
+ state 已訓練模型 {
+ state 訓練集 #palegreen
+ state 未訓練模型 #lightgray : 黑盒子
+ 訓練集 --> 未訓練模型
+ }
+ state 測試集 #palegreen
+ 測試集 --> 已訓練模型
+ state 預測結果
+ 已訓練模型 --> 預測結果
+@enduml
+#+end_src
+
+#+RESULTS:
+[[file:images/datapreprocessing.png]]
+
+*** 為什麼要分割資料
+- 訓練集（training): 舉例來說就是上課學習。主要用在訓練階段，用於模型擬合，直接參與了模型參數調整的過程[fn:1]。
+- 驗證集（validation）: 舉例來說就是模擬考，你會根據模擬考的成績繼續學習、或調整學習方式重新學習。在訓練過程中，用於評估模型的初步能力與超參數調整的依據。不過驗證集是非必需的，不像訓練集和測試集。如果不需要調整超參數，就可以不使用驗證集[fn:1]。
+- 測試集（test）就像是學測，用來評估你最終的學習結果。用來評估模型最終的泛化能力。為了能評估模型真正的能力，測試集不應該為參數調整、選擇特徵等依據[fn:1]。
+使用學測來比喻，是因為測試集不應該做為參數調整、選擇特徵等依據。這些選擇與調整可以想像成學習方式的調整，但學測已經考完，你不能時光倒轉回到最初調整學習方式[fn:1]。
+*** 資料分割實作
+訓練集與測試集的分割可以自行以Python進行分割，也可以直接呼叫函式進行分割
+**** 手動分割
+#+BEGIN_SRC python -r -n :results output :exports both
+import pandas as pd
+import numpy as np
+import random
+
+df_wine = pd.read_csv('https://archive.ics.uci.edu/'
+                      'ml/machine-learning-databases/wine/wine.data',
+                      header=None)
+
+df_wine.columns = ['Class label', 'Alcohol', 'Malic acid', 'Ash',
+                   'Alcalinity of ash', 'Magnesium', 'Total phenols',
+                   'Flavanoids', 'Nonflavanoid phenols', 'Proanthocyanins',
+                   'Color intensity', 'Hue', 'OD280/OD315 of diluted wines',
+                   'Proline']
+
+train_len = int(len(df_wine) * 0.7)
+
+# 打亂資料集順序
+idx = list(df_wine.index)
+random.shuffle(idx)
+
+# 分割資料集
+TrainSet = df_wine.loc[idx[:train_len]]
+TestSet = df_wine.loc[idx[train_len:]]
+print(len(TrainSet))
+print(len(TestSet))
+X_train, y_train = TrainSet.iloc[:, 1:].values, TrainSet.iloc[:, 0].values
+X_test, y_test = TestSet.iloc[:, 1:].values, TestSet.iloc[:, 0].values
+
+print('==========訓練集==========')
+print(X_train[:2])
+print(y_train[:2])
+print('==========測試集==========')
+print(X_test[:2])
+print(y_test[:2])
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+124
+54
+==========訓練集==========
+[[1.229e+01 2.830e+00 2.220e+00 1.800e+01 8.800e+01 2.450e+00 2.250e+00
+  2.500e-01 1.990e+00 2.150e+00 1.150e+00 3.300e+00 2.900e+02]
+ [1.340e+01 4.600e+00 2.860e+00 2.500e+01 1.120e+02 1.980e+00 9.600e-01
+  2.700e-01 1.110e+00 8.500e+00 6.700e-01 1.920e+00 6.300e+02]]
+[2 3]
+==========測試集==========
+[[1.394e+01 1.730e+00 2.270e+00 1.740e+01 1.080e+02 2.880e+00 3.540e+00
+  3.200e-01 2.080e+00 8.900e+00 1.120e+00 3.100e+00 1.260e+03]
+ [1.402e+01 1.680e+00 2.210e+00 1.600e+01 9.600e+01 2.650e+00 2.330e+00
+  2.600e-01 1.980e+00 4.700e+00 1.040e+00 3.590e+00 1.035e+03]]
+[1 1]
+#+end_example
+**** 呼叫scikit learn的function
+#+BEGIN_SRC python -r -n :results output :exports both
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+
+df_wine = pd.read_csv('https://archive.ics.uci.edu/'
+                      'ml/machine-learning-databases/wine/wine.data',
+                      header=None)
+
+df_wine.columns = ['Class label', 'Alcohol', 'Malic acid', 'Ash',
+                   'Alcalinity of ash', 'Magnesium', 'Total phenols',
+                   'Flavanoids', 'Nonflavanoid phenols', 'Proanthocyanins',
+                   'Color intensity', 'Hue', 'OD280/OD315 of diluted wines',
+                   'Proline']
+
+print('Class labels', np.unique(df_wine['Class label']))
+
+X, y = df_wine.iloc[:, 1:].values, df_wine.iloc[:, 0].values
+
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y,
+                     test_size=0.3, random_state=0, stratify=y)
+
+print(len(X_train))
+print(len(y_test))
+
+print('==========訓練集==========')
+print(X_train[:2])
+print(y_train[:2])
+print('==========測試集==========')
+print(X_test[:2])
+print(y_test[:2])
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+Class labels [1 2 3]
+124
+54
+==========訓練集==========
+[[1.362e+01 4.950e+00 2.350e+00 2.000e+01 9.200e+01 2.000e+00 8.000e-01
+  4.700e-01 1.020e+00 4.400e+00 9.100e-01 2.050e+00 5.500e+02]
+ [1.376e+01 1.530e+00 2.700e+00 1.950e+01 1.320e+02 2.950e+00 2.740e+00
+  5.000e-01 1.350e+00 5.400e+00 1.250e+00 3.000e+00 1.235e+03]]
+[3 1]
+==========測試集==========
+[[1.377e+01 1.900e+00 2.680e+00 1.710e+01 1.150e+02 3.000e+00 2.790e+00
+  3.900e-01 1.680e+00 6.300e+00 1.130e+00 2.930e+00 1.375e+03]
+ [1.217e+01 1.450e+00 2.530e+00 1.900e+01 1.040e+02 1.890e+00 1.750e+00
+  4.500e-01 1.030e+00 2.950e+00 1.450e+00 2.230e+00 3.550e+02]]
+[1 2]
+#+end_example
+
+* 選取有意義的特徵 :noexport:
 overfitting 的產生原因是模型過度遷就於訓練數據，導致面對新數據(測試集)時成效不彰，我們稱這種模型具有較高變異性(high variance)，一般的解決策略有：
 - 收集更多的訓練數據集
 - 經由正規化，對於過度複雜的模型引進一個「懲罰」(penalty)
