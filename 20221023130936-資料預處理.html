@@ -3,14 +3,14 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-09-19 Thu 11:00 -->
+<!-- 2024-11-01 Fri 13:40 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>資料預處理</title>
-<meta name="author" content="Yung-Chin Yen" />
-<meta name="generator" content="Org Mode" />
-<style>
-  #content { max-width: 60em; margin: auto; }
+<meta name="generator" content="Org mode" />
+<meta name="author" content="Yung Chin, Yen" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
   .title  { text-align: center;
              margin-bottom: .2em; }
   .subtitle { text-align: center;
@@ -31,9 +31,8 @@
   #postamble p, #preamble p { font-size: 90%; margin: .2em; }
   p.verse { margin-left: 3%; }
   pre {
-    border: 1px solid #e6e6e6;
-    border-radius: 3px;
-    background-color: #f2f2f2;
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
     padding: 8pt;
     font-family: monospace;
     overflow: auto;
@@ -41,22 +40,22 @@
   }
   pre.src {
     position: relative;
-    overflow: auto;
+    overflow: visible;
+    padding-top: 1.2em;
   }
   pre.src:before {
     display: none;
     position: absolute;
-    top: -8px;
-    right: 12px;
+    background-color: white;
+    top: -10px;
+    right: 10px;
     padding: 3px;
-    color: #555;
-    background-color: #f2f2f299;
+    border: 1px solid black;
   }
-  pre.src:hover:before { display: inline; margin-top: 14px;}
+  pre.src:hover:before { display: inline;}
   /* Languages per Org manual */
   pre.src-asymptote:before { content: 'Asymptote'; }
   pre.src-awk:before { content: 'Awk'; }
-  pre.src-authinfo::before { content: 'Authinfo'; }
   pre.src-C:before { content: 'C'; }
   /* pre.src-C++ doesn't work in CSS */
   pre.src-clojure:before { content: 'Clojure'; }
@@ -191,91 +190,118 @@
     { font-size: 10px; font-weight: bold; white-space: nowrap; }
   .org-info-js_search-highlight
     { background-color: #ffff00; color: #000000; font-weight: bold; }
-  .org-svg { }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
 </style>
 <link rel="stylesheet" type="text/css" href="../css/muse.css" />
 <script src="../css/copy_code.js"></script>
-<script>
-  window.MathJax = {
-    tex: {
-      ams: {
-        multlineWidth: '85%'
-      },
-      tags: 'ams',
-      tagSide: 'right',
-      tagIndent: '.8em'
-    },
-    chtml: {
-      scale: 1.0,
-      displayAlign: 'center',
-      displayIndent: '0em'
-    },
-    svg: {
-      scale: 1.0,
-      displayAlign: 'center',
-      displayIndent: '0em'
-    },
-    output: {
-      font: 'mathjax-modern',
-      displayOverflow: 'overflow'
-    }
-  };
+<script type="text/javascript">
+// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
+<!--/*--><![CDATA[/*><!--*/
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.cacheClassElem = elem.className;
+         elem.cacheClassTarget = target.className;
+         target.className = "code-highlighted";
+         elem.className   = "code-highlighted";
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(elem.cacheClassElem)
+         elem.className = elem.cacheClassElem;
+       if(elem.cacheClassTarget)
+         target.className = elem.cacheClassTarget;
+     }
+    /*]]>*///-->
+// @license-end
 </script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
 
-<script
-  id="MathJax-script"
-  async
-  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
 </script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
 </head>
 <body>
-<div id="content" class="content">
+<div id="content">
 <h1 class="title">資料預處理</h1>
-<div id="table-of-contents" role="doc-toc">
+<div id="table-of-contents">
 <h2>Table of Contents</h2>
-<div id="text-table-of-contents" role="doc-toc">
+<div id="text-table-of-contents">
 <ul>
-<li><a href="#org01640c6">1. 資料預處理</a>
+<li><a href="#orgc3236ba">1. AI處理的資料</a>
 <ul>
-<li><a href="#orgd31d2f8">1.1. 讀檔</a></li>
-<li><a href="#orgcaa5f50">1.2. 刪除遺漏值</a></li>
-<li><a href="#orga47af56">1.3. 填補遺漏值</a></li>
-<li><a href="#org9e38b33">1.4. [作業]資料預處理&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></a></li>
+<li><a href="#org0c05189">1.1. 資料量：</a></li>
+<li><a href="#orga27419d">1.2. 資料結構：</a></li>
+<li><a href="#orgb301004">1.3. 資料處理與儲存：</a></li>
+<li><a href="#org59f6603">1.4. 資料更新頻率：</a></li>
+<li><a href="#org7b37626">1.5. 資料處理特點：</a></li>
 </ul>
 </li>
-<li><a href="#org8688054">2. 資料間的關係</a>
+<li><a href="#org7ed2585">2. 資料預處理</a></li>
+<li><a href="#org5a73a47">3. 資料遺漏值與異常值處理</a>
 <ul>
-<li><a href="#org3e64270">2.1. 兩點間的距離</a></li>
-<li><a href="#orgfc5fed8">2.2. 兩個向量間的距離</a></li>
-<li><a href="#org7e59a0d">2.3. [課堂作業]曼哈頓距離</a></li>
-<li><a href="#orge6a5ed9">2.4. 其他應用</a></li>
+<li><a href="#org8f9c002">3.1. 讀檔</a></li>
+<li><a href="#org05b9b8f">3.2. 識別、刪除遺漏值</a></li>
+<li><a href="#org6029c0a">3.3. 填補遺漏值</a></li>
+<li><a href="#orgf8ea345">3.4. [作業]資料預處理&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></a></li>
 </ul>
 </li>
-<li><a href="#orgf1df148">3. 資料集分類特徵編碼</a>
+<li><a href="#org59e2edf">4. 資料間的關係</a>
 <ul>
-<li><a href="#orgc9970d8">3.1. 讀檔</a></li>
-<li><a href="#orgdc74d3c">3.2. 次序變項</a></li>
-<li><a href="#org19f3eb3">3.3. 名義變項</a></li>
-<li><a href="#orga5823b0">3.4. One-Hot Encoding</a></li>
+<li><a href="#orgfcf4aa9">4.1. 兩點間的距離</a></li>
+<li><a href="#org43e07c0">4.2. 兩個向量間的距離</a></li>
+<li><a href="#org32f4a9a">4.3. [課堂作業]曼哈頓距離</a></li>
+<li><a href="#org70235d9">4.4. 其他應用</a></li>
+<li><a href="#org4f46eee">4.5. [課堂作業]誰和我的能力最接近&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></a></li>
 </ul>
 </li>
-<li><a href="#org91411f5">4. 特徵縮放(Feature scaling)</a>
+<li><a href="#org1a245ef">5. 資料集分類特徵編碼</a>
 <ul>
-<li><a href="#orge62852e">4.1. 常態化(Normalization)</a></li>
-<li><a href="#orgb77a34a">4.2. 標準化(Standardization)</a></li>
+<li><a href="#org1756b74">5.1. 讀檔</a></li>
+<li><a href="#org4eb63f0">5.2. 次序變項</a></li>
+<li><a href="#org69aeda4">5.3. 名義變項</a></li>
+<li><a href="#org095f6cf">5.4. One-Hot Encoding</a></li>
 </ul>
 </li>
-<li><a href="#org8cdeade">5. 資料擴增</a>
+<li><a href="#org5ca98db">6. 特徵縮放(Feature scaling)</a>
 <ul>
-<li><a href="#org5294eec">5.1. 下載範例程式</a></li>
-<li><a href="#org59065f3">5.2. 範例</a></li>
-<li><a href="#org9d7b8b3">5.3. 其他擴增方法</a></li>
+<li><a href="#org1e41b54">6.1. 常態化(Normalization)</a></li>
+<li><a href="#orgb89c4eb">6.2. 標準化(Standardization)</a></li>
+<li><a href="#org596274f">6.3. 適用時機</a></li>
 </ul>
 </li>
-<li><a href="#org7365c17">6. 資料集與資料分割</a>
+<li><a href="#orge88d833">7. 資料擴增</a>
 <ul>
-<li><a href="#org3128893">6.1. 常用資料集</a></li>
-<li><a href="#org2a4040c">6.2. 資料分割</a></li>
+<li><a href="#org5dd3684">7.1. 下載範例程式</a></li>
+<li><a href="#org72ea5ca">7.2. 範例</a></li>
+<li><a href="#org25d06ea">7.3. 其他擴增方法</a></li>
+</ul>
+</li>
+<li><a href="#org85b9c4f">8. 資料集與資料分割</a>
+<ul>
+<li><a href="#orgde5c9fd">8.1. 常用資料集</a></li>
+<li><a href="#org8560bf8">8.2. 資料分割</a></li>
 </ul>
 </li>
 </ul>
@@ -283,30 +309,113 @@
 </div>
 <a href="https://hits.sh/letranger.github.io/AI/20221023130936-資料預處理.html"><img alt="Hits" align="right" src="https://hits.sh/letranger.github.io/AI/20221023130936-資料預處理.html.svg"/></a>
 
-<p>
-進行數運模式運算之前，需要進行的數據預處理工作大致可分為以下幾點：<br />
-</p>
-<ol class="org-ol">
-<li>數據遺漏值處理<br /></li>
-<li>數據分類編碼<br /></li>
-<li>數據訓練集與測試集之分割<br /></li>
-<li>數據特徵選取<br /></li>
-</ol>
-<div id="outline-container-org01640c6" class="outline-2">
-<h2 id="org01640c6"><span class="section-number-2">1.</span> 資料預處理</h2>
+<div id="outline-container-orgc3236ba" class="outline-2">
+<h2 id="orgc3236ba"><span class="section-number-2">1</span> AI處理的資料</h2>
 <div class="outline-text-2" id="text-1">
 <p>
-在收集到所需的資料後，常會遇到各種資料不全、缺失的情況，因此需要對資料進行整理，以便後續的分析。進行數運模式運算之前，需要進行的<a href="20221023130936-資料預處理.html#ID-82e219c3-6ca0-43b0-bb11-e3a8454f089d">資料預處理</a>工作大致可分為以下幾點：<br />
+大數據與傳統資料的主要差異<br />
 </p>
+</div>
+<div id="outline-container-org0c05189" class="outline-3">
+<h3 id="org0c05189"><span class="section-number-3">1.1</span> 資料量：</h3>
+<div class="outline-text-3" id="text-1-1">
+<ul class="org-ul">
+<li>大數據：AI所需的大數據集規模通常極大，通常包含數十萬、數百萬甚至數十億筆記錄。這些資料可以來自網路使用者的行為、傳感器數據、社群媒體等。<br /></li>
+<li>傳統資料：傳統意義上的資料通常規模較小，例如企業的銷售記錄、財務報表，或者手動收集的問卷調查結果。<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orga27419d" class="outline-3">
+<h3 id="orga27419d"><span class="section-number-3">1.2</span> 資料結構：</h3>
+<div class="outline-text-3" id="text-1-2">
+
+<div id="orgb736a01" class="figure">
+<p><img src="images/strucdata.png" alt="strucdata.png" width="500" /><br />
+</p>
+<p><span class="figure-number">Figure 1: </span>結構化與非結構化資料</p>
+</div>
+<ul class="org-ul">
+<li>大數據：大數據包含結構化(如Excel報表、Sensor回傳資料)、半結構化(有欄位、但不一致)和非結構化數據(如社群軟體貼文)。這些數據可以包括文字、圖片、影片、聲音等，因此處理大數據需要考慮多樣的資料格式。<br /></li>
+<li>傳統資料：通常是結構化的資料，例如SQL資料庫中的表格，行列分明，資料屬性相對簡單。<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgb301004" class="outline-3">
+<h3 id="orgb301004"><span class="section-number-3">1.3</span> 資料處理與儲存：</h3>
+<div class="outline-text-3" id="text-1-3">
+<ul class="org-ul">
+<li>大數據的儲存：由於大數據的數量龐大，通常需要分佈式系統來存儲，例如Hadoop、分散式資料庫等。大數據的資料儲存涉及到不同的檔案格式，如Parquet、Avro等，這些格式有助於壓縮數據並高效存取。<br /></li>
+<li>傳統資料的儲存：多數情況下會採用關聯式數據庫來儲存，使用如MySQL、PostgreSQL等。<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org59f6603" class="outline-3">
+<h3 id="org59f6603"><span class="section-number-3">1.4</span> 資料更新頻率：</h3>
+<div class="outline-text-3" id="text-1-4">
+<ul class="org-ul">
+<li>大數據：大數據來自不斷變化的即時數據來源，資料更新的頻率可能是每秒、每分鐘，甚至是即時的，因此需要考慮實時處理的需求。<br /></li>
+<li>傳統資料：傳統資料通常是靜態的，資料更新的頻率低，通常是批量更新，並且並不需要即時性。<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org7b37626" class="outline-3">
+<h3 id="org7b37626"><span class="section-number-3">1.5</span> 資料處理特點：</h3>
+<div class="outline-text-3" id="text-1-5">
+<ul class="org-ul">
+<li>大數據處理：因應資料量和資料格式的多樣化，大數據處理更多地依賴於分布式處理技術，例如MapReduce、Spark。這些工具的設計旨在能夠平行處理大量的資料。<br /></li>
+<li>傳統資料處理：傳統資料處理則多數使用單機處理技術，或是使用單一SQL語句進行分析，處理的複雜度和規模有限。<br /></li>
+</ul>
+
+<p>
+這些差異決定了AI所面臨的資料不僅僅是量上的增加，更是對多樣性和處理方法上的挑戰。因此，資料的儲存格式、擴充性和資料品質變得更加重要，需要採取新的資料預處理方法，確保AI模型可以有效使用這些數據。<br />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org7ed2585" class="outline-2">
+<h2 id="org7ed2585"><span class="section-number-2">2</span> 資料預處理</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+在收集到所需的資料後，常會遇到各種資料不全、缺失的情況，因此需要對資料進行整理，以便後續的分析。在進行資料建模運算之前，需要進行的資料預處理工作大致可分為以下幾點：<br />
+</p>
+
 <ol class="org-ol">
-<li>數據遺漏值處理<br /></li>
-<li>數據分類編碼<br /></li>
-<li>數據訓練集與測試集之分割<br /></li>
-<li>數據特徵選取<br /></li>
+<li>資料遺漏值與異常值處理<br />
+對於資料中的缺失值或異常值，可以採取以下方法：<br />
+<ul class="org-ul">
+<li>刪除有遺漏值或異常值的樣本或特徵。<br /></li>
+<li>用平均值、中位數、眾數等方法進行填補。<br /></li>
+<li>對於異常值，可以選擇替代處理，以減少對模型的負面影響。<br /></li>
+</ul></li>
+<li>資料編碼<br />
+針對類別型資料進行編碼，常見的編碼方法有：<br />
+<ul class="org-ul">
+<li>標籤編碼（Label Encoding）：將類別資料轉換為數值標籤，適用於類別之間有順序性的情況。<br /></li>
+<li>獨熱編碼（One-Hot Encoding）：將類別資料轉換為二進位表示，每個類別對應一個新特徵，適用於類別之間無順序性的情況。<br /></li>
+<li>二元編碼（Binary Encoding）：對於類別數量較多的情況，二元編碼可以有效減少特徵數量，平衡編碼效率與模型複雜度。<br /></li>
+</ul></li>
+<li>資料標準化與正規化<br />
+<ul class="org-ul">
+<li>對資料進行標準化或正規化，以便縮放資料範圍，確保所有特徵值在相似的數值範圍內，這樣有助於提升模型的訓練效果。<br /></li>
+</ul></li>
+<li>資料特徵選取<br />
+<ul class="org-ul">
+<li>根據資料集中的特徵對預測目標的影響程度，選擇保留有用的特徵。這可以透過統計方法或特徵重要性評估技術來實現。<br /></li>
+</ul></li>
+<li>資料擴增<br /></li>
+<li>資料縮減<br />
+<ul class="org-ul">
+<li>使用主成分分析（PCA）等方法來降低資料維度，減少運算量並保留重要資訊。<br /></li>
+</ul></li>
+<li>資料訓練集與測試集之分割<br />
+<ul class="org-ul">
+<li>將資料集分為訓練集和測試集，以便進行模型訓練和性能評估。通常的分割合適比例為80%訓練集與20%測試集，或者70%與30%。<br /></li>
+</ul></li>
 </ol>
 
 <p>
-以下的程式碼都是簡單的pandas應用，如果你看不懂，表示你自已要惡補一下Pandas的課程，可以參看:<br />
+以下的程式碼 <b>大部份</b> 都是 <b>簡單</b> 的pandas應用，如果你看不懂，表示你自已要惡補一下Pandas的課程，可以參看:<br />
 </p>
 <ul class="org-ul">
 <li><a href="https://letranger.github.io/PythonCourse/Pandas.html">Pandas教學</a><br /></li>
@@ -314,34 +423,40 @@
 <li>其他的自己<a href="https://www.google.com/">Google</a><br /></li>
 </ul>
 </div>
-<div id="outline-container-orgd31d2f8" class="outline-3">
-<h3 id="orgd31d2f8"><span class="section-number-3">1.1.</span> 讀檔</h3>
-<div class="outline-text-3" id="text-1-1">
+</div>
+
+<div id="outline-container-org5a73a47" class="outline-2">
+<h2 id="org5a73a47"><span class="section-number-2">3</span> 資料遺漏值與異常值處理</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-org8f9c002" class="outline-3">
+<h3 id="org8f9c002"><span class="section-number-3">3.1</span> 讀檔</h3>
+<div class="outline-text-3" id="text-3-1">
 <ul class="org-ul">
 <li><a href="images/資料預處理/CatDog.csv">按這裡下載測試檔案</a><br /></li>
 </ul>
 </div>
-<div id="outline-container-orgb0b727f" class="outline-4">
-<h4 id="orgb0b727f"><span class="section-number-4">1.1.1.</span> Colab</h4>
-<div class="outline-text-4" id="text-1-1-1">
+<div id="outline-container-orga891749" class="outline-4">
+<h4 id="orga891749"><span class="section-number-4">3.1.1</span> Colab</h4>
+<div class="outline-text-4" id="text-3-1-1">
 </div>
-<div id="outline-container-org93c2458" class="outline-5">
-<h5 id="org93c2458"><span class="section-number-5">1.1.1.1.</span> 檔案在/content裡</h5>
-<div class="outline-text-5" id="text-1-1-1-1">
+<div id="outline-container-orga3aca76" class="outline-5">
+<h5 id="orga3aca76"><span class="section-number-5">3.1.1.1</span> 檔案在/content裡</h5>
+<div class="outline-text-5" id="text-3-1-1-1">
 </div>
 <ol class="org-ol">
-<li><a id="orgd4f7ecd"></a>先把下載的檔案拉到<br />
-<div class="outline-text-6" id="text-1-1-1-1-1">
+<li><a id="orge062d20"></a>先把下載的檔案拉到<br />
+<div class="outline-text-6" id="text-3-1-1-1-1">
 
-<div id="org2a6dd0f" class="figure">
+<div id="orgd34534c" class="figure">
 <p><img src="images/Colab編寫環境/2024-01-13_13-54-39_2024-01-13_13-54-06.png" alt="2024-01-13_13-54-39_2024-01-13_13-54-06.png" width="300" /><br />
 </p>
-<p><span class="figure-number">Figure 1: </span>將檔案上傳至Colab雲端硬碟</p>
+<p><span class="figure-number">Figure 2: </span>將檔案上傳至Colab雲端硬碟</p>
 </div>
 </div>
 </li>
-<li><a id="org04779d1"></a>讀取檔案<br />
-<div class="outline-text-6" id="text-1-1-1-1-2">
+<li><a id="org849b8bf"></a>讀取檔案<br />
+<div class="outline-text-6" id="text-3-1-1-1-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
 <span class="linenr">2: </span>
@@ -353,9 +468,9 @@
 </li>
 </ol>
 </div>
-<div id="outline-container-orgfe63d9d" class="outline-5">
-<h5 id="orgfe63d9d"><span class="section-number-5">1.1.1.2.</span> 檔案在你的Google Drive</h5>
-<div class="outline-text-5" id="text-1-1-1-2">
+<div id="outline-container-orge950c57" class="outline-5">
+<h5 id="orge950c57"><span class="section-number-5">3.1.1.2</span> 檔案在你的Google Drive</h5>
+<div class="outline-text-5" id="text-3-1-1-2">
 <p>
 先連結Google Drive<br />
 </p>
@@ -374,16 +489,16 @@
 </div>
 </div>
 </div>
-<div id="outline-container-orgcaa5f50" class="outline-3">
-<h3 id="orgcaa5f50"><span class="section-number-3">1.2.</span> 刪除遺漏值</h3>
-<div class="outline-text-3" id="text-1-2">
+<div id="outline-container-org05b9b8f" class="outline-3">
+<h3 id="org05b9b8f"><span class="section-number-3">3.2</span> 識別、刪除遺漏值</h3>
+<div class="outline-text-3" id="text-3-2">
 <p>
 現實世界中可能會因各種原因導致數據缺失或遺漏(如問卷被刻意留白)，這些部份通常會以「空白」、「NaN」或「NULL」來取代。<br />
 </p>
 </div>
-<div id="outline-container-org69da80d" class="outline-4">
-<h4 id="org69da80d"><span class="section-number-4">1.2.1.</span> 查看資料集內容</h4>
-<div class="outline-text-4" id="text-1-2-1">
+<div id="outline-container-orga938c64" class="outline-4">
+<h4 id="orga938c64"><span class="section-number-4">3.2.1</span> 查看資料集內容</h4>
+<div class="outline-text-4" id="text-3-2-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #dcaeea;">csv_data</span> =<span style="color: #98be65;">"""A,B,C,D,E</span>
 <span class="linenr"> 2: </span><span style="color: #98be65;"> 1.0,,  2.0,  3.0, 4.0</span>
@@ -393,18 +508,16 @@
 <span class="linenr"> 6: </span>
 <span class="linenr"> 7: </span><span style="color: #51afef;">import</span> sys
 <span class="linenr"> 8: </span><span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
-<span class="linenr"> 9: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">python 2.7&#38656;&#36914;&#34892;unicode&#36681;&#30908;</span>
-<span class="linenr">10: </span><span style="color: #51afef;">if</span> (sys.version_info &lt; (<span style="color: #da8548; font-weight: bold;">3</span>, <span style="color: #da8548; font-weight: bold;">0</span>)):
-<span class="linenr">11: </span>    <span style="color: #dcaeea;">csv_data</span> = <span style="color: #c678dd;">unicode</span>(csv_data)
-<span class="linenr">12: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35712;&#20837;&#31243;&#24335;&#27284;&#20013;&#30340;csv&#36039;&#26009;</span>
-<span class="linenr">13: </span><span style="color: #51afef;">from</span> io <span style="color: #51afef;">import</span> StringIO
-<span class="linenr">14: </span><span style="color: #dcaeea;">df</span> = pd.read_csv(StringIO(csv_data))
-<span class="linenr">15: </span><span style="color: #c678dd;">print</span>(df)
+<span class="linenr"> 9: </span>
+<span class="linenr">10: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35712;&#20837;&#31243;&#24335;&#27284;&#20013;&#30340;csv&#36039;&#26009;</span>
+<span class="linenr">11: </span><span style="color: #51afef;">from</span> io <span style="color: #51afef;">import</span> StringIO
+<span class="linenr">12: </span><span style="color: #dcaeea;">df</span> = pd.read_csv(StringIO(csv_data))
+<span class="linenr">13: </span><span style="color: #51afef;">print</span>(df)
 </pre>
 </div>
 
 <pre class="example">
-      A   B     C     D    E
+A   B     C     D    E
 0   1.0 NaN   2.0   3.0  4.0
 1   5.0 NaN   6.0   NaN  8.0
 2  10.0 NaN  11.0  12.0  5.0
@@ -413,28 +526,28 @@
 
 
 <p>
-雖然pd.read_csv是用來讀取網路上或本機端的csv檔，此處為了省去大家讀取d檔案的工作，我們以直接以字串模擬一個檔案出來，所以在讀取時要以以下的方式來讀：<br />
+雖然pd.read_csv是用來讀取網路上或本機端的csv檔，此處為了省去大家讀取d檔案的工作，我們以直接以字串模擬一個檔案出來，所以在讀取時要以下列的方式來讀取內容：<br />
 </p>
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr">1: </span>pd.read_csv)StringIO(&#23383;&#20018;&#35722;&#25976;&#21517;&#31281;)
+<pre class="src src-python"><span class="linenr">1: </span>pd.read_csv(StringIO(&#23383;&#20018;&#35722;&#25976;&#21517;&#31281;))
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-org3e0c03d" class="outline-4">
-<h4 id="org3e0c03d"><span class="section-number-4">1.2.2.</span> 遺漏值的識別</h4>
-<div class="outline-text-4" id="text-1-2-2">
+<div id="outline-container-org2c434c4" class="outline-4">
+<h4 id="org2c434c4"><span class="section-number-4">3.2.2</span> 遺漏值的識別</h4>
+<div class="outline-text-4" id="text-3-2-2">
 <p>
 現在可以大概統計一下遺漏值<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21015;&#20986;&#27599;&#34892;&#26377;&#30340;null&#20491;&#25976;</span>
-<span class="linenr">2: </span><span style="color: #c678dd;">print</span>(df.isnull().<span style="color: #c678dd;">sum</span>())
-<span class="linenr">3: </span><span style="color: #c678dd;">print</span>(df.isnull().<span style="color: #c678dd;">sum</span>(axis=<span style="color: #da8548; font-weight: bold;">1</span>))
+<span class="linenr">2: </span><span style="color: #51afef;">print</span>(df.isnull().<span style="color: #c678dd;">sum</span>())
+<span class="linenr">3: </span><span style="color: #51afef;">print</span>(df.isnull().<span style="color: #c678dd;">sum</span>(axis=<span style="color: #da8548; font-weight: bold;">1</span>))
 </pre>
 </div>
 
-<pre class="example" id="orgdc73c03">
+<pre class="example">
 A    0
 B    4
 C    0
@@ -449,54 +562,96 @@ dtype: int64
 </pre>
 </div>
 </div>
-<div id="outline-container-org5062565" class="outline-4">
-<h4 id="org5062565"><span class="section-number-4">1.2.3.</span> 刪除有遺漏值的記錄</h4>
-<div class="outline-text-4" id="text-1-2-3">
+<div id="outline-container-orge8adc71" class="outline-4">
+<h4 id="orge8adc71"><span class="section-number-4">3.2.3</span> 刪除有遺漏值的記錄</h4>
+<div class="outline-text-4" id="text-3-2-3">
+</div>
+<div id="outline-container-org0cfc043" class="outline-5">
+<h5 id="org0cfc043"><span class="section-number-5">3.2.3.1</span> 刪除有遺失值的資料列</h5>
+<div class="outline-text-5" id="text-3-2-3-1">
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21083;&#38500;&#26377;&#36986;&#22833;&#20540;&#30340;&#36039;&#26009;&#21015;</span>
-<span class="linenr"> 2: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'====&#21034;&#25481;&#26377;&#36986;&#22833;&#20540;&#30340;&#21015;:df.dropna(axis=1)===='</span>)
-<span class="linenr"> 3: </span><span style="color: #dcaeea;">tmpDf</span> = df.dropna(axis=<span style="color: #da8548; font-weight: bold;">0</span>)
-<span class="linenr"> 4: </span><span style="color: #c678dd;">print</span>(tmpDf)
-<span class="linenr"> 5: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21083;&#38500;&#26377;&#36986;&#22833;&#20540;&#30340;&#36039;&#26009;&#34892;</span>
-<span class="linenr"> 6: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'====&#21034;&#25481;&#26377;&#36986;&#22833;&#20540;&#30340;&#27396;:df.dropna(axis=1)===='</span>)
-<span class="linenr"> 7: </span><span style="color: #dcaeea;">tmpDf</span> = df.dropna(axis=<span style="color: #da8548; font-weight: bold;">1</span>)
-<span class="linenr"> 8: </span><span style="color: #c678dd;">print</span>(tmpDf)
-<span class="linenr"> 9: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21083;&#38500;&#25972;&#21015;&#28858;NaN&#32773;</span>
-<span class="linenr">10: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'====&#21083;&#38500;&#25972;&#27396;&#28858;NaN&#32773;:df.dropna(how=</span><span style="color: #a9a1e1;">\'</span><span style="color: #98be65;">all</span><span style="color: #a9a1e1;">\'</span><span style="color: #98be65;">)===='</span>)
-<span class="linenr">11: </span><span style="color: #dcaeea;">tmpDf</span> = df.dropna(axis=<span style="color: #da8548; font-weight: bold;">1</span>, how=<span style="color: #98be65;">'all'</span>)
-<span class="linenr">12: </span><span style="color: #c678dd;">print</span>(tmpDf)
-<span class="linenr">13: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21034;&#38500;&#26377;&#20540;&#20491;&#25976;&#20302;&#26044;thresh&#30340;&#21015;</span>
-<span class="linenr">14: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'====&#21034;&#38500;&#26377;&#20540;&#20491;&#25976;&#20302;&#26044;thresh&#30340;&#21015;:df.dropna(thresh=4)===='</span>)
-<span class="linenr">15: </span><span style="color: #dcaeea;">tmpDf</span> = df.dropna(thresh=<span style="color: #da8548; font-weight: bold;">4</span>)
-<span class="linenr">16: </span><span style="color: #c678dd;">print</span>(tmpDf)
-<span class="linenr">17: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21034;&#38500;&#29305;&#23450;&#34892;(&#22914;&#31532;C&#34892;)&#20013;&#26377;NaN&#20043;&#21015;</span>
-<span class="linenr">18: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'====&#21034;&#38500;&#29305;&#23450;&#34892;(&#22914;&#31532;C&#34892;)&#20013;&#26377;NaN&#20043;&#21015;:df.dropna(columns=[</span><span style="color: #a9a1e1;">\'</span><span style="color: #98be65;">C</span><span style="color: #a9a1e1;">\'</span><span style="color: #98be65;">])===='</span>)
-<span class="linenr">19: </span><span style="color: #dcaeea;">tmpDf</span>=df.drop(columns=[<span style="color: #98be65;">'C'</span>])
-<span class="linenr">20: </span><span style="color: #c678dd;">print</span>(tmpDf)
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'====&#21034;&#25481;&#26377;&#36986;&#22833;&#20540;&#30340;&#21015;:df.dropna(axis=0)===='</span>)
+<span class="linenr">2: </span><span style="color: #dcaeea;">tmpDf</span> = df.dropna(axis=<span style="color: #da8548; font-weight: bold;">0</span>)
+<span class="linenr">3: </span><span style="color: #51afef;">print</span>(tmpDf)
 </pre>
 </div>
 
-<pre class="example" id="org13f2621">
-====刪掉有遺失值的列:df.dropna(axis=1)====
+<pre class="example">
 Empty DataFrame
 Columns: [A, B, C, D, E]
 Index: []
+</pre>
+</div>
+</div>
+<div id="outline-container-orgd9a32e2" class="outline-5">
+<h5 id="orgd9a32e2"><span class="section-number-5">3.2.3.2</span> 刪除有遺失值的資料行</h5>
+<div class="outline-text-5" id="text-3-2-3-2">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'====&#21034;&#25481;&#26377;&#36986;&#22833;&#20540;&#30340;&#27396;:df.dropna(axis=1)===='</span>)
+<span class="linenr">2: </span><span style="color: #dcaeea;">tmpDf</span> = df.dropna(axis=<span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr">3: </span><span style="color: #51afef;">print</span>(tmpDf)
+</pre>
+</div>
+
+<pre class="example">
 ====刪掉有遺失值的欄:df.dropna(axis=1)====
       A     C
 0   1.0   2.0
 1   5.0   6.0
 2  10.0  11.0
 3   9.9   8.0
-====剛除整欄為NaN者:df.dropna(how='all')====
+</pre>
+</div>
+</div>
+<div id="outline-container-org69a0919" class="outline-5">
+<h5 id="org69a0919"><span class="section-number-5">3.2.3.3</span> 刪除整列為NaN者</h5>
+<div class="outline-text-5" id="text-3-2-3-3">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'====&#21034;&#38500;&#25972;&#27396;&#28858;NaN&#32773;:df.dropna(how=\'all\')===='</span>)
+<span class="linenr">2: </span><span style="color: #dcaeea;">tmpDf</span> = df.dropna(axis=<span style="color: #da8548; font-weight: bold;">1</span>, how=<span style="color: #98be65;">'all'</span>)
+<span class="linenr">3: </span><span style="color: #51afef;">print</span>(tmpDf)
+</pre>
+</div>
+
+<pre class="example">
+====刪除整欄為NaN者:df.dropna(how='all')====
       A     C     D    E
 0   1.0   2.0   3.0  4.0
 1   5.0   6.0   NaN  8.0
 2  10.0  11.0  12.0  5.0
 3   9.9   8.0  12.0  NaN
+</pre>
+</div>
+</div>
+<div id="outline-container-orgfe90024" class="outline-5">
+<h5 id="orgfe90024"><span class="section-number-5">3.2.3.4</span> 刪除有值個數低於thresh的列</h5>
+<div class="outline-text-5" id="text-3-2-3-4">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'====&#21034;&#38500;&#26377;&#20540;&#20491;&#25976;&#20302;&#26044;thresh&#30340;&#21015;:df.dropna(thresh=4)===='</span>)
+<span class="linenr">2: </span><span style="color: #dcaeea;">tmpDf</span> = df.dropna(thresh=<span style="color: #da8548; font-weight: bold;">4</span>)
+<span class="linenr">3: </span><span style="color: #51afef;">print</span>(tmpDf)
+</pre>
+</div>
+
+<pre class="example">
 ====刪除有值個數低於thresh的列:df.dropna(thresh=4)====
       A   B     C     D    E
 0   1.0 NaN   2.0   3.0  4.0
 2  10.0 NaN  11.0  12.0  5.0
+</pre>
+</div>
+</div>
+<div id="outline-container-org2e4a8f2" class="outline-5">
+<h5 id="org2e4a8f2"><span class="section-number-5">3.2.3.5</span> 刪除特定行(如第C行)中有NaN之列</h5>
+<div class="outline-text-5" id="text-3-2-3-5">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'====&#21034;&#38500;&#29305;&#23450;&#34892;(&#22914;&#31532;C&#34892;)&#20013;&#26377;NaN&#20043;&#21015;:df.dropna(columns=[\'C\'])===='</span>)
+<span class="linenr">2: </span><span style="color: #dcaeea;">tmpDf</span>=df.drop(columns=[<span style="color: #98be65;">'C'</span>])
+<span class="linenr">3: </span><span style="color: #51afef;">print</span>(tmpDf)
+</pre>
+</div>
+
+<pre class="example">
 ====刪除特定行(如第C行)中有NaN之列:df.dropna(columns=['C'])====
       A   B     D    E
 0   1.0 NaN   3.0  4.0
@@ -504,23 +659,25 @@ Index: []
 2  10.0 NaN  12.0  5.0
 3   9.9 NaN  12.0  NaN
 </pre>
+
 <p>
 雖然刪除包含遺漏值的數據似乎是個方便的方法，但終究可能會刪除過多的樣本，導致分析的結果並不可靠；或是因為刪除了特徵的時候，卻失去了重要的資訊。<br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-orga47af56" class="outline-3">
-<h3 id="orga47af56"><span class="section-number-3">1.3.</span> 填補遺漏值</h3>
-<div class="outline-text-3" id="text-1-3">
 </div>
-<div id="outline-container-orge2673d9" class="outline-4">
-<h4 id="orge2673d9"><span class="section-number-4">1.3.1.</span> 直接填零</h4>
-<div class="outline-text-4" id="text-1-3-1">
+<div id="outline-container-org6029c0a" class="outline-3">
+<h3 id="org6029c0a"><span class="section-number-3">3.3</span> 填補遺漏值</h3>
+<div class="outline-text-3" id="text-3-3">
+</div>
+<div id="outline-container-org8a49753" class="outline-4">
+<h4 id="org8a49753"><span class="section-number-4">3.3.1</span> 直接填零</h4>
+<div class="outline-text-4" id="text-3-3-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #dcaeea;">csv_data</span> =<span style="color: #98be65;">"""A,B,C,D,E</span>
-<span class="linenr"> 2: </span><span style="color: #98be65;"> 1.0,7.7, 2.0,  3.0, 4.0</span>
-<span class="linenr"> 3: </span><span style="color: #98be65;"> 5.0,,  6.0,, 8.0</span>
+<span class="linenr"> 2: </span><span style="color: #98be65;">1.0,7.7, 2.0,  3.0, 4.0</span>
+<span class="linenr"> 3: </span><span style="color: #98be65;">5.0,,  6.0,, 8.0</span>
 <span class="linenr"> 4: </span><span style="color: #98be65;">10.0,, 11.0, 12.0, 5.0</span>
 <span class="linenr"> 5: </span><span style="color: #98be65;">9.9,8.8,8.0, 12.0"""</span>
 <span class="linenr"> 6: </span>
@@ -534,7 +691,7 @@ Index: []
 <span class="linenr">14: </span><span style="color: #dcaeea;">df</span> = pd.read_csv(StringIO(csv_data))
 <span class="linenr">15: </span>
 <span class="linenr">16: </span><span style="color: #dcaeea;">tmpDf</span> = df.fillna(<span style="color: #da8548; font-weight: bold;">0</span>)
-<span class="linenr">17: </span><span style="color: #c678dd;">print</span>(tmpDf)
+<span class="linenr">17: </span><span style="color: #51afef;">print</span>(tmpDf)
 </pre>
 </div>
 
@@ -547,21 +704,21 @@ Index: []
 </pre>
 </div>
 </div>
-<div id="outline-container-org96b6592" class="outline-4">
-<h4 id="org96b6592"><span class="section-number-4">1.3.2.</span> 以平均值填補</h4>
-<div class="outline-text-4" id="text-1-3-2">
+<div id="outline-container-org51d714b" class="outline-4">
+<h4 id="org51d714b"><span class="section-number-4">3.3.2</span> 以平均值填補</h4>
+<div class="outline-text-4" id="text-3-3-2">
 </div>
-<div id="outline-container-orgb586172" class="outline-5">
-<h5 id="orgb586172"><span class="section-number-5">1.3.2.1.</span> Python手動填補</h5>
-<div class="outline-text-5" id="text-1-3-2-1">
+<div id="outline-container-org0341668" class="outline-5">
+<h5 id="org0341668"><span class="section-number-5">3.3.2.1</span> Python手動填補</h5>
+<div class="outline-text-5" id="text-3-3-2-1">
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr">1: </span><span style="color: #c678dd;">print</span>(df)
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">print</span>(df)
 <span class="linenr">2: </span><span style="color: #dcaeea;">df</span>[<span style="color: #98be65;">'D'</span>] = df[<span style="color: #98be65;">'D'</span>].fillna(df[<span style="color: #98be65;">'D'</span>].mean())
-<span class="linenr">3: </span><span style="color: #c678dd;">print</span>(df)
+<span class="linenr">3: </span><span style="color: #51afef;">print</span>(df)
 </pre>
 </div>
 
-<pre class="example" id="org4aac4f2">
+<pre class="example">
       A    B     C     D    E
 0   1.0  7.7   2.0   3.0  4.0
 1   5.0  NaN   6.0   NaN  8.0
@@ -575,9 +732,9 @@ Index: []
 </pre>
 </div>
 </div>
-<div id="outline-container-org040b94a" class="outline-5">
-<h5 id="org040b94a"><span class="section-number-5">1.3.2.2.</span> 以scikit-learn的impute填補</h5>
-<div class="outline-text-5" id="text-1-3-2-2">
+<div id="outline-container-org67a2abf" class="outline-5">
+<h5 id="org67a2abf"><span class="section-number-5">3.3.2.2</span> 以scikit-learn的impute填補</h5>
+<div class="outline-text-5" id="text-3-3-2-2">
 <p>
 最常見的「插補技術」之一為「平均插補」(mean imputation)，即，以整個特徵行的平均值來代替遺漏值。<br />
 </p>
@@ -589,8 +746,8 @@ Index: []
 <span class="linenr">5: </span><span style="color: #dcaeea;">imr</span> = SimpleImputer(missing_values=np.nan, strategy=<span style="color: #98be65;">'mean'</span>)
 <span class="linenr">6: </span><span style="color: #dcaeea;">imr</span> = imr.fit(df.values)
 <span class="linenr">7: </span><span style="color: #dcaeea;">imputed_data</span> = imr.transform(df.values)
-<span class="linenr">8: </span><span style="color: #c678dd;">print</span>(df)
-<span class="linenr">9: </span><span style="color: #c678dd;">print</span>(imputed_data)
+<span class="linenr">8: </span><span style="color: #51afef;">print</span>(df)
+<span class="linenr">9: </span><span style="color: #51afef;">print</span>(imputed_data)
 </pre>
 </div>
 
@@ -608,23 +765,213 @@ Index: []
 
 
 <p>
-scikit-learn早期版本的填補類別為Imputer，屬於 transformer 類別，主要的工作是做「數據轉換」，這些 estimator 有兩種基本方法：fit 與 transform，fit 方法是用來進行參數學習。在目前的版本中，SimpleImputer 已經被拿來取代以前的 sklearn.preprocessing.Imputer，預設的strategy為mean，其他strategy請參關<a href="https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html">scikit-learn官網</a>。<br />
+scikit-learn早期版本的填補類別為Imputer，屬於 transformer 類別，主要的工作是做「數據轉換」，這些 estimator 有兩種基本方法：fit 與 transform，fit 方法是用來進行參數學習。<br />
 </p>
 
 <p>
-更詳細的使用教學請閱讀<a href="https://ithelp.ithome.com.tw/articles/10293386?sc=pt">[Day03] 拾起武器- Data Preprocessing(02)</a><br />
+在新的版本中，SimpleImputer 已經被拿來取代以前的 sklearn.preprocessing.Imputer，預設的strategy為mean，其他strategy請參關<a href="https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html">scikit-learn官網</a>。<br />
 </p>
 </div>
+<ol class="org-ol">
+<li><a id="org3dfbe32"></a>SimpleImputer 基本語法：<br />
+<div class="outline-text-6" id="text-3-3-2-2-1">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">from</span> sklearn.impute <span style="color: #51afef;">import</span> SimpleImputer
+<span class="linenr"> 2: </span>
+<span class="linenr"> 3: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;&#31435; SimpleImputer &#29289;&#20214;</span>
+<span class="linenr"> 4: </span><span style="color: #dcaeea;">imputer</span> = SimpleImputer(strategy=<span style="color: #98be65;">'mean'</span>)
+<span class="linenr"> 5: </span>
+<span class="linenr"> 6: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23565;&#25976;&#25818;&#36914;&#34892;&#23416;&#32722;</span>
+<span class="linenr"> 7: </span>imputer.fit(data)
+<span class="linenr"> 8: </span>
+<span class="linenr"> 9: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23565;&#25976;&#25818;&#36914;&#34892;&#36681;&#25563;&#65292;&#22635;&#35036;&#36986;&#28431;&#20540;</span>
+<span class="linenr">10: </span><span style="color: #dcaeea;">filled_data</span> = imputer.transform(data)
+</pre>
+</div>
+<p>
+其中的strategy可以是<br />
+</p>
+<ul class="org-ul">
+<li>mean：使用每一列的均值填補缺失值（預設）。<br /></li>
+<li>median：使用每一列的中位數填補缺失值。<br /></li>
+<li>most_frequent：使用每一列最常出現的值填補缺失值。<br /></li>
+<li>constant：使用一個固定值來填補缺失值，需指定 fill_value。<br /></li>
+</ul>
+</div>
+</li>
+<li><a id="org3d11a18"></a>SimpleImputer範例<br />
+<div class="outline-text-6" id="text-3-3-2-2-2">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 2: </span><span style="color: #51afef;">from</span> sklearn.impute <span style="color: #51afef;">import</span> SimpleImputer
+<span class="linenr"> 3: </span>
+<span class="linenr"> 4: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;&#31435;&#24118;&#26377;&#36986;&#28431;&#20540;&#30340;&#25976;&#25818;</span>
+<span class="linenr"> 5: </span><span style="color: #dcaeea;">data</span> = np.array([[<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">2</span>, np.nan], [<span style="color: #da8548; font-weight: bold;">4</span>, np.nan, <span style="color: #da8548; font-weight: bold;">6</span>], [<span style="color: #da8548; font-weight: bold;">7</span>, <span style="color: #da8548; font-weight: bold;">8</span>, <span style="color: #da8548; font-weight: bold;">9</span>]])
+<span class="linenr"> 6: </span>
+<span class="linenr"> 7: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20351;&#29992;&#22343;&#20540;&#22635;&#35036;&#36986;&#28431;&#20540;</span>
+<span class="linenr"> 8: </span><span style="color: #dcaeea;">imputer</span> = SimpleImputer(strategy=<span style="color: #98be65;">'mean'</span>)
+<span class="linenr"> 9: </span>imputer.fit(data)
+<span class="linenr">10: </span><span style="color: #dcaeea;">filled_data</span> = imputer.transform(data)
+<span class="linenr">11: </span>
+<span class="linenr">12: </span><span style="color: #51afef;">print</span>(filled_data)
+<span class="linenr">13: </span>
+</pre>
+</div>
+
+<pre class="example">
+[[1.  2.  7.5]
+ [4.  5.  6. ]
+ [7.  8.  9. ]]
+</pre>
+</div>
+<ul class="org-ul">
+<li><a id="org35b688a"></a>使用中位數 (median) 來填補：<br />
+<div class="outline-text-7" id="text-org35b688a">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">imputer</span> = SimpleImputer(strategy=<span style="color: #98be65;">'median'</span>)
+<span class="linenr">2: </span><span style="color: #dcaeea;">filled_data</span> = imputer.fit_transform(data)
+<span class="linenr">3: </span><span style="color: #51afef;">print</span>(filled_data)
+</pre>
+</div>
+
+<pre class="example">
+[[1.  2.  7.5]
+ [4.  5.  6. ]
+ [7.  8.  9. ]]
+</pre>
+</div>
+</li>
+
+<li><a id="org37b45d8"></a>使用最常出現的值 (most_frequent) 來填補：<br />
+<div class="outline-text-7" id="text-org37b45d8">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">imputer</span> = SimpleImputer(strategy=<span style="color: #98be65;">'most_frequent'</span>)
+<span class="linenr">2: </span><span style="color: #dcaeea;">filled_data</span> = imputer.fit_transform(data)
+<span class="linenr">3: </span><span style="color: #51afef;">print</span>(filled_data)
+</pre>
+</div>
+
+<pre class="example">
+[[1. 2. 6.]
+ [4. 2. 6.]
+ [7. 8. 9.]]
+</pre>
+</div>
+</li>
+
+<li><a id="org479e264"></a>使用固定值 (constant) 來填補：<br />
+<div class="outline-text-7" id="text-org479e264">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">imputer</span> = SimpleImputer(strategy=<span style="color: #98be65;">'constant'</span>, fill_value=-<span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr">2: </span><span style="color: #dcaeea;">filled_data</span> = imputer.fit_transform(data)
+<span class="linenr">3: </span><span style="color: #51afef;">print</span>(filled_data)
+</pre>
+</div>
+
+<pre class="example">
+[[ 1.  2. -1.]
+ [ 4. -1.  6.]
+ [ 7.  8.  9.]]
+</pre>
+</div>
+</li>
+</ul>
+</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-org1c3f953" class="outline-4">
+<h4 id="org1c3f953"><span class="section-number-4">3.3.3</span> 時間序列資料的插補</h4>
+<div class="outline-text-4" id="text-3-3-3">
+<p>
+假設我們有一些 PM2.5 感測器在全台南市地區，每 30 分鐘偵測一次，共有 20 支感測器進行了一段時間的測量，其中部分感測器在特定時間失靈，導致一些值遺失。<br />
+</p>
+</div>
+<div id="outline-container-orgdcb18de" class="outline-5">
+<h5 id="orgdcb18de"><span class="section-number-5">3.3.3.1</span> 線性插補</h5>
+<div class="outline-text-5" id="text-3-3-3-1">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #dcaeea;">pm25_data</span> = <span style="color: #98be65;">"""Sensor1,Sensor2,Sensor3,Sensor4,Sensor5,Sensor6,Sensor7,Sensor8,Sensor9,Sensor10,Sensor11,Sensor12,Sensor13,Sensor14,Sensor15,Sensor16,Sensor17,Sensor18,Sensor19,Sensor20</span>
+<span class="linenr"> 2: </span><span style="color: #98be65;">35.0,40.0,30.0,45.0,38.0,,50.0,,42.0,37.0,39.0,,41.0,50.0,,48.0,39.0,,,44.0</span>
+<span class="linenr"> 3: </span><span style="color: #98be65;">36.0,,32.0,46.0,39.0,51.0,43.0,,43.0,,40.0,,42.0,,47.0,49.0,39.5,,43.0,45.0</span>
+<span class="linenr"> 4: </span><span style="color: #98be65;">,41.0,,47.0,40.0,,44.0,44.0,38.0,41.0,,46.0,,51.0,,50.0,40.0,,44.0,46.0</span>
+<span class="linenr"> 5: </span><span style="color: #98be65;">37.0,42.0,34.0,,41.0,52.0,,45.0,39.0,,47.0,43.0,,52.0,48.0,,40.5,42.0,,47.0</span>
+<span class="linenr"> 6: </span><span style="color: #98be65;">38.0,,35.0,49.0,,53.0,46.0,46.0,,40.0,42.0,48.0,,53.0,,51.0,,43.0,45.0,48.0</span>
+<span class="linenr"> 7: </span><span style="color: #98be65;">39.0,43.0,36.0,,43.0,,47.0,47.0,,41.0,,49.0,45.0,,49.0,52.0,42.0,44.0,,49.0</span>
+<span class="linenr"> 8: </span><span style="color: #98be65;">,44.0,37.0,50.0,44.0,55.0,,48.0,,43.0,,50.0,,54.0,,53.0,43.0,45.0,46.0,50.0</span>
+<span class="linenr"> 9: </span><span style="color: #98be65;">40.0,45.0,,51.0,45.0,,49.0,49.0,43.0,,44.0,,46.0,55.0,50.0,,44.5,46.5,47.0,51.0</span>
+<span class="linenr">10: </span><span style="color: #98be65;">41.0,,39.0,52.0,46.0,57.0,50.0,,50.0,,45.0,52.0,,56.0,,54.0,45.0,,48.0,52.0</span>
+<span class="linenr">11: </span><span style="color: #98be65;">42.0,46.0,40.0,,47.0,,51.0,,,44.0,46.0,,48.0,57.0,51.0,53.0,,46.0,49.0,53.0</span>
+<span class="linenr">12: </span><span style="color: #98be65;">,47.0,41.0,54.0,,59.0,52.0,52.0,,45.0,,53.0,49.0,,52.0,56.0,,47.0,50.0,"""</span>
+<span class="linenr">13: </span><span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
+<span class="linenr">14: </span><span style="color: #51afef;">from</span> io <span style="color: #51afef;">import</span> StringIO
+<span class="linenr">15: </span>
+<span class="linenr">16: </span><span style="color: #dcaeea;">pd.options.display.precision</span> = <span style="color: #da8548; font-weight: bold;">2</span>
+<span class="linenr">17: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35712;&#20837;&#24863;&#28204;&#22120;&#30340; PM2.5 &#36039;&#26009;</span>
+<span class="linenr">18: </span><span style="color: #dcaeea;">df_pm25</span> = pd.read_csv(StringIO(pm25_data))
+<span class="linenr">19: </span><span style="color: #51afef;">print</span>(df_pm25)
+<span class="linenr">20: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'==========&#20351;&#29992;&#21069;&#24460;&#26178;&#38291;&#24179;&#22343;&#20540;&#36914;&#34892;&#25554;&#35036;=========='</span>)
+<span class="linenr">21: </span><span style="color: #dcaeea;">df_pm25</span> = df_pm25.interpolate(method=<span style="color: #98be65;">'linear'</span>, axis=<span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr">22: </span><span style="color: #51afef;">print</span>(df_pm25)
+</pre>
+</div>
+
+<pre class="example">
+Sensor1  Sensor2  Sensor3  ...  Sensor18  Sensor19  Sensor20
+0      35.0     40.0     30.0  ...       NaN       NaN      44.0
+1      36.0      NaN     32.0  ...       NaN      43.0      45.0
+2       NaN     41.0      NaN  ...       NaN      44.0      46.0
+3      37.0     42.0     34.0  ...      42.0       NaN      47.0
+4      38.0      NaN     35.0  ...      43.0      45.0      48.0
+5      39.0     43.0     36.0  ...      44.0       NaN      49.0
+6       NaN     44.0     37.0  ...      45.0      46.0      50.0
+7      40.0     45.0      NaN  ...      46.5      47.0      51.0
+8      41.0      NaN     39.0  ...       NaN      48.0      52.0
+9      42.0     46.0     40.0  ...      46.0      49.0      53.0
+10      NaN     47.0     41.0  ...      47.0      50.0       NaN
+
+[11 rows x 20 columns]
+==========使用前後時間平均值進行插補==========
+    Sensor1  Sensor2  Sensor3  ...  Sensor18  Sensor19  Sensor20
+0      35.0     40.0     30.0  ...     40.67     42.33      44.0
+1      36.0     34.0     32.0  ...     41.25     43.00      45.0
+2       NaN     41.0     44.0  ...     42.00     44.00      46.0
+3      37.0     42.0     34.0  ...     42.00     44.50      47.0
+4      38.0     36.5     35.0  ...     43.00     45.00      48.0
+5      39.0     43.0     36.0  ...     44.00     46.50      49.0
+6       NaN     44.0     37.0  ...     45.00     46.00      50.0
+7      40.0     45.0     48.0  ...     46.50     47.00      51.0
+8      41.0     40.0     39.0  ...     46.50     48.00      52.0
+9      42.0     46.0     40.0  ...     46.00     49.00      53.0
+10      NaN     47.0     41.0  ...     47.00     50.00      50.0
+
+[11 rows x 20 columns]
+</pre>
+</div>
+</div>
+<div id="outline-container-org6ec846d" class="outline-5">
+<h5 id="org6ec846d"><span class="section-number-5">3.3.3.2</span> [課堂練習]線性插補的兩端缺失問題&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></h5>
+<div class="outline-text-5" id="text-3-3-3-2">
+<p>
+上面的插補似乎無法解決 <b>資料列的頭尾缺失</b> 問題，請想辧法解決這個問題，你可以<br />
+</p>
+<ol class="org-ol">
+<li>通靈<br /></li>
+<li>Google<br /></li>
+<li>冥想<br /></li>
+<li>ChatGPT<br /></li>
+</ol>
 </div>
 </div>
 </div>
-<div id="outline-container-org9e38b33" class="outline-3">
-<h3 id="org9e38b33"><span class="section-number-3">1.4.</span> [作業]資料預處理&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></h3>
-<div class="outline-text-3" id="text-1-4">
 </div>
-<div id="outline-container-org3121aba" class="outline-4">
-<h4 id="org3121aba"><span class="section-number-4">1.4.1.</span> 題目</h4>
-<div class="outline-text-4" id="text-1-4-1">
+<div id="outline-container-orgf8ea345" class="outline-3">
+<h3 id="orgf8ea345"><span class="section-number-3">3.4</span> [作業]資料預處理&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></h3>
+<div class="outline-text-3" id="text-3-4">
+</div>
+<div id="outline-container-org86f1373" class="outline-4">
+<h4 id="org86f1373"><span class="section-number-4">3.4.1</span> 題目</h4>
+<div class="outline-text-4" id="text-3-4-1">
 <p>
 南一中網路書店即將開張，為了處理龐大的書單資料，資訊科教師們很無恥的把書籍資料登錄工作當成作業分派給一年級的修課學生，所謂團結力量大，一份不太可靠的<a href="Downloads/403books.csv">書目資料</a>就這麼完成了。<br />
 </p>
@@ -654,24 +1001,24 @@ scikit-learn早期版本的填補類別為Imputer，屬於 transformer 類別，
 </ol>
 </div>
 </div>
-<div id="outline-container-orgf335ff3" class="outline-4">
-<h4 id="orgf335ff3"><span class="section-number-4">1.4.2.</span> 要求</h4>
-<div class="outline-text-4" id="text-1-4-2">
+<div id="outline-container-org138861f" class="outline-4">
+<h4 id="org138861f"><span class="section-number-4">3.4.2</span> 要求</h4>
+<div class="outline-text-4" id="text-3-4-2">
 <p>
 請你透過colab來完成以下的任務：<br />
 </p>
 </div>
-<div id="outline-container-org5466e37" class="outline-5">
-<h5 id="org5466e37"><span class="section-number-5">1.4.2.1.</span> 讀檔</h5>
-<div class="outline-text-5" id="text-1-4-2-1">
+<div id="outline-container-org51431e2" class="outline-5">
+<h5 id="org51431e2"><span class="section-number-5">3.4.2.1</span> 讀檔</h5>
+<div class="outline-text-5" id="text-3-4-2-1">
 <p>
 你可以選擇用Pandas直接讀線上的檔案，也可以選擇將檔案上傳到Google的雲端硬碟後再利用Colab來讀取。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orga048c50" class="outline-5">
-<h5 id="orga048c50"><span class="section-number-5">1.4.2.2.</span> 預處理</h5>
-<div class="outline-text-5" id="text-1-4-2-2">
+<div id="outline-container-orged74c21" class="outline-5">
+<h5 id="orged74c21"><span class="section-number-5">3.4.2.2</span> 預處理</h5>
+<div class="outline-text-5" id="text-3-4-2-2">
 <p>
 要請你進行以下的資料預處理<br />
 </p>
@@ -684,9 +1031,9 @@ scikit-learn早期版本的填補類別為Imputer，屬於 transformer 類別，
 </ol>
 </div>
 </div>
-<div id="outline-container-org401f5ae" class="outline-5">
-<h5 id="org401f5ae"><span class="section-number-5">1.4.2.3.</span> 輸出</h5>
-<div class="outline-text-5" id="text-1-4-2-3">
+<div id="outline-container-org531060c" class="outline-5">
+<h5 id="org531060c"><span class="section-number-5">3.4.2.3</span> 輸出</h5>
+<div class="outline-text-5" id="text-3-4-2-3">
 <p>
 最後輸出以下內容<br />
 </p>
@@ -701,13 +1048,13 @@ scikit-learn早期版本的填補類別為Imputer，屬於 transformer 類別，
 </div>
 </div>
 </div>
-<div id="outline-container-org344d4e4" class="outline-4">
-<h4 id="org344d4e4"><span class="section-number-4">1.4.3.</span> 參考答案</h4>
-<div class="outline-text-4" id="text-1-4-3">
+<div id="outline-container-org65f0389" class="outline-4">
+<h4 id="org65f0389"><span class="section-number-4">3.4.3</span> 參考答案</h4>
+<div class="outline-text-4" id="text-3-4-3">
 <p>
 整份colab的程式碼要能一次執行並輸出以下結果(不能直接print我給的答案&#x2026;)<br />
 </p>
-<pre class="example" id="org33cc7d4">
+<pre class="example">
 原始資料筆數 271350
 可用資料數: 259397
 2000年出版: 16438
@@ -717,9 +1064,9 @@ scikit-learn早期版本的填補類別為Imputer，屬於 transformer 類別，
 </pre>
 </div>
 </div>
-<div id="outline-container-org1314119" class="outline-4">
-<h4 id="org1314119"><span class="section-number-4">1.4.4.</span> 友情提醒</h4>
-<div class="outline-text-4" id="text-1-4-4">
+<div id="outline-container-org6577f1b" class="outline-4">
+<h4 id="org6577f1b"><span class="section-number-4">3.4.4</span> 友情提醒</h4>
+<div class="outline-text-4" id="text-3-4-4">
 <ul class="org-ul">
 <li>資料量很大，相信我，你不會想用Excel或Numbers或Google試算表來打開它然後逐一處理&#x2026;，我試過在一台8G的Macbook Air上用Numbers打開這個csv檔，大概花了 <b>八分鐘</b> 就開起來了&#x2026;<br /></li>
 <li>你可以參考<a href="https://letranger.github.io/PythonCourse/Pandas.html">Python選修Pandas教材</a>，不過這份教材只是概略描述基本功能，你可能還需要再自行Google相關的功能<br /></li>
@@ -728,61 +1075,63 @@ scikit-learn早期版本的填補類別為Imputer，屬於 transformer 類別，
 </div>
 </div>
 </div>
-<div id="outline-container-org8688054" class="outline-2">
-<h2 id="org8688054"><span class="section-number-2">2.</span> 資料間的關係</h2>
-<div class="outline-text-2" id="text-2">
+
+<div id="outline-container-org59e2edf" class="outline-2">
+<h2 id="org59e2edf"><span class="section-number-2">4</span> 資料間的關係</h2>
+<div class="outline-text-2" id="text-4">
 <p>
 找出特徵值間的差異與相似性是機器學習中非常重要的工作。<br />
 </p>
 </div>
-<div id="outline-container-org3e64270" class="outline-3">
-<h3 id="org3e64270"><span class="section-number-3">2.1.</span> 兩點間的距離</h3>
-<div class="outline-text-3" id="text-2-1">
+<div id="outline-container-orgfcf4aa9" class="outline-3">
+<h3 id="orgfcf4aa9"><span class="section-number-3">4.1</span> 兩點間的距離</h3>
+<div class="outline-text-3" id="text-4-1">
 <p>
-兩種常見的特徵距離計算方式:曼哈頓距離及歐幾里得距離，以一個城市中的兩個地標為例(如圖<a href="#org0573096">2</a>中的兩個黑點)。<br />
+兩種常見的特徵距離計算方式:曼哈頓距離及歐幾里得距離，以一個城市中的兩個地標為例(如圖<a href="#org6bc2fd3">3</a>中的兩個黑點)。<br />
 </p>
 
 
-<div id="org0573096" class="figure">
+<div id="org6bc2fd3" class="figure">
 <p><img src="images/資料間的關係/2024-02-02_13-46-36_2024-02-02_13-20-54.png" alt="2024-02-02_13-46-36_2024-02-02_13-20-54.png" width="300" /><br />
 </p>
-<p><span class="figure-number">Figure 2: </span>城市中的兩個地標</p>
+<p><span class="figure-number">Figure 3: </span>城市中的兩個地標</p>
 </div>
 </div>
-<div id="outline-container-org3e4eb96" class="outline-4">
-<h4 id="org3e4eb96"><span class="section-number-4">2.1.1.</span> 曼哈頓距離（Manhattan distance）</h4>
-<div class="outline-text-4" id="text-2-1-1">
+
+<div id="outline-container-org0bd1e89" class="outline-4">
+<h4 id="org0bd1e89"><span class="section-number-4">4.1.1</span> 曼哈頓距離（Manhattan distance）</h4>
+<div class="outline-text-4" id="text-4-1-1">
 <p>
-在如圖<a href="#org0573096">2</a>這樣的棋盤式街道的城式中，要由點(1,1)走到(7,7)的最簡單方式是先往上直走到(1,7)，再右轉直走到(7,7)，這便是曼哈頓距離，這段距離為 \(|1-7|+|1-7| \)，公式為<br />
+在如圖<a href="#org6bc2fd3">3</a>這樣的棋盤式街道的城式中，要由點(1,1)走到(7,7)的最簡單方式是先往上直走到(1,7)，再右轉直走到(7,7)，這便是曼哈頓距離，這段距離為 \(|1-7|+|1-7| \)，公式為<br />
 \[ \sum_{i=1}^n|x_i-y_i| \]<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org6b9eb82" class="outline-4">
-<h4 id="org6b9eb82"><span class="section-number-4">2.1.2.</span> 歐幾里得距離（Euclidian distance）</h4>
-<div class="outline-text-4" id="text-2-1-2">
+<div id="outline-container-org727335f" class="outline-4">
+<h4 id="org727335f"><span class="section-number-4">4.1.2</span> 歐幾里得距離（Euclidian distance）</h4>
+<div class="outline-text-4" id="text-4-1-2">
 
-<div id="org875c226" class="figure">
+<div id="orgdfa4570" class="figure">
 <p><img src="images/資料間的關係/2024-02-02_14-05-00_2024-02-02_14-03-31.png" alt="2024-02-02_14-05-00_2024-02-02_14-03-31.png" width="400" /><br />
 </p>
-<p><span class="figure-number">Figure 3: </span>Numbus 2000</p>
+<p><span class="figure-number">Figure 4: </span>Numbus 2000</p>
 </div>
 
 <p>
-如果我們肯花美金499<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>買到<a href="https://cinereplicas.com/products/harry-potter-nimbus-2000-broom-2019-edition">Nimbus 2000</a>，那我們就能實踐「直線是兩點間最短距離」這個法則，此時圖<a href="#org0573096">2</a>中由點(1,1)到點(7,7)的矩離就變成\( \sqrt{(1-7)^2+(1-7)^2} \)，公式為<br />
+如果我們肯花美金499<sup><a id="fnr.1" class="footref" href="#fn.1">1</a></sup>買到<a href="https://cinereplicas.com/products/harry-potter-nimbus-2000-broom-2019-edition">Nimbus 2000</a>，那我們就能實踐「直線是兩點間最短距離」這個法則，此時圖<a href="#org6bc2fd3">3</a>中由點(1,1)到點(7,7)的矩離就變成\( \sqrt{(1-7)^2+(1-7)^2} \)，公式為<br />
 \[ \sqrt{\sum_{i=1}^n(x_i-y_i)^2 } \]<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org890ccd8" class="outline-4">
-<h4 id="org890ccd8"><span class="section-number-4">2.1.3.</span> [課堂練習]能力相似度&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></h4>
-<div class="outline-text-4" id="text-2-1-3">
+<div id="outline-container-orge82423b" class="outline-4">
+<h4 id="orge82423b"><span class="section-number-4">4.1.3</span> [課堂練習]能力相似度&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></h4>
+<div class="outline-text-4" id="text-4-1-3">
 <p>
 上述計算方式貌似沒什麼問題，但如果今天的問題不是二維地圖中的兩個點，而是：<br />
 </p>
 <ul class="org-ul">
-<li>計算兩個人身材的相似度:特徵值為身高、體重、體脂率<sup><a id="fnr.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup><br /></li>
-<li>計算兩個學生程式設計能力的差異: 特徵值為APCS觀念題分數、APCS實作題分數<sup><a id="fnr.3" class="footref" href="#fn.3" role="doc-backlink">3</a></sup>、一年級程式設計學期分數<br /></li>
+<li>計算兩個人身材的相似度:特徵值為身高、體重、體脂率<sup><a id="fnr.2" class="footref" href="#fn.2">2</a></sup><br /></li>
+<li>計算兩個學生程式設計能力的差異: 特徵值為APCS觀念題分數、APCS實作題分數<sup><a id="fnr.3" class="footref" href="#fn.3">3</a></sup>、一年級程式設計學期分數<br /></li>
 </ul>
 
 <p>
@@ -801,9 +1150,9 @@ scikit-learn早期版本的填補類別為Imputer，屬於 transformer 類別，
 </ul>
 </div>
 </div>
-<div id="outline-container-org2952b7f" class="outline-4">
-<h4 id="org2952b7f"><span class="section-number-4">2.1.4.</span> 進階閱讀</h4>
-<div class="outline-text-4" id="text-2-1-4">
+<div id="outline-container-orgc2c0fe3" class="outline-4">
+<h4 id="orgc2c0fe3"><span class="section-number-4">4.1.4</span> 進階閱讀</h4>
+<div class="outline-text-4" id="text-4-1-4">
 <ul class="org-ul">
 <li><a href="https://kknews.cc/zh-tw/code/v3laxal.html">python 各類距離公式實現</a><br /></li>
 <li><a href="https://www.pinecone.io/learn/vector-similarity/">Vector Similarity Explained</a><br /></li>
@@ -811,9 +1160,9 @@ scikit-learn早期版本的填補類別為Imputer，屬於 transformer 類別，
 </div>
 </div>
 </div>
-<div id="outline-container-orgfc5fed8" class="outline-3">
-<h3 id="orgfc5fed8"><span class="section-number-3">2.2.</span> 兩個向量間的距離</h3>
-<div class="outline-text-3" id="text-2-2">
+<div id="outline-container-org43e07c0" class="outline-3">
+<h3 id="org43e07c0"><span class="section-number-3">4.2</span> 兩個向量間的距離</h3>
+<div class="outline-text-3" id="text-4-2">
 <p>
 以下為三個學生的國文、數學、英文三科成績，哪兩個學生的學業能力較為接近?<br />
 </p>
@@ -824,37 +1173,95 @@ scikit-learn早期版本的填補類別為Imputer，屬於 transformer 類別，
 </ul>
 
 <p>
-為了回答上述問題，我們可以將學生的各科成績當成vector(如圖<a href="#org1ea49ca">4</a>)，我們的問題就變成：哪兩個vector更為相似? 三個學生的成績向量分佈如下：<br />
+為了回答上述問題，我們可以將學生的各科成績當成vector(如圖<a href="#org99cb688">5</a>)，我們的問題就變成：哪兩個vector更為相似? 三個學生的成績向量分佈如下：<br />
 </p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
+<span class="linenr"> 2: </span><span style="color: #51afef;">from</span> mpl_toolkits.mplot3d <span style="color: #51afef;">import</span> Axes3D
+<span class="linenr"> 3: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 4: </span>
+<span class="linenr"> 5: </span><span style="color: #dcaeea;">plt.rcParams</span>[<span style="color: #98be65;">'font.sans-serif'</span>] = [<span style="color: #98be65;">'Arial Unicode MS'</span>] <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27493;&#39519;&#19968;&#65288;&#26367;&#25563;&#31995;&#32113;&#20013;&#30340;&#23383;&#22411;&#65292;&#36889;&#35041;&#29992;&#30340;&#26159;Mac OSX&#31995;&#32113;&#65289;</span>
+<span class="linenr"> 6: </span><span style="color: #dcaeea;">plt.rcParams</span>[<span style="color: #98be65;">'axes.unicode_minus'</span>] = <span style="color: #a9a1e1;">False</span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27493;&#39519;&#20108;&#65288;&#35299;&#27770;&#24231;&#27161;&#36600;&#36000;&#25976;&#30340;&#36000;&#34399;&#39023;&#31034;&#21839;&#38988;&#65289;</span>
+<span class="linenr"> 7: </span>
+<span class="linenr"> 8: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">setup_3d_axes</span>():
+<span class="linenr"> 9: </span>    <span style="color: #dcaeea;">ax</span> = plt.axes(projection=<span style="color: #98be65;">'3d'</span>)
+<span class="linenr">10: </span>    ax.view_init(azim=-<span style="color: #da8548; font-weight: bold;">105</span>, elev=<span style="color: #da8548; font-weight: bold;">20</span>)
+<span class="linenr">11: </span>    ax.set_xlabel(<span style="color: #98be65;">'&#22283;&#25991;'</span>)
+<span class="linenr">12: </span>    ax.set_ylabel(<span style="color: #98be65;">'&#33521;&#25991;'</span>)
+<span class="linenr">13: </span>    ax.set_zlabel(<span style="color: #98be65;">'&#25976;&#23416;'</span>)
+<span class="linenr">14: </span>    ax.set_xlim(<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">100</span>)
+<span class="linenr">15: </span>    ax.set_ylim(<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">100</span>)
+<span class="linenr">16: </span>    ax.set_zlim(<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">100</span>)
+<span class="linenr">17: </span>    <span style="color: #51afef;">return</span> ax
+<span class="linenr">18: </span>
+<span class="linenr">19: </span><span style="color: #dcaeea;">ax</span> = setup_3d_axes()
+<span class="linenr">20: </span>
+<span class="linenr">21: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">plot the vector (3, 2, 5)</span>
+<span class="linenr">22: </span><span style="color: #dcaeea;">origin</span> = np.zeros((<span style="color: #da8548; font-weight: bold;">3</span>, <span style="color: #da8548; font-weight: bold;">1</span>))
+<span class="linenr">23: </span><span style="color: #dcaeea;">point</span> = np.array([[<span style="color: #da8548; font-weight: bold;">80</span>, <span style="color: #da8548; font-weight: bold;">90</span>, <span style="color: #da8548; font-weight: bold;">70</span>]]).T
+<span class="linenr">24: </span><span style="color: #dcaeea;">vector</span> = np.hstack([origin, point])
+<span class="linenr">25: </span>ax.plot(*vector, color=<span style="color: #98be65;">'r'</span>, label=<span style="color: #98be65;">'James'</span>)
+<span class="linenr">26: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">ax.plot(*point, color='k', marker='o')</span>
+<span class="linenr">27: </span>
+<span class="linenr">28: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">project the vector onto the x,y plane and plot it</span>
+<span class="linenr">29: </span><span style="color: #dcaeea;">xy_projection_matrix</span> = np.array([[<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>], [<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">0</span>], [<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>]])
+<span class="linenr">30: </span><span style="color: #dcaeea;">projected_point</span> = xy_projection_matrix @ point
+<span class="linenr">31: </span><span style="color: #dcaeea;">projected_vector</span> = xy_projection_matrix @ vector
+<span class="linenr">32: </span>
+<span class="linenr">33: </span><span style="color: #dcaeea;">point</span> = np.array([[<span style="color: #da8548; font-weight: bold;">90</span>, <span style="color: #da8548; font-weight: bold;">80</span>, <span style="color: #da8548; font-weight: bold;">60</span>]]).T
+<span class="linenr">34: </span><span style="color: #dcaeea;">vector</span> = np.hstack([origin, point])
+<span class="linenr">35: </span>ax.plot(*vector, color=<span style="color: #98be65;">'b'</span>, label=<span style="color: #98be65;">'Ruby'</span>)
+<span class="linenr">36: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">ax.plot(*point, color='k', marker='o')</span>
+<span class="linenr">37: </span>
+<span class="linenr">38: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">project the vector onto the x,y plane and plot it</span>
+<span class="linenr">39: </span><span style="color: #dcaeea;">xy_projection_matrix</span> = np.array([[<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>], [<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">0</span>], [<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>]])
+<span class="linenr">40: </span><span style="color: #dcaeea;">projected_point</span> = xy_projection_matrix @ point
+<span class="linenr">41: </span><span style="color: #dcaeea;">projected_vector</span> = xy_projection_matrix @ vector
+<span class="linenr">42: </span>
+<span class="linenr">43: </span><span style="color: #dcaeea;">point</span> = np.array([[<span style="color: #da8548; font-weight: bold;">90</span>, <span style="color: #da8548; font-weight: bold;">70</span>, <span style="color: #da8548; font-weight: bold;">90</span>]]).T
+<span class="linenr">44: </span><span style="color: #dcaeea;">vector</span> = np.hstack([origin, point])
+<span class="linenr">45: </span>ax.plot(*vector, color=<span style="color: #98be65;">'g'</span>, label=<span style="color: #98be65;">'Vanessa'</span>)
+<span class="linenr">46: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">ax.plot(*point, color='k', marker='o')</span>
+<span class="linenr">47: </span>
+<span class="linenr">48: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">project the vector onto the x,y plane and plot it</span>
+<span class="linenr">49: </span><span style="color: #dcaeea;">xy_projection_matrix</span> = np.array([[<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>], [<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">0</span>], [<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>]])
+<span class="linenr">50: </span><span style="color: #dcaeea;">projected_point</span> = xy_projection_matrix @ point
+<span class="linenr">51: </span><span style="color: #dcaeea;">projected_vector</span> = xy_projection_matrix @ vector
+<span class="linenr">52: </span>
+<span class="linenr">53: </span>ax.legend()
+<span class="linenr">54: </span>plt.legend()
+<span class="linenr">55: </span>plt.savefig(<span style="color: #98be65;">'images/healthCondition.png'</span>, dpi=<span style="color: #da8548; font-weight: bold;">300</span>)
+</pre>
+</div>
 
-<div id="org1ea49ca" class="figure">
+<div id="org99cb688" class="figure">
 <p><img src="images/healthCondition.png" alt="healthCondition.png" width="500" /><br />
 </p>
-<p><span class="figure-number">Figure 4: </span>三個學生的成績向量</p>
+<p><span class="figure-number">Figure 5: </span>三個學生的成績向量</p>
 </div>
 
 <p>
-如何計算? 有以下三種方式：歐幾里得距離、餘弦相似度、向量內積(如圖<a href="#orgcb8efcb">5</a>)<sup><a id="fnr.4" class="footref" href="#fn.4" role="doc-backlink">4</a></sup>。<br />
+如何計算? 有以下三種方式：歐幾里得距離、餘弦相似度、向量內積(如圖<a href="#orgef841e5">6</a>)<sup><a id="fnr.4" class="footref" href="#fn.4">4</a></sup>。<br />
 </p>
 
-<div id="orgcb8efcb" class="figure">
+<div id="orgef841e5" class="figure">
 <p><img src="images/資料間的關係/2024-02-03_17-40-18_2024-02-03_17-39-29.png" alt="2024-02-03_17-40-18_2024-02-03_17-39-29.png" width="500" /><br />
 </p>
-<p><span class="figure-number">Figure 5: </span>Vector Similarity</p>
+<p><span class="figure-number">Figure 6: </span>Vector Similarity</p>
 </div>
 </div>
-<div id="outline-container-orge073c58" class="outline-4">
-<h4 id="orge073c58"><span class="section-number-4">2.2.1.</span> 歐幾里得距離</h4>
-<div class="outline-text-4" id="text-2-2-1">
+<div id="outline-container-orgc7e8487" class="outline-4">
+<h4 id="orgc7e8487"><span class="section-number-4">4.2.1</span> 歐幾里得距離</h4>
+<div class="outline-text-4" id="text-4-2-1">
 
-<div id="org9857945" class="figure">
+<div id="orgb3e0f8d" class="figure">
 <p><img src="images/資料間的關係/2024-02-03_17-48-03_2024-02-03_17-47-50.png" alt="2024-02-03_17-48-03_2024-02-03_17-47-50.png" width="300" /><br />
 </p>
-<p><span class="figure-number">Figure 6: </span>歐幾里得距離</p>
+<p><span class="figure-number">Figure 7: </span>歐幾里得距離</p>
 </div>
 
 <p>
-多維空間中兩個向量之間的直線距離，距離越近越相似。歐幾里得距離演算法的優點是可以反映向量的絕對距離，適用於需要考慮向量長度的相似性計算。例如推薦系統中，需要根據使用者的歷史行為來推薦相似的商品，這時就需要考慮使用者的歷史行為的數量，而不僅僅是使用者的歷史行為的相似度<sup><a id="fnr.5" class="footref" href="#fn.5" role="doc-backlink">5</a></sup>。<br />
+多維空間中兩個向量之間的直線距離，距離越近越相似。歐幾里得距離演算法的優點是可以反映向量的絕對距離，適用於需要考慮向量長度的相似性計算。例如推薦系統中，需要根據使用者的歷史行為來推薦相似的商品，這時就需要考慮使用者的歷史行為的數量，而不僅僅是使用者的歷史行為的相似度<sup><a id="fnr.5" class="footref" href="#fn.5">5</a></sup>。<br />
 </p>
 
 <ul class="org-ul">
@@ -866,18 +1273,18 @@ scikit-learn早期版本的填補類別為Imputer，屬於 transformer 類別，
 </p>
 </div>
 </div>
-<div id="outline-container-org0c2e321" class="outline-4">
-<h4 id="org0c2e321"><span class="section-number-4">2.2.2.</span> 餘弦相似度(Cosine Similarity)</h4>
-<div class="outline-text-4" id="text-2-2-2">
+<div id="outline-container-orgb42f19d" class="outline-4">
+<h4 id="orgb42f19d"><span class="section-number-4">4.2.2</span> 餘弦相似度(Cosine Similarity)</h4>
+<div class="outline-text-4" id="text-4-2-2">
 
-<div id="org1fe7c0a" class="figure">
+<div id="orgab99e90" class="figure">
 <p><img src="images/資料間的關係/2024-02-03_17-50-17_2024-02-03_17-50-07.png" alt="2024-02-03_17-50-17_2024-02-03_17-50-07.png" width="300" /><br />
 </p>
-<p><span class="figure-number">Figure 7: </span>餘弦相似度</p>
+<p><span class="figure-number">Figure 8: </span>餘弦相似度</p>
 </div>
 
 <p>
-兩個向量的夾角越小越相似，比較兩個向量的餘弦值進行比較，夾角越小，餘弦值越大。餘弦相似度對向量的長度不敏感，只關注向量的方向，因此適用於高維向量的相似性計算。例如語義搜尋和文件分類<sup><a id="fnr.5.100" class="footref" href="#fn.5" role="doc-backlink">5</a></sup>。當兩個向量的方向重合時夾角餘弦取最大值1，當兩個向量的方向完全相反夾角餘弦取最小值-1。<br />
+兩個向量的夾角越小越相似，比較兩個向量的餘弦值進行比較，夾角越小，餘弦值越大。餘弦相似度對向量的長度不敏感，只關注向量的方向，因此適用於高維向量的相似性計算。例如語義搜尋和文件分類<sup><a id="fnr.5.100" class="footref" href="#fn.5">5</a></sup>。當兩個向量的方向重合時夾角餘弦取最大值1，當兩個向量的方向完全相反夾角餘弦取最小值-1。<br />
 </p>
 
 <ul class="org-ul">
@@ -888,18 +1295,18 @@ scikit-learn早期版本的填補類別為Imputer，屬於 transformer 類別，
 計算兩向量a, b餘弦相似度的方式為: \( sim(a,b) = \frac{a \cdot b}{||a| \cdot |b||} = \frac{ \sum\limits_{i=1}^n a_i \times b_i}{\sqrt{\sum\limits_{i=1}^na_i^2} \times \sqrt{\sum\limits_{i=1}^nb_i^2}} \)<br />
 </p>
 </div>
-<div id="outline-container-orgf2b665f" class="outline-5">
-<h5 id="orgf2b665f"><span class="section-number-5">2.2.2.1.</span> Dot Product</h5>
-<div class="outline-text-5" id="text-2-2-2-1">
+<div id="outline-container-orgdf4446a" class="outline-5">
+<h5 id="orgdf4446a"><span class="section-number-5">4.2.2.1</span> Dot Product</h5>
+<div class="outline-text-5" id="text-4-2-2-1">
 
-<div id="org4358f68" class="figure">
+<div id="org670a014" class="figure">
 <p><img src="images/資料間的關係/2024-02-03_17-49-28_2024-02-03_17-49-09.png" alt="2024-02-03_17-49-28_2024-02-03_17-49-09.png" width="300" /><br />
 </p>
-<p><span class="figure-number">Figure 8: </span>向量內積</p>
+<p><span class="figure-number">Figure 9: </span>向量內積</p>
 </div>
 
 <p>
-一種計算向量之間相似度的度量演算法，它計算兩個向量之間的點積（內積），所得值越大越與搜尋值相似<sup><a id="fnr.5.100" class="footref" href="#fn.5" role="doc-backlink">5</a></sup>。<br />
+一種計算向量之間相似度的度量演算法，它計算兩個向量之間的點積（內積），所得值越大越與搜尋值相似<sup><a id="fnr.5.100" class="footref" href="#fn.5">5</a></sup>。<br />
 </p>
 
 <ul class="org-ul">
@@ -914,16 +1321,16 @@ scikit-learn早期版本的填補類別為Imputer，屬於 transformer 類別，
 </div>
 </div>
 </div>
-<div id="outline-container-org203b531" class="outline-4">
-<h4 id="org203b531"><span class="section-number-4">2.2.3.</span> 歐幾里得距離實作</h4>
-<div class="outline-text-4" id="text-2-2-3">
+<div id="outline-container-orga4869ab" class="outline-4">
+<h4 id="orga4869ab"><span class="section-number-4">4.2.3</span> 歐幾里得距離實作</h4>
+<div class="outline-text-4" id="text-4-2-3">
 <p>
 有了公式就可以自己用你苦學了半年的Python+高一數學來手刻程式，或是呼叫其他函式庫來計算。<br />
 </p>
 </div>
-<div id="outline-container-org2f94de3" class="outline-5">
-<h5 id="org2f94de3"><span class="section-number-5">2.2.3.1.</span> Python手刻</h5>
-<div class="outline-text-5" id="text-2-2-3-1">
+<div id="outline-container-org7c29110" class="outline-5">
+<h5 id="org7c29110"><span class="section-number-5">4.2.3.1</span> Python手刻</h5>
+<div class="outline-text-5" id="text-4-2-3-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> math
 <span class="linenr"> 2: </span>
@@ -943,9 +1350,9 @@ scikit-learn早期版本的填補類別為Imputer，屬於 transformer 類別，
 <span class="linenr">16: </span><span style="color: #dcaeea;">RV_sim</span> = cosine_similarity(Ruby, Vanessa)
 <span class="linenr">17: </span><span style="color: #dcaeea;">JV_sim</span> = cosine_similarity(James, Vanessa)
 <span class="linenr">18: </span>
-<span class="linenr">19: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'James v.s. Ruby:'</span>, JR_sim)
-<span class="linenr">20: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'Ruby v.s. Vanessa:'</span>, RV_sim)
-<span class="linenr">21: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'James v.s. Vanessa:'</span>, JV_sim)
+<span class="linenr">19: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'James v.s. Ruby:'</span>, JR_sim)
+<span class="linenr">20: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'Ruby v.s. Vanessa:'</span>, RV_sim)
+<span class="linenr">21: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'James v.s. Vanessa:'</span>, JV_sim)
 </pre>
 </div>
 
@@ -956,9 +1363,10 @@ James v.s. Vanessa: 0.978640304032486
 </pre>
 </div>
 </div>
-<div id="outline-container-orgd7826fc" class="outline-5">
-<h5 id="orgd7826fc"><span class="section-number-5">2.2.3.2.</span> Numpy</h5>
-<div class="outline-text-5" id="text-2-2-3-2">
+
+<div id="outline-container-org2c3a01b" class="outline-5">
+<h5 id="org2c3a01b"><span class="section-number-5">4.2.3.2</span> Numpy</h5>
+<div class="outline-text-5" id="text-4-2-3-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">from</span> numpy <span style="color: #51afef;">import</span> dot
 <span class="linenr"> 2: </span><span style="color: #51afef;">from</span> numpy.linalg <span style="color: #51afef;">import</span> norm
@@ -970,9 +1378,9 @@ James v.s. Vanessa: 0.978640304032486
 <span class="linenr"> 8: </span><span style="color: #dcaeea;">RV_sim</span> = dot(Ruby, Vanessa)/(norm(Ruby)*norm(Vanessa))
 <span class="linenr"> 9: </span><span style="color: #dcaeea;">JV_sim</span> = dot(James, Vanessa)/(norm(James)*norm(Vanessa))
 <span class="linenr">10: </span>
-<span class="linenr">11: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'James v.s. Ruby:'</span>, JR_sim)
-<span class="linenr">12: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'Ruby v.s. Vanessa:'</span>, RV_sim)
-<span class="linenr">13: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'James v.s. Vanessa:'</span>, JV_sim)
+<span class="linenr">11: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'James v.s. Ruby:'</span>, JR_sim)
+<span class="linenr">12: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'Ruby v.s. Vanessa:'</span>, RV_sim)
+<span class="linenr">13: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'James v.s. Vanessa:'</span>, JV_sim)
 </pre>
 </div>
 
@@ -984,13 +1392,13 @@ James v.s. Vanessa: 0.9786403040324858
 </div>
 </div>
 </div>
-<div id="outline-container-org1e6082c" class="outline-4">
-<h4 id="org1e6082c"><span class="section-number-4">2.2.4.</span> 餘弦相似度實作</h4>
-<div class="outline-text-4" id="text-2-2-4">
+<div id="outline-container-orgfc2cdb6" class="outline-4">
+<h4 id="orgfc2cdb6"><span class="section-number-4">4.2.4</span> 餘弦相似度實作</h4>
+<div class="outline-text-4" id="text-4-2-4">
 </div>
-<div id="outline-container-org9eb35ad" class="outline-5">
-<h5 id="org9eb35ad"><span class="section-number-5">2.2.4.1.</span> SciPy</h5>
-<div class="outline-text-5" id="text-2-2-4-1">
+<div id="outline-container-org2feb91c" class="outline-5">
+<h5 id="org2feb91c"><span class="section-number-5">4.2.4.1</span> SciPy</h5>
+<div class="outline-text-5" id="text-4-2-4-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">from</span> scipy <span style="color: #51afef;">import</span> spatial
 <span class="linenr"> 2: </span>
@@ -1001,9 +1409,9 @@ James v.s. Vanessa: 0.9786403040324858
 <span class="linenr"> 7: </span><span style="color: #dcaeea;">RV_sim</span> = <span style="color: #da8548; font-weight: bold;">1</span> - spatial.distance.cosine(Ruby, Vanessa)
 <span class="linenr"> 8: </span><span style="color: #dcaeea;">JV_sim</span> = <span style="color: #da8548; font-weight: bold;">1</span> - spatial.distance.cosine(James, Vanessa)
 <span class="linenr"> 9: </span>
-<span class="linenr">10: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'James v.s. Ruby:'</span>, JR_sim)
-<span class="linenr">11: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'Ruby v.s. Vanessa:'</span>, RV_sim)
-<span class="linenr">12: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'James v.s. Vanessa:'</span>, JV_sim)
+<span class="linenr">10: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'James v.s. Ruby:'</span>, JR_sim)
+<span class="linenr">11: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'Ruby v.s. Vanessa:'</span>, RV_sim)
+<span class="linenr">12: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'James v.s. Vanessa:'</span>, JV_sim)
 </pre>
 </div>
 
@@ -1016,9 +1424,9 @@ James v.s. Vanessa: 0.978640304032486
 </div>
 </div>
 </div>
-<div id="outline-container-org7e59a0d" class="outline-3">
-<h3 id="org7e59a0d"><span class="section-number-3">2.3.</span> [課堂作業]曼哈頓距離</h3>
-<div class="outline-text-3" id="text-2-3">
+<div id="outline-container-org32f4a9a" class="outline-3">
+<h3 id="org32f4a9a"><span class="section-number-3">4.3</span> [課堂作業]曼哈頓距離</h3>
+<div class="outline-text-3" id="text-4-3">
 <ul class="org-ul">
 <li>參考前節[歐幾里得距離實作]<br /></li>
 <li>自行Google曼哈頓距離的定義<br /></li>
@@ -1033,33 +1441,72 @@ James v.s. Vanessa: 0.978640304032486
 </div>
 </div>
 </div>
-<div id="outline-container-orge6a5ed9" class="outline-3">
-<h3 id="orge6a5ed9"><span class="section-number-3">2.4.</span> 其他應用</h3>
-<div class="outline-text-3" id="text-2-4">
+<div id="outline-container-org70235d9" class="outline-3">
+<h3 id="org70235d9"><span class="section-number-3">4.4</span> 其他應用</h3>
+<div class="outline-text-3" id="text-4-4">
 <p>
-計算向量間的距離不僅可以比較上述以數值呈現的特徵，也能比較看起來並不是數值的特徵，例如：文字。例如，如何比較這幾個單字間的相似性：lion, dog, cat, love, apple, NYC<sup><a id="fnr.6" class="footref" href="#fn.6" role="doc-backlink">6</a></sup>。<br />
+計算向量間的距離不僅可以比較上述以數值呈現的特徵，也能比較看起來並不是數值的特徵，例如：文字。例如，如何比較這幾個單字間的相似性：lion, dog, cat, love, apple, NYC<sup><a id="fnr.6" class="footref" href="#fn.6">6</a></sup>。<br />
 </p>
 
 <p>
-如圖<a href="#orge22342f">9</a><sup><a id="fnr.6.100" class="footref" href="#fn.6" role="doc-backlink">6</a></sup>，我們可以由三個角度(animalness, petness, cityness)來賦予每個單字一個數值，那麼就可以利用同樣的方式來比較不同單字間的相似性，這就是自然語言處理的基本原理。<br />
+如圖<a href="#orgb9f1b6d">10</a><sup><a id="fnr.6.100" class="footref" href="#fn.6">6</a></sup>，我們可以由三個角度(animalness, petness, cityness)來賦予每個單字一個數值，那麼就可以利用同樣的方式來比較不同單字間的相似性，這就是自然語言處理的基本原理。<br />
 </p>
 
 
-<div id="orge22342f" class="figure">
+<div id="orgb9f1b6d" class="figure">
 <p><img src="images/資料間的關係/2024-02-03_19-07-07_2024-02-03_19-07-00.png" alt="2024-02-03_19-07-07_2024-02-03_19-07-00.png" width="400" /><br />
 </p>
-<p><span class="figure-number">Figure 9: </span>不同單字間的相似性</p>
+<p><span class="figure-number">Figure 10: </span>不同單字間的相似性</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org4f46eee" class="outline-3">
+<h3 id="org4f46eee"><span class="section-number-3">4.5</span> [課堂作業]誰和我的能力最接近&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></h3>
+<div class="outline-text-3" id="text-4-5">
+</div>
+<div id="outline-container-org892c033" class="outline-4">
+<h4 id="org892c033"><span class="section-number-4">4.5.1</span> 說明</h4>
+<div class="outline-text-4" id="text-4-5-1">
+<p>
+以下是5位學生的程式設計能力資料(特徵值為APCS觀念題分數、APCS實作題分數、一年級程式設計學期分數)，請問那一位學生與你的能力(50, 300, 86)最為接近?<br />
+</p>
+<blockquote>
+<p>
+A: 70, 340, 84<br />
+B: 60, 310, 89<br />
+C: 50, 280, 90<br />
+D: 40, 320, 78<br />
+E: 91, 310, 99<br />
+</p>
+</blockquote>
+</div>
+</div>
+<div id="outline-container-org27e98bb" class="outline-4">
+<h4 id="org27e98bb"><span class="section-number-4">4.5.2</span> 要求</h4>
+<div class="outline-text-4" id="text-4-5-2">
+<ul class="org-ul">
+<li>找出與你的能力最相似的那位學生編號<br /></li>
+<li>你可以完全用程式自動輸出，也可以用程式計算你與每個人的相似度後再人工輸出，但是不能以<span style="color:orange;">通靈</span>的方式直接輸出結果<br /></li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36889;&#26159;&#20813;&#36027;&#36104;&#36865;&#30340;&#35712;&#27284;code,&#20320;&#19981;&#19968;&#23450;&#35201;&#29992;numpy,&#20063;&#21487;&#20197;&#20351;&#29992;python&#20358;&#35336;&#31639;</span>
+<span class="linenr">2: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr">3: </span>
+<span class="linenr">4: </span><span style="color: #dcaeea;">scores</span> = [[<span style="color: #da8548; font-weight: bold;">70</span>, <span style="color: #da8548; font-weight: bold;">340</span>, <span style="color: #da8548; font-weight: bold;">84</span>], [<span style="color: #da8548; font-weight: bold;">58</span>, <span style="color: #da8548; font-weight: bold;">318</span>, <span style="color: #da8548; font-weight: bold;">76</span>], [<span style="color: #da8548; font-weight: bold;">54</span>, <span style="color: #da8548; font-weight: bold;">279</span>, <span style="color: #da8548; font-weight: bold;">85</span>], [<span style="color: #da8548; font-weight: bold;">40</span>, <span style="color: #da8548; font-weight: bold;">320</span>, <span style="color: #da8548; font-weight: bold;">78</span>], [<span style="color: #da8548; font-weight: bold;">91</span>, <span style="color: #da8548; font-weight: bold;">310</span>, <span style="color: #da8548; font-weight: bold;">99</span>]]
+</pre>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-orgf1df148" class="outline-2">
-<h2 id="orgf1df148"><span class="section-number-2">3.</span> 資料集分類特徵編碼</h2>
-<div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-orgc9970d8" class="outline-3">
-<h3 id="orgc9970d8"><span class="section-number-3">3.1.</span> 讀檔</h3>
-<div class="outline-text-3" id="text-3-1">
+
+<div id="outline-container-org1a245ef" class="outline-2">
+<h2 id="org1a245ef"><span class="section-number-2">5</span> 資料集分類特徵編碼</h2>
+<div class="outline-text-2" id="text-5">
+</div>
+<div id="outline-container-org1756b74" class="outline-3">
+<h3 id="org1756b74"><span class="section-number-3">5.1</span> 讀檔</h3>
+<div class="outline-text-3" id="text-5-1">
 <p>
 真實世界的數據集往往包含各種「類別特徵」(categorical feature)，類別特徵可再分為<br />
 </p>
@@ -1077,8 +1524,8 @@ James v.s. Vanessa: 0.978640304032486
 <span class="linenr"> 7: </span>[<span style="color: #98be65;">'&#27512;&#20161;&#21312;'</span>,<span style="color: #da8548; font-weight: bold;">950</span>,<span style="color: #da8548; font-weight: bold;">22.9</span>,<span style="color: #da8548; font-weight: bold;">41.49</span>,<span style="color: #98be65;">'&#20303;&#23429;&#22823;&#27155;(11&#23652;&#21547;&#20197;&#19978;&#26377;&#38651;&#26799;)'</span>,<span style="color: #da8548; font-weight: bold;">29</span>,<span style="color: #98be65;">'&#22235;&#23652;/&#20108;&#21313;&#23652;'</span>,<span style="color: #98be65;">'&#20303;&#23478;&#29992;'</span>,<span style="color: #98be65;">'&#20445;&#35703;&#21312;'</span>],
 <span class="linenr"> 8: </span>[<span style="color: #98be65;">'&#26481;&#21312;'</span>,<span style="color: #da8548; font-weight: bold;">390</span>,<span style="color: #da8548; font-weight: bold;">24.7</span>,<span style="color: #da8548; font-weight: bold;">56.38</span>,<span style="color: #98be65;">'&#20303;&#23429;&#22823;&#27155;(11&#23652;&#21547;&#20197;&#19978;&#26377;&#38651;&#26799;)'</span>,<span style="color: #da8548; font-weight: bold;">27</span>,<span style="color: #98be65;">'&#21313;&#19977;&#23652;/&#21313;&#22235;&#23652;'</span>,<span style="color: #98be65;">'&#20303;&#21830;&#29992;'</span>,<span style="color: #98be65;">'&#34892;&#25919;&#21312;'</span>],
 <span class="linenr"> 9: </span>[<span style="color: #98be65;">'&#26032;&#21270;&#21312;'</span>,<span style="color: #da8548; font-weight: bold;">482</span>,<span style="color: #da8548; font-weight: bold;">15.3</span>,<span style="color: #da8548; font-weight: bold;">31.59</span>,<span style="color: #98be65;">'&#20844;&#23507;(5&#27155;&#21547;&#20197;&#19979;&#28961;&#38651;&#26799;)'</span>,<span style="color: #da8548; font-weight: bold;">42</span>,<span style="color: #98be65;">'&#19977;&#23652;/&#20116;&#23652;'</span>,<span style="color: #98be65;">'&#20303;&#23478;&#29992;'</span>,<span style="color: #98be65;">'&#20489;&#24235;&#21312;'</span>]])
-<span class="linenr">10: </span>df.<span style="color: #dcaeea;">columns</span> = [<span style="color: #98be65;">'&#22320;&#27573;'</span>, <span style="color: #98be65;">'&#32317;&#20729;'</span>, <span style="color: #98be65;">'&#21934;&#20729;'</span>, <span style="color: #98be65;">'&#32317;&#38754;&#31309;'</span>, <span style="color: #98be65;">'&#22411;&#24907;'</span>, <span style="color: #98be65;">'&#23627;&#40801;'</span>, <span style="color: #98be65;">'&#27155;&#21029;'</span>, <span style="color: #98be65;">'&#29992;&#36884;'</span>, <span style="color: #98be65;">'&#22320;&#21312;&#21029;'</span>]
-<span class="linenr">11: </span><span style="color: #c678dd;">print</span>(df)
+<span class="linenr">10: </span><span style="color: #dcaeea;">df.columns</span> = [<span style="color: #98be65;">'&#22320;&#27573;'</span>, <span style="color: #98be65;">'&#32317;&#20729;'</span>, <span style="color: #98be65;">'&#21934;&#20729;'</span>, <span style="color: #98be65;">'&#32317;&#38754;&#31309;'</span>, <span style="color: #98be65;">'&#22411;&#24907;'</span>, <span style="color: #98be65;">'&#23627;&#40801;'</span>, <span style="color: #98be65;">'&#27155;&#21029;'</span>, <span style="color: #98be65;">'&#29992;&#36884;'</span>, <span style="color: #98be65;">'&#22320;&#21312;&#21029;'</span>]
+<span class="linenr">11: </span><span style="color: #51afef;">print</span>(df)
 </pre>
 </div>
 
@@ -1095,9 +1542,9 @@ James v.s. Vanessa: 0.978640304032486
 </pre>
 </div>
 </div>
-<div id="outline-container-orgdc74d3c" class="outline-3">
-<h3 id="orgdc74d3c"><span class="section-number-3">3.2.</span> 次序變項</h3>
-<div class="outline-text-3" id="text-3-2">
+<div id="outline-container-org4eb63f0" class="outline-3">
+<h3 id="org4eb63f0"><span class="section-number-3">5.2</span> 次序變項</h3>
+<div class="outline-text-3" id="text-5-2">
 <p>
 目前的土地使用區分大致有行政區、文教區、倉庫區、風景區、農業區、河川區&#x2026;等不同型態，這裡主觀的以上述順序做為土地價值順序，也就是把&rsquo;土地區分&rsquo;這個欄位視為ordinal feature。此處自定一個 mapping dictionary，即 land_mapping，然後將 land_mapping 對應到 land_mapping 中的鍵值(程式第<a href="#coderef-sizeMapping" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-sizeMapping');" onmouseout="CodeHighlightOff(this, 'coderef-sizeMapping');">10</a>行)。<br />
 </p>
@@ -1112,7 +1559,7 @@ James v.s. Vanessa: 0.978640304032486
 <span class="linenr"> 8: </span>    <span style="color: #98be65;">'&#20445;&#35703;&#21312;'</span>: <span style="color: #da8548; font-weight: bold;">2</span>,
 <span class="linenr"> 9: </span>    <span style="color: #98be65;">'&#27827;&#24029;&#21312;'</span>: <span style="color: #da8548; font-weight: bold;">1</span>}
 <span id="coderef-sizeMapping" class="coderef-off"><span class="linenr">10: </span><span style="color: #dcaeea;">df</span>[<span style="color: #98be65;">'&#22320;&#21312;&#21029;'</span>] = df[<span style="color: #98be65;">'&#22320;&#21312;&#21029;'</span>].<span style="color: #c678dd;">map</span>(land_mapping)</span>
-<span class="linenr">11: </span><span style="color: #c678dd;">print</span>(df)
+<span class="linenr">11: </span><span style="color: #51afef;">print</span>(df)
 </pre>
 </div>
 
@@ -1129,16 +1576,16 @@ James v.s. Vanessa: 0.978640304032486
 </pre>
 </div>
 </div>
-<div id="outline-container-org19f3eb3" class="outline-3">
-<h3 id="org19f3eb3"><span class="section-number-3">3.3.</span> 名義變項</h3>
-<div class="outline-text-3" id="text-3-3">
+<div id="outline-container-org69aeda4" class="outline-3">
+<h3 id="org69aeda4"><span class="section-number-3">5.3</span> 名義變項</h3>
+<div class="outline-text-3" id="text-5-3">
 <p>
 接下來我們試著處理一個nominal feature: 用途<br />
 </p>
 </div>
-<div id="outline-container-org7ab1489" class="outline-4">
-<h4 id="org7ab1489"><span class="section-number-4">3.3.1.</span> classlabel</h4>
-<div class="outline-text-4" id="text-3-3-1">
+<div id="outline-container-org1bbb9a1" class="outline-4">
+<h4 id="org1bbb9a1"><span class="section-number-4">5.3.1</span> classlabel</h4>
+<div class="outline-text-4" id="text-5-3-1">
 <p>
 許多機器學習的函式庫需要將「類別標籤」編碼為整數值。方法之一是以列舉方式為這些 nominal features 自 0 開始編號，先以 enumerate 方式建立一個 mapping dictionary: class_mapping(程式第<a href="#coderef-classMapping" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-classMapping');" onmouseout="CodeHighlightOff(this, 'coderef-classMapping');">2</a>行)，然後利用這個字典將類別特徵轉換為整數值。<br />
 </p>
@@ -1146,14 +1593,14 @@ James v.s. Vanessa: 0.978640304032486
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">class_mapping</span> = {
 <span id="coderef-classMapping" class="coderef-off"><span class="linenr">2: </span>    label: idx <span style="color: #51afef;">for</span> idx, label <span style="color: #51afef;">in</span> <span style="color: #c678dd;">enumerate</span>(np.unique(df[<span style="color: #98be65;">'&#29992;&#36884;'</span>]))</span>
 <span class="linenr">3: </span>}
-<span class="linenr">4: </span><span style="color: #c678dd;">print</span>(class_mapping)
+<span class="linenr">4: </span><span style="color: #51afef;">print</span>(class_mapping)
 <span class="linenr">5: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23559;&#39006;&#21029;&#29305;&#24501;&#36681;&#25563;&#28858;&#25972;&#25976;&#20540;</span>
 <span class="linenr">6: </span><span style="color: #dcaeea;">df</span>[<span style="color: #98be65;">'&#29992;&#36884;'</span>] = df[<span style="color: #98be65;">'&#29992;&#36884;'</span>].<span style="color: #c678dd;">map</span>(class_mapping)
-<span class="linenr">7: </span><span style="color: #c678dd;">print</span>(df)
+<span class="linenr">7: </span><span style="color: #51afef;">print</span>(df)
 </pre>
 </div>
 
-<pre class="example" id="orgc673ec2">
+<pre class="example">
 {'住商用': 0, '住家用': 1, '商業用': 2}
     地段   總價    單價    總面積               型態  屋齡       樓別  用途  地區別
 0   東區  150  25.3  45.49    華廈(10層含以下有電梯)  30    四層/九層   1    6
@@ -1173,13 +1620,13 @@ James v.s. Vanessa: 0.978640304032486
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#29986;&#29983;&#21453;&#36681;&#23383;&#20856;&#65292;&#23559;&#25972;&#25976;&#36996;&#21407;&#33267;&#21407;&#22987;&#30340;&#39006;&#21029;&#27161;&#31844;</span>
 <span id="coderef-invClassMapping" class="coderef-off"><span class="linenr">2: </span><span style="color: #dcaeea;">inv_class_mapping</span> = {v: k <span style="color: #51afef;">for</span> k, v <span style="color: #51afef;">in</span> class_mapping.items()}</span>
-<span class="linenr">3: </span><span style="color: #c678dd;">print</span>(inv_class_mapping)
+<span class="linenr">3: </span><span style="color: #51afef;">print</span>(inv_class_mapping)
 <span class="linenr">4: </span><span style="color: #dcaeea;">df</span>[<span style="color: #98be65;">'&#29992;&#36884;'</span>] = df[<span style="color: #98be65;">'&#29992;&#36884;'</span>].<span style="color: #c678dd;">map</span>(inv_class_mapping)
-<span class="linenr">5: </span><span style="color: #c678dd;">print</span>(df)
+<span class="linenr">5: </span><span style="color: #51afef;">print</span>(df)
 </pre>
 </div>
 
-<pre class="example" id="org56221aa">
+<pre class="example">
 {0: '住商用', 1: '住家用', 2: '商業用'}
     地段   總價    單價    總面積               型態  屋齡       樓別   用途  地區別
 0   東區  150  25.3  45.49    華廈(10層含以下有電梯)  30    四層/九層  住家用    6
@@ -1193,9 +1640,9 @@ James v.s. Vanessa: 0.978640304032486
 </pre>
 </div>
 </div>
-<div id="outline-container-org3bb93e4" class="outline-4">
-<h4 id="org3bb93e4"><span class="section-number-4">3.3.2.</span> scikit-learn LabelEncoder</h4>
-<div class="outline-text-4" id="text-3-3-2">
+<div id="outline-container-org752917e" class="outline-4">
+<h4 id="org752917e"><span class="section-number-4">5.3.2</span> scikit-learn LabelEncoder</h4>
+<div class="outline-text-4" id="text-5-3-2">
 <p>
 事實上，scikit-learn 中有一個更為方便的 LabelEncoder 類別則可以直接完成上述工作(第<a href="#coderef-labelEncoder" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-labelEncoder');" onmouseout="CodeHighlightOff(this, 'coderef-labelEncoder');">4</a>行)。<br />
 </p>
@@ -1204,13 +1651,13 @@ James v.s. Vanessa: 0.978640304032486
 <span class="linenr">2: </span><span style="color: #51afef;">from</span> sklearn.preprocessing <span style="color: #51afef;">import</span> LabelEncoder
 <span class="linenr">3: </span><span style="color: #dcaeea;">le</span> = LabelEncoder()
 <span id="coderef-labelEncoder" class="coderef-off"><span class="linenr">4: </span><span style="color: #dcaeea;">y</span> = le.fit_transform(df[<span style="color: #98be65;">'&#29992;&#36884;'</span>].values)</span>
-<span class="linenr">5: </span><span style="color: #c678dd;">print</span>(y)
+<span class="linenr">5: </span><span style="color: #51afef;">print</span>(y)
 <span class="linenr">6: </span><span style="color: #dcaeea;">df</span>[<span style="color: #98be65;">'&#29992;&#36884;'</span>] = y
-<span class="linenr">7: </span><span style="color: #c678dd;">print</span>(df) <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39006;&#21029;&#33287;&#25976;&#23383;&#30340;&#23565;&#25033;&#19981;&#19968;&#23450;&#33287;&#33258;&#35330;&#23383;&#20856;&#19968;&#33268;</span>
+<span class="linenr">7: </span><span style="color: #51afef;">print</span>(df) <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39006;&#21029;&#33287;&#25976;&#23383;&#30340;&#23565;&#25033;&#19981;&#19968;&#23450;&#33287;&#33258;&#35330;&#23383;&#20856;&#19968;&#33268;</span>
 </pre>
 </div>
 
-<pre class="example" id="org79b4ea7">
+<pre class="example">
 [1 2 0 1 1 1 0 1]
     地段   總價    單價    總面積               型態  屋齡       樓別  用途  地區別
 0   東區  150  25.3  45.49    華廈(10層含以下有電梯)  30    四層/九層   1    6
@@ -1229,14 +1676,14 @@ James v.s. Vanessa: 0.978640304032486
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21453;&#21521;&#32534;&#30908;&#65292;&#23559;&#25976;&#20540;&#32232;&#30908;&#36681;&#25563;&#22238;&#21407;&#22987;&#39006;&#21029;</span>
 <span class="linenr">2: </span><span style="color: #dcaeea;">original_labels</span> = le.inverse_transform(y)
-<span class="linenr">3: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#21453;&#36681;&#32232;&#30908;:"</span>, original_labels)
+<span class="linenr">3: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">"&#21453;&#36681;&#32232;&#30908;:"</span>, original_labels)
 <span class="linenr">4: </span>
 <span class="linenr">5: </span><span style="color: #dcaeea;">df</span>[<span style="color: #98be65;">'&#21407;&#20358;&#30340;&#29992;&#36884;&#27396;'</span>] = original_labels
-<span class="linenr">6: </span><span style="color: #c678dd;">print</span>(df)
+<span class="linenr">6: </span><span style="color: #51afef;">print</span>(df)
 </pre>
 </div>
 
-<pre class="example" id="orgff620c5">
+<pre class="example">
 反轉编碼: ['住家用' '商業用' '住商用' '住家用' '住家用' '住家用' '住商用' '住家用']
     地段   總價    單價    總面積               型態  屋齡       樓別  用途  地區別 原來的用途欄
 0   東區  150  25.3  45.49    華廈(10層含以下有電梯)  30    四層/九層   1    6    住家用
@@ -1255,9 +1702,9 @@ James v.s. Vanessa: 0.978640304032486
 </div>
 </div>
 </div>
-<div id="outline-container-orga5823b0" class="outline-3">
-<h3 id="orga5823b0"><span class="section-number-3">3.4.</span> One-Hot Encoding</h3>
-<div class="outline-text-3" id="text-3-4">
+<div id="outline-container-org095f6cf" class="outline-3">
+<h3 id="org095f6cf"><span class="section-number-3">5.4</span> One-Hot Encoding</h3>
+<div class="outline-text-3" id="text-5-4">
 <p>
 在上面的例子中，我們以scikit-learn 的 LabelEncoder 類別將「類別特徵」編碼為整數值，但這樣會引發另一個問題:原本無序的類別變項就變成有序變項了。如果我們將上述資料中的 <b>地段</b> 特徵轉換為整數值，如下：<br />
 </p>
@@ -1266,8 +1713,8 @@ James v.s. Vanessa: 0.978640304032486
 <span class="linenr">2: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20197;LabelEncoder&#36681;&#25563;</span>
 <span class="linenr">3: </span><span style="color: #51afef;">from</span> sklearn.preprocessing <span style="color: #51afef;">import</span> LabelEncoder
 <span class="linenr">4: </span><span style="color: #dcaeea;">le</span> = LabelEncoder()
-<span class="linenr">5: </span><span style="color: #c678dd;">print</span>(X)
-<span class="linenr">6: </span><span style="color: #c678dd;">print</span>(le.fit_transform(X[:,<span style="color: #da8548; font-weight: bold;">0</span>]))
+<span class="linenr">5: </span><span style="color: #51afef;">print</span>(X)
+<span class="linenr">6: </span><span style="color: #51afef;">print</span>(le.fit_transform(X[:,<span style="color: #da8548; font-weight: bold;">0</span>]))
 </pre>
 </div>
 
@@ -1292,23 +1739,23 @@ James v.s. Vanessa: 0.978640304032486
 針對此一問題，常見的解決方案是 one-hot encoding(獨熱編碼&#x2013;真是直白的翻譯啊啊啊&#x2026;.)，其原理是：對特徵值中的每個值，建立一個新的「虛擬特徵」(dummy feature)。<br />
 </p>
 </div>
-<div id="outline-container-orgaab4936" class="outline-4">
-<h4 id="orgaab4936"><span class="section-number-4">3.4.1.</span> 以pandas get_dummies()進行One Hot Encoding</h4>
-<div class="outline-text-4" id="text-3-4-1">
+<div id="outline-container-org3fd09e3" class="outline-4">
+<h4 id="org3fd09e3"><span class="section-number-4">5.4.1</span> 以pandas get_dummies()進行One Hot Encoding</h4>
+<div class="outline-text-4" id="text-5-4-1">
 <p>
 利用 Pandas 套件的 get_dummies 類別，直接將類別資料轉成二進位類型，即One-Hot encoding。這種轉換只有字串數據會被轉換，其他內容則否。<br />
 </p>
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr">1: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'===&#21407;&#22987;&#36039;&#26009;==='</span>)
-<span class="linenr">2: </span><span style="color: #c678dd;">print</span>(df)
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'===&#21407;&#22987;&#36039;&#26009;==='</span>)
+<span class="linenr">2: </span><span style="color: #51afef;">print</span>(df)
 <span class="linenr">3: </span>
 <span class="linenr">4: </span><span style="color: #dcaeea;">OheDf</span> = pd.get_dummies(df, columns=[<span style="color: #98be65;">'&#22320;&#27573;'</span>])
-<span class="linenr">5: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'===&#36681;&#25563;&#24460;&#36039;&#26009;==='</span>)
-<span class="linenr">6: </span><span style="color: #c678dd;">print</span>(OheDf)
+<span class="linenr">5: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'===&#36681;&#25563;&#24460;&#36039;&#26009;==='</span>)
+<span class="linenr">6: </span><span style="color: #51afef;">print</span>(OheDf)
 </pre>
 </div>
 
-<pre class="example" id="orgb78486e">
+<pre class="example">
 ===原始資料===
     地段   總價    單價    總面積               型態  屋齡       樓別  用途  地區別 原來的用途欄
 0   東區  150  25.3  45.49    華廈(10層含以下有電梯)  30    四層/九層   1    6    住家用
@@ -1334,9 +1781,9 @@ James v.s. Vanessa: 0.978640304032486
 </pre>
 </div>
 </div>
-<div id="outline-container-orgf85e4eb" class="outline-4">
-<h4 id="orgf85e4eb"><span class="section-number-4">3.4.2.</span> 以scikit-learn ColumnTransformer 進行One-Hot Encoding</h4>
-<div class="outline-text-4" id="text-3-4-2">
+<div id="outline-container-org3fbe768" class="outline-4">
+<h4 id="org3fbe768"><span class="section-number-4">5.4.2</span> 以scikit-learn ColumnTransformer 進行One-Hot Encoding</h4>
+<div class="outline-text-4" id="text-5-4-2">
 <p>
 利用 ColumnTransformer 函式庫的 ColumnTransformer 類別，將特徵值轉換 One-Hot Encoding 的對應矩陣，如程式第<a href="#coderef-FitTransform" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-FitTransform');" onmouseout="CodeHighlightOff(this, 'coderef-FitTransform');">27</a>行。<br />
 </p>
@@ -1353,10 +1800,10 @@ James v.s. Vanessa: 0.978640304032486
 <span class="linenr"> 9: </span>[<span style="color: #98be65;">'&#27512;&#20161;&#21312;'</span>,<span style="color: #da8548; font-weight: bold;">950</span>,<span style="color: #da8548; font-weight: bold;">22.9</span>,<span style="color: #da8548; font-weight: bold;">41.49</span>,<span style="color: #98be65;">'&#20303;&#23429;&#22823;&#27155;(11&#23652;&#21547;&#20197;&#19978;&#26377;&#38651;&#26799;)'</span>,<span style="color: #da8548; font-weight: bold;">29</span>,<span style="color: #98be65;">'&#22235;&#23652;/&#20108;&#21313;&#23652;'</span>,<span style="color: #98be65;">'&#20303;&#23478;&#29992;'</span>,<span style="color: #98be65;">'&#20445;&#35703;&#21312;'</span>],
 <span class="linenr">10: </span>[<span style="color: #98be65;">'&#26481;&#21312;'</span>,<span style="color: #da8548; font-weight: bold;">390</span>,<span style="color: #da8548; font-weight: bold;">24.7</span>,<span style="color: #da8548; font-weight: bold;">56.38</span>,<span style="color: #98be65;">'&#20303;&#23429;&#22823;&#27155;(11&#23652;&#21547;&#20197;&#19978;&#26377;&#38651;&#26799;)'</span>,<span style="color: #da8548; font-weight: bold;">27</span>,<span style="color: #98be65;">'&#21313;&#19977;&#23652;/&#21313;&#22235;&#23652;'</span>,<span style="color: #98be65;">'&#20303;&#21830;&#29992;'</span>,<span style="color: #98be65;">'&#34892;&#25919;&#21312;'</span>],
 <span class="linenr">11: </span>[<span style="color: #98be65;">'&#26032;&#21270;&#21312;'</span>,<span style="color: #da8548; font-weight: bold;">482</span>,<span style="color: #da8548; font-weight: bold;">15.3</span>,<span style="color: #da8548; font-weight: bold;">31.59</span>,<span style="color: #98be65;">'&#20844;&#23507;(5&#27155;&#21547;&#20197;&#19979;&#28961;&#38651;&#26799;)'</span>,<span style="color: #da8548; font-weight: bold;">42</span>,<span style="color: #98be65;">'&#19977;&#23652;/&#20116;&#23652;'</span>,<span style="color: #98be65;">'&#20303;&#23478;&#29992;'</span>,<span style="color: #98be65;">'&#20489;&#24235;&#21312;'</span>]])
-<span class="linenr">12: </span>df.<span style="color: #dcaeea;">columns</span> = [<span style="color: #98be65;">'&#22320;&#27573;'</span>, <span style="color: #98be65;">'&#32317;&#20729;'</span>, <span style="color: #98be65;">'&#21934;&#20729;'</span>, <span style="color: #98be65;">'&#32317;&#38754;&#31309;'</span>, <span style="color: #98be65;">'&#22411;&#24907;'</span>, <span style="color: #98be65;">'&#23627;&#40801;'</span>, <span style="color: #98be65;">'&#27155;&#21029;'</span>, <span style="color: #98be65;">'&#29992;&#36884;'</span>, <span style="color: #98be65;">'&#22320;&#21312;&#21029;'</span>]
+<span class="linenr">12: </span><span style="color: #dcaeea;">df.columns</span> = [<span style="color: #98be65;">'&#22320;&#27573;'</span>, <span style="color: #98be65;">'&#32317;&#20729;'</span>, <span style="color: #98be65;">'&#21934;&#20729;'</span>, <span style="color: #98be65;">'&#32317;&#38754;&#31309;'</span>, <span style="color: #98be65;">'&#22411;&#24907;'</span>, <span style="color: #98be65;">'&#23627;&#40801;'</span>, <span style="color: #98be65;">'&#27155;&#21029;'</span>, <span style="color: #98be65;">'&#29992;&#36884;'</span>, <span style="color: #98be65;">'&#22320;&#21312;&#21029;'</span>]
 <span class="linenr">13: </span>
-<span class="linenr">14: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'===&#21407;&#22987;&#36039;&#26009;==='</span>)
-<span class="linenr">15: </span><span style="color: #c678dd;">print</span>(df[[<span style="color: #98be65;">'&#22320;&#27573;'</span>]])
+<span class="linenr">14: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'===&#21407;&#22987;&#36039;&#26009;==='</span>)
+<span class="linenr">15: </span><span style="color: #51afef;">print</span>(df[[<span style="color: #98be65;">'&#22320;&#27573;'</span>]])
 <span class="linenr">16: </span>
 <span class="linenr">17: </span><span style="color: #51afef;">from</span> sklearn.compose <span style="color: #51afef;">import</span> ColumnTransformer
 <span class="linenr">18: </span>
@@ -1366,9 +1813,9 @@ James v.s. Vanessa: 0.978640304032486
 <span class="linenr">22: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Leave the rest of the columns untouched</span>
 <span class="linenr">23: </span>    [(<span style="color: #98be65;">'OneHot'</span>, OneHotEncoder(), [<span style="color: #da8548; font-weight: bold;">0</span>])], remainder=<span style="color: #98be65;">'passthrough'</span>
 <span class="linenr">24: </span>)
-<span class="linenr">25: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'===&#36681;&#25563;&#24460;&#30340;one-hot encoding&#36039;&#26009;==='</span>)
+<span class="linenr">25: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'===&#36681;&#25563;&#24460;&#30340;one-hot encoding&#36039;&#26009;==='</span>)
 <span class="linenr">26: </span><span style="color: #dcaeea;">X_transformed</span> = ct.fit_transform(X)
-<span id="coderef-FitTransform" class="coderef-off"><span class="linenr">27: </span><span style="color: #c678dd;">print</span>(ct.fit_transform(X))</span>
+<span id="coderef-FitTransform" class="coderef-off"><span class="linenr">27: </span><span style="color: #51afef;">print</span>(ct.fit_transform(X))</span>
 <span class="linenr">28: </span>
 <span class="linenr">29: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23559;&#31232;&#30095;&#30697;&#38499;&#36996;&#21407;&#28858;&#23494;&#38598;&#30697;&#38499;(&#38750;&#24517;&#38920;&#65292;&#21482;&#26159;&#35731;&#25105;&#20497;&#23481;&#26131;&#30475;&#19968;&#19979;&#32080;&#26524;)</span>
 <span class="linenr">30: </span><span style="color: #dcaeea;">X_dense</span> = X_transformed.toarray()
@@ -1376,12 +1823,12 @@ James v.s. Vanessa: 0.978640304032486
 <span class="linenr">32: </span><span style="color: #dcaeea;">encoded_columns</span> = ct.named_transformers_[<span style="color: #98be65;">'OneHot'</span>].get_feature_names_out([<span style="color: #98be65;">'&#22320;&#27573;'</span>])
 <span class="linenr">33: </span><span style="color: #dcaeea;">df_encoded</span> = pd.DataFrame(X_dense, columns=encoded_columns)
 <span class="linenr">34: </span>
-<span class="linenr">35: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'===One-Hot&#32467;&#26524;==='</span>)
-<span class="linenr">36: </span><span style="color: #c678dd;">print</span>(df_encoded)
+<span class="linenr">35: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'===One-Hot&#32467;&#26524;==='</span>)
+<span class="linenr">36: </span><span style="color: #51afef;">print</span>(df_encoded)
 </pre>
 </div>
 
-<pre class="example" id="orge14fb3e">
+<pre class="example">
 ===原始資料===
     地段
 0   東區
@@ -1414,9 +1861,9 @@ James v.s. Vanessa: 0.978640304032486
 </pre>
 </div>
 </div>
-<div id="outline-container-org8dddb97" class="outline-4">
-<h4 id="org8dddb97"><span class="section-number-4">3.4.3.</span> scikit learn OneHotEncoder()</h4>
-<div class="outline-text-4" id="text-3-4-3">
+<div id="outline-container-orge31803c" class="outline-4">
+<h4 id="orge31803c"><span class="section-number-4">5.4.3</span> scikit learn OneHotEncoder()</h4>
+<div class="outline-text-4" id="text-5-4-3">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21021;&#22987;&#21270; OneHotEncoder</span>
 <span class="linenr">2: </span><span style="color: #dcaeea;">encoder</span> = OneHotEncoder()
@@ -1424,11 +1871,11 @@ James v.s. Vanessa: 0.978640304032486
 <span class="linenr">4: </span><span style="color: #dcaeea;">encoded_df</span> = pd.DataFrame(encoded_colors.toarray(), columns=encoder.get_feature_names_out([<span style="color: #98be65;">'&#22320;&#27573;'</span>]))
 <span class="linenr">5: </span>
 <span class="linenr">6: </span><span style="color: #dcaeea;">df_encoded</span> = pd.concat([df.drop(columns=[<span style="color: #98be65;">'&#22320;&#27573;'</span>]), encoded_df], axis=<span style="color: #da8548; font-weight: bold;">1</span>)
-<span class="linenr">7: </span><span style="color: #c678dd;">print</span>(df_encoded)
+<span class="linenr">7: </span><span style="color: #51afef;">print</span>(df_encoded)
 </pre>
 </div>
 
-<pre class="example" id="orgb13ea5c">
+<pre class="example">
     總價    單價    總面積               型態  屋齡  ... 地段_安南區 地段_新化區 地段_新市區  地段_東區  地段_歸仁區
 0  150  25.3  45.49    華廈(10層含以下有電梯)  30  ...    0.0    0.0    0.0    1.0     0.0
 1  321  16.8  78.66  住宅大樓(11層含以上有電梯)  32  ...    0.0    0.0    0.0    0.0     0.0
@@ -1445,11 +1892,12 @@ James v.s. Vanessa: 0.978640304032486
 </div>
 </div>
 </div>
-<div id="outline-container-org91411f5" class="outline-2">
-<h2 id="org91411f5"><span class="section-number-2">4.</span> 特徵縮放(Feature scaling)</h2>
-<div class="outline-text-2" id="text-4">
+
+<div id="outline-container-org5ca98db" class="outline-2">
+<h2 id="org5ca98db"><span class="section-number-2">6</span> 特徵縮放(Feature scaling)</h2>
+<div class="outline-text-2" id="text-6">
 <p>
-當我們在比較分析兩組數據資料時，可能會遭遇因單位的不同(例如：身高與體重)，或數字大小的代表性不同(例如：粉專1萬人與滿足感0.8)，造成各自變化的程度不一，進而影響統計分析的結果；為解決此類的問題，我們可利用資料的正規化(Normalization, 或譯為常態化)與標準化(Standardization)來進行數據的比較及分析<sup><a id="fnr.7" class="footref" href="#fn.7" role="doc-backlink">7</a></sup>。<br />
+當我們在比較分析兩組數據資料時，可能會遭遇因單位的不同(例如：身高與體重)，或數字大小的代表性不同(例如：粉專1萬人與滿足感0.8)，造成各自變化的程度不一，進而影響統計分析的結果；為解決此類的問題，我們可利用資料的正規化(Normalization, 或譯為常態化)與標準化(Standardization)來進行數據的比較及分析<sup><a id="fnr.7" class="footref" href="#fn.7">7</a></sup>。<br />
 </p>
 
 <p>
@@ -1466,9 +1914,10 @@ James v.s. Vanessa: 0.978640304032486
 將特徵值 x1 及 x2 餵入一些需計算樣本彼此的距離(例如:歐氏距離)分類器演算法中，則 x2 的影響很可能將遠大於 x1，若實際上 x1 的指標意義及重要性高於 x2，這將導致我們分析的結果失真。因此，資料的標準化是有必要的，可讓每個特徵值對結果做出相近程度的貢獻。<br /></li>
 </ol>
 </div>
-<div id="outline-container-orge62852e" class="outline-3">
-<h3 id="orge62852e"><span class="section-number-3">4.1.</span> 常態化(Normalization)</h3>
-<div class="outline-text-3" id="text-4-1">
+
+<div id="outline-container-org1e41b54" class="outline-3">
+<h3 id="org1e41b54"><span class="section-number-3">6.1</span> 常態化(Normalization)</h3>
+<div class="outline-text-3" id="text-6-1">
 <p>
 正規化的目的是將資料縮放到固定的範圍內，通常是 [0, 1] 或 [-1, 1]，這樣可以避免因為特徵值範圍過大或過小而影響模型的表現。這種方法特別適合那些依賴距離的模型，比如 k 最近鄰演算法（KNN）和神經網路。<br />
 </p>
@@ -1489,22 +1938,22 @@ James v.s. Vanessa: 0.978640304032486
 <span class="linenr"> 8: </span>[<span style="color: #98be65;">'&#27512;&#20161;&#21312;'</span>,<span style="color: #da8548; font-weight: bold;">950</span>,<span style="color: #da8548; font-weight: bold;">22.9</span>,<span style="color: #da8548; font-weight: bold;">41.49</span>,<span style="color: #98be65;">'&#20303;&#23429;&#22823;&#27155;(11&#23652;&#21547;&#20197;&#19978;&#26377;&#38651;&#26799;)'</span>,<span style="color: #da8548; font-weight: bold;">29</span>,<span style="color: #98be65;">'&#22235;&#23652;/&#20108;&#21313;&#23652;'</span>,<span style="color: #98be65;">'&#20303;&#23478;&#29992;'</span>,<span style="color: #98be65;">'&#20445;&#35703;&#21312;'</span>],
 <span class="linenr"> 9: </span>[<span style="color: #98be65;">'&#26481;&#21312;'</span>,<span style="color: #da8548; font-weight: bold;">390</span>,<span style="color: #da8548; font-weight: bold;">24.7</span>,<span style="color: #da8548; font-weight: bold;">56.38</span>,<span style="color: #98be65;">'&#20303;&#23429;&#22823;&#27155;(11&#23652;&#21547;&#20197;&#19978;&#26377;&#38651;&#26799;)'</span>,<span style="color: #da8548; font-weight: bold;">27</span>,<span style="color: #98be65;">'&#21313;&#19977;&#23652;/&#21313;&#22235;&#23652;'</span>,<span style="color: #98be65;">'&#20303;&#21830;&#29992;'</span>,<span style="color: #98be65;">'&#34892;&#25919;&#21312;'</span>],
 <span class="linenr">10: </span>[<span style="color: #98be65;">'&#26032;&#21270;&#21312;'</span>,<span style="color: #da8548; font-weight: bold;">482</span>,<span style="color: #da8548; font-weight: bold;">15.3</span>,<span style="color: #da8548; font-weight: bold;">31.59</span>,<span style="color: #98be65;">'&#20844;&#23507;(5&#27155;&#21547;&#20197;&#19979;&#28961;&#38651;&#26799;)'</span>,<span style="color: #da8548; font-weight: bold;">42</span>,<span style="color: #98be65;">'&#19977;&#23652;/&#20116;&#23652;'</span>,<span style="color: #98be65;">'&#20303;&#23478;&#29992;'</span>,<span style="color: #98be65;">'&#20489;&#24235;&#21312;'</span>]])
-<span class="linenr">11: </span>df.<span style="color: #dcaeea;">columns</span> = [<span style="color: #98be65;">'&#22320;&#27573;'</span>, <span style="color: #98be65;">'&#32317;&#20729;'</span>, <span style="color: #98be65;">'&#21934;&#20729;'</span>, <span style="color: #98be65;">'&#32317;&#38754;&#31309;'</span>, <span style="color: #98be65;">'&#22411;&#24907;'</span>, <span style="color: #98be65;">'&#23627;&#40801;'</span>, <span style="color: #98be65;">'&#27155;&#21029;'</span>, <span style="color: #98be65;">'&#29992;&#36884;'</span>, <span style="color: #98be65;">'&#22320;&#21312;&#21029;'</span>]
-<span class="linenr">12: </span><span style="color: #c678dd;">print</span>(df)
+<span class="linenr">11: </span><span style="color: #dcaeea;">df.columns</span> = [<span style="color: #98be65;">'&#22320;&#27573;'</span>, <span style="color: #98be65;">'&#32317;&#20729;'</span>, <span style="color: #98be65;">'&#21934;&#20729;'</span>, <span style="color: #98be65;">'&#32317;&#38754;&#31309;'</span>, <span style="color: #98be65;">'&#22411;&#24907;'</span>, <span style="color: #98be65;">'&#23627;&#40801;'</span>, <span style="color: #98be65;">'&#27155;&#21029;'</span>, <span style="color: #98be65;">'&#29992;&#36884;'</span>, <span style="color: #98be65;">'&#22320;&#21312;&#21029;'</span>]
+<span class="linenr">12: </span><span style="color: #51afef;">print</span>(df)
 <span class="linenr">13: </span>
 <span class="linenr">14: </span><span style="color: #dcaeea;">mmScaler</span> = MinMaxScaler()
-<span class="linenr">15: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'===Normalization&#24460;&#30340;&#36039;&#26009;==='</span>)
+<span class="linenr">15: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'===Normalization&#24460;&#30340;&#36039;&#26009;==='</span>)
 <span class="linenr">16: </span>df[[<span style="color: #98be65;">'&#32317;&#20729;'</span>, <span style="color: #98be65;">'&#21934;&#20729;'</span>]] = mmScaler.fit_transform(df[[<span style="color: #98be65;">'&#32317;&#20729;'</span>, <span style="color: #98be65;">'&#21934;&#20729;'</span>]])
-<span class="linenr">17: </span><span style="color: #c678dd;">print</span>(df[[<span style="color: #98be65;">'&#32317;&#20729;'</span>, <span style="color: #98be65;">'&#21934;&#20729;'</span>]])
+<span class="linenr">17: </span><span style="color: #51afef;">print</span>(df[[<span style="color: #98be65;">'&#32317;&#20729;'</span>, <span style="color: #98be65;">'&#21934;&#20729;'</span>]])
 <span class="linenr">18: </span>
 <span class="linenr">19: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23559;&#25976;&#25818;&#36996;&#21407;&#21040;&#21407;&#22987;&#31684;&#22285;</span>
-<span class="linenr">20: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'===&#36996;&#21407;&#24460;&#30340;&#36039;&#26009;==='</span>)
+<span class="linenr">20: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'===&#36996;&#21407;&#24460;&#30340;&#36039;&#26009;==='</span>)
 <span class="linenr">21: </span>df[[<span style="color: #98be65;">'&#32317;&#20729;'</span>, <span style="color: #98be65;">'&#21934;&#20729;'</span>]] = mmScaler.inverse_transform(df[[<span style="color: #98be65;">'&#32317;&#20729;'</span>, <span style="color: #98be65;">'&#21934;&#20729;'</span>]])
-<span class="linenr">22: </span><span style="color: #c678dd;">print</span>(df[[<span style="color: #98be65;">'&#32317;&#20729;'</span>, <span style="color: #98be65;">'&#21934;&#20729;'</span>]])
+<span class="linenr">22: </span><span style="color: #51afef;">print</span>(df[[<span style="color: #98be65;">'&#32317;&#20729;'</span>, <span style="color: #98be65;">'&#21934;&#20729;'</span>]])
 </pre>
 </div>
 
-<pre class="example" id="orgbcab1f4">
+<pre class="example">
     地段   總價    單價    總面積               型態  屋齡       樓別   用途  地區別
 0   東區  150  25.3  45.49    華廈(10層含以下有電梯)  30    四層/九層  住家用  文教區
 1   北區  321  16.8  78.66  住宅大樓(11層含以上有電梯)  32  十三層/十四層  商業用  行政區
@@ -1537,9 +1986,10 @@ James v.s. Vanessa: 0.978640304032486
 </pre>
 </div>
 </div>
-<div id="outline-container-orgb77a34a" class="outline-3">
-<h3 id="orgb77a34a"><span class="section-number-3">4.2.</span> 標準化(Standardization)</h3>
-<div class="outline-text-3" id="text-4-2">
+
+<div id="outline-container-orgb89c4eb" class="outline-3">
+<h3 id="orgb89c4eb"><span class="section-number-3">6.2</span> 標準化(Standardization)</h3>
+<div class="outline-text-3" id="text-6-2">
 <p>
 標準化則是將資料轉換為具有零均值和單位方差(說人話就是平均數為0、標準差為1h)的分佈，這意味著數據被中心化並且具有相同的尺度。這種技術適合資料呈現常態分佈或近似常態分佈的情況，並且適合大多數機器學習模型（如線性回歸、支持向量機等）。<br />
 </p>
@@ -1553,16 +2003,16 @@ James v.s. Vanessa: 0.978640304032486
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">from</span> sklearn.preprocessing <span style="color: #51afef;">import</span> StandardScaler
 <span class="linenr">2: </span><span style="color: #dcaeea;">sdScaler</span> = StandardScaler()
 <span class="linenr">3: </span>df[[<span style="color: #98be65;">'&#32317;&#20729;'</span>, <span style="color: #98be65;">'&#21934;&#20729;'</span>]] = sdScaler.fit_transform(df[[<span style="color: #98be65;">'&#32317;&#20729;'</span>, <span style="color: #98be65;">'&#21934;&#20729;'</span>]])
-<span class="linenr">4: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'===&#27161;&#28310;&#21270;&#24460;&#30340;&#36039;&#26009;==='</span>)
-<span class="linenr">5: </span><span style="color: #c678dd;">print</span>(df[[<span style="color: #98be65;">'&#32317;&#20729;'</span>, <span style="color: #98be65;">'&#21934;&#20729;'</span>]])
+<span class="linenr">4: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'===&#27161;&#28310;&#21270;&#24460;&#30340;&#36039;&#26009;==='</span>)
+<span class="linenr">5: </span><span style="color: #51afef;">print</span>(df[[<span style="color: #98be65;">'&#32317;&#20729;'</span>, <span style="color: #98be65;">'&#21934;&#20729;'</span>]])
 <span class="linenr">6: </span>
 <span class="linenr">7: </span>df[[<span style="color: #98be65;">'&#32317;&#20729;'</span>, <span style="color: #98be65;">'&#21934;&#20729;'</span>]] = sdScaler.inverse_transform(df[[<span style="color: #98be65;">'&#32317;&#20729;'</span>, <span style="color: #98be65;">'&#21934;&#20729;'</span>]])
-<span class="linenr">8: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'===&#36996;&#21407;&#24460;&#30340;&#36039;&#26009;==='</span>)
-<span class="linenr">9: </span><span style="color: #c678dd;">print</span>(df[[<span style="color: #98be65;">'&#32317;&#20729;'</span>, <span style="color: #98be65;">'&#21934;&#20729;'</span>]])
+<span class="linenr">8: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'===&#36996;&#21407;&#24460;&#30340;&#36039;&#26009;==='</span>)
+<span class="linenr">9: </span><span style="color: #51afef;">print</span>(df[[<span style="color: #98be65;">'&#32317;&#20729;'</span>, <span style="color: #98be65;">'&#21934;&#20729;'</span>]])
 </pre>
 </div>
 
-<pre class="example" id="org44eded9">
+<pre class="example">
 ===標準化後的資料===
          總價        單價
 0 -1.331969  0.454115
@@ -1586,14 +2036,41 @@ James v.s. Vanessa: 0.978640304032486
 </pre>
 </div>
 </div>
+<div id="outline-container-org596274f" class="outline-3">
+<h3 id="org596274f"><span class="section-number-3">6.3</span> 適用時機</h3>
+<div class="outline-text-3" id="text-6-3">
 </div>
-<div id="outline-container-org8cdeade" class="outline-2">
-<h2 id="org8cdeade"><span class="section-number-2">5.</span> 資料擴增</h2>
-<div class="outline-text-2" id="text-5">
-<p>
-資料擴增是一種在訓練機器學習模型特別是深度學習模型時非常重要的技術。它通過對訓練資料進行多種隨機變換，來生成更多的資料樣本，以增強模型的泛化能力並避免過擬合。資料擴增對於擁有有限數據的情況尤其有用，因為它能夠讓模型看到更多樣化的資料，從而提升模型的預測能力和準確度。<br />
-</p>
+<div id="outline-container-org1260f17" class="outline-4">
+<h4 id="org1260f17"><span class="section-number-4">6.3.1</span> Standardization</h4>
+<div class="outline-text-4" id="text-6-3-1">
+<ul class="org-ul">
+<li>常態分佈資料：當資料的分佈接近常態分佈時，標準化通常能有效地將資料居中，這樣的變換效果最佳。<br /></li>
+<li>線性模型（例如線性回歸、邏輯回歸）：這些模型對資料尺度敏感，標準化可提升模型的效果。<br /></li>
+<li>距離度量模型（如K-means、SVM、PCA等）：這些算法在不同尺度的特徵上運行時，數值較大的特徵可能會主導結果，標準化能夠使得所有特徵對結果的影響一致。<br /></li>
+<li>神經網路：在神經網絡中，標準化也能穩定訓練過程，加速收斂，尤其是在使用梯度下降的情境下。<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgda79f2c" class="outline-4">
+<h4 id="orgda79f2c"><span class="section-number-4">6.3.2</span> Normalization</h4>
+<div class="outline-text-4" id="text-6-3-2">
+<ul class="org-ul">
+<li>非常態分佈的資料：特徵範圍差異較大，且資料並不符合常態分佈時，正規化可避免資料的擴散影響。<br /></li>
+<li>距離度量模型（如K-NN、距離加權的算法）：正規化能夠防止數值較大的特徵對距離計算產生過大影響。<br /></li>
+<li>樹模型（如決策樹、隨機森林）：這些模型對資料尺度不敏感，正規化能使其更具解釋性。<br /></li>
+<li>對輸入範圍有特定要求的模型：如神經網絡，尤其是一些輸入需要在特定範圍內的神經網絡結構，如RNN和一些圖像處理應用的CNN。<br /></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
 
+<div id="outline-container-orge88d833" class="outline-2">
+<h2 id="orge88d833"><span class="section-number-2">7</span> 資料擴增</h2>
+<div class="outline-text-2" id="text-7">
+<p>
+資料擴增是一種在訓練機器學習模型特別是深度學習模型時非常重要的技術。它通過對訓練資料進行多種隨機變換，來生成更多的資料樣本，以增強模型的泛化能力並避免過擬合。資料擴增對於擁有有限的情況尤其有用，因為它能夠讓模型看到更多樣化的資料，從而提升模型的預測能力和準確度。<br />
+</p>
 <ul class="org-ul">
 <li>資料擴增的重要性<br />
 資料擴增能夠模擬真實世界中數據的變化。例如，影像資料可能因為角度、光照、比例等不同而有所變化。透過對現有資料進行旋轉、翻轉、縮放、平移等變換，我們可以有效地提高模型的健壯性，使其能夠在不同場景下依然表現良好。<br /></li>
@@ -1609,9 +2086,9 @@ James v.s. Vanessa: 0.978640304032486
 </ol></li>
 </ul>
 </div>
-<div id="outline-container-org5294eec" class="outline-3">
-<h3 id="org5294eec"><span class="section-number-3">5.1.</span> 下載範例程式</h3>
-<div class="outline-text-3" id="text-5-1">
+<div id="outline-container-org5dd3684" class="outline-3">
+<h3 id="org5dd3684"><span class="section-number-3">7.1</span> 下載範例程式</h3>
+<div class="outline-text-3" id="text-7-1">
 <ul class="org-ul">
 <li>底下的檔案可以透過以下方式下載(於終端機執行)<br /></li>
 <li>要記得修改main.py裡的資料夾路徑<br /></li>
@@ -1622,9 +2099,9 @@ James v.s. Vanessa: 0.978640304032486
 </div>
 </div>
 </div>
-<div id="outline-container-org59065f3" class="outline-3">
-<h3 id="org59065f3"><span class="section-number-3">5.2.</span> 範例</h3>
-<div class="outline-text-3" id="text-5-2">
+<div id="outline-container-org72ea5ca" class="outline-3">
+<h3 id="org72ea5ca"><span class="section-number-3">7.2</span> 範例</h3>
+<div class="outline-text-3" id="text-7-2">
 <p>
 安裝opencv<br />
 </p>
@@ -1695,13 +2172,17 @@ James v.s. Vanessa: 0.978640304032486
         <span style="color: #dcaeea;">category_input_dir</span> = os.path.join(input_dir, category)
         <span style="color: #dcaeea;">category_output_dir</span> = os.path.join(output_dir, category)
 
+        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27298;&#26597;&#20006;&#21109;&#24314;&#23376;&#30446;&#37636;</span>
+        <span style="color: #51afef;">if</span> <span style="color: #51afef;">not</span> os.path.exists(category_output_dir):
+            os.makedirs(category_output_dir)
+
         <span style="color: #51afef;">for</span> filename <span style="color: #51afef;">in</span> os.listdir(category_input_dir):
             <span style="color: #dcaeea;">image_path</span> = os.path.join(category_input_dir, filename)
             <span style="color: #dcaeea;">image</span> = cv2.imread(image_path)
             <span style="color: #dcaeea;">augmented_images</span> = augment_image(image)
 
             <span style="color: #51afef;">for</span> i, augmented_image <span style="color: #51afef;">in</span> <span style="color: #c678dd;">enumerate</span>(augmented_images):
-                <span style="color: #dcaeea;">output_filename</span> = f<span style="color: #98be65;">"</span>{os.path.splitext(filename)[0]}<span style="color: #98be65;">_aug_</span>{i}<span style="color: #98be65;">.jpg"</span>
+                <span style="color: #dcaeea;">output_filename</span> = f<span style="color: #98be65;">"{os.path.splitext(filename)[0]}_aug_{i}.jpg"</span>
                 <span style="color: #dcaeea;">output_path</span> = os.path.join(category_output_dir, output_filename)
                 cv2.imwrite(output_path, augmented_image)
 
@@ -1715,9 +2196,10 @@ process_directory(input_directory, output_directory)
 </div>
 </div>
 </div>
-<div id="outline-container-org9d7b8b3" class="outline-3">
-<h3 id="org9d7b8b3"><span class="section-number-3">5.3.</span> 其他擴增方法</h3>
-<div class="outline-text-3" id="text-5-3">
+
+<div id="outline-container-org25d06ea" class="outline-3">
+<h3 id="org25d06ea"><span class="section-number-3">7.3</span> 其他擴增方法</h3>
+<div class="outline-text-3" id="text-7-3">
 <p>
 其他資料擴增方式還有:濾波、銳化、去噪、旋轉、縮放、裁剪和增加人工噪聲&#x2026;.，至於資料擴增對於模型有何助益請<a href="https://blog.toright.com/posts/7144/keras-tutorial-cnn-data-augmentation-training">參閱這篇</a>。其他資料擴增方式請看:<br />
 </p>
@@ -1728,20 +2210,21 @@ process_directory(input_directory, output_directory)
 </div>
 </div>
 </div>
-<div id="outline-container-org7365c17" class="outline-2">
-<h2 id="org7365c17"><span class="section-number-2">6.</span> 資料集與資料分割</h2>
-<div class="outline-text-2" id="text-6">
+
+<div id="outline-container-org85b9c4f" class="outline-2">
+<h2 id="org85b9c4f"><span class="section-number-2">8</span> 資料集與資料分割</h2>
+<div class="outline-text-2" id="text-8">
 </div>
-<div id="outline-container-org3128893" class="outline-3">
-<h3 id="org3128893"><span class="section-number-3">6.1.</span> 常用資料集</h3>
-<div class="outline-text-3" id="text-6-1">
+<div id="outline-container-orgde5c9fd" class="outline-3">
+<h3 id="orgde5c9fd"><span class="section-number-3">8.1</span> 常用資料集</h3>
+<div class="outline-text-3" id="text-8-1">
 <p>
 當你使用 Python 學習人工智慧（AI）和機器學習（ML）時，以下是一些常用的資料集及其簡單介紹：<br />
 </p>
 </div>
-<div id="outline-container-orgbdbb922" class="outline-4">
-<h4 id="orgbdbb922"><span class="section-number-4">6.1.1.</span> MNIST</h4>
-<div class="outline-text-4" id="text-6-1-1">
+<div id="outline-container-orgb95a360" class="outline-4">
+<h4 id="orgb95a360"><span class="section-number-4">8.1.1</span> MNIST</h4>
+<div class="outline-text-4" id="text-8-1-1">
 <p>
 簡介：MNIST（Modified National Institute of Standards and Technology database）是一個大型手寫數字資料集，包含 0 到 9 的手寫數字圖像。<br />
 </p>
@@ -1752,14 +2235,14 @@ process_directory(input_directory, output_directory)
 </ul>
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">from</span> tensorflow.keras.datasets <span style="color: #51afef;">import</span> mnist
-<span class="linenr">2: </span>(x_train, y_train), (<span style="color: #dcaeea;">x_test</span>, <span style="color: #dcaeea;">y_test</span>) = mnist.load_data()
+<span class="linenr">2: </span>(x_train, y_train), (x_test, y_test) = mnist.load_data()
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-org42183cc" class="outline-4">
-<h4 id="org42183cc"><span class="section-number-4">6.1.2.</span> Iris</h4>
-<div class="outline-text-4" id="text-6-1-2">
+<div id="outline-container-orge797391" class="outline-4">
+<h4 id="orge797391"><span class="section-number-4">8.1.2</span> Iris</h4>
+<div class="outline-text-4" id="text-8-1-2">
 <ul class="org-ul">
 <li>簡介：Iris 資料集包含 3 種鰹魚花（Setosa、Versicolour 和 Virginica）的 150 個樣本，每個樣本有 4 個特徵（花萼長度、花萼寬度、花瓣長度、花瓣寬度）。<br /></li>
 <li>用途：常用於分類和聚類算法的入門練習。<br /></li>
@@ -1774,9 +2257,9 @@ process_directory(input_directory, output_directory)
 </div>
 </div>
 </div>
-<div id="outline-container-orgd3e7ebd" class="outline-4">
-<h4 id="orgd3e7ebd"><span class="section-number-4">6.1.3.</span> Boston 房價</h4>
-<div class="outline-text-4" id="text-6-1-3">
+<div id="outline-container-org197baff" class="outline-4">
+<h4 id="org197baff"><span class="section-number-4">8.1.3</span> Boston 房價</h4>
+<div class="outline-text-4" id="text-8-1-3">
 <ul class="org-ul">
 <li>簡介：Boston 房價資料集包含 506 個房屋的特徵和價格信息，用於回歸問題。<br /></li>
 <li>用途：常用於回歸算法的入門練習。<br /></li>
@@ -1787,14 +2270,14 @@ process_directory(input_directory, output_directory)
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
 <span class="linenr">2: </span><span style="color: #51afef;">from</span> tensorflow.keras.datasets <span style="color: #51afef;">import</span> boston_housing
 <span class="linenr">3: </span>
-<span class="linenr">4: </span>(train_x, train_y), (<span style="color: #dcaeea;">test_x</span>, <span style="color: #dcaeea;">test_y</span>) = boston_housing.load_data()
+<span class="linenr">4: </span>(train_x, train_y), (test_x, test_y) = boston_housing.load_data()
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-org3ba8ce6" class="outline-4">
-<h4 id="org3ba8ce6"><span class="section-number-4">6.1.4.</span> CIFAR-10</h4>
-<div class="outline-text-4" id="text-6-1-4">
+<div id="outline-container-orga305b0b" class="outline-4">
+<h4 id="orga305b0b"><span class="section-number-4">8.1.4</span> CIFAR-10</h4>
+<div class="outline-text-4" id="text-8-1-4">
 <ul class="org-ul">
 <li>簡介：CIFAR-10 是一個影像資料集，包含 10 個類別的 60,000 張彩色圖片，每個類別有 6,000 張圖片。<br /></li>
 <li>用途：常用於圖像分類和深度學習的入門練習。<br /></li>
@@ -1803,14 +2286,14 @@ process_directory(input_directory, output_directory)
 </ul>
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">from</span> tensorflow.keras.datasets <span style="color: #51afef;">import</span> cifar10
-<span class="linenr">2: </span>(x_train, y_train), (<span style="color: #dcaeea;">x_test</span>, <span style="color: #dcaeea;">y_test</span>) = cifar10.load_data()
+<span class="linenr">2: </span>(x_train, y_train), (x_test, y_test) = cifar10.load_data()
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-org5c6a95b" class="outline-4">
-<h4 id="org5c6a95b"><span class="section-number-4">6.1.5.</span> Wine</h4>
-<div class="outline-text-4" id="text-6-1-5">
+<div id="outline-container-org96c7660" class="outline-4">
+<h4 id="org96c7660"><span class="section-number-4">8.1.5</span> Wine</h4>
+<div class="outline-text-4" id="text-8-1-5">
 <ul class="org-ul">
 <li>簡介：Wine 資料集包含 178 個樣本，記錄了 3 種不同葡萄酒的 13 個化學成分。<br /></li>
 <li>用途：常用於分類問題。<br /></li>
@@ -1825,9 +2308,9 @@ process_directory(input_directory, output_directory)
 </div>
 </div>
 </div>
-<div id="outline-container-orgc27edb0" class="outline-4">
-<h4 id="orgc27edb0"><span class="section-number-4">6.1.6.</span> Breast Cancer Wisconsin</h4>
-<div class="outline-text-4" id="text-6-1-6">
+<div id="outline-container-orge69f1c1" class="outline-4">
+<h4 id="orge69f1c1"><span class="section-number-4">8.1.6</span> Breast Cancer Wisconsin</h4>
+<div class="outline-text-4" id="text-8-1-6">
 <ul class="org-ul">
 <li>簡介：Breast Cancer Wisconsin 資料集包含 569 個乳腺癌樣本的特徵，目的是預測腫瘤是良性還是惡性。<br /></li>
 <li>用途：常用於二元分類問題。<br /></li>
@@ -1843,38 +2326,39 @@ process_directory(input_directory, output_directory)
 </div>
 </div>
 </div>
-<div id="outline-container-org2a4040c" class="outline-3">
-<h3 id="org2a4040c"><span class="section-number-3">6.2.</span> 資料分割</h3>
-<div class="outline-text-3" id="text-6-2">
+<div id="outline-container-org8560bf8" class="outline-3">
+<h3 id="org8560bf8"><span class="section-number-3">8.2</span> 資料分割</h3>
+<div class="outline-text-3" id="text-8-2">
 
-<div id="org9e6345b" class="figure">
+<div class="figure">
 <p><img src="images/datapreprocessing.png" alt="datapreprocessing.png" /><br />
 </p>
 </div>
 </div>
-<div id="outline-container-org70352c6" class="outline-4">
-<h4 id="org70352c6"><span class="section-number-4">6.2.1.</span> 為什麼要分割資料</h4>
-<div class="outline-text-4" id="text-6-2-1">
+
+<div id="outline-container-org27e67fe" class="outline-4">
+<h4 id="org27e67fe"><span class="section-number-4">8.2.1</span> 為什麼要分割資料</h4>
+<div class="outline-text-4" id="text-8-2-1">
 <ul class="org-ul">
-<li>訓練集（training): 舉例來說就是上課學習。主要用在訓練階段，用於模型擬合，直接參與了模型參數調整的過程<sup><a id="fnr.8" class="footref" href="#fn.8" role="doc-backlink">8</a></sup>。<br /></li>
-<li>驗證集（validation）: 舉例來說就是模擬考，你會根據模擬考的成績繼續學習、或調整學習方式重新學習。在訓練過程中，用於評估模型的初步能力與超參數調整的依據。不過驗證集是非必需的，不像訓練集和測試集。如果不需要調整超參數，就可以不使用驗證集<sup><a id="fnr.8.100" class="footref" href="#fn.8" role="doc-backlink">8</a></sup>。<br /></li>
-<li>測試集（test）就像是學測，用來評估你最終的學習結果。用來評估模型最終的泛化能力。為了能評估模型真正的能力，測試集不應該為參數調整、選擇特徵等依據<sup><a id="fnr.8.100" class="footref" href="#fn.8" role="doc-backlink">8</a></sup>。<br /></li>
+<li>訓練集（training): 舉例來說就是上課學習。主要用在訓練階段，用於模型擬合，直接參與了模型參數調整的過程<sup><a id="fnr.8" class="footref" href="#fn.8">8</a></sup>。<br /></li>
+<li>驗證集（validation）: 舉例來說就是模擬考，你會根據模擬考的成績繼續學習、或調整學習方式重新學習。在訓練過程中，用於評估模型的初步能力與超參數調整的依據。不過驗證集是非必需的，不像訓練集和測試集。如果不需要調整超參數，就可以不使用驗證集<sup><a id="fnr.8.100" class="footref" href="#fn.8">8</a></sup>。<br /></li>
+<li>測試集（test）就像是學測，用來評估你最終的學習結果。用來評估模型最終的泛化能力。為了能評估模型真正的能力，測試集不應該為參數調整、選擇特徵等依據<sup><a id="fnr.8.100" class="footref" href="#fn.8">8</a></sup>。<br /></li>
 </ul>
 <p>
-使用學測來比喻，是因為測試集不應該做為參數調整、選擇特徵等依據。這些選擇與調整可以想像成學習方式的調整，但學測已經考完，你不能時光倒轉回到最初調整學習方式<sup><a id="fnr.8.100" class="footref" href="#fn.8" role="doc-backlink">8</a></sup>。<br />
+使用學測來比喻，是因為測試集不應該做為參數調整、選擇特徵等依據。這些選擇與調整可以想像成學習方式的調整，但學測已經考完，你不能時光倒轉回到最初調整學習方式<sup><a id="fnr.8.100" class="footref" href="#fn.8">8</a></sup>。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org2b8d3fb" class="outline-4">
-<h4 id="org2b8d3fb"><span class="section-number-4">6.2.2.</span> 資料分割實作</h4>
-<div class="outline-text-4" id="text-6-2-2">
+<div id="outline-container-orgcde898a" class="outline-4">
+<h4 id="orgcde898a"><span class="section-number-4">8.2.2</span> 資料分割實作</h4>
+<div class="outline-text-4" id="text-8-2-2">
 <p>
 訓練集與測試集的分割可以自行以Python進行分割，也可以直接呼叫函式進行分割<br />
 </p>
 </div>
-<div id="outline-container-org4d2cef7" class="outline-5">
-<h5 id="org4d2cef7"><span class="section-number-5">6.2.2.1.</span> 手動分割</h5>
-<div class="outline-text-5" id="text-6-2-2-1">
+<div id="outline-container-org3045f15" class="outline-5">
+<h5 id="org3045f15"><span class="section-number-5">8.2.2.1</span> 手動分割</h5>
+<div class="outline-text-5" id="text-8-2-2-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
 <span class="linenr"> 2: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
@@ -1884,7 +2368,7 @@ process_directory(input_directory, output_directory)
 <span class="linenr"> 6: </span>                      <span style="color: #98be65;">'ml/machine-learning-databases/wine/wine.data'</span>,
 <span class="linenr"> 7: </span>                      header=<span style="color: #a9a1e1;">None</span>)
 <span class="linenr"> 8: </span>
-<span class="linenr"> 9: </span>df_wine.<span style="color: #dcaeea;">columns</span> = [<span style="color: #98be65;">'Class label'</span>, <span style="color: #98be65;">'Alcohol'</span>, <span style="color: #98be65;">'Malic acid'</span>, <span style="color: #98be65;">'Ash'</span>,
+<span class="linenr"> 9: </span><span style="color: #dcaeea;">df_wine.columns</span> = [<span style="color: #98be65;">'Class label'</span>, <span style="color: #98be65;">'Alcohol'</span>, <span style="color: #98be65;">'Malic acid'</span>, <span style="color: #98be65;">'Ash'</span>,
 <span class="linenr">10: </span>                   <span style="color: #98be65;">'Alcalinity of ash'</span>, <span style="color: #98be65;">'Magnesium'</span>, <span style="color: #98be65;">'Total phenols'</span>,
 <span class="linenr">11: </span>                   <span style="color: #98be65;">'Flavanoids'</span>, <span style="color: #98be65;">'Nonflavanoid phenols'</span>, <span style="color: #98be65;">'Proanthocyanins'</span>,
 <span class="linenr">12: </span>                   <span style="color: #98be65;">'Color intensity'</span>, <span style="color: #98be65;">'Hue'</span>, <span style="color: #98be65;">'OD280/OD315 of diluted wines'</span>,
@@ -1899,21 +2383,21 @@ process_directory(input_directory, output_directory)
 <span class="linenr">21: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20998;&#21106;&#36039;&#26009;&#38598;</span>
 <span class="linenr">22: </span><span style="color: #dcaeea;">TrainSet</span> = df_wine.loc[idx[:train_len]]
 <span class="linenr">23: </span><span style="color: #dcaeea;">TestSet</span> = df_wine.loc[idx[train_len:]]
-<span class="linenr">24: </span><span style="color: #c678dd;">print</span>(<span style="color: #c678dd;">len</span>(TrainSet))
-<span class="linenr">25: </span><span style="color: #c678dd;">print</span>(<span style="color: #c678dd;">len</span>(TestSet))
+<span class="linenr">24: </span><span style="color: #51afef;">print</span>(<span style="color: #c678dd;">len</span>(TrainSet))
+<span class="linenr">25: </span><span style="color: #51afef;">print</span>(<span style="color: #c678dd;">len</span>(TestSet))
 <span class="linenr">26: </span><span style="color: #dcaeea;">X_train</span>, <span style="color: #dcaeea;">y_train</span> = TrainSet.iloc[:, <span style="color: #da8548; font-weight: bold;">1</span>:].values, TrainSet.iloc[:, <span style="color: #da8548; font-weight: bold;">0</span>].values
 <span class="linenr">27: </span><span style="color: #dcaeea;">X_test</span>, <span style="color: #dcaeea;">y_test</span> = TestSet.iloc[:, <span style="color: #da8548; font-weight: bold;">1</span>:].values, TestSet.iloc[:, <span style="color: #da8548; font-weight: bold;">0</span>].values
 <span class="linenr">28: </span>
-<span class="linenr">29: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'==========&#35347;&#32244;&#38598;=========='</span>)
-<span class="linenr">30: </span><span style="color: #c678dd;">print</span>(X_train[:<span style="color: #da8548; font-weight: bold;">2</span>])
-<span class="linenr">31: </span><span style="color: #c678dd;">print</span>(y_train[:<span style="color: #da8548; font-weight: bold;">2</span>])
-<span class="linenr">32: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'==========&#28204;&#35430;&#38598;=========='</span>)
-<span class="linenr">33: </span><span style="color: #c678dd;">print</span>(X_test[:<span style="color: #da8548; font-weight: bold;">2</span>])
-<span class="linenr">34: </span><span style="color: #c678dd;">print</span>(y_test[:<span style="color: #da8548; font-weight: bold;">2</span>])
+<span class="linenr">29: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'==========&#35347;&#32244;&#38598;=========='</span>)
+<span class="linenr">30: </span><span style="color: #51afef;">print</span>(X_train[:<span style="color: #da8548; font-weight: bold;">2</span>])
+<span class="linenr">31: </span><span style="color: #51afef;">print</span>(y_train[:<span style="color: #da8548; font-weight: bold;">2</span>])
+<span class="linenr">32: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'==========&#28204;&#35430;&#38598;=========='</span>)
+<span class="linenr">33: </span><span style="color: #51afef;">print</span>(X_test[:<span style="color: #da8548; font-weight: bold;">2</span>])
+<span class="linenr">34: </span><span style="color: #51afef;">print</span>(y_test[:<span style="color: #da8548; font-weight: bold;">2</span>])
 </pre>
 </div>
 
-<pre class="example" id="orgf975dea">
+<pre class="example">
 124
 54
 ==========訓練集==========
@@ -1931,9 +2415,9 @@ process_directory(input_directory, output_directory)
 </pre>
 </div>
 </div>
-<div id="outline-container-org3787e4d" class="outline-5">
-<h5 id="org3787e4d"><span class="section-number-5">6.2.2.2.</span> 呼叫scikit learn的function</h5>
-<div class="outline-text-5" id="text-6-2-2-2">
+<div id="outline-container-org58dcd5e" class="outline-5">
+<h5 id="org58dcd5e"><span class="section-number-5">8.2.2.2</span> 呼叫scikit learn的function</h5>
+<div class="outline-text-5" id="text-8-2-2-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
 <span class="linenr"> 2: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
@@ -1943,13 +2427,13 @@ process_directory(input_directory, output_directory)
 <span class="linenr"> 6: </span>                      <span style="color: #98be65;">'ml/machine-learning-databases/wine/wine.data'</span>,
 <span class="linenr"> 7: </span>                      header=<span style="color: #a9a1e1;">None</span>)
 <span class="linenr"> 8: </span>
-<span class="linenr"> 9: </span>df_wine.<span style="color: #dcaeea;">columns</span> = [<span style="color: #98be65;">'Class label'</span>, <span style="color: #98be65;">'Alcohol'</span>, <span style="color: #98be65;">'Malic acid'</span>, <span style="color: #98be65;">'Ash'</span>,
+<span class="linenr"> 9: </span><span style="color: #dcaeea;">df_wine.columns</span> = [<span style="color: #98be65;">'Class label'</span>, <span style="color: #98be65;">'Alcohol'</span>, <span style="color: #98be65;">'Malic acid'</span>, <span style="color: #98be65;">'Ash'</span>,
 <span class="linenr">10: </span>                   <span style="color: #98be65;">'Alcalinity of ash'</span>, <span style="color: #98be65;">'Magnesium'</span>, <span style="color: #98be65;">'Total phenols'</span>,
 <span class="linenr">11: </span>                   <span style="color: #98be65;">'Flavanoids'</span>, <span style="color: #98be65;">'Nonflavanoid phenols'</span>, <span style="color: #98be65;">'Proanthocyanins'</span>,
 <span class="linenr">12: </span>                   <span style="color: #98be65;">'Color intensity'</span>, <span style="color: #98be65;">'Hue'</span>, <span style="color: #98be65;">'OD280/OD315 of diluted wines'</span>,
 <span class="linenr">13: </span>                   <span style="color: #98be65;">'Proline'</span>]
 <span class="linenr">14: </span>
-<span class="linenr">15: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'Class labels'</span>, np.unique(df_wine[<span style="color: #98be65;">'Class label'</span>]))
+<span class="linenr">15: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'Class labels'</span>, np.unique(df_wine[<span style="color: #98be65;">'Class label'</span>]))
 <span class="linenr">16: </span>
 <span class="linenr">17: </span><span style="color: #dcaeea;">X</span>, <span style="color: #dcaeea;">y</span> = df_wine.iloc[:, <span style="color: #da8548; font-weight: bold;">1</span>:].values, df_wine.iloc[:, <span style="color: #da8548; font-weight: bold;">0</span>].values
 <span class="linenr">18: </span>
@@ -1957,19 +2441,19 @@ process_directory(input_directory, output_directory)
 <span class="linenr">20: </span><span style="color: #dcaeea;">X_train</span>, <span style="color: #dcaeea;">X_test</span>, <span style="color: #dcaeea;">y_train</span>, <span style="color: #dcaeea;">y_test</span> = train_test_split(X, y,
 <span class="linenr">21: </span>                     test_size=<span style="color: #da8548; font-weight: bold;">0.3</span>, random_state=<span style="color: #da8548; font-weight: bold;">0</span>, stratify=y)
 <span class="linenr">22: </span>
-<span class="linenr">23: </span><span style="color: #c678dd;">print</span>(<span style="color: #c678dd;">len</span>(X_train))
-<span class="linenr">24: </span><span style="color: #c678dd;">print</span>(<span style="color: #c678dd;">len</span>(y_test))
+<span class="linenr">23: </span><span style="color: #51afef;">print</span>(<span style="color: #c678dd;">len</span>(X_train))
+<span class="linenr">24: </span><span style="color: #51afef;">print</span>(<span style="color: #c678dd;">len</span>(y_test))
 <span class="linenr">25: </span>
-<span class="linenr">26: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'==========&#35347;&#32244;&#38598;=========='</span>)
-<span class="linenr">27: </span><span style="color: #c678dd;">print</span>(X_train[:<span style="color: #da8548; font-weight: bold;">2</span>])
-<span class="linenr">28: </span><span style="color: #c678dd;">print</span>(y_train[:<span style="color: #da8548; font-weight: bold;">2</span>])
-<span class="linenr">29: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'==========&#28204;&#35430;&#38598;=========='</span>)
-<span class="linenr">30: </span><span style="color: #c678dd;">print</span>(X_test[:<span style="color: #da8548; font-weight: bold;">2</span>])
-<span class="linenr">31: </span><span style="color: #c678dd;">print</span>(y_test[:<span style="color: #da8548; font-weight: bold;">2</span>])
+<span class="linenr">26: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'==========&#35347;&#32244;&#38598;=========='</span>)
+<span class="linenr">27: </span><span style="color: #51afef;">print</span>(X_train[:<span style="color: #da8548; font-weight: bold;">2</span>])
+<span class="linenr">28: </span><span style="color: #51afef;">print</span>(y_train[:<span style="color: #da8548; font-weight: bold;">2</span>])
+<span class="linenr">29: </span><span style="color: #51afef;">print</span>(<span style="color: #98be65;">'==========&#28204;&#35430;&#38598;=========='</span>)
+<span class="linenr">30: </span><span style="color: #51afef;">print</span>(X_test[:<span style="color: #da8548; font-weight: bold;">2</span>])
+<span class="linenr">31: </span><span style="color: #51afef;">print</span>(y_test[:<span style="color: #da8548; font-weight: bold;">2</span>])
 </pre>
 </div>
 
-<pre class="example" id="org001fd0b">
+<pre class="example">
 Class labels [1 2 3]
 124
 54
@@ -1995,35 +2479,35 @@ Class labels [1 2 3]
 <h2 class="footnotes">Footnotes: </h2>
 <div id="text-footnotes">
 
-<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1">1</a></sup> <div class="footpara"><p class="footpara">
 <a href="https://cinereplicas.com/products/harry-potter-nimbus-2000-broom-2019-edition">Nimbus 2000</a><br />
 </p></div></div>
 
-<div class="footdef"><sup><a id="fn.2" class="footnum" href="#fnr.2" role="doc-backlink">2</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<div class="footdef"><sup><a id="fn.2" class="footnum" href="#fnr.2">2</a></sup> <div class="footpara"><p class="footpara">
 <a href="https://www.cw.com.tw/index.php/article/5124891?rec=es">體脂肪多少才標準？體脂機的原理是什麼？體脂率對照表一次看</a><br />
 </p></div></div>
 
-<div class="footdef"><sup><a id="fn.3" class="footnum" href="#fnr.3" role="doc-backlink">3</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<div class="footdef"><sup><a id="fn.3" class="footnum" href="#fnr.3">3</a></sup> <div class="footpara"><p class="footpara">
 <a href="https://apcs.csie.ntnu.edu.tw/index.php/info/grades/">APCS檢測資訊</a><br />
 </p></div></div>
 
-<div class="footdef"><sup><a id="fn.4" class="footnum" href="#fnr.4" role="doc-backlink">4</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<div class="footdef"><sup><a id="fn.4" class="footnum" href="#fnr.4">4</a></sup> <div class="footpara"><p class="footpara">
 <a href="https://www.pinecone.io/learn/vector-similarity/">Vector Similarity Explained</a><br />
 </p></div></div>
 
-<div class="footdef"><sup><a id="fn.5" class="footnum" href="#fnr.5" role="doc-backlink">5</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<div class="footdef"><sup><a id="fn.5" class="footnum" href="#fnr.5">5</a></sup> <div class="footpara"><p class="footpara">
 <a href="http://blog.itpub.net/70027826/viewspace-2970075/">向量資料庫與pgvector </a><br />
 </p></div></div>
 
-<div class="footdef"><sup><a id="fn.6" class="footnum" href="#fnr.6" role="doc-backlink">6</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<div class="footdef"><sup><a id="fn.6" class="footnum" href="#fnr.6">6</a></sup> <div class="footpara"><p class="footpara">
 <a href="https://livebook.manning.com/concept/nlp/3d-vector">Natural Language Processing in Action: Understanding, analyzing, and generating text with Python</a><br />
 </p></div></div>
 
-<div class="footdef"><sup><a id="fn.7" class="footnum" href="#fnr.7" role="doc-backlink">7</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<div class="footdef"><sup><a id="fn.7" class="footnum" href="#fnr.7">7</a></sup> <div class="footpara"><p class="footpara">
 <a href="https://aifreeblog.herokuapp.com/posts/54/data_science_203/">資料的正規化(Normalization)及標準化(Standardization)</a><br />
 </p></div></div>
 
-<div class="footdef"><sup><a id="fn.8" class="footnum" href="#fnr.8" role="doc-backlink">8</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<div class="footdef"><sup><a id="fn.8" class="footnum" href="#fnr.8">8</a></sup> <div class="footpara"><p class="footpara">
 <a href="https://cynthiachuang.github.io/What-is-the-Difference-between-Training-Validation-and-Test-Dataset/">訓練集、驗證集、測試集的定義與劃分</a><br />
 </p></div></div>
 
@@ -2031,8 +2515,8 @@ Class labels [1 2 3]
 </div>
 </div></div>
 <div id="postamble" class="status">
-<p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2024-09-19 Thu 11:00</p>
+<p class="author">Author: Yung Chin, Yen</p>
+<p class="date">Created: 2024-11-01 Fri 13:40</p>
 </div>
 </body>
 </html>

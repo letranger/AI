@@ -16,24 +16,110 @@
 
 #+latex:\newpage
 
+* 為此 org 啟用 venv :noexport:
+#+begin_src shell -r -n :results output :exports both
+python3 -m venv /tmp/venv
+source /tmp/venv/bin/activate
+echo $VIRTUAL_ENV
+ls venv
+pip3 install opencv-python
+#+end_src
+
+#+RESULTS:
+#+begin_example
+/tmp/venv
+bin
+include
+lib
+list
+pyvenv.cfg
+share
+Collecting opencv-python
+  Downloading opencv_python-4.10.0.84-cp37-abi3-macosx_11_0_arm64.whl.metadata (20 kB)
+Requirement already satisfied: numpy>=1.21.2 in /private/tmp/venv/lib/python3.13/site-packages (from opencv-python) (2.1.2)
+Downloading opencv_python-4.10.0.84-cp37-abi3-macosx_11_0_arm64.whl (54.8 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 54.8/54.8 MB 16.7 MB/s eta 0:00:00
+Installing collected packages: opencv-python
+Successfully installed opencv-python-4.10.0.84
+#+end_example
+
+#+BEGIN_SRC emacs-lisp :session :exports no
+(pyvenv-activate "/tmp/venv")
+(setq org-babel-python-command "/tmp/venv/bin/python3")
+#+END_SRC
+
+#+RESULTS:
+: /tmp/venv/bin/python3
+
+#+begin_src python -r -n :async :results output :exports both :session python
+print('test')
+#+end_src
+
+#+RESULTS:
+: test
+
 進行數運模式運算之前，需要進行的數據預處理工作大致可分為以下幾點：
 1. 數據遺漏值處理
 1. 數據分類編碼
 1. 數據訓練集與測試集之分割
 1. 數據特徵選取
 
-* 資料預處理
-在收集到所需的資料後，常會遇到各種資料不全、缺失的情況，因此需要對資料進行整理，以便後續的分析。進行數運模式運算之前，需要進行的[[id:82e219c3-6ca0-43b0-bb11-e3a8454f089d][資料預處理]]工作大致可分為以下幾點：
-1. 數據遺漏值處理
-2. 數據分類編碼
-3. 數據訓練集與測試集之分割
-4. 數據特徵選取
+* AI處理的資料
+大數據與傳統資料的主要差異
+** 資料量：
+- 大數據：AI所需的大數據集規模通常極大，通常包含數十萬、數百萬甚至數十億筆記錄。這些資料可以來自網路使用者的行為、傳感器數據、社群媒體等。
+- 傳統資料：傳統意義上的資料通常規模較小，例如企業的銷售記錄、財務報表，或者手動收集的問卷調查結果。
+** 資料結構：
+#+CAPTION: 結構化與非結構化資料
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/strucdata.png]]
+- 大數據：大數據包含結構化(如Excel報表、Sensor回傳資料)、半結構化(有欄位、但不一致)和非結構化數據(如社群軟體貼文)。這些數據可以包括文字、圖片、影片、聲音等，因此處理大數據需要考慮多樣的資料格式。
+- 傳統資料：通常是結構化的資料，例如SQL資料庫中的表格，行列分明，資料屬性相對簡單。
+** 資料處理與儲存：
+- 大數據的儲存：由於大數據的數量龐大，通常需要分佈式系統來存儲，例如Hadoop、分散式資料庫等。大數據的資料儲存涉及到不同的檔案格式，如Parquet、Avro等，這些格式有助於壓縮數據並高效存取。
+- 傳統資料的儲存：多數情況下會採用關聯式數據庫來儲存，使用如MySQL、PostgreSQL等。
+** 資料更新頻率：
+- 大數據：大數據來自不斷變化的即時數據來源，資料更新的頻率可能是每秒、每分鐘，甚至是即時的，因此需要考慮實時處理的需求。
+- 傳統資料：傳統資料通常是靜態的，資料更新的頻率低，通常是批量更新，並且並不需要即時性。
+** 資料處理特點：
+- 大數據處理：因應資料量和資料格式的多樣化，大數據處理更多地依賴於分布式處理技術，例如MapReduce、Spark。這些工具的設計旨在能夠平行處理大量的資料。
+- 傳統資料處理：傳統資料處理則多數使用單機處理技術，或是使用單一SQL語句進行分析，處理的複雜度和規模有限。
 
-以下的程式碼都是簡單的pandas應用，如果你看不懂，表示你自已要惡補一下Pandas的課程，可以參看:
+這些差異決定了AI所面臨的資料不僅僅是量上的增加，更是對多樣性和處理方法上的挑戰。因此，資料的儲存格式、擴充性和資料品質變得更加重要，需要採取新的資料預處理方法，確保AI模型可以有效使用這些數據。
+
+* 資料預處理
+在收集到所需的資料後，常會遇到各種資料不全、缺失的情況，因此需要對資料進行整理，以便後續的分析。在進行資料建模運算之前，需要進行的資料預處理工作大致可分為以下幾點：
+
+1. 資料遺漏值與異常值處理
+   對於資料中的缺失值或異常值，可以採取以下方法：
+   - 刪除有遺漏值或異常值的樣本或特徵。
+   - 用平均值、中位數、眾數等方法進行填補。
+   - 對於異常值，可以選擇替代處理，以減少對模型的負面影響。
+2. 資料編碼
+   針對類別型資料進行編碼，常見的編碼方法有：
+   - 標籤編碼（Label Encoding）：將類別資料轉換為數值標籤，適用於類別之間有順序性的情況。
+   - 獨熱編碼（One-Hot Encoding）：將類別資料轉換為二進位表示，每個類別對應一個新特徵，適用於類別之間無順序性的情況。
+   - 二元編碼（Binary Encoding）：對於類別數量較多的情況，二元編碼可以有效減少特徵數量，平衡編碼效率與模型複雜度。
+3. 資料標準化與正規化
+   - 對資料進行標準化或正規化，以便縮放資料範圍，確保所有特徵值在相似的數值範圍內，這樣有助於提升模型的訓練效果。
+4. 資料特徵選取
+   - 根據資料集中的特徵對預測目標的影響程度，選擇保留有用的特徵。這可以透過統計方法或特徵重要性評估技術來實現。
+5. 資料擴增
+6. 資料縮減
+   - 使用主成分分析（PCA）等方法來降低資料維度，減少運算量並保留重要資訊。
+7. 資料訓練集與測試集之分割
+   - 將資料集分為訓練集和測試集，以便進行模型訓練和性能評估。通常的分割合適比例為80%訓練集與20%測試集，或者70%與30%。
+
+以下的程式碼 *大部份* 都是 *簡單* 的pandas應用，如果你看不懂，表示你自已要惡補一下Pandas的課程，可以參看:
 - [[https://letranger.github.io/PythonCourse/Pandas.html][Pandas教學]]
 - [[https://leemeng.tw/practical-pandas-tutorial-for-aspiring-data-scientists.html][資料科學家的 pandas實戰手冊:掌握40個實用數據技巧]]
 - 其他的自己[[https://www.google.com/][Google]]
 
+* 資料遺漏值與異常值處理
 ** 讀檔
 - [[file:images/資料預處理/CatDog.csv][按這裡下載測試檔案]]
 *** Colab
@@ -65,15 +151,26 @@ drive.mount('/content/gdrive')
 test = pd.read_csv('gdrive/My Drive/CatDog.csv')
 test
 #+end_src
-** 刪除遺漏值
+** 識別、刪除遺漏值
 現實世界中可能會因各種原因導致數據缺失或遺漏(如問卷被刻意留白)，這些部份通常會以「空白」、「NaN」或「NULL」來取代。
 *** Emacs Baabel Virtual Environment for Python :noexport:
 虛擬環境名稱設定: venv
-#+BEGIN_SRC elisp :session venv
-(pyvenv-activate "~/Dropbox/notes/roam/.venv")
-(setq org-babel-python-command "~/Dropbox/notes/roam/.venv/bin/python")
-(pyvenv-workon "venv")
+#+begin_src shell -r -n :results output :exports both
+python3 -m venv /tmp/venv
+source /tmp/venv/bin/activate
+echo $VIRTUAL_ENV
+#+end_src
+
+#+RESULTS:
+: /tmp/venv
+
+#+BEGIN_SRC elisp
+(pyvenv-activate "/tmp/venv")
+(setq org-babel-python-command "/tmp/venv/bin/python3")
 #+END_SRC
+
+#+RESULTS:
+: /tmp/venv/bin/python3
 *** 查看資料集內容
 #+BEGIN_SRC python -r -n :async :results  output :exports both :session venv
 csv_data ="""A,B,C,D,E
@@ -84,9 +181,7 @@ csv_data ="""A,B,C,D,E
 
 import sys
 import pandas as pd
-# python 2.7需進行unicode轉碼
-if (sys.version_info < (3, 0)):
-    csv_data = unicode(csv_data)
+
 # 讀入程式檔中的csv資料
 from io import StringIO
 df = pd.read_csv(StringIO(csv_data))
@@ -94,15 +189,15 @@ print(df)
 #+END_SRC
 
 #+RESULTS:
-:       A   B     C     D    E
+: A   B     C     D    E
 : 0   1.0 NaN   2.0   3.0  4.0
 : 1   5.0 NaN   6.0   NaN  8.0
 : 2  10.0 NaN  11.0  12.0  5.0
 : 3   9.9 NaN   8.0  12.0  NaN
 
-雖然pd.read_csv是用來讀取網路上或本機端的csv檔，此處為了省去大家讀取d檔案的工作，我們以直接以字串模擬一個檔案出來，所以在讀取時要以以下的方式來讀：
+雖然pd.read_csv是用來讀取網路上或本機端的csv檔，此處為了省去大家讀取d檔案的工作，我們以直接以字串模擬一個檔案出來，所以在讀取時要以下列的方式來讀取內容：
 #+begin_src python -r -n :results output :exports both
-pd.read_csv)StringIO(字串變數名稱)
+pd.read_csv(StringIO(字串變數名稱))
 #+end_src
 *** 遺漏值的識別
 現在可以大概統計一下遺漏值
@@ -126,67 +221,79 @@ dtype: int64
 3    2
 dtype: int64
 #+end_example
-
 *** 刪除有遺漏值的記錄
+**** 刪除有遺失值的資料列
 #+BEGIN_SRC python -r -n :async :results output :exports both :session venv
-# 剛除有遺失值的資料列
-print('====刪掉有遺失值的列:df.dropna(axis=1)====')
+print('====刪掉有遺失值的列:df.dropna(axis=0)====')
 tmpDf = df.dropna(axis=0)
 print(tmpDf)
-# 剛除有遺失值的資料行
+#+end_src
+
+#+RESULTS:
+: Empty DataFrame
+: Columns: [A, B, C, D, E]
+: Index: []
+**** 刪除有遺失值的資料行
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
 print('====刪掉有遺失值的欄:df.dropna(axis=1)====')
 tmpDf = df.dropna(axis=1)
 print(tmpDf)
-# 剛除整列為NaN者
-print('====剛除整欄為NaN者:df.dropna(how=\'all\')====')
+#+end_src
+
+#+RESULTS:
+: ====刪掉有遺失值的欄:df.dropna(axis=1)====
+:       A     C
+: 0   1.0   2.0
+: 1   5.0   6.0
+: 2  10.0  11.0
+: 3   9.9   8.0
+**** 刪除整列為NaN者
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
+print('====刪除整欄為NaN者:df.dropna(how=\'all\')====')
 tmpDf = df.dropna(axis=1, how='all')
 print(tmpDf)
-# 刪除有值個數低於thresh的列
+#+end_src
+
+#+RESULTS:
+: ====刪除整欄為NaN者:df.dropna(how='all')====
+:       A     C     D    E
+: 0   1.0   2.0   3.0  4.0
+: 1   5.0   6.0   NaN  8.0
+: 2  10.0  11.0  12.0  5.0
+: 3   9.9   8.0  12.0  NaN
+**** 刪除有值個數低於thresh的列
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
 print('====刪除有值個數低於thresh的列:df.dropna(thresh=4)====')
 tmpDf = df.dropna(thresh=4)
 print(tmpDf)
-# 刪除特定行(如第C行)中有NaN之列
+#+end_src
+
+#+RESULTS:
+: ====刪除有值個數低於thresh的列:df.dropna(thresh=4)====
+:       A   B     C     D    E
+: 0   1.0 NaN   2.0   3.0  4.0
+: 2  10.0 NaN  11.0  12.0  5.0
+**** 刪除特定行(如第C行)中有NaN之列
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
 print('====刪除特定行(如第C行)中有NaN之列:df.dropna(columns=[\'C\'])====')
 tmpDf=df.drop(columns=['C'])
 print(tmpDf)
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
-====刪掉有遺失值的列:df.dropna(axis=1)====
-Empty DataFrame
-Columns: [A, B, C, D, E]
-Index: []
-====刪掉有遺失值的欄:df.dropna(axis=1)====
-      A     C
-0   1.0   2.0
-1   5.0   6.0
-2  10.0  11.0
-3   9.9   8.0
-====剛除整欄為NaN者:df.dropna(how='all')====
-      A     C     D    E
-0   1.0   2.0   3.0  4.0
-1   5.0   6.0   NaN  8.0
-2  10.0  11.0  12.0  5.0
-3   9.9   8.0  12.0  NaN
-====刪除有值個數低於thresh的列:df.dropna(thresh=4)====
-      A   B     C     D    E
-0   1.0 NaN   2.0   3.0  4.0
-2  10.0 NaN  11.0  12.0  5.0
-====刪除特定行(如第C行)中有NaN之列:df.dropna(columns=['C'])====
-      A   B     D    E
-0   1.0 NaN   3.0  4.0
-1   5.0 NaN   NaN  8.0
-2  10.0 NaN  12.0  5.0
-3   9.9 NaN  12.0  NaN
-#+end_example
+: ====刪除特定行(如第C行)中有NaN之列:df.dropna(columns=['C'])====
+:       A   B     D    E
+: 0   1.0 NaN   3.0  4.0
+: 1   5.0 NaN   NaN  8.0
+: 2  10.0 NaN  12.0  5.0
+: 3   9.9 NaN  12.0  NaN
 雖然刪除包含遺漏值的數據似乎是個方便的方法，但終究可能會刪除過多的樣本，導致分析的結果並不可靠；或是因為刪除了特徵的時候，卻失去了重要的資訊。
 ** 填補遺漏值
 *** 直接填零
 #+BEGIN_SRC python -r -n :async :results  output :exports both :session venv
 csv_data ="""A,B,C,D,E
- 1.0,7.7, 2.0,  3.0, 4.0
- 5.0,,  6.0,, 8.0
+1.0,7.7, 2.0,  3.0, 4.0
+5.0,,  6.0,, 8.0
 10.0,, 11.0, 12.0, 5.0
 9.9,8.8,8.0, 12.0"""
 
@@ -255,9 +362,264 @@ print(imputed_data)
 :  [10.          8.25       11.         12.          5.        ]
 :  [ 9.9         8.8         8.         12.          5.66666667]]
 
-scikit-learn早期版本的填補類別為Imputer，屬於 transformer 類別，主要的工作是做「數據轉換」，這些 estimator 有兩種基本方法：fit 與 transform，fit 方法是用來進行參數學習。在目前的版本中，SimpleImputer 已經被拿來取代以前的 sklearn.preprocessing.Imputer，預設的strategy為mean，其他strategy請參關[[https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html][scikit-learn官網]]。
+scikit-learn早期版本的填補類別為Imputer，屬於 transformer 類別，主要的工作是做「數據轉換」，這些 estimator 有兩種基本方法：fit 與 transform，fit 方法是用來進行參數學習。
 
-更詳細的使用教學請閱讀[[https://ithelp.ithome.com.tw/articles/10293386?sc=pt][[Day03] 拾起武器- Data Preprocessing(02)]]
+在新的版本中，SimpleImputer 已經被拿來取代以前的 sklearn.preprocessing.Imputer，預設的strategy為mean，其他strategy請參關[[https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html][scikit-learn官網]]。
+***** SimpleImputer 基本語法：
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
+from sklearn.impute import SimpleImputer
+
+# 建立 SimpleImputer 物件
+imputer = SimpleImputer(strategy='mean')
+
+# 對數據進行學習
+imputer.fit(data)
+
+# 對數據進行轉換，填補遺漏值
+filled_data = imputer.transform(data)
+#+end_src
+其中的strategy可以是
+- mean：使用每一列的均值填補缺失值（預設）。
+- median：使用每一列的中位數填補缺失值。
+- most_frequent：使用每一列最常出現的值填補缺失值。
+- constant：使用一個固定值來填補缺失值，需指定 fill_value。
+***** SimpleImputer範例
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
+import numpy as np
+from sklearn.impute import SimpleImputer
+
+# 建立帶有遺漏值的數據
+data = np.array([[1, 2, np.nan], [4, np.nan, 6], [7, 8, 9]])
+
+# 使用均值填補遺漏值
+imputer = SimpleImputer(strategy='mean')
+imputer.fit(data)
+filled_data = imputer.transform(data)
+
+print(filled_data)
+
+#+end_src
+
+#+RESULTS:
+: [[1.  2.  7.5]
+:  [4.  5.  6. ]
+:  [7.  8.  9. ]]
+****** 使用中位數 (median) 來填補：
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
+imputer = SimpleImputer(strategy='median')
+filled_data = imputer.fit_transform(data)
+print(filled_data)
+#+end_src
+
+#+RESULTS:
+: [[1.  2.  7.5]
+:  [4.  5.  6. ]
+:  [7.  8.  9. ]]
+
+****** 使用最常出現的值 (most_frequent) 來填補：
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
+imputer = SimpleImputer(strategy='most_frequent')
+filled_data = imputer.fit_transform(data)
+print(filled_data)
+#+end_src
+
+#+RESULTS:
+: [[1. 2. 6.]
+:  [4. 2. 6.]
+:  [7. 8. 9.]]
+
+****** 使用固定值 (constant) 來填補：
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
+imputer = SimpleImputer(strategy='constant', fill_value=-1)
+filled_data = imputer.fit_transform(data)
+print(filled_data)
+#+end_src
+
+#+RESULTS:
+: [[ 1.  2. -1.]
+:  [ 4. -1.  6.]
+:  [ 7.  8.  9.]]
+*** 時間序列資料的插補
+假設我們有一些 PM2.5 感測器在全台南市地區，每 30 分鐘偵測一次，共有 20 支感測器進行了一段時間的測量，其中部分感測器在特定時間失靈，導致一些值遺失。
+**** 線性插補
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
+pm25_data = """Sensor1,Sensor2,Sensor3,Sensor4,Sensor5,Sensor6,Sensor7,Sensor8,Sensor9,Sensor10,Sensor11,Sensor12,Sensor13,Sensor14,Sensor15,Sensor16,Sensor17,Sensor18,Sensor19,Sensor20
+35.0,40.0,30.0,45.0,38.0,,50.0,,42.0,37.0,39.0,,41.0,50.0,,48.0,39.0,,,44.0
+36.0,,32.0,46.0,39.0,51.0,43.0,,43.0,,40.0,,42.0,,47.0,49.0,39.5,,43.0,45.0
+,41.0,,47.0,40.0,,44.0,44.0,38.0,41.0,,46.0,,51.0,,50.0,40.0,,44.0,46.0
+37.0,42.0,34.0,,41.0,52.0,,45.0,39.0,,47.0,43.0,,52.0,48.0,,40.5,42.0,,47.0
+38.0,,35.0,49.0,,53.0,46.0,46.0,,40.0,42.0,48.0,,53.0,,51.0,,43.0,45.0,48.0
+39.0,43.0,36.0,,43.0,,47.0,47.0,,41.0,,49.0,45.0,,49.0,52.0,42.0,44.0,,49.0
+,44.0,37.0,50.0,44.0,55.0,,48.0,,43.0,,50.0,,54.0,,53.0,43.0,45.0,46.0,50.0
+40.0,45.0,,51.0,45.0,,49.0,49.0,43.0,,44.0,,46.0,55.0,50.0,,44.5,46.5,47.0,51.0
+41.0,,39.0,52.0,46.0,57.0,50.0,,50.0,,45.0,52.0,,56.0,,54.0,45.0,,48.0,52.0
+42.0,46.0,40.0,,47.0,,51.0,,,44.0,46.0,,48.0,57.0,51.0,53.0,,46.0,49.0,53.0
+,47.0,41.0,54.0,,59.0,52.0,52.0,,45.0,,53.0,49.0,,52.0,56.0,,47.0,50.0,"""
+import pandas as pd
+from io import StringIO
+
+pd.options.display.precision = 2
+# 讀入感測器的 PM2.5 資料
+df_pm25 = pd.read_csv(StringIO(pm25_data))
+print(df_pm25)
+print('==========使用前後時間平均值進行插補==========')
+df_pm25 = df_pm25.interpolate(method='linear', axis=1)
+print(df_pm25)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Sensor1  Sensor2  Sensor3  ...  Sensor18  Sensor19  Sensor20
+0      35.0     40.0     30.0  ...       NaN       NaN      44.0
+1      36.0      NaN     32.0  ...       NaN      43.0      45.0
+2       NaN     41.0      NaN  ...       NaN      44.0      46.0
+3      37.0     42.0     34.0  ...      42.0       NaN      47.0
+4      38.0      NaN     35.0  ...      43.0      45.0      48.0
+5      39.0     43.0     36.0  ...      44.0       NaN      49.0
+6       NaN     44.0     37.0  ...      45.0      46.0      50.0
+7      40.0     45.0      NaN  ...      46.5      47.0      51.0
+8      41.0      NaN     39.0  ...       NaN      48.0      52.0
+9      42.0     46.0     40.0  ...      46.0      49.0      53.0
+10      NaN     47.0     41.0  ...      47.0      50.0       NaN
+
+[11 rows x 20 columns]
+==========使用前後時間平均值進行插補==========
+    Sensor1  Sensor2  Sensor3  ...  Sensor18  Sensor19  Sensor20
+0      35.0     40.0     30.0  ...     40.67     42.33      44.0
+1      36.0     34.0     32.0  ...     41.25     43.00      45.0
+2       NaN     41.0     44.0  ...     42.00     44.00      46.0
+3      37.0     42.0     34.0  ...     42.00     44.50      47.0
+4      38.0     36.5     35.0  ...     43.00     45.00      48.0
+5      39.0     43.0     36.0  ...     44.00     46.50      49.0
+6       NaN     44.0     37.0  ...     45.00     46.00      50.0
+7      40.0     45.0     48.0  ...     46.50     47.00      51.0
+8      41.0     40.0     39.0  ...     46.50     48.00      52.0
+9      42.0     46.0     40.0  ...     46.00     49.00      53.0
+10      NaN     47.0     41.0  ...     47.00     50.00      50.0
+
+[11 rows x 20 columns]
+#+end_example
+**** [課堂練習]線性插補的兩端缺失問題 :TNFSH:
+上面的插補似乎無法解決 *資料列的頭尾缺失* 問題，請想辧法解決這個問題，你可以
+1. 通靈
+2. Google
+3. 冥想
+4. ChatGPT
+***** solution :noexport:
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
+import pandas as pd
+from io import StringIO
+
+pd.options.display.precision = 2
+
+# 讀入感測器的 PM2.5 資料
+df_pm25 = pd.read_csv(StringIO(pm25_data))
+
+# 使用最近的有效值填補頭尾缺失
+df_pm25 = df_pm25.interpolate(method='linear', axis=1)
+print('========== 使用線性插補處理後的資料 ==========')
+print(df_pm25)
+
+# 使用前後時間平均值進行插補
+df_pm25 = df_pm25.fillna(method='bfill', axis=1)
+#
+print('========== 使用最近的有效值填補頭尾缺失後的資料 ==========')
+print(df_pm25)
+
+#+end_src
+
+#+RESULTS:
+#+begin_example
+========== 使用線性插補處理後的資料 ==========
+    Sensor1  Sensor2  Sensor3  ...  Sensor18  Sensor19  Sensor20
+0      35.0     40.0     30.0  ...     40.67     42.33      44.0
+1      36.0     34.0     32.0  ...     41.25     43.00      45.0
+2       NaN     41.0     44.0  ...     42.00     44.00      46.0
+3      37.0     42.0     34.0  ...     42.00     44.50      47.0
+4      38.0     36.5     35.0  ...     43.00     45.00      48.0
+5      39.0     43.0     36.0  ...     44.00     46.50      49.0
+6       NaN     44.0     37.0  ...     45.00     46.00      50.0
+7      40.0     45.0     48.0  ...     46.50     47.00      51.0
+8      41.0     40.0     39.0  ...     46.50     48.00      52.0
+9      42.0     46.0     40.0  ...     46.00     49.00      53.0
+10      NaN     47.0     41.0  ...     47.00     50.00      50.0
+
+[11 rows x 20 columns]
+<string>:16: FutureWarning: DataFrame.fillna with 'method' is deprecated and will raise in a future version. Use obj.ffill() or obj.bfill() instead.
+========== 使用最近的有效值填補頭尾缺失後的資料 ==========
+    Sensor1  Sensor2  Sensor3  ...  Sensor18  Sensor19  Sensor20
+0      35.0     40.0     30.0  ...     40.67     42.33      44.0
+1      36.0     34.0     32.0  ...     41.25     43.00      45.0
+2      41.0     41.0     44.0  ...     42.00     44.00      46.0
+3      37.0     42.0     34.0  ...     42.00     44.50      47.0
+4      38.0     36.5     35.0  ...     43.00     45.00      48.0
+5      39.0     43.0     36.0  ...     44.00     46.50      49.0
+6      44.0     44.0     37.0  ...     45.00     46.00      50.0
+7      40.0     45.0     48.0  ...     46.50     47.00      51.0
+8      41.0     40.0     39.0  ...     46.50     48.00      52.0
+9      42.0     46.0     40.0  ...     46.00     49.00      53.0
+10     47.0     47.0     41.0  ...     47.00     50.00      50.0
+
+[11 rows x 20 columns]
+#+end_example
+***** 語法說明 :noexport:
+在 Pandas 中，bfill 是 "backward fill" 的縮寫，用來向後填充缺失值。相對地，向前填充缺失值的方法是 ffill，即 "forward fill"。
+- ffill（前向填充）
+  - 作用: 使用前一個非缺失值來填充缺失值。
+  - 應用場景: 適合需要根據上一個觀測值推斷當前缺失值的情況，例如時間序列數據。
+- bfill（後向填充）
+  - 作用: 使用下一個非缺失值來填充缺失值。
+  - 應用場景: 當希望根據下一個觀測值來推斷當前缺失值時使用。
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
+import pandas as pd
+import numpy as np
+
+# 建立範例數據
+data = {'A': [1, np.nan, 3, np.nan, 5]}
+df = pd.DataFrame(data)
+
+# 前向填充
+df_ffill = df.fillna(method='ffill')
+
+# 後向填充
+df_bfill = df.fillna(method='bfill')
+
+print("原始資料:")
+print(df)
+print("\n前向填充 (ffill):")
+print(df_ffill)
+print("\n後向填充 (bfill):")
+print(df_bfill)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+<string>:10: FutureWarning: DataFrame.fillna with 'method' is deprecated and will raise in a future version. Use obj.ffill() or obj.bfill() instead.
+<string>:13: FutureWarning: DataFrame.fillna with 'method' is deprecated and will raise in a future version. Use obj.ffill() or obj.bfill() instead.
+原始資料:
+     A
+0  1.0
+1  NaN
+2  3.0
+3  NaN
+4  5.0
+
+前向填充 (ffill):
+     A
+0  1.0
+1  1.0
+2  3.0
+3  3.0
+4  5.0
+
+後向填充 (bfill):
+     A
+0  1.0
+1  3.0
+2  3.0
+3  5.0
+4  5.0
+#+end_example
 ** [作業]資料預處理 :TNFSH:
 *** 題目
 南一中網路書店即將開張，為了處理龐大的書單資料，資訊科教師們很無恥的把書籍資料登錄工作當成作業分派給一年級的修課學生，所謂團結力量大，一份不太可靠的[[file:Downloads/403books.csv][書目資料]]就這麼完成了。
@@ -435,7 +797,6 @@ max            2024.000000    1000.000000
 *** 曼哈頓距離（Manhattan distance）
 在如圖[[fig:feature-distance]]這樣的棋盤式街道的城式中，要由點(1,1)走到(7,7)的最簡單方式是先往上直走到(1,7)，再右轉直走到(7,7)，這便是曼哈頓距離，這段距離為 \(|1-7|+|1-7| \)，公式為
 $$ \sum_{i=1}^n|x_i-y_i| $$
-
 *** 歐幾里得距離（Euclidian distance）
 #+CAPTION: Numbus 2000
 #+LABEL:fig:Labl
@@ -527,11 +888,9 @@ MD: 1.6614327764060297
 MD: 2.1917020067767887
 MD: 0.0
 #+end_example
-
 *** 進階閱讀
 - [[https://kknews.cc/zh-tw/code/v3laxal.html][python 各類距離公式實現]]
 - [[https://www.pinecone.io/learn/vector-similarity/][Vector Similarity Explained]]
-
 ** 兩個向量間的距離
 以下為三個學生的國文、數學、英文三科成績，哪兩個學生的學業能力較為接近?
 - James: 80, 90, 70
@@ -539,7 +898,7 @@ MD: 0.0
 - Vanessa: 90, 70, 90
 
 為了回答上述問題，我們可以將學生的各科成績當成vector(如圖[[fig:3scores]])，我們的問題就變成：哪兩個vector更為相似? 三個學生的成績向量分佈如下：
-#+begin_src python -r -n :results output :exports none
+#+begin_src python -r -n :results output :exports both
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
@@ -613,7 +972,6 @@ plt.savefig('images/healthCondition.png', dpi=300)
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/資料間的關係/2024-02-03_17-40-18_2024-02-03_17-39-29.png]]
-
 *** 歐幾里得距離
 #+CAPTION: 歐幾里得距離
 #+LABEL:fig:Labl
@@ -655,8 +1013,8 @@ print(f"James 和 Ruby 之間的歐幾里得距離: {distance_James_Ruby}")
 print(f"James 和 Vanessa 之間的歐幾里得距離: {distance_James_Vanessa}")
 print(f"Ruby 和 Vanessa 之間的歐幾里得距離: {distance_Ruby_Vanessa}")
 #+end_src
-
 **** Numpy :noexport:
+***** 方法一
 #+begin_src python -r -n :results output :exports both
 import numpy as np
 
@@ -679,7 +1037,42 @@ print(f"James 和 Ruby 之間的歐幾里得距離: {distance_James_Ruby}")
 print(f"James 和 Vanessa 之間的歐幾里得距離: {distance_James_Vanessa}")
 print(f"Ruby 和 Vanessa 之間的歐幾里得距離: {distance_Ruby_Vanessa}")
 #+end_src
+***** 方法二
+範例
+#+begin_src python -r -n :results output :exports both
+import numpy as np
 
+point1 = np.array([1, 2])
+point2 = np.array([4, 6])
+
+# 計算每個維度的平方差
+squared_diff = np.square(point1 - point2)
+
+# 將平方差加總後取平方根
+distance = np.sqrt(np.sum(squared_diff))
+
+print(f"歐幾里得距離: {distance}")
+
+#+end_src
+做法
+#+begin_src python -r -n :results output :exports both
+import numpy as np
+
+# 定義三個人的分數
+James = np.array([80, 90, 70])
+Ruby = np.array([90, 80, 60])
+Vanessa = np.array([90, 70, 90])
+
+# 計算每對之間的距離
+distance_James_Ruby = np.sqrt(np.sum(np.square(James - Ruby)))
+distance_James_Vanessa = np.sqrt(np.sum(np.square(James - Vanessa)))
+distance_Ruby_Vanessa = np.sqrt(np.sum(np.square(Ruby - Vanessa)))
+
+# 輸出結果
+print(f"James 和 Ruby 之間的歐幾里得距離: {distance_James_Ruby}")
+print(f"James 和 Vanessa 之間的歐幾里得距離: {distance_James_Vanessa}")
+print(f"Ruby 和 Vanessa 之間的歐幾里得距離: {distance_Ruby_Vanessa}")
+#+end_src
 *** 餘弦相似度(Cosine Similarity)
 #+CAPTION: 餘弦相似度
 #+LABEL:fig:Labl
@@ -710,7 +1103,6 @@ print(f"Ruby 和 Vanessa 之間的歐幾里得距離: {distance_Ruby_Vanessa}")
 計算兩向量a, b內積的方式為: \( a \cdot b =  a_1b_1 + a_2b_2 + \dots + a_nb_n \)
 或是
 $$ a \cdot b = |a||b| \cos \alpha $$
-
 *** 歐幾里得距離實作
 有了公式就可以自己用你苦學了半年的Python+高一數學來手刻程式，或是呼叫其他函式庫來計算。
 **** Python手刻
@@ -788,7 +1180,6 @@ print('James v.s. Vanessa:', JV_sim)
 : James v.s. Ruby: 0.9925966195847843
 : Ruby v.s. Vanessa: 0.977356154645257
 : James v.s. Vanessa: 0.978640304032486
-
 ** [課堂作業]曼哈頓距離
 - 參考前節[歐幾里得距離實作]
 - 自行Google曼哈頓距離的定義
@@ -835,7 +1226,25 @@ print('James v.s. Vanessa:', JV_sim)
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 400
 [[file:images/資料間的關係/2024-02-03_19-07-07_2024-02-03_19-07-00.png]]
+** [課堂作業]誰和我的能力最接近 :TNFSH:
+*** 說明
+以下是5位學生的程式設計能力資料(特徵值為APCS觀念題分數、APCS實作題分數、一年級程式設計學期分數)，請問那一位學生與你的能力(50, 300, 86)最為接近?
+#+begin_quote
+A: 70, 340, 84
+B: 60, 310, 89
+C: 50, 280, 90
+D: 40, 320, 78
+E: 91, 310, 99
+#+end_quote
+*** 要求
+- 找出與你的能力最相似的那位學生編號
+- 你可以完全用程式自動輸出，也可以用程式計算你與每個人的相似度後再人工輸出，但是不能以[[color:orange][通靈]]的方式直接輸出結果
+#+begin_src python -r -n :results output :exports both
+# 這是免費贈送的讀檔code,你不一定要用numpy,也可以使用python來計算
+import numpy as np
 
+scores = [[70, 340, 84], [58, 318, 76], [54, 279, 85], [40, 320, 78], [91, 310, 99]]
+#+end_src
 
 * 資料集分類特徵編碼
 ** 讀檔
@@ -1271,9 +1680,20 @@ print(df[['總價', '單價']])
 6  390.0  24.7
 7  482.0  15.3
 #+end_example
+** 適用時機
+*** Standardization
+- 常態分佈資料：當資料的分佈接近常態分佈時，標準化通常能有效地將資料居中，這樣的變換效果最佳。
+- 線性模型（例如線性回歸、邏輯回歸）：這些模型對資料尺度敏感，標準化可提升模型的效果。
+- 距離度量模型（如K-means、SVM、PCA等）：這些算法在不同尺度的特徵上運行時，數值較大的特徵可能會主導結果，標準化能夠使得所有特徵對結果的影響一致。
+- 神經網路：在神經網絡中，標準化也能穩定訓練過程，加速收斂，尤其是在使用梯度下降的情境下。
+*** Normalization
+- 非常態分佈的資料：特徵範圍差異較大，且資料並不符合常態分佈時，正規化可避免資料的擴散影響。
+- 距離度量模型（如K-NN、距離加權的算法）：正規化能夠防止數值較大的特徵對距離計算產生過大影響。
+- 樹模型（如決策樹、隨機森林）：這些模型對資料尺度不敏感，正規化能使其更具解釋性。
+- 對輸入範圍有特定要求的模型：如神經網絡，尤其是一些輸入需要在特定範圍內的神經網絡結構，如RNN和一些圖像處理應用的CNN。
 
 * 資料擴增
-資料擴增是一種在訓練機器學習模型特別是深度學習模型時非常重要的技術。它通過對訓練資料進行多種隨機變換，來生成更多的資料樣本，以增強模型的泛化能力並避免過擬合。資料擴增對於擁有有限數據的情況尤其有用，因為它能夠讓模型看到更多樣化的資料，從而提升模型的預測能力和準確度。
+資料擴增是一種在訓練機器學習模型特別是深度學習模型時非常重要的技術。它通過對訓練資料進行多種隨機變換，來生成更多的資料樣本，以增強模型的泛化能力並避免過擬合。資料擴增對於擁有有限的情況尤其有用，因為它能夠讓模型看到更多樣化的資料，從而提升模型的預測能力和準確度。
 - 資料擴增的重要性
   資料擴增能夠模擬真實世界中數據的變化。例如，影像資料可能因為角度、光照、比例等不同而有所變化。透過對現有資料進行旋轉、翻轉、縮放、平移等變換，我們可以有效地提高模型的健壯性，使其能夠在不同場景下依然表現良好。
 - 資料擴增的常見方法
@@ -1353,6 +1773,10 @@ def process_directory(input_dir, output_dir):
         category_input_dir = os.path.join(input_dir, category)
         category_output_dir = os.path.join(output_dir, category)
 
+        # 檢查並創建子目錄
+        if not os.path.exists(category_output_dir):
+            os.makedirs(category_output_dir)
+
         for filename in os.listdir(category_input_dir):
             image_path = os.path.join(category_input_dir, filename)
             image = cv2.imread(image_path)
@@ -1370,6 +1794,9 @@ output_directory = '/Users/letranger/Downloads/aug/augImages'
 # 處理圖像
 process_directory(input_directory, output_directory)
 #+end_src
+
+#+RESULTS:
+
 ** 其他擴增方法
 其他資料擴增方式還有:濾波、銳化、去噪、旋轉、縮放、裁剪和增加人工噪聲....，至於資料擴增對於模型有何助益請[[https://blog.toright.com/posts/7144/keras-tutorial-cnn-data-augmentation-training][參閱這篇]]。其他資料擴增方式請看:
 - [[https://cynthiachuang.github.io/Augmentor-Image-Augmentation-Library-in-Python/][Augmentor：影像資料增強工具庫]]
