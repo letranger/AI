@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-11-27 Wed 10:47 -->
+<!-- 2024-11-27 Wed 15:33 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>迴歸</title>
@@ -235,50 +235,49 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgd353fa3">1. 關於迴歸</a>
+<li><a href="#org5db4c04">1. 關於迴歸</a>
 <ul>
-<li><a href="#orgc4dd2eb">1.1. 迴歸類型</a></li>
+<li><a href="#orgf742d80">1.1. 迴歸類型</a></li>
 </ul>
 </li>
-<li><a href="#org582d4bf">2. 迴歸原理</a>
+<li><a href="#orgcabae24">2. 迴歸原理</a>
 <ul>
-<li><a href="#org0e92d42">2.1. Step 1: Model, Data</a></li>
-<li><a href="#org63323ad">2.2. Step 2: Goodness of Function</a></li>
-<li><a href="#org4f05a32">2.3. 迴歸預測流程(以波士頓房價預測為例)</a></li>
+<li><a href="#org4d01dd6">2.1. Step 1: Model, Data</a></li>
+<li><a href="#orgb29e02f">2.2. Step 2: Goodness of Function</a></li>
 </ul>
 </li>
-<li><a href="#org2c7b5d2">3. 線性迴歸: 學期成績預估</a>
+<li><a href="#org392422e">3. 線性迴歸: 學期成績預估</a>
 <ul>
-<li><a href="#org3bf118c">3.1. 函數: AI的本質</a></li>
-<li><a href="#orgd641bfb">3.2. 逐步找出最佳的a</a></li>
-<li><a href="#org2ccff6a">3.3. 兩項成績推估</a></li>
-<li><a href="#orgbae44ff">3.4. 神經網路的視角</a></li>
+<li><a href="#orge67dc6a">3.1. 函數: AI的本質</a></li>
+<li><a href="#orgf12cc9d">3.2. 逐步找出最佳的a</a></li>
+<li><a href="#orgc13a444">3.3. 兩項成績推估</a></li>
+<li><a href="#org0c8f060">3.4. 神經網路的視角</a></li>
 </ul>
 </li>
-<li><a href="#orgd5d0fb6">4. 線性迴歸實作: 波士頓房價預測</a>
+<li><a href="#org2395d03">4. 線性迴歸實作: 波士頓房價預測</a>
 <ul>
-<li><a href="#org9258e3c">4.1. 下載資料</a></li>
-<li><a href="#orgc4d74f9">4.2. 大概觀察一下資料集</a></li>
-<li><a href="#org2fdcedc">4.3. 資料預處理</a></li>
-<li><a href="#org8d7439f">4.4. 觀察資料</a></li>
-<li><a href="#orga043bd8">4.5. 分割訓練集與測試集</a></li>
-<li><a href="#org1444262">4.6. 建立模型</a></li>
-<li><a href="#orgbf7446a">4.7. 測試效能</a></li>
-<li><a href="#org8462adf">4.8. 找出線性模型</a></li>
+<li><a href="#org00e5e5c">4.1. 下載資料</a></li>
+<li><a href="#orgafd0e45">4.2. 大概觀察一下資料集</a></li>
+<li><a href="#orgf6b6884">4.3. 資料預處理</a></li>
+<li><a href="#orgc2eef62">4.4. 觀察資料</a></li>
+<li><a href="#org85fb7eb">4.5. 分割訓練集與測試集</a></li>
+<li><a href="#orgeccfb96">4.6. 建立模型</a></li>
+<li><a href="#org3568d70">4.7. 測試效能</a></li>
+<li><a href="#org772c8bb">4.8. 找出線性模型</a></li>
 </ul>
 </li>
-<li><a href="#orgbd81ede">5. [作業]依據期中考成績預測期末考成績&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></a>
+<li><a href="#orgf395336">5. [作業]依據期中考成績預測期末考成績&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></a>
 <ul>
-<li><a href="#orga7acbf0">5.1. Data</a></li>
-<li><a href="#org867208e">5.2. Task</a></li>
+<li><a href="#orgd8f9e91">5.1. Data</a></li>
+<li><a href="#org2b0c421">5.2. Task</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 <a href="https://letranger.github.io/AI/20221023154410-regression.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20221023154410-regression.html.svg"/></a>
-<div id="outline-container-orgd353fa3" class="outline-2">
-<h2 id="orgd353fa3"><span class="section-number-2">1.</span> 關於迴歸</h2>
+<div id="outline-container-org5db4c04" class="outline-2">
+<h2 id="org5db4c04"><span class="section-number-2">1.</span> 關於迴歸</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 即，根據一組預測特徵（predictor，如里程數、車齡、品牌）來預測目標數值（如二手車車價）<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>、根據歷史股價來預測明天股價、根據路況來預測方向盤轉向及車速。<br />
@@ -288,8 +287,8 @@
 部份迴歸演算法也可以用來分類，例如Logistic，它可以輸出一個數值，以這個數值來表示對應到特定類別的機率，例如，某封email為垃圾郵件的機率為20%、某張圖片為狗的機率為70%。<br />
 </p>
 </div>
-<div id="outline-container-orgc4dd2eb" class="outline-3">
-<h3 id="orgc4dd2eb"><span class="section-number-3">1.1.</span> 迴歸類型</h3>
+<div id="outline-container-orgf742d80" class="outline-3">
+<h3 id="orgf742d80"><span class="section-number-3">1.1.</span> 迴歸類型</h3>
 <div class="outline-text-3" id="text-1-1">
 <p>
 迴歸問題可分為兩類：<br />
@@ -299,8 +298,8 @@
 <li>Logistic regression<br /></li>
 </ul>
 </div>
-<div id="outline-container-orgaec94dd" class="outline-4">
-<h4 id="orgaec94dd"><span class="section-number-4">1.1.1.</span> Linear regression:</h4>
+<div id="outline-container-org448bb72" class="outline-4">
+<h4 id="org448bb72"><span class="section-number-4">1.1.1.</span> Linear regression:</h4>
 <div class="outline-text-4" id="text-1-1-1">
 <ul class="org-ul">
 <li>假設輸入變量(x)與單一輸出變量(y)間存在線性關係，並以此建立模型。<br /></li>
@@ -312,44 +311,44 @@
 Linear regression可再細分為<br />
 </p>
 </div>
-<div id="outline-container-orgb8c65ae" class="outline-5">
-<h5 id="orgb8c65ae">Simple Linear regression (簡單線性迴歸):</h5>
-<div class="outline-text-5" id="text-orgb8c65ae">
+<div id="outline-container-org7d6fbdb" class="outline-5">
+<h5 id="org7d6fbdb">Simple Linear regression (簡單線性迴歸):</h5>
+<div class="outline-text-5" id="text-org7d6fbdb">
 </div>
 <ul class="org-ul">
-<li><a id="org76e6d94"></a>迴歸<br />
-<div class="outline-text-6" id="text-org76e6d94">
+<li><a id="org3d2f1b0"></a>迴歸<br />
+<div class="outline-text-6" id="text-org3d2f1b0">
 <p>
 討論兩個變數間的關係(輸入變量(x)與單一輸出變量(y)間)的關係<br />
 </p>
 
-<div id="orgf2e696d" class="figure">
+<div id="orgb210bf2" class="figure">
 <p><img src="images/regvsml1.png" alt="regvsml1.png" /><br />
 </p>
 </div>
 </div>
 </li>
-<li><a id="orgd97b751"></a>在統計中:<br />
-<div class="outline-text-6" id="text-orgd97b751">
+<li><a id="orgcd36609"></a>在統計中:<br />
+<div class="outline-text-6" id="text-orgcd36609">
 <ul class="org-ul">
 <li>x為Independent Variables: 自變數<br /></li>
 <li>y為Dependent Variables: 應變數<br /></li>
 </ul>
 
-<div id="orge997cc3" class="figure">
+<div id="org491b6f0" class="figure">
 <p><img src="images/regvsml2.png" alt="regvsml2.png" /><br />
 </p>
 </div>
 </div>
 </li>
-<li><a id="org008d6f7"></a>在機器學習中<br />
-<div class="outline-text-6" id="text-org008d6f7">
+<li><a id="org82e53a8"></a>在機器學習中<br />
+<div class="outline-text-6" id="text-org82e53a8">
 <ul class="org-ul">
 <li>x叫Features: 特徵值<br /></li>
 <li>y叫Label: 標籤<br /></li>
 </ul>
 
-<div id="orgfb1e9ab" class="figure">
+<div id="orgde2fde4" class="figure">
 <p><img src="images/regvsml3.png" alt="regvsml3.png" /><br />
 </p>
 </div>
@@ -357,18 +356,19 @@ Linear regression可再細分為<br />
 </li>
 </ul>
 </div>
-<div id="outline-container-org6abb7be" class="outline-5">
-<h5 id="org6abb7be">Multiple Linear regression (多元線性迴歸)</h5>
-<div class="outline-text-5" id="text-org6abb7be">
+<div id="outline-container-orgb1b0e2b" class="outline-5">
+<h5 id="orgb1b0e2b">Multiple Linear regression (多元線性迴歸)</h5>
+<div class="outline-text-5" id="text-orgb1b0e2b">
 
-<div id="orgf4f3e75" class="figure">
-<p><img src="images/regvsm3.png" alt="regvsm3.png" /><br />
+<div id="org74babf0" class="figure">
+<p><img src="./images/regvsm3.png" alt="regvsm3.png" width="200" /><br />
 </p>
+<p><span class="figure-number">Figure 1: </span>多元線性迴歸</p>
 </div>
 
 <p>
 討論多個變數間的關係，Multiple Linear Regression 是線性迴歸的一種延伸，當輸出變量 \(y\) 與多個輸入變量 \(x_1,x_2,…,x_n\) 之間存在線性關係時，可使用多元線性迴歸來建模:<br />
-$$y=ax_1+bx_2+cx_3+⋯+zx_n+ϵ$<br />
+\[y=ax_1+bx_2+cx_3+⋯+zx_n+ϵ\]<br />
 其中<br />
 </p>
 <ul class="org-ul">
@@ -380,8 +380,8 @@ $$y=ax_1+bx_2+cx_3+⋯+zx_n+ϵ$<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org99055f0" class="outline-4">
-<h4 id="org99055f0"><span class="section-number-4">1.1.2.</span> Logistic regression</h4>
+<div id="outline-container-org000cf92" class="outline-4">
+<h4 id="org000cf92"><span class="section-number-4">1.1.2.</span> Logistic regression</h4>
 <div class="outline-text-4" id="text-1-1-2">
 <ul class="org-ul">
 <li>也是線性方法，但使用logist function轉換輸出的預測結果，其輸出結果為類別機率(class probabilities)<br /></li>
@@ -390,17 +390,17 @@ $$y=ax_1+bx_2+cx_3+⋯+zx_n+ϵ$<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-org47e4c7e" class="outline-4">
-<h4 id="org47e4c7e"><span class="section-number-4">1.1.3.</span> 迴歸的目的</h4>
+<div id="outline-container-org8bca63f" class="outline-4">
+<h4 id="org8bca63f"><span class="section-number-4">1.1.3.</span> 迴歸的目的</h4>
 <div class="outline-text-4" id="text-1-1-3">
 <p>
-建立迴歸的目的在於從現有資料中找出規則，然後依此規則來對後續的新進資料進行預測。如圖<a href="#org6a8fafc">1</a>中有一些資料分佈，x、y軸為資料的兩個特徵值。<br />
+建立迴歸的目的在於從現有資料中找出規則，然後依此規則來對後續的新進資料進行預測。如圖<a href="#org7bd4b0e">2</a>中有一些資料分佈，x、y軸為資料的兩個特徵值。<br />
 </p>
 
-<div id="org6a8fafc" class="figure">
+<div id="org7bd4b0e" class="figure">
 <p><img src="images/關於迴歸/2024-02-07_15-18-38_2024-02-07_15-18-19.png" alt="2024-02-07_15-18-38_2024-02-07_15-18-19.png" width="400" /><br />
 </p>
-<p><span class="figure-number">Figure 1: </span>原始資料分佈</p>
+<p><span class="figure-number">Figure 2: </span>原始資料分佈</p>
 </div>
 
 <p>
@@ -411,10 +411,10 @@ $$y=ax_1+bx_2+cx_3+⋯+zx_n+ϵ$<br />
 <li>怎麼知道哪一條最有代表性<br /></li>
 </ul>
 
-<div id="org939482f" class="figure">
+<div id="orgfe24eb7" class="figure">
 <p><img src="images/關於迴歸/2024-02-07_15-19-44_2024-02-07_15-18-27.png" alt="2024-02-07_15-19-44_2024-02-07_15-18-27.png" width="400" /><br />
 </p>
-<p><span class="figure-number">Figure 2: </span>根據原始資料畫出的幾條迴歸線</p>
+<p><span class="figure-number">Figure 3: </span>根據原始資料畫出的幾條迴歸線</p>
 </div>
 
 <p>
@@ -424,8 +424,8 @@ $$y=ax_1+bx_2+cx_3+⋯+zx_n+ϵ$<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org582d4bf" class="outline-2">
-<h2 id="org582d4bf"><span class="section-number-2">2.</span> 迴歸原理</h2>
+<div id="outline-container-orgcabae24" class="outline-2">
+<h2 id="orgcabae24"><span class="section-number-2">2.</span> 迴歸原理</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 練習投藍的時後，我們需要知道籃筐位置，誤差多少，做出丟球的修正。<br />
@@ -437,8 +437,8 @@ $$y=ax_1+bx_2+cx_3+⋯+zx_n+ϵ$<br />
 <li>做出修正: 在<a href="20221023101456-機器學習.html#ID-20221023T101456.955364">機器學習</a>中，我們用optimizer來不斷對模型進行修正<br /></li>
 </ul>
 </div>
-<div id="outline-container-org0e92d42" class="outline-3">
-<h3 id="org0e92d42"><span class="section-number-3">2.1.</span> Step 1: Model, Data</h3>
+<div id="outline-container-org4d01dd6" class="outline-3">
+<h3 id="org4d01dd6"><span class="section-number-3">2.1.</span> Step 1: Model, Data</h3>
 <div class="outline-text-3" id="text-2-1">
 <ol class="org-ol">
 <li>Model: \(y = w*x+b\)<br /></li>
@@ -446,8 +446,8 @@ $$y=ax_1+bx_2+cx_3+⋯+zx_n+ϵ$<br />
 </ol>
 </div>
 </div>
-<div id="outline-container-org63323ad" class="outline-3">
-<h3 id="org63323ad"><span class="section-number-3">2.2.</span> Step 2: Goodness of Function</h3>
+<div id="outline-container-orgb29e02f" class="outline-3">
+<h3 id="orgb29e02f"><span class="section-number-3">2.2.</span> Step 2: Goodness of Function</h3>
 <div class="outline-text-3" id="text-2-2">
 <ol class="org-ol">
 <li>Training Data<br /></li>
@@ -460,31 +460,13 @@ input: a function / output: how bad it is<br /></li>
 </ol>
 </div>
 </div>
-<div id="outline-container-org4f05a32" class="outline-3">
-<h3 id="org4f05a32"><span class="section-number-3">2.3.</span> 迴歸預測流程(以波士頓房價預測為例)</h3>
-<div class="outline-text-3" id="text-2-3">
-<ol class="org-ol">
-<li>Import the required module<br /></li>
-<li>Load and configure the Boston housing data set<br /></li>
-<li>Check the relation between the variable, using pairplot and correlation graph<br /></li>
-<li>Descriptive statistics: central tendency and dispersion<br /></li>
-<li>Select the required columns<br /></li>
-<li>Train the test split<br /></li>
-<li>Normalize the data<br /></li>
-<li>Build the input pipeline for the TensorFlow model<br /></li>
-<li>Model training<br /></li>
-<li>Predictions<br /></li>
-<li>Validation<br /></li>
-</ol>
 </div>
-</div>
-</div>
-<div id="outline-container-org2c7b5d2" class="outline-2">
-<h2 id="org2c7b5d2"><span class="section-number-2">3.</span> 線性迴歸: 學期成績預估</h2>
+<div id="outline-container-org392422e" class="outline-2">
+<h2 id="org392422e"><span class="section-number-2">3.</span> 線性迴歸: 學期成績預估</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-org3bf118c" class="outline-3">
-<h3 id="org3bf118c"><span class="section-number-3">3.1.</span> 函數: AI的本質</h3>
+<div id="outline-container-orge67dc6a" class="outline-3">
+<h3 id="orge67dc6a"><span class="section-number-3">3.1.</span> 函數: AI的本質</h3>
 <div class="outline-text-3" id="text-3-1">
 <p>
 人工智慧本質上就是在找出一個特定函數。例如，我們想利用人工智慧來預估自己這個學期的資訊科成績，其實相當於在找一個類似這樣的函數：<br />
@@ -495,26 +477,26 @@ input: a function / output: how bad it is<br /></li>
 </p>
 
 <p>
-為了找出這個函數，我們首先應蒐集歷屆學長姐的成績資料（包括兩次段考平均成績與學期總成績），這些資料稱之為訓練資料（training data）。在將訓練資料視覺化後，我們發現x與y的分佈如圖<a href="#org275025a">3</a>所示（假設我們詢問了10位學長姐、收集了10筆訓練資料），初步猜測二者可能存在線性關係。接下來的任務就是畫出一條能儘量接近圖上所有資料點的線，也就是找出最佳的參數a（即這條迴歸線的斜率）。<br />
+為了找出這個函數，我們首先應蒐集歷屆學長姐的成績資料（包括兩次段考平均成績與學期總成績），這些資料稱之為訓練資料（training data）。在將訓練資料視覺化後，我們發現x與y的分佈如圖<a href="#orgec1254d">4</a>所示（假設我們詢問了10位學長姐、收集了10筆訓練資料），初步猜測二者可能存在線性關係。接下來的任務就是畫出一條能儘量接近圖上所有資料點的線，也就是找出最佳的參數a（即這條迴歸線的斜率）。<br />
 </p>
 
 
-<div id="org275025a" class="figure">
+<div id="orgec1254d" class="figure">
 <p><img src="images/2scores.png" alt="2scores.png" width="500" /><br />
 </p>
-<p><span class="figure-number">Figure 3: </span>兩次段考平均與學期總成績關係</p>
+<p><span class="figure-number">Figure 4: </span>兩次段考平均與學期總成績關係</p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgd641bfb" class="outline-3">
-<h3 id="orgd641bfb"><span class="section-number-3">3.2.</span> 逐步找出最佳的a</h3>
+<div id="outline-container-orgf12cc9d" class="outline-3">
+<h3 id="orgf12cc9d"><span class="section-number-3">3.2.</span> 逐步找出最佳的a</h3>
 <div class="outline-text-3" id="text-3-2">
 <p>
 雖然在此例中最佳的a可以很快用數學公式求出，但此處我們打算介紹另一種逐步找出最佳a的方式，步驟詳列如下：<br />
 </p>
 </div>
-<div id="outline-container-orgb33162b" class="outline-4">
-<h4 id="orgb33162b"><span class="section-number-4">3.2.1.</span> a=0.5</h4>
+<div id="outline-container-org90044d5" class="outline-4">
+<h4 id="org90044d5"><span class="section-number-4">3.2.1.</span> a=0.5</h4>
 <div class="outline-text-4" id="text-3-2-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> matplotlib
@@ -528,55 +510,55 @@ cc
 
 
 <p>
-首先，面對未知的困難，我們要有嚴格的解題SOP，也就是要遵循「科學、理性、務實」的精神：閉著眼睛隨便給個 \(a\)。例如：a=0.5，畫出的迴歸線結果如圖<a href="#orgfa8df4f">4</a>。<br />
+首先，面對未知的困難，我們要有嚴格的解題SOP，也就是要遵循「科學、理性、務實」的精神：閉著眼睛隨便給個 \(a\)。例如：a=0.5，畫出的迴歸線結果如圖<a href="#org936bfcd">5</a>。<br />
 </p>
 
-<div id="orgfa8df4f" class="figure">
+<div id="org936bfcd" class="figure">
 <p><img src="images/2scores_with_regression.png" alt="2scores_with_regression.png" width="500" /><br />
 </p>
-<p><span class="figure-number">Figure 4: </span>a=0.5的迴歸線</p>
+<p><span class="figure-number">Figure 5: </span>a=0.5的迴歸線</p>
 </div>
 
 <p>
-有了這條線，我們就可以找出這10筆資料與這條線有多遠。理想狀況下我們希望每個點都離線越近越好，把所有點與迴歸線的距離（圖<a href="#orgfa8df4f">4</a>中的橘色線段）加總起來，我們把它稱為誤差。此處以均方差（Mean Squared Error, MSE）來計算，誤差值為367.76。MSE公式如下：<br />
+有了這條線，我們就可以找出這10筆資料與這條線有多遠。理想狀況下我們希望每個點都離線越近越好，把所有點與迴歸線的距離（圖<a href="#org936bfcd">5</a>中的橘色線段）加總起來，我們把它稱為誤差。此處以均方差（Mean Squared Error, MSE）來計算，誤差值為367.76。MSE公式如下：<br />
 \[MSE=\frac{1}{n}\sum_{i=1}^{n}{(y_i-\widehat{y_i})}^2\]<br />
 ，這裡的MSE就是這個模型的損失函數（Loss Function） 。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org49f3846" class="outline-4">
-<h4 id="org49f3846"><span class="section-number-4">3.2.2.</span> a=0.4, a=0.6</h4>
+<div id="outline-container-org473dbe0" class="outline-4">
+<h4 id="org473dbe0"><span class="section-number-4">3.2.2.</span> a=0.4, a=0.6</h4>
 <div class="outline-text-4" id="text-3-2-2">
 <p>
-但是目前的a(0.5)是最好的嗎？我們可以試著調整a值，對它各加、減0.1，再來觀察誤差的變化，結果如圖<a href="#orga9f4f95">5</a>，可以發現a再大一些結果似乎會更好。<br />
+但是目前的a(0.5)是最好的嗎？我們可以試著調整a值，對它各加、減0.1，再來觀察誤差的變化，結果如圖<a href="#org4404869">6</a>，可以發現a再大一些結果似乎會更好。<br />
 </p>
 
-<div id="orga9f4f95" class="figure">
+<div id="org4404869" class="figure">
 <p><img src="images/2scores_with_regression12.png" alt="2scores_with_regression12.png" width="800" /><br />
 </p>
-<p><span class="figure-number">Figure 5: </span>a=0.4 v.s. a=0.6</p>
+<p><span class="figure-number">Figure 6: </span>a=0.4 v.s. a=0.6</p>
 </div>
 </div>
 </div>
-<div id="outline-container-org88dedea" class="outline-4">
-<h4 id="org88dedea"><span class="section-number-4">3.2.3.</span> 全部的a</h4>
+<div id="outline-container-org56f88b6" class="outline-4">
+<h4 id="org56f88b6"><span class="section-number-4">3.2.3.</span> 全部的a</h4>
 <div class="outline-text-4" id="text-3-2-3">
 <p>
-當我們把全部合理的  a  值（如\(0.3 \le a \le 1.4\)）對應的損失函數逐一計算出來後，就可以將這些結果畫成一條如圖<a href="#orgc962bd6">6</a>的曲線，這就是這個模型的損失函數曲線（Loss Function Curve）。不難看出：只要將a逐步往損失函數較小的方向調整，這個模型的預測效果就會更好。另一種調整a值的方式是透過資料點在曲線上的切線（圖中綠色虛線）斜率來判斷該往左或右移動a值，直到找到切線斜率為0的點，這便是曲線的最低點，也是最佳a值。此函數如下，也是我們用來預估分數的模型：<br />
+當我們把全部合理的  a  值（如\(0.3 \le a \le 1.4\)）對應的損失函數逐一計算出來後，就可以將這些結果畫成一條如圖<a href="#orga028a67">7</a>的曲線，這就是這個模型的損失函數曲線（Loss Function Curve）。不難看出：只要將a逐步往損失函數較小的方向調整，這個模型的預測效果就會更好。另一種調整a值的方式是透過資料點在曲線上的切線（圖中綠色虛線）斜率來判斷該往左或右移動a值，直到找到切線斜率為0的點，這便是曲線的最低點，也是最佳a值。此函數如下，也是我們用來預估分數的模型：<br />
 \[y=f\left(x\right)=0.84x\]<br />
 </p>
 
 
-<div id="orgc962bd6" class="figure">
+<div id="orga028a67" class="figure">
 <p><img src="images/scoreLoss.png" alt="scoreLoss.png" width="500" /><br />
 </p>
-<p><span class="figure-number">Figure 6: </span>合理a值畫出的誤差函數</p>
+<p><span class="figure-number">Figure 7: </span>合理a值畫出的誤差函數</p>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-org2ccff6a" class="outline-3">
-<h3 id="org2ccff6a"><span class="section-number-3">3.3.</span> 兩項成績推估</h3>
+<div id="outline-container-orgc13a444" class="outline-3">
+<h3 id="orgc13a444"><span class="section-number-3">3.3.</span> 兩項成績推估</h3>
 <div class="outline-text-3" id="text-3-3">
 <p>
 如果老師的計分是針對期中期末考給予不同權重呢？那我們新的目標函數就要改成如下式子，此時的任務在求出最佳的參數a, b。<br />
@@ -585,42 +567,42 @@ cc
 </p>
 
 <p>
-比照上述步驟的做法，我們可以求出所有合理的a, b值（0～1）及其所對應的損失函數，將結果畫成如圖 ‎2.2 5的曲面。實際求解時，一樣先隨機指定一組權重值a, b（圖<a href="#org00de240">7</a>藍色點），依該點在曲面上的斜率（此處稱為梯度，Gradient） ，沿著梯度的反方向往下找，就能找到這個曲面的最低點（圖<a href="#orgc962bd6">6</a>紅色點），該點便是函數的最佳參數。此種做法也就是神經網路中找出模型最佳參數的核心思想：梯度下降法（Gradient Descent）。<br />
+比照上述步驟的做法，我們可以求出所有合理的a, b值（0～1）及其所對應的損失函數，將結果畫成如圖 ‎2.2 5的曲面。實際求解時，一樣先隨機指定一組權重值a, b（圖<a href="#orgc49789d">8</a>藍色點），依該點在曲面上的斜率（此處稱為梯度，Gradient） ，沿著梯度的反方向往下找，就能找到這個曲面的最低點（圖<a href="#orga028a67">7</a>紅色點），該點便是函數的最佳參數。此種做法也就是神經網路中找出模型最佳參數的核心思想：梯度下降法（Gradient Descent）。<br />
 </p>
 
 
-<div id="org00de240" class="figure">
+<div id="orgc49789d" class="figure">
 <p><img src="images/3dScoreLoss.png" alt="3dScoreLoss.png" width="500" /><br />
 </p>
-<p><span class="figure-number">Figure 7: </span>兩個參數時的誤差函數</p>
+<p><span class="figure-number">Figure 8: </span>兩個參數時的誤差函數</p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgbae44ff" class="outline-3">
-<h3 id="orgbae44ff"><span class="section-number-3">3.4.</span> 神經網路的視角</h3>
+<div id="outline-container-org0c8f060" class="outline-3">
+<h3 id="org0c8f060"><span class="section-number-3">3.4.</span> 神經網路的視角</h3>
 <div class="outline-text-3" id="text-3-4">
 <p>
 從神經網路的角度來看，上述函數也可以視為如圖 ‎2.2 6的模型，模型中只有一層隱藏層，裡面只有一個神經元，輸出結果為期末成績，這便是一個能進行迴歸計算的神經網路。<br />
 </p>
 
-<div id="org63b37b4" class="figure">
+<div id="org70e0f13" class="figure">
 <p><img src="images/scoreNN.png" alt="scoreNN.png" width="300" /><br />
 </p>
-<p><span class="figure-number">Figure 8: </span>以兩項成績預估學期成績的神經網路</p>
+<p><span class="figure-number">Figure 9: </span>以兩項成績預估學期成績的神經網路</p>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-orgd5d0fb6" class="outline-2">
-<h2 id="orgd5d0fb6"><span class="section-number-2">4.</span> 線性迴歸實作: 波士頓房價預測</h2>
+<div id="outline-container-org2395d03" class="outline-2">
+<h2 id="org2395d03"><span class="section-number-2">4.</span> 線性迴歸實作: 波士頓房價預測</h2>
 <div class="outline-text-2" id="text-4">
 <ul class="org-ul">
 <li>本例中部份程式碼及文字來自<a href="https://medium.com/li-ting-liao-tiffany/python-%E5%BF%AB%E9%80%9F%E8%B3%87%E6%96%99%E5%88%86%E6%9E%90-boston-housing%E6%B3%A2%E5%A3%AB%E9%A0%93%E6%88%BF%E5%83%B9-9c535fb7ceb7">What impacts Boston Housing Prices</a><br /></li>
 <li>本例使用資料集為 1970 年中期 Boston 郊區資料，包含犯罪率、當地財產稅等，用以預測某郊區房價中位數，本例有 506 筆資料，分為 404 個訓練樣本和 102 個測試樣本，但每個 feature 的單位不同，故須先進行資料預調整。<br /></li>
 </ul>
 </div>
-<div id="outline-container-org9258e3c" class="outline-3">
-<h3 id="org9258e3c"><span class="section-number-3">4.1.</span> 下載資料</h3>
+<div id="outline-container-org00e5e5c" class="outline-3">
+<h3 id="org00e5e5c"><span class="section-number-3">4.1.</span> 下載資料</h3>
 <div class="outline-text-3" id="text-4-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
@@ -641,8 +623,8 @@ cc
 </div>
 </div>
 </div>
-<div id="outline-container-orgc4d74f9" class="outline-3">
-<h3 id="orgc4d74f9"><span class="section-number-3">4.2.</span> 大概觀察一下資料集</h3>
+<div id="outline-container-orgafd0e45" class="outline-3">
+<h3 id="orgafd0e45"><span class="section-number-3">4.2.</span> 大概觀察一下資料集</h3>
 <div class="outline-text-3" id="text-4-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #c678dd;">print</span>(<span style="color: #c678dd;">type</span>(housing))
@@ -651,7 +633,7 @@ cc
 </pre>
 </div>
 
-<pre class="example" id="org7b1a719">
+<pre class="example" id="orga0ffd8b">
 &lt;class 'pandas.core.frame.DataFrame'&gt;
 (506, 14)
 crim         0.00632
@@ -691,12 +673,12 @@ Name: 0, dtype: float64
 </ul>
 </div>
 </div>
-<div id="outline-container-org2fdcedc" class="outline-3">
-<h3 id="org2fdcedc"><span class="section-number-3">4.3.</span> 資料預處理</h3>
+<div id="outline-container-orgf6b6884" class="outline-3">
+<h3 id="orgf6b6884"><span class="section-number-3">4.3.</span> 資料預處理</h3>
 <div class="outline-text-3" id="text-4-3">
 </div>
-<div id="outline-container-org34224f2" class="outline-4">
-<h4 id="org34224f2"><span class="section-number-4">4.3.1.</span> 處理缺漏值</h4>
+<div id="outline-container-orgfc96984" class="outline-4">
+<h4 id="orgfc96984"><span class="section-number-4">4.3.1.</span> 處理缺漏值</h4>
 <div class="outline-text-4" id="text-4-3-1">
 <p>
 快速檢查是否有缺漏值<br />
@@ -705,7 +687,7 @@ Name: 0, dtype: float64
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #c678dd;">print</span>(housing.isnull().<span style="color: #c678dd;">sum</span>())
 </pre>
 </div>
-<pre class="example" id="orgd9a1c79">
+<pre class="example" id="orgcdff75a">
 crim        0
 zn          0
 indus       0
@@ -732,7 +714,7 @@ dtype: int64
 </pre>
 </div>
 
-<pre class="example" id="org407a20b">
+<pre class="example" id="org7e84b42">
 crim       0
 zn         0
 indus      0
@@ -752,8 +734,8 @@ dtype: int64
 </pre>
 </div>
 </div>
-<div id="outline-container-org2dbabce" class="outline-4">
-<h4 id="org2dbabce"><span class="section-number-4">4.3.2.</span> 資料標準化</h4>
+<div id="outline-container-org4fc0183" class="outline-4">
+<h4 id="org4fc0183"><span class="section-number-4">4.3.2.</span> 資料標準化</h4>
 <div class="outline-text-4" id="text-4-3-2">
 <p>
 由第一筆訓練資料特徵housing.iloc[0]可以看出，每項特徵值的差異甚大，我們可以先對這些資料特徵進行標準化：<br />
@@ -770,7 +752,7 @@ dtype: int64
 </pre>
 </div>
 
-<pre class="example" id="orgc5af837">
+<pre class="example" id="org195a403">
 crim         0.00632
 zn          18.00000
 indus        2.31000
@@ -815,12 +797,12 @@ Name: 0, dtype: float64
 </div>
 </div>
 </div>
-<div id="outline-container-org8d7439f" class="outline-3">
-<h3 id="org8d7439f"><span class="section-number-3">4.4.</span> 觀察資料</h3>
+<div id="outline-container-orgc2eef62" class="outline-3">
+<h3 id="orgc2eef62"><span class="section-number-3">4.4.</span> 觀察資料</h3>
 <div class="outline-text-3" id="text-4-4">
 </div>
-<div id="outline-container-org704d423" class="outline-4">
-<h4 id="org704d423"><span class="section-number-4">4.4.1.</span> 初步看一下房價的分佈</h4>
+<div id="outline-container-org7d534ec" class="outline-4">
+<h4 id="org7d534ec"><span class="section-number-4">4.4.1.</span> 初步看一下房價的分佈</h4>
 <div class="outline-text-4" id="text-4-4-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
@@ -831,15 +813,15 @@ Name: 0, dtype: float64
 </pre>
 </div>
 
-<div id="org2686d80" class="figure">
+<div id="org1a6f629" class="figure">
 <p><img src="images/housing-price.png" alt="housing-price.png" width="500" /><br />
 </p>
-<p><span class="figure-number">Figure 9: </span>房價分佈概況</p>
+<p><span class="figure-number">Figure 10: </span>房價分佈概況</p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgc35ccf8" class="outline-4">
-<h4 id="orgc35ccf8"><span class="section-number-4">4.4.2.</span> 各特徵值間的關係</h4>
+<div id="outline-container-orgba30fdb" class="outline-4">
+<h4 id="orgba30fdb"><span class="section-number-4">4.4.2.</span> 各特徵值間的關係</h4>
 <div class="outline-text-4" id="text-4-4-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">correlation_matrix</span> = housing.corr().<span style="color: #c678dd;">round</span>(<span style="color: #da8548; font-weight: bold;">2</span>)
@@ -849,14 +831,14 @@ Name: 0, dtype: float64
 </pre>
 </div>
 
-<div id="org3cbef09" class="figure">
+<div id="orgb069942" class="figure">
 <p><img src="images/housing-corr.png" alt="housing-corr.png" width="500" /><br />
 </p>
-<p><span class="figure-number">Figure 10: </span>特徵值間的闗係</p>
+<p><span class="figure-number">Figure 11: </span>特徵值間的闗係</p>
 </div>
 
 <p>
-由圖<a href="#org3cbef09">10</a>可以看出：<br />
+由圖<a href="#orgb069942">11</a>可以看出：<br />
 </p>
 <ul class="org-ul">
 <li>跟MEDV（房價）高度相關的是LSTAT（中低收入戶佔當地居住人口的比例）和RM（房子有幾間房間）這兩個變數。<br /></li>
@@ -886,15 +868,15 @@ Name: 0, dtype: float64
 </div>
 
 
-<div id="org90e6378" class="figure">
+<div id="org0435247" class="figure">
 <p><img src="images/housing-2var.png" alt="housing-2var.png" width="600" /><br />
 </p>
-<p><span class="figure-number">Figure 11: </span>Caption</p>
+<p><span class="figure-number">Figure 12: </span>Caption</p>
 </div>
 </div>
 </div>
-<div id="outline-container-org1847eaf" class="outline-4">
-<h4 id="org1847eaf"><span class="section-number-4">4.4.3.</span> 準備訓練用的資料</h4>
+<div id="outline-container-orgf4f9af4" class="outline-4">
+<h4 id="orgf4f9af4"><span class="section-number-4">4.4.3.</span> 準備訓練用的資料</h4>
 <div class="outline-text-4" id="text-4-4-3">
 <p>
 先拿兩項特徵值來試一下水溫: lstat和rm<br />
@@ -908,7 +890,7 @@ Name: 0, dtype: float64
 </pre>
 </div>
 
-<pre class="example" id="org0120696">
+<pre class="example" id="orgd3f6baa">
         lstat        rm
 0   -1.049614  0.347120
 1   -0.373898  0.116169
@@ -939,8 +921,8 @@ Name: medv, Length: 452, dtype: float64
 </div>
 </div>
 </div>
-<div id="outline-container-orga043bd8" class="outline-3">
-<h3 id="orga043bd8"><span class="section-number-3">4.5.</span> 分割訓練集與測試集</h3>
+<div id="outline-container-org85fb7eb" class="outline-3">
+<h3 id="org85fb7eb"><span class="section-number-3">4.5.</span> 分割訓練集與測試集</h3>
 <div class="outline-text-3" id="text-4-5">
 <p>
 訓練集佔80%、測試集佔20%<br />
@@ -965,8 +947,8 @@ Name: medv, Length: 452, dtype: float64
 </pre>
 </div>
 </div>
-<div id="outline-container-org1444262" class="outline-3">
-<h3 id="org1444262"><span class="section-number-3">4.6.</span> 建立模型</h3>
+<div id="outline-container-orgeccfb96" class="outline-3">
+<h3 id="orgeccfb96"><span class="section-number-3">4.6.</span> 建立模型</h3>
 <div class="outline-text-3" id="text-4-6">
 <p>
 new出一個LinearRegression的物件後，用特徵變數的訓練資料和目標變數的訓練資料產生一個模型。接著將特徵變數的測試資料倒進這個新產生的模型當中，得到預測的目標變數資料<sup><a id="fnr.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup>。<br />
@@ -980,8 +962,8 @@ new出一個LinearRegression的物件後，用特徵變數的訓練資料和目�
 </div>
 </div>
 </div>
-<div id="outline-container-orgbf7446a" class="outline-3">
-<h3 id="orgbf7446a"><span class="section-number-3">4.7.</span> 測試效能</h3>
+<div id="outline-container-org3568d70" class="outline-3">
+<h3 id="org3568d70"><span class="section-number-3">4.7.</span> 測試效能</h3>
 <div class="outline-text-3" id="text-4-7">
 <p>
 將這個預測的目標變數資料（預測結果）和目標變數的測試資料（真實結果）做R2-score：<br />
@@ -1001,8 +983,8 @@ R2: 0.6048366146231109
 得到的這個R2-score讓我們可以知道特徵變數對於目標變數的解釋程度為何，而越接近1代表越準確。這裡大約是66%，解釋程度算是相當好的<sup><a id="fnr.2.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup>。<br />
 </p>
 </div>
-<div id="outline-container-org84c365e" class="outline-4">
-<h4 id="org84c365e"><span class="section-number-4">4.7.1.</span> 模型效能視覺化</h4>
+<div id="outline-container-orgddca9d3" class="outline-4">
+<h4 id="orgddca9d3"><span class="section-number-4">4.7.1.</span> 模型效能視覺化</h4>
 <div class="outline-text-4" id="text-4-7-1">
 <p>
 把剛剛的預測的目標變數資料和測試的目標變數資料畫成散佈圖<br />
@@ -1022,16 +1004,16 @@ R2: 0.6048366146231109
 </div>
 
 
-<div id="orga5850a8" class="figure">
+<div id="org3fe92e1" class="figure">
 <p><img src="images/boston-perf.png" alt="boston-perf.png" width="500" /><br />
 </p>
-<p><span class="figure-number">Figure 12: </span>Caption</p>
+<p><span class="figure-number">Figure 13: </span>Caption</p>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-org8462adf" class="outline-3">
-<h3 id="org8462adf"><span class="section-number-3">4.8.</span> 找出線性模型</h3>
+<div id="outline-container-org772c8bb" class="outline-3">
+<h3 id="org772c8bb"><span class="section-number-3">4.8.</span> 找出線性模型</h3>
 <div class="outline-text-3" id="text-4-8">
 <p>
 由LinearRegression()找出線性模型的intercept和coefficient<br />
@@ -1057,12 +1039,12 @@ rm: 4.663312387946355
 </div>
 </div>
 </div>
-<div id="outline-container-orgbd81ede" class="outline-2">
-<h2 id="orgbd81ede"><span class="section-number-2">5.</span> [作業]依據期中考成績預測期末考成績&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></h2>
+<div id="outline-container-orgf395336" class="outline-2">
+<h2 id="orgf395336"><span class="section-number-2">5.</span> [作業]依據期中考成績預測期末考成績&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></h2>
 <div class="outline-text-2" id="text-5">
 </div>
-<div id="outline-container-orga7acbf0" class="outline-3">
-<h3 id="orga7acbf0"><span class="section-number-3">5.1.</span> Data</h3>
+<div id="outline-container-orgd8f9e91" class="outline-3">
+<h3 id="orgd8f9e91"><span class="section-number-3">5.1.</span> Data</h3>
 <div class="outline-text-3" id="text-5-1">
 <ul class="org-ul">
 <li>線上資料: <a href="https://letranger.github.io/AI/2023A-CS-Data.csv">https://letranger.github.io/AI/Downloads/PythonScores.csv</a><br /></li>
@@ -1077,8 +1059,8 @@ rm: 4.663312387946355
 </ul>
 </div>
 </div>
-<div id="outline-container-org867208e" class="outline-3">
-<h3 id="org867208e"><span class="section-number-3">5.2.</span> Task</h3>
+<div id="outline-container-org2b0c421" class="outline-3">
+<h3 id="org2b0c421"><span class="section-number-3">5.2.</span> Task</h3>
 <div class="outline-text-3" id="text-5-2">
 <p>
 你的任務是建立一個模型，輸入一個或多個特徵值(class, task, mid)來預測期末考成績(final)，其他相關任務包括:<br />
@@ -1111,7 +1093,7 @@ Hands-On Machine Learning with Scikit-Learn: Aurelien Geron<br />
 </div></div>
 <div id="postamble" class="status">
 <p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2024-11-27 Wed 10:47</p>
+<p class="date">Created: 2024-11-27 Wed 15:33</p>
 </div>
 </body>
 </html>
