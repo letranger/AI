@@ -1,0 +1,662 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2025-02-13 Thu 11:26 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>生成式學習</title>
+<meta name="author" content="Yung-Chin Yen" />
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<link rel="stylesheet" type="text/css" href="../css/muse.css" />
+<script src="../css/copy_code.js"></script>
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">生成式學習</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org539ad60">1. 生成式學習</a></li>
+<li><a href="#org0b0f410">2. 2. 生成式AI相關理論</a></li>
+<li><a href="#org1f6f608">3. 3. 自然語言生成</a></li>
+<li><a href="#org7421f28">4. 4. 影像與多模態生成</a></li>
+<li><a href="#orgba641c4">5. 5. 生成式 AI 的相關議題</a></li>
+<li><a href="#org93059ad">6. Resource</a></li>
+</ul>
+</div>
+</div>
+<a href="https://hits.sh/letranger.github.io/working/2025%E5%8D%97%E5%A4%A7%E7%94%9F%E6%88%90%E5%BC%8FAI%E6%95%99%E6%9D%90%E7%B7%A8%E4%BF%AE.html/"><img alt="Hits" align="right"  src="https://hits.sh/letranger.github.io/working/2025%E5%8D%97%E5%A4%A7%E7%94%9F%E6%88%90%E5%BC%8FAI%E6%95%99%E6%9D%90%E7%B7%A8%E4%BF%AE.html.svg"/></a>
+<div id="outline-container-org539ad60" class="outline-2">
+<h2 id="org539ad60"><span class="section-number-2">1.</span> 生成式學習</h2>
+<div class="outline-text-2" id="text-1">
+</div>
+<div id="outline-container-orge6dd3fc" class="outline-3">
+<h3 id="orge6dd3fc"><span class="section-number-3">1.1.</span> 生成是一件複雜的事</h3>
+<div class="outline-text-3" id="text-1-1">
+<ul class="org-ul">
+<li>以256種顏色隨機生成一張長寛均為16像素（pixel）的小圖，這張隨機生成的圖將有(16×16)^256=256^256種可能性，大約是10^1229種 。<br /></li>
+<li>以1000個基礎英文單字隨機生成一篇100字的英文作文，這篇作文的可能結果將來到100^1000=10^2000種。<br /></li>
+<li>可觀測宇宙中有10^24顆恒星<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup><br /></li>
+<li>宇宙中原子總數：10^82<sup><a id="fnr.1.100" class="footref" href="#fn.1" role="doc-backlink">1</a></sup><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgff5d9ea" class="outline-3">
+<h3 id="orgff5d9ea"><span class="section-number-3">1.2.</span> 生成式AI的發展與演進</h3>
+<div class="outline-text-3" id="text-1-2">
+<ol class="org-ol">
+<li>早期的文字生成與對話模擬<br />
+<ul class="org-ul">
+<li><a href="https://letranger.github.io/AI/eliza.html">ELIZA</a><br /></li>
+<li><a href="https://github.com/letranger/GAI-Textbook/blob/main/eliza.html">ELIZA原始碼</a><br /></li>
+</ul></li>
+<li>從規則系統到統計方法<br /></li>
+
+<li>機器學習的興起<br /></li>
+<li>從翻譯到文字生成<br /></li>
+<li>從文字生成到影像生成<br /></li>
+<li>從影像生成到影像理解<br /></li>
+<li>Transformer 架構的突破<br /></li>
+<li>大語言模型與多模態生成時代<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-org977648c" class="outline-3">
+<h3 id="org977648c"><span class="section-number-3">1.3.</span> 生成式AI的類型與應用</h3>
+<div class="outline-text-3" id="text-1-3">
+<ol class="org-ol">
+<li>文字生成<br /></li>
+<li>影像生成<br /></li>
+<li>程式生成<br /></li>
+<li>其他模態生成<br /></li>
+</ol>
+</div>
+</div>
+</div>
+<div id="outline-container-org0b0f410" class="outline-2">
+<h2 id="org0b0f410"><span class="section-number-2">2.</span> 2. 生成式AI相關理論</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-orgf786018" class="outline-3">
+<h3 id="orgf786018"><span class="section-number-3">2.1.</span> AI 的本質：函數</h3>
+<div class="outline-text-3" id="text-2-1">
+<ul class="org-ul">
+<li>解釋如何AI視為尋找特定函數<br /></li>
+<li>解釋函數與參數的關係<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org3ee600e" class="outline-3">
+<h3 id="org3ee600e"><span class="section-number-3">2.2.</span> 模型訓練</h3>
+<div class="outline-text-3" id="text-2-2">
+<ul class="org-ul">
+<li>以函數參數尋找最佳模型<br /></li>
+<li>利用梯度下降法與損失函數（如 MSE）來優化模型<br /></li>
+<li>神經網路的概念與其參數調整方式<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org249e91a" class="outline-3">
+<h3 id="org249e91a"><span class="section-number-3">2.3.</span> 探討活動 1</h3>
+<div class="outline-text-3" id="text-2-3">
+<ul class="org-ul">
+<li>Python 任務<br />
+<ol class="org-ol">
+<li>比較不同類型的種損失函數、繪製損失函數曲線<br /></li>
+<li>設計一個函數來量化模型的準確性<br /></li>
+</ol></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgca88786" class="outline-3">
+<h3 id="orgca88786"><span class="section-number-3">2.4.</span> 生成式 AI： 一種會接龍的函數</h3>
+<div class="outline-text-3" id="text-2-4">
+<ul class="org-ul">
+<li>簡介文字生成的接龍機制<br /></li>
+<li>Token 概念 與不同 GPT 版本的 token 處理方式<br /></li>
+<li>自迴歸模型 (AR) 與非自迴歸模型 (NAR) 比較<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org7fe32a9" class="outline-3">
+<h3 id="org7fe32a9"><span class="section-number-3">2.5.</span> 探討活動 2</h3>
+<div class="outline-text-3" id="text-2-5">
+<ul class="org-ul">
+<li>測試不同的中英文輸入，分析 Token 的劃分方式<br /></li>
+<li>比較 GPT-3 和 GPT-4 的 Token 分割方式<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org3ad3683" class="outline-3">
+<h3 id="org3ad3683"><span class="section-number-3">2.6.</span> 文字、圖形與向量：先理解才能生成</h3>
+<div class="outline-text-3" id="text-2-6">
+<ul class="org-ul">
+<li>AI模型如何理解影像資料<br /></li>
+<li>AI模型如何理解文字資料<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org1a0af59" class="outline-3">
+<h3 id="org1a0af59"><span class="section-number-3">2.7.</span> 探討活動 3</h3>
+<div class="outline-text-3" id="text-2-7">
+<ul class="org-ul">
+<li>以 Python 撰寫卷積核程式，分析影像特徵擷取<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orged0e6c6" class="outline-3">
+<h3 id="orged0e6c6"><span class="section-number-3">2.8.</span> 探討活動 4</h3>
+<div class="outline-text-3" id="text-2-8">
+<ul class="org-ul">
+<li>文字轉換向量的實作與探究<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgb9cf579" class="outline-3">
+<h3 id="orgb9cf579"><span class="section-number-3">2.9.</span> 2.5 編碼與解碼：邁向生成的一小步</h3>
+<div class="outline-text-3" id="text-2-9">
+<ul class="org-ul">
+<li>簡介自動編碼器運作原理<br /></li>
+<li>簡介自動編碼器的應用<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org5f9a1c9" class="outline-3">
+<h3 id="org5f9a1c9"><span class="section-number-3">2.10.</span> 探討活動 5</h3>
+<div class="outline-text-3" id="text-2-10">
+<ul class="org-ul">
+<li>體驗 VAE（變分自動編碼器）的影像漸變<br /></li>
+<li>設計並測試不同數字間的影像漸變<br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org1f6f608" class="outline-2">
+<h2 id="org1f6f608"><span class="section-number-2">3.</span> 3. 自然語言生成</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-org1c0c341" class="outline-3">
+<h3 id="org1c0c341"><span class="section-number-3">3.1.</span> 見樹也見林：從單詞到全句</h3>
+<div class="outline-text-3" id="text-3-1">
+<ul class="org-ul">
+<li>探討 NLP 如何理解句子與文件<br /></li>
+<li>簡介BoW、TF-IDF、N-Gram<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org6c17ae9" class="outline-3">
+<h3 id="org6c17ae9"><span class="section-number-3">3.2.</span> 探討活動 1</h3>
+<div class="outline-text-3" id="text-3-2">
+<ul class="org-ul">
+<li>以實作體驗BoW、TF-IDF的運作並分析結果<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org004134e" class="outline-3">
+<h3 id="org004134e"><span class="section-number-3">3.3.</span> RNN/LSTM：時間序列資料的解決方案</h3>
+<div class="outline-text-3" id="text-3-3">
+<ul class="org-ul">
+<li>簡介RNN，LSTM、GRU運作原理<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgd0a166c" class="outline-3">
+<h3 id="orgd0a166c"><span class="section-number-3">3.4.</span> 探討活動 2</h3>
+<div class="outline-text-3" id="text-3-4">
+<ol class="org-ol">
+<li>比較 RNN、LSTM、GRU 的結構與應用<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-org19c180d" class="outline-3">
+<h3 id="org19c180d"><span class="section-number-3">3.5.</span> 注意力機制與 Transformer</h3>
+<div class="outline-text-3" id="text-3-5">
+<ul class="org-ul">
+<li>簡Seq2Seq 模型<br /></li>
+<li>簡介Transformer及自注意力機制<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org69820d3" class="outline-3">
+<h3 id="org69820d3"><span class="section-number-3">3.6.</span> 探討活動 3</h3>
+<div class="outline-text-3" id="text-3-6">
+<ol class="org-ol">
+<li>實作以 Transformer 進行文字翻譯<br /></li>
+<li>觀察並解釋程式生成之注意力矩陣<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-org0ecd6f3" class="outline-3">
+<h3 id="org0ecd6f3"><span class="section-number-3">3.7.</span> 從 LM 到 LLM</h3>
+<div class="outline-text-3" id="text-3-7">
+<ul class="org-ul">
+<li>簡介LM與LLM<br /></li>
+<li>介紹幾種常見的LLM<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgd2b8e7d" class="outline-3">
+<h3 id="orgd2b8e7d"><span class="section-number-3">3.8.</span> 探討活動 4</h3>
+<div class="outline-text-3" id="text-3-8">
+<ol class="org-ol">
+<li>搜尋並介紹一款 LLM<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-org3b9aa04" class="outline-3">
+<h3 id="org3b9aa04"><span class="section-number-3">3.9.</span> 語言模型的訓練與微調</h3>
+<div class="outline-text-3" id="text-3-9">
+<ol class="org-ol">
+<li>介紹語言模型的建置、訓練與微調<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-org7839128" class="outline-3">
+<h3 id="org7839128"><span class="section-number-3">3.10.</span> 探討活動 5</h3>
+<div class="outline-text-3" id="text-3-10">
+<ol class="org-ol">
+<li>訓練一個簡單的語言模型<br /></li>
+</ol>
+</div>
+</div>
+</div>
+<div id="outline-container-org7421f28" class="outline-2">
+<h2 id="org7421f28"><span class="section-number-2">4.</span> 4. 影像與多模態生成</h2>
+<div class="outline-text-2" id="text-4">
+</div>
+<div id="outline-container-orgb9b2ad3" class="outline-3">
+<h3 id="orgb9b2ad3"><span class="section-number-3">4.1.</span> 影像與多模態生成概述</h3>
+<div class="outline-text-3" id="text-4-1">
+<ul class="org-ul">
+<li>簡介 AI 在影像與影片生成的發展<br /></li>
+<li>介紹不同類型的多模態生成<br />
+<ol class="org-ol">
+<li>文字生成影像、文字生成影片（Text-to-Image / Text-to-Video）<br /></li>
+<li>影像生成文字、影片生成文字（Image-to-Text / Video-to-Text）<br /></li>
+<li>影像生成影像、影片生成影片（Image-to-Image / Video-to-Video）<br /></li>
+</ol></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgf5d3570" class="outline-3">
+<h3 id="orgf5d3570"><span class="section-number-3">4.2.</span> 探討活動 1</h3>
+<div class="outline-text-3" id="text-4-2">
+<ol class="org-ol">
+<li>選擇兩種多模態生成技術<br /></li>
+<li>比較不同工具的生成品質與操作便利性<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-orgd1f0b8e" class="outline-3">
+<h3 id="orgd1f0b8e"><span class="section-number-3">4.3.</span> VAE：生成模型的開端</h3>
+<div class="outline-text-3" id="text-4-3">
+<ul class="org-ul">
+<li>變分自動編碼器（VAE）的概念與原理<br /></li>
+<li>應用VAE進行風格轉換與圖片漸變<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orga07a2d8" class="outline-3">
+<h3 id="orga07a2d8"><span class="section-number-3">4.4.</span> 探討活動 2</h3>
+<div class="outline-text-3" id="text-4-4">
+<ol class="org-ol">
+<li>使用 VAE 進行圖片風格轉換<br /></li>
+<li>測試不同的 <b><b>潛在向量（Latent Code）</b></b> 設定，分析結果<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-org1a1475c" class="outline-3">
+<h3 id="org1a1475c"><span class="section-number-3">4.5.</span> GAN：在對抗中學習</h3>
+<div class="outline-text-3" id="text-4-5">
+<ul class="org-ul">
+<li>介紹 <b><b>生成對抗網路（GAN）</b></b> 的概念<br /></li>
+<li>GAN 在 <b><b>圖片生成、風格轉換、Deepfake</b></b> 等領域的應用<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgc17ef92" class="outline-3">
+<h3 id="orgc17ef92"><span class="section-number-3">4.6.</span> 探討活動 3</h3>
+<div class="outline-text-3" id="text-4-6">
+<ol class="org-ol">
+<li>訓練一個簡單的 GAN 來生成手寫數字<br /></li>
+<li>體驗 GAN 風格轉換，將照片轉換為卡通風格<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-orga17bf0c" class="outline-3">
+<h3 id="orga17bf0c"><span class="section-number-3">4.7.</span> Diffusion Models：擴散模型的崛起</h3>
+<div class="outline-text-3" id="text-4-7">
+<ul class="org-ul">
+<li>介紹擴散模型（Diffusion Models）的原理<br /></li>
+<li>介紹幾種代表性的擴散模型應用<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orge94b92b" class="outline-3">
+<h3 id="orge94b92b"><span class="section-number-3">4.8.</span> 探討活動 4</h3>
+<div class="outline-text-3" id="text-4-8">
+<ol class="org-ol">
+<li>嘗試不同的提示詞（Prompt），比較生成結果<br /></li>
+<li>利用Gradio 或 Streamlit實作一個簡單的文生圖介面<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-orgbce66ca" class="outline-3">
+<h3 id="orgbce66ca"><span class="section-number-3">4.9.</span> 從單模態到多模態生成</h3>
+<div class="outline-text-3" id="text-4-9">
+<ul class="org-ul">
+<li>簡介多模態生成（Multimodal Generation）的概念<br /></li>
+<li>介紹 CLIP、Sora、ViT（Vision Transformer） 的應用<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgb55f9cc" class="outline-3">
+<h3 id="orgb55f9cc"><span class="section-number-3">4.10.</span> 探討活動 5</h3>
+<div class="outline-text-3" id="text-4-10">
+<ol class="org-ol">
+<li>使用 CLIP 進行圖文匹配<br /></li>
+<li>嘗試以 Sora 生成短影片<br /></li>
+<li>討論多模態 AI 的應用與未來發展<br /></li>
+</ol>
+</div>
+</div>
+</div>
+<div id="outline-container-orgba641c4" class="outline-2">
+<h2 id="orgba641c4"><span class="section-number-2">5.</span> 5. 生成式 AI 的相關議題</h2>
+<div class="outline-text-2" id="text-5">
+</div>
+<div id="outline-container-org61acfe0" class="outline-3">
+<h3 id="org61acfe0"><span class="section-number-3">5.1.</span> 法律議題</h3>
+<div class="outline-text-3" id="text-5-1">
+<ul class="org-ul">
+<li>探討生成式 AI 在法律層面的影響<br /></li>
+<li>探討生成式AI主要法律爭議<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgc8cd3e1" class="outline-3">
+<h3 id="orgc8cd3e1"><span class="section-number-3">5.2.</span> 探討活動 1</h3>
+<div class="outline-text-3" id="text-5-2">
+<ol class="org-ol">
+<li>討論兩起生成式 AI 相關的判決案例<br /></li>
+<li>分析 AI 生成內容的法律地位與影響<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-org3153c28" class="outline-3">
+<h3 id="org3153c28"><span class="section-number-3">5.3.</span> 倫理議題</h3>
+<div class="outline-text-3" id="text-5-3">
+<ul class="org-ul">
+<li>討論生成式 AI 可能引發的倫理問題：<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org2c67cda" class="outline-3">
+<h3 id="org2c67cda"><span class="section-number-3">5.4.</span> 探討活動 2</h3>
+<div class="outline-text-3" id="text-5-4">
+<ol class="org-ol">
+<li>測試不同 AI 聊天機器人的倫理邊界<br /></li>
+<li>討論如何設計更符合倫理規範的 AI<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-org5f04e5a" class="outline-3">
+<h3 id="org5f04e5a"><span class="section-number-3">5.5.</span> 教育議題</h3>
+<div class="outline-text-3" id="text-5-5">
+<ul class="org-ul">
+<li>探討生成式 AI 對學校教育的影響<br /></li>
+<li>討論 AI 在學習輔助與評量中的角色<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgfd936f3" class="outline-3">
+<h3 id="orgfd936f3"><span class="section-number-3">5.6.</span> 探討活動 3</h3>
+<div class="outline-text-3" id="text-5-6">
+<ol class="org-ol">
+<li>一組使用 AI 撰寫報告，另一組傳統方式撰寫<br /></li>
+<li>實驗比較「有/無以AI輔助學習」在學習內容完整性與學習體驗上的差異<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-orgdacdc53" class="outline-3">
+<h3 id="orgdacdc53"><span class="section-number-3">5.7.</span> 其他議題</h3>
+<div class="outline-text-3" id="text-5-7">
+<ul class="org-ul">
+<li>環保議題：生成式 AI 的電力與水資源消耗<br /></li>
+<li>壟斷與反壟斷：科技巨頭如何主導 AI 發展<br /></li>
+<li>就業市場影響：AI 取代與創造的新職業<br /></li>
+<li>國防與安全風險：AI 在戰爭與資訊戰中的應用<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgabe1144" class="outline-3">
+<h3 id="orgabe1144"><span class="section-number-3">5.8.</span> 探討活動 4</h3>
+<div class="outline-text-3" id="text-5-8">
+<ol class="org-ol">
+<li>計算、分析個人 AI 使用的電力消耗<br /></li>
+<li>討論 AI 節能技術與環保策略<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-org692cc68" class="outline-3">
+<h3 id="org692cc68"><span class="section-number-3">5.9.</span> 探討活動 5</h3>
+<div class="outline-text-3" id="text-5-9">
+<ol class="org-ol">
+<li>列舉 AI 可能取代的職業、可能創造的新職業<br /></li>
+<li>制定 AI 時代的職業發展策略<br /></li>
+</ol>
+</div>
+</div>
+</div>
+<div id="outline-container-org93059ad" class="outline-2">
+<h2 id="org93059ad"><span class="section-number-2">6.</span> Resource</h2>
+<div class="outline-text-2" id="text-6">
+<ul class="org-ul">
+<li><a href="https://www.techbang.com/posts/114202-8-google-employees-invented-modern-artificial-intelligence">8 名Google員工發明了現代人工智慧，這是那篇論文的內幕故事</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://zh.wikipedia.org/zh-tw/%E5%AE%87%E5%AE%99">維基百科:宇宙</a><br />
+</p></div></div>
+
+
+</div>
+</div></div>
+<div id="postamble" class="status">
+<p class="author">Author: Yung-Chin Yen</p>
+<p class="date">Created: 2025-02-13 Thu 11:26</p>
+</div>
+</body>
+</html>
