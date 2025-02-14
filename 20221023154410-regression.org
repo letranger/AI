@@ -13,9 +13,28 @@
 #+OPTIONS: H:4
 #+LATEX:\newpage
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/muse.css" />
+#+HTML_HEAD_EXTRA: <script src="../css/copy_code.js"></script>
 #+begin_export html
 <a href="https://letranger.github.io/AI/20221023154410-regression.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20221023154410-regression.html.svg"/></a>
 #+end_export
+
+* 為此 org 啟用 venv :noexport:
+#+begin_src shell -r -n :results output :exports no
+python3 -m venv ./venv
+source ./venv/bin/activate
+echo $VIRTUAL_ENV
+ls venv
+
+python3 -m pip install -U matplotlib
+#+end_src
+
+#+BEGIN_SRC emacs-lisp :exports no
+(pyvenv-activate "./venv")
+(setq org-babel-python-command "./venv/bin/python3")
+#+END_SRC
+
+#+RESULTS:
+: ./venv/bin/python3
 
 * 關於迴歸
 即，根據一組預測特徵（predictor，如里程數、車齡、品牌）來預測目標數值（如二手車車價）[fn:1]、根據歷史股價來預測明天股價、根據路況來預測方向盤轉向及車速。
@@ -67,8 +86,36 @@ package "機器學習"{
 
 #+RESULTS:
 [[file:images/regvsml3.png]]
-**** Multiple Linear regression (複線性迴歸)
-討論多個變數間的關係
+**** Multiple Linear regression (多元線性迴歸)
+#+BEGIN_SRC dot :file ./images/regvsm3.png :cmdline -Kdot -Tpng
+digraph perceptron {
+  rankdir=LR
+  x1 [label="x1"]
+  x2 [label="x2"]
+  x3 [label="x3"]
+  output [label="輸出變量y" shape="record"]
+  x1 -> output [label="a"]
+  x2 -> output [label="b"]
+  x3 -> output [label="c"]
+}
+#+END_SRC
+
+#+CAPTION: 多元線性迴歸
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 200
+[[file:./images/regvsm3.png]]
+
+討論多個變數間的關係，Multiple Linear Regression 是線性迴歸的一種延伸，當輸出變量 $y$ 與多個輸入變量 $x_1,x_2,…,x_n$ 之間存在線性關係時，可使用多元線性迴歸來建模:
+$$y=ax_1+bx_2+cx_3+⋯+zx_n+ϵ$$
+其中
+- $y$: 輸出變量 (應變數)
+- $x_1,x_2,…,x_n$​: 輸入變量 (特徵值)
+- $a,b,c​,…,z$​: 係數 (權重)
+- $ϵ$: 誤差項 (Residual)
+
 *** Logistic regression
   * 也是線性方法，但使用logist function轉換輸出的預測結果，其輸出結果為類別機率(class probabilities)
   * 優點: 簡單、容易解釋
@@ -97,7 +144,7 @@ package "機器學習"{
 典型迴歸案例: Boston Housing Data
 
 * 迴歸原理
-練習投藍的時後，我們需要知道籃筐位置，誤差多少，做出丟球的修正。
+練習投藍的時後，我們需要知道籃筐位置，誤差多少，1做出丟球的修正。
 做 Machine Learning 也是一樣道理，我們需要 :
 - 建立模型
 - 計算誤差: 在[[id:20221023T101456.955364][機器學習]]中，我們用loss function來計算
@@ -111,24 +158,571 @@ package "機器學習"{
 2. Loss function L: 越小越好
    input: a function / output: how bad it is
 3. Pick the *Best Function* :
-   $f* = arg min L(f)$
+   $f* = \arg\min L(f)$
    上述可以微分來求最佳解，即求 function L 的最小值
 4. 數值最佳解: Gradient Descent(找拋物線/面最低點)
 
-** 迴歸預測流程(以波士頓房價預測為例)
-1. Import the required module
-1. Load and configure the Boston housing data set
-1. Check the relation between the variable, using pairplot and correlation graph
-1. Descriptive statistics: central tendency and dispersion
-1. Select the required columns
-1. Train the test split
-1. Normalize the data
-1. Build the input pipeline for the TensorFlow model
-1. Model training
-1. Predictions
-1. Validation
+* 線性迴歸: 學期成績預估
+** 函數: AI的本質
+人工智慧本質上就是在找出一個特定函數。例如，我們想利用人工智慧來預估自己這個學期的資訊科成績，其實相當於在找一個類似這樣的函數：
+$$f(期中考成績,期末考成績)→學期總成績$$
+有了這個函數，只要我們輸入這學期的兩次段成績，就能算出自己的學期總成績。但像這樣的函數f有無限多個，其中一種可能的計算方式如下：
+$$期末成績=0.4×期中考成績+0.6×期末考成績$$
+，此處的0.4, 0.6就稱為這個函數的參數（parameter）。
 
-* 線性迴歸:年齡身高預測#1
+為了找出這個函數，我們首先應蒐集歷屆學長姐的成績資料（包括兩次段考平均成績與學期總成績），這些資料稱之為訓練資料（training data）。在將訓練資料視覺化後，我們發現x與y的分佈如圖[[fig:scoReg-1]]所示（假設我們詢問了10位學長姐、收集了10筆訓練資料），初步猜測二者可能存在線性關係。接下來的任務就是畫出一條能儘量接近圖上所有資料點的線，也就是找出最佳的參數a（即這條迴歸線的斜率）。
+
+#+begin_src python -r -n :sync :session tmp :results output :exports none
+import numpy as np
+import matplotlib.pyplot as plt
+import math
+plt.rcParams['font.sans-serif'] = ['Arial Unicode MS'] # 步驟一（替換系統中的字型，這裡用的是Mac OSX系統）
+plt.rcParams['axes.unicode_minus'] = False  # 步驟二（解決座標軸負數的負號顯示問題）
+
+# 模擬數據
+np.random.seed(403)  # 固定隨機種子以便重現
+x = np.random.uniform(10, 90, 10)  # 模擬期中和期末考平均，範圍為 50-100
+noise = np.random.normal(-10, 10, 10)  # 添加隨機誤差
+y = x * 0.9 +10 + noise  # 模擬學期總成績，假設公式 y = 0.8 * x + 20 + 誤差
+for i,j in zip(x, y):
+    print(f'({i:.0f}, {j:.0f})', end=', ')
+# 畫出散佈圖
+plt.scatter(x, y, color='blue', alpha=0.7)
+plt.title("兩次段考平均與學期總成績關係", fontsize=16)
+plt.xlim(0, 101)
+plt.ylim(0, 101)
+plt.xlabel("兩次段考平均(x)", fontsize=14)
+plt.ylabel("學期總成績(y)", fontsize=14)
+plt.grid(True, linestyle='--', alpha=0.5)
+
+plt.savefig('images/2scores.png', dpi=300)
+#+end_src
+
+#+RESULTS:
+: (25, 10), (57, 43), (58, 73), (39, 28), (34, 16), (54, 38), (67, 63), (44, 25), (47, 44), (15, 7),
+
+#+CAPTION: 兩次段考平均與學期總成績關係
+#+LABEL:fig:scoReg-1
+#+name: fig:scoReg-1
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/2scores.png]]
+
+** 逐步找出最佳的a
+雖然在此例中最佳的a可以很快用數學公式求出，但此處我們打算介紹另一種逐步找出最佳a的方式，步驟詳列如下：
+
+*** a=0.5
+#+begin_src python -r -n :results output :exports both
+import matplotlib
+print('cc')
+#+end_src
+
+#+RESULTS:
+: cc
+
+首先，面對未知的困難，我們要有嚴格的解題SOP，也就是要遵循「科學、理性、務實」的精神：閉著眼睛隨便給個 $a$。例如：a=0.5，畫出的迴歸線結果如圖[[fig:scoReg-2]]。
+#+begin_src python -r -n  :results output :exports none
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 設定 matplotlib 中文顯示（視系統情況調整字型）
+plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
+plt.rcParams['axes.unicode_minus'] = False
+
+# 模擬數據
+np.random.seed(403)  # 固定隨機種子以便重現
+x = np.random.uniform(10, 90, 10)  # 模擬期中和期末考平均，範圍為 50-100
+noise = np.random.normal(-10, 10, 10)  # 添加隨機誤差
+y = x * 0.9 +10 + noise  # 模擬學期總成績，假設公式 y = 0.8 * x + 20 + 誤差
+#print(x)
+#print(y)
+# 計算迴歸線參數
+a = np.sum(x * y) / np.sum(x**2)  # 假設通過原點的回歸線 y = ax
+#print('best a: ', a)
+a = 0.5 # 假設出一條隨機指定的線(經過原點)
+#print(a)
+
+# 均方誤差
+errors = y - x*a
+mse = np.mean(errors**2)  # 平方誤差平均值
+print(f"總平方誤差 (MSE): {mse:.2f}")
+
+# 畫出散佈圖與迴歸線
+plt.figure(figsize=(8, 6))
+plt.scatter(x, y, color='blue', alpha=0.7, label="成績")
+plt.plot(x, x*a, color='red', linewidth=2, label=f"迴歸線: y = {a:.2f}x")
+
+# 添加標題與標籤
+plt.title(f"均方差：{mse:.2f}", fontsize=16)
+plt.xlim(0, 101)
+plt.ylim(0, 101)
+plt.xlabel("兩次段考平均(x)", fontsize=14)
+plt.ylabel("學期總成績(y)", fontsize=14)
+plt.grid(True, linestyle='--', alpha=0.5)
+plt.legend(fontsize=12)
+
+i = 0
+for x, y1, y2 in zip(x, y, x*a):
+    xs = [x, x]
+    ys = [y1, y2]
+    plt.plot(xs, ys, color='orange')
+    plt.text(x-0.4, y2-6, rf'$\hat y_{i}$', color='blue', fontsize=12)
+    i += 1
+
+# 保存圖片
+import os
+os.makedirs('images', exist_ok=True)  # 確保目錄存在
+plt.savefig('images/2scores_with_regression.png', dpi=300)
+#+end_src
+
+#+RESULTS:
+: 總平方誤差 (MSE): 367.76
+
+#+CAPTION: a=0.5的迴歸線
+#+LABEL:fig:scoReg-2
+#+name: fig:scoReg-2
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/2scores_with_regression.png]]
+
+有了這條線，我們就可以找出這10筆資料與這條線有多遠。理想狀況下我們希望每個點都離線越近越好，把所有點與迴歸線的距離（圖[[fig:scoReg-2]]中的橘色線段）加總起來，我們把它稱為誤差。此處以均方差（Mean Squared Error, MSE）來計算，誤差值為367.76。MSE公式如下：
+$$MSE=\frac{1}{n}\sum_{i=1}^{n}{(y_i-\widehat{y_i})}^2$$
+，這裡的MSE就是這個模型的損失函數（Loss Function） 。
+
+*** a=0.4, a=0.6
+但是目前的a(0.5)是最好的嗎？我們可以試著調整a值，對它各加、減0.1，再來觀察誤差的變化，結果如圖[[fig:scoReg-12]]，可以發現a再大一些結果似乎會更好。
+#+begin_src python -r -n :results output :exports none
+import sys
+
+execution_directory = sys.path[0]
+print("執行檔案目錄是:", execution_directory)
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 設定 matplotlib 中文顯示（視系統情況調整字型）
+plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
+plt.rcParams['axes.unicode_minus'] = False
+
+# 模擬數據
+np.random.seed(403)  # 固定隨機種子以便重現
+x = np.random.uniform(10, 90, 10)  # 模擬期中和期末考平均，範圍為 50-100
+noise = np.random.normal(-10, 10, 10)  # 添加隨機誤差
+y = x * 0.9 +10 + noise  # 模擬學期總成績，假設公式 y = 0.8 * x + 20 + 誤差
+plt.figure(figsize=(20, 8))
+# ===== a = 0.4
+plt.subplot(121)
+# 計算迴歸線參數
+#a = np.sum(x * y) / np.sum(x**2)  # 假設通過原點的回歸線 y = ax
+a = 0.4
+print(a)
+
+# 均方誤差
+errors = y - x*a
+mse = np.mean(errors**2)  # 平方誤差平均值
+print(f"總平方誤差 (MSE): {mse:.2f}")
+
+# 畫出散佈圖與迴歸線
+
+plt.scatter(x, y, color='blue', alpha=0.7, label="成績")
+plt.plot(x, x*a, color='red', linewidth=2, label=f"迴歸線: y = {a:.2f}x")
+
+# 添加標題與標籤
+plt.title(f"均方差：{mse:.2f}", fontsize=16)
+plt.xlim(0, 101)
+plt.ylim(0, 101)
+plt.xlabel("兩次段考平均(x)", fontsize=14)
+plt.ylabel("學期總成績(y)", fontsize=14)
+plt.grid(True, linestyle='--', alpha=0.5)
+plt.legend(fontsize=12)
+
+i = 0
+for x, y1, y2 in zip(x, y, x*a):
+    xs = [x, x]
+    ys = [y1, y2]
+    plt.plot(xs, ys, color='orange')
+    plt.text(x-0.4, y2-2, rf'$\hat y_{i}$', color='blue', fontsize=12)
+    i += 1
+
+# ===== a=0.6
+plt.subplot(122)
+# ====================
+x = np.random.uniform(10, 90, 10)  # 模擬期中和期末考平均，範圍為 50-100
+noise = np.random.normal(-10, 10, 10)  # 添加隨機誤差
+y = x * 0.9 +10 + noise  # 模擬學期總成績，假設公式 y = 0.8 * x + 20 + 誤差
+
+
+a = 0.6
+print(a)
+
+# 均方誤差
+errors = y - x*a
+mse = np.mean(errors**2)  # 平方誤差平均值
+print(f"總平方誤差 (MSE): {mse:.2f}")
+
+# 畫出散佈圖與迴歸線
+#plt.figure(figsize=(8, 6))
+plt.scatter(x, y, color='blue', alpha=0.7, label="成績")
+plt.plot(x, x*a, color='red', linewidth=2, label=f"迴歸線: y = {a:.2f}x")
+
+# 添加標題與標籤
+plt.title(f"均方差：{mse:.2f}", fontsize=16)
+plt.xlim(0, 101)
+plt.ylim(0, 101)
+plt.xlabel("兩次段考平均(x)", fontsize=14)
+plt.ylabel("學期總成績(y)", fontsize=14)
+plt.grid(True, linestyle='--', alpha=0.5)
+plt.legend(fontsize=12)
+
+i = 0
+for x, y1, y2 in zip(x, y, x*a):
+    xs = [x, x]
+    ys = [y1, y2]
+    plt.plot(xs, ys, color='orange')
+    plt.text(x-0.4, y2-2, rf'$\hat y_{i}$', color='blue', fontsize=12)
+    i += 1
+
+# 保存圖片
+plt.savefig('images/2scores_with_regression12.png', dpi=300)
+#+end_src
+
+#+RESULTS:
+: 0.4: 總平方誤差 (MSE): 535.29
+: 0.6: 總平方誤差 (MSE): 498.39
+
+#+CAPTION: a=0.4 v.s. a=0.6
+#+LABEL:fig:scoReg-12
+#+name: fig:scoReg-12
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 800
+[[file:images/2scores_with_regression12.png]]
+
+*** a=0.6 :noexport:
+#+begin_src python -r -n :results output :exports none
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 設定 matplotlib 中文顯示（視系統情況調整字型）
+plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
+plt.rcParams['axes.unicode_minus'] = False
+
+# 模擬數據
+np.random.seed(403)  # 固定隨機種子以便重現
+x = np.random.uniform(10, 90, 10)  # 模擬期中和期末考平均，範圍為 50-100
+noise = np.random.normal(-10, 10, 10)  # 添加隨機誤差
+y = x * 0.9 +10 + noise  # 模擬學期總成績，假設公式 y = 0.8 * x + 20 + 誤差
+
+# 計算迴歸線參數
+#a = np.sum(x * y) / np.sum(x**2)  # 假設通過原點的回歸線 y = ax
+a = 0.6
+print(a)
+
+# 均方誤差
+errors = y - x*a
+mse = np.mean(errors**2)  # 平方誤差平均值
+print(f"總平方誤差 (MSE): {mse:.2f}")
+
+# 畫出散佈圖與迴歸線
+plt.figure(figsize=(8, 6))
+plt.scatter(x, y, color='blue', alpha=0.7, label="成績")
+plt.plot(x, x*a, color='red', linewidth=2, label=f"迴歸線: y = {a:.2f}x")
+
+# 添加標題與標籤
+plt.title(f"均方差：{mse:.2f}", fontsize=16)
+plt.xlim(0, 101)
+plt.ylim(0, 101)
+plt.xlabel("兩次段考平均(x)", fontsize=14)
+plt.ylabel("學期總成績(y)", fontsize=14)
+plt.grid(True, linestyle='--', alpha=0.5)
+plt.legend(fontsize=12)
+
+i = 0
+for x, y1, y2 in zip(x, y, x*a):
+    xs = [x, x]
+    ys = [y1, y2]
+    plt.plot(xs, ys, color='orange')
+    plt.text(x-0.4, y2-2, rf'$\hat y_{i}$', color='blue', fontsize=12)
+    i += 1
+
+# 保存圖片
+import os
+os.makedirs('images', exist_ok=True)  # 確保目錄存在
+plt.savefig('images/2scores_with_regression2.png', dpi=300)
+#+end_src
+
+#+CAPTION: a=0.6
+#+LABEL:fig:scoReg-4
+#+name: fig:scoReg-4
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/2scores_with_regression2.png]]
+
+*** 全部的a
+當我們把全部合理的  a  值（如$0.3 \le a \le 1.4$）對應的損失函數逐一計算出來後，就可以將這些結果畫成一條如圖[[fig:scoReg-5]]的曲線，這就是這個模型的損失函數曲線（Loss Function Curve）。不難看出：只要將a逐步往損失函數較小的方向調整，這個模型的預測效果就會更好。另一種調整a值的方式是透過資料點在曲線上的切線（圖中綠色虛線）斜率來判斷該往左或右移動a值，直到找到切線斜率為0的點，這便是曲線的最低點，也是最佳a值。此函數如下，也是我們用來預估分數的模型：
+$$y=f\left(x\right)=0.84x$$
+
+#+begin_src python -r -n :results output :exports none
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 設定 matplotlib 中文顯示（視系統情況調整字型）
+plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
+plt.rcParams['axes.unicode_minus'] = False
+fig, ax = plt.subplots()
+
+# 模擬數據
+np.random.seed(403)  # 固定隨機種子以便重現
+x = np.random.uniform(10, 90, 10)  # 模擬期中和期末考平均，範圍為 50-100
+noise = np.random.normal(-10, 10, 10)  # 添加隨機誤差
+y = x * 0.9 +10 + noise  # 模擬學期總成績，假設公式 y = 0.8 * x + 20 + 誤差
+# 計算迴歸線參數
+#a = np.sum(x * y) / np.sum(x**2)  # 假設通過原點的回歸線 y = ax
+
+#全部的a
+w = np.arange(0.4,1.41,0.01)
+loss = []
+for i in w:
+    yHat = x*i
+    loss.append(np.mean((yHat - y)**2))
+
+
+# 計算斜率用
+xdist = 0.1
+x0, y0 = 0.5, 367.76
+x1, y1 = 0.4, 535.29
+x2, y2 = 0.6, 243.59
+
+
+# w0
+ax.scatter(x0, y0, color='k')
+ax.text(x0+0.05, y0, rf'a=0.5', color='black')
+# w1
+ax.scatter(x1, y1, color='k')
+ax.text(x1+0.05, y1, rf'a=0.4', color='red')
+# w2
+ax.scatter(x2, y2, color='k')
+ax.text(x2+0.05, y2, rf'a=0.6', color='blue')
+
+#ax.plot([x0, x0], [y0, 0], 'k--')
+#ax.plot([x1, x1], [y1, 0], 'r--')
+#ax.plot([x2, x2], [y2, 0], 'b--')
+
+
+# 添加切線
+# 計算切線的斜率（數學上是導數）
+slope = (y2 - y1) / (x2 - x1)
+
+# 切線公式：y = slope * (x - x0) + y0
+x_tangent = np.linspace(0.3, 0.7, 100)  # 定義切線的 x 範圍
+y_tangent = slope * (x_tangent - x0) + y0
+
+plt.plot(x_tangent, y_tangent, 'g--', label="切線 (x0, y0)")
+plt.scatter(x0, y0, color='green', label="切線點 (x0, y0)", zorder=5)
+
+# 計算誤差曲線的最低點及其切線
+min_index = np.argmin(loss)  # 找到誤差曲線的最低點索引
+min_w = w[min_index]         # 對應的 w 值
+min_loss = loss[min_index]   # 對應的最小誤差值
+
+# 最低點的切線：斜率為 0，即水平線
+x_flat_tangent = np.linspace(min_w - 0.1, min_w + 0.1, 100)
+y_flat_tangent = np.full_like(x_flat_tangent, min_loss)
+# 添加最低點的水平切線
+plt.plot(x_flat_tangent, y_flat_tangent, 'purple', linestyle='--', label="最低點切線")
+plt.scatter(min_w, min_loss, color='purple', label="最低點", zorder=5)
+plt.text(min_w - 0.05, min_loss-30, rf'a={min_w:.2f}', color='purple')
+
+
+
+# 添加標題與標籤
+plt.plot(w, loss)
+plt.xlabel(r'a')
+plt.ylabel(r'誤差(Loss)')
+plt.savefig("images/scoreLoss.png", dpi=300)
+#+end_src
+
+#+RESULTS:
+
+#+CAPTION: 合理a值畫出的誤差函數
+#+LABEL:fig:scoReg-5
+#+name: fig:scoReg-5
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/scoreLoss.png]]
+
+** 兩項成績推估
+如果老師的計分是針對期中期末考給予不同權重呢？那我們新的目標函數就要改成如下式子，此時的任務在求出最佳的參數a, b。
+$$y=f\left(x\right)=ax_1+bx_2$$
+，其中 $x_1$ 為兩次段考平均成績, $x_2$ 為學期總成績。
+
+比照上述步驟的做法，我們可以求出所有合理的a, b值（0～1）及其所對應的損失函數，將結果畫成如圖 ‎2.2 5的曲面。實際求解時，一樣先隨機指定一組權重值a, b（圖[[fig:scoReg-6]]藍色點），依該點在曲面上的斜率（此處稱為梯度，Gradient） ，沿著梯度的反方向往下找，就能找到這個曲面的最低點（圖[[fig:scoReg-5]]紅色點），該點便是函數的最佳參數。此種做法也就是神經網路中找出模型最佳參數的核心思想：梯度下降法（Gradient Descent）。
+
+#+begin_src python -r -n :results output :exports none
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+# 設定 matplotlib 字體
+plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
+plt.rcParams['axes.unicode_minus'] = False
+
+# 模擬數據
+np.random.seed(403)  # 固定隨機種子
+x1 = np.random.uniform(10, 99, 10)  # 模擬期中考成績
+x2 = np.random.uniform(10, 99, 10)  # 模擬期末考成績
+y = x1 * 0.5 + 10 + x2 * 0.7 + 10  # 模擬學期總成績
+
+# 設定參數範圍
+a_values = np.linspace(0, 1, 50)  # a 的範圍
+b_values = np.linspace(0, 1, 50)  # b 的範圍
+A, B = np.meshgrid(a_values, b_values)  # 創建網格
+
+# 計算 Loss
+loss = np.zeros_like(A)
+for i in range(A.shape[0]):
+    for j in range(A.shape[1]):
+        y_pred = A[i, j] * x1 + B[i, j] * x2  # 預測值
+        loss[i, j] = np.mean((y_pred - y)**2)  # 平均平方誤差 (MSE)
+
+# 找到最小 Loss 對應的 a, b
+min_index = np.unravel_index(np.argmin(loss), loss.shape)
+best_a = A[min_index]
+best_b = B[min_index]
+min_loss = loss[min_index]
+
+# 繪製 3D Loss 曲面圖
+fig = plt.figure(figsize=(10, 8))
+ax = fig.add_subplot(111, projection='3d')
+ax.plot_surface(A, B, loss, cmap='viridis', alpha=0.6)
+ax.scatter(best_a, best_b, min_loss, color='red', s=100, label=f"最佳解: a={best_a:.2f}, b={best_b:.2f}, Loss={min_loss:.2f}")
+
+# 隨機初始化一個 (a, b) 點
+init_a, init_b = 0.2, 0.4  # 隨機指定的起始點
+init_loss = np.mean((init_a * x1 + init_b * x2 - y)**2)
+# 添加隨機點
+ax.scatter(init_a, init_b, init_loss, color='blue', s=100, label=f"隨機起始點: a={init_a:.2f}, b={init_b:.2f}, Loss={init_loss:.2f}")
+
+# 繪製箭頭指向最低點
+#ax.quiver(init_a, init_b, init_loss,
+#          best_a - init_a, best_b - init_b, min_loss - init_loss,
+#          color='black', linewidth=2, linestyle='dashed', arrow_length_ratio=0.1)
+
+
+
+# 添加標籤
+ax.set_xlabel("a 值", fontsize=14)
+ax.set_ylabel("b 值", fontsize=14)
+ax.set_zlabel("Loss", fontsize=14)
+ax.legend()
+
+plt.savefig('images/3dScoreLoss.png', dpi=300)
+#+end_src
+
+#+RESULTS:
+#+CAPTION: 兩個參數時的誤差函數
+#+LABEL:fig:scoReg-6
+#+name: fig:scoReg-6
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/3dScoreLoss.png]]
+
+** 神經網路的視角
+從神經網路的角度來看，上述函數也可以視為如圖 ‎2.2 6的模型，模型中只有一層隱藏層，裡面只有一個神經元，輸出結果為期末成績，這便是一個能進行迴歸計算的神經網路。
+#+BEGIN_SRC dot :file images/scoreNN.png :cmdline -Kdot -Tpng
+  digraph threeLayerNetwork{
+  rankdir=LR
+  splines=line
+        nodesep=.05;
+        node [label=""];
+        subgraph cluster_0 {
+                 color=white;
+                 node [style=solid,color=blue4, shape=circle];
+                 x1[label = x1];
+                 x3[label = x2];
+
+                 node [style=filled,color=gray, shape=circle];
+                 label = "輸入層";
+        }
+        subgraph cluster_1 {
+                 color=white;
+                 node [style=filled,color=gray, shape=circle];
+                 node [style=solid,color=red2, shape=circle];
+                 a22[label = "f"];
+                 label = "隱藏層";
+        }
+        subgraph cluster_3 {
+                 color=white;
+                 node [style=solid,color=seagreen2, shape=circle];
+                 O1[label = y];
+                 label="輸出層";
+        }
+        x3 -> a22  [label="b"];
+        x1 -> a22 [label="a"];
+
+
+
+        a22 -> O1
+
+
+  }
+#+END_SRC
+
+#+RESULTS:
+#+CAPTION: 以兩項成績預估學期成績的神經網路
+#+LABEL:fig:scoNN-1
+#+name: fig:scoNN-1
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 300
+[[file:images/scoreNN.png]]
+
+
+#+BEGIN_SRC dot :file images/scoreNN.png :cmdline -Kdot -Tpng
+  digraph threeLayerNetwork{
+  rankdir=LR
+  splines=line
+        nodesep=.05;
+        node [label=""];
+        subgraph cluster_0 {
+                 color=white;
+                 node [style=solid,color=blue4, shape=circle];
+                 x1[label = x1];
+                 x3[label = x2];
+
+                 node [style=filled,color=gray, shape=circle];
+                 label = "輸入層";
+        }
+        subgraph cluster_1 {
+                 color=white;
+                 node [style=filled,color=gray, shape=circle];
+                 node [style=solid,color=red2, shape=circle];
+                 a22[label = "f"];
+                 label = "隱藏層";
+        }
+        subgraph cluster_3 {
+                 color=white;
+                 node [style=solid,color=seagreen2, shape=circle];
+                 O1[label = y];
+                 label="輸出層";
+        }
+        x3 -> a22  [label="b"];
+        x1 -> a22 [label="a"];
+
+
+
+        a22 -> O1
+
+
+  }
+#+END_SRC
+
+* 線性迴歸:年齡身高預測#1 :noexport:
 <<datagen>>
 ** 資料生成
 這是當初上帝創造人類時決定人類身高的規則，我們也可以將之視為這組資料的模型，這個規則或模型是很神祕的，等一下我們要假裝我們不知道這個模型的存在，而迴歸的目的就在於想辦法猜出這個規則或模型。
@@ -581,7 +1175,7 @@ plt.savefig('images/SSELossC.png', dpi=300)
 
 好吧，我也不知道。不如我們先跳過這個看起來太複雜的問題，先換個簡單點的來強化自信。
 
-* 保持距離以測安全
+* 保持距離以測安全 :noexport:
 :PROPERTIES:
 :ID:       e02d602e-c9a4-4a8b-8e5b-336dcac6cc63
 :END:
@@ -1138,7 +1732,7 @@ f'(x)=2ax+b
 $$2ax+b=0$$
 故 $x=\frac{-b}{2a}$ 時有最小值
 
-* 線性迴歸:年齡身高預測#2
+* 線性迴歸:年齡身高預測#2 :noexport:
 回到第[[sec:sbs]]節[[datagen][以年齡預測身高]]的例子，我們提及要找出最佳的參數組合 $(a,b)$ ，最合理的方式是在圖[[fig:SSELossA]]中隨意點圈出一個點 $(a_0, b_0)$ (如圖[[fig:SSELossC]])。接下來：
 1. 找出 *一個方法* 來判斷要由點 $(a_0, b_0)$ 點沿著這個曲面的 *哪一個方向* 前進 *多遠* ，來到下一點 $(a_1, b_1)$。也許是沿著曲面往上移一小段(如圖[[fig:SSELossC]]中的藍色線段)、也許是沿著曲面往下移一小段(如圖[[fig:SSELossC]]中的紅色線段)。
 3. 利用 *同一個方法* 來判斷接下來要由點 $(a_1, b_1)$ 點沿著這個曲面的 *哪一個方向* 繼續前進 *多遠* ，來到下一點 $(a_2, b_2)$
@@ -1698,7 +2292,7 @@ print('rm:',reg.coef_[1])
 5. 請自行決定你要用多少個特徵值來預測，並以測試集來評估模型效能，輸出分數(R2-score)
 6. 列出你找出的模型方程式
 
-** Solution :noexport:TNFSH:
+** Solution :TNFSH:
 #+begin_src python -r -n :results output :exports both
 import pandas as pd
 import numpy as np
