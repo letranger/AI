@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2025-03-30 Sun 14:38 -->
+<!-- 2025-04-17 四 22:12 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>時間序列的預言者：如何通過 RNN、LSTM 和 GRU 預測未來</title>
@@ -234,50 +234,55 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org7408775">1. CNN的限制</a></li>
-<li><a href="#org4ee3e01">2. 遞迴神經網路(Recurrent Neural Networks, RNNs)</a></li>
-<li><a href="#orgd98dd1e">3. RNN實作</a>
+<li><a href="#org53d4a7d">1. CNN的限制</a></li>
+<li><a href="#org5e4e9ba">2. 遞迴神經網路(Recurrent Neural Network, RNN)</a></li>
+<li><a href="#org6ea20ee">3. RNN實作</a>
 <ul>
-<li><a href="#orgc44fd4a">3.1. RNN的程式運作示例</a></li>
-<li><a href="#org9ce6595">3.2. RNN的程式模型架構</a></li>
-<li><a href="#org4902ed4">3.3. 應用情境</a></li>
+<li><a href="#org46188af">3.1. RNN的程式運作示例</a></li>
+<li><a href="#org0aba971">3.2. RNN的程式模型架構</a></li>
+<li><a href="#orgf7e6d64">3.3. 應用情境</a></li>
 </ul>
 </li>
-<li><a href="#orged3d88c">4. LSTM</a>
+<li><a href="#org972c24b">4. RNN模型練習</a>
 <ul>
-<li><a href="#org4360c79">4.1. LSTM的運作原理</a></li>
-<li><a href="#orgded9922">4.2. LSTM的程式運作示例</a></li>
-<li><a href="#org547c33a">4.3. LSTM的程式模型架構</a></li>
-<li><a href="#org875d06d">4.4. 實作: 以AI預測股價-隔日漲跌</a></li>
+<li><a href="#org4fbb9fe">4.1. 匯入與資料產生</a></li>
+<li><a href="#orgee63362">4.2. 前處理與序列資料製作</a></li>
+<li><a href="#org57c0f24">4.3. 建立RNN模型</a></li>
+<li><a href="#org647968e">4.4. 訓練模型</a></li>
+<li><a href="#org02bc6b9">4.5. 評估預測效果並繪圖</a></li>
+<li><a href="#org1bc9410">4.6. 提升效能</a></li>
 </ul>
 </li>
-<li><a href="#orgb95a974">5. 貼圖</a>
+<li><a href="#org0f846d3">5. LSTM</a>
 <ul>
-<li><a href="#orge39366d">5.1. 讀圖</a></li>
+<li><a href="#org6105ba2">5.1. LSTM的運作原理</a></li>
+<li><a href="#org9b2759a">5.2. LSTM的程式運作示例</a></li>
+<li><a href="#org801a02c">5.3. LSTM的程式模型架構</a></li>
+<li><a href="#org74f10d3">5.4. 實作: 以AI預測股價-隔日漲跌</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org7408775" class="outline-2">
-<h2 id="org7408775"><span class="section-number-2">1.</span> CNN的限制</h2>
+<div id="outline-container-org53d4a7d" class="outline-2">
+<h2 id="org53d4a7d"><span class="section-number-2">1.</span> CNN的限制</h2>
 <div class="outline-text-2" id="text-1">
 <p>
-在<a href="20221023101414-卷積神經網路.html#ID-20221023T101414.457264">卷積神經網路</a>中，我們提過CNN的想法源自於對人類大腦認知方式的模仿，當我們辨識一個圖像，會先注意到顏色鮮明的點、線、面，之後將它們構成一個個不同的形狀(眼睛、鼻子、嘴巴 &#x2026;)，這種抽象化的過程就是 CNN 演算法建立模型的方式。其過程如圖<a href="#org9c9670f">1</a><sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。<br />
+在<a href="20221023101414-卷積神經網路.html#ID-20221023T101414.457264">卷積神經網路</a>中，我們提過CNN的想法源自於對人類大腦認知方式的模仿，當我們辨識一個圖像，會先注意到顏色鮮明的點、線、面，之後將它們構成一個個不同的形狀(眼睛、鼻子、嘴巴 &#x2026;)，這種抽象化的過程就是 CNN 演算法建立模型的方式。其過程如圖<a href="#orge112f0a">1</a><sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。<br />
 </p>
 
 
-<div id="org9c9670f" class="figure">
+<div id="orge112f0a" class="figure">
 <p><img src="images/CNN-1.png" alt="CNN-1.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 1: </span>CNN 概念</p>
 </div>
 
 <p>
-至於圖片中的每一個特徵則是利用卷積核來取得(如圖<a href="#org6faf10c">2</a>)，換言之，CNN其實是在模擬人類的眼睛。<br />
+至於圖片中的每一個特徵則是利用卷積核來取得(如圖<a href="#org3010da9">2</a>)，換言之，CNN其實是在模擬人類的眼睛。<br />
 </p>
 
-<div id="org6faf10c" class="figure">
+<div id="org3010da9" class="figure">
 <p><img src="images/CNN_卷積神經網路/2024-04-17_09-18-53_2024-04-17_09-11-28.png" alt="2024-04-17_09-18-53_2024-04-17_09-11-28.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 2: </span>CNN原理</p>
@@ -301,8 +306,8 @@
 </p>
 </div>
 </div>
-<div id="outline-container-org4ee3e01" class="outline-2">
-<h2 id="org4ee3e01"><span class="section-number-2">2.</span> 遞迴神經網路(Recurrent Neural Networks, RNNs)</h2>
+<div id="outline-container-org5e4e9ba" class="outline-2">
+<h2 id="org5e4e9ba"><span class="section-number-2">2.</span> 遞迴神經網路(Recurrent Neural Network, RNN)</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 遞迴神經網絡（RNN）是一種專門設計來處理序列資料的人工神經網絡。序列資料指的是那些隨時間連續出現的資料，比如語言（單詞組成的句子）、影片（一連串的影像畫面），或者是音樂（一連串的音符）。<br />
@@ -313,43 +318,43 @@
 </p>
 
 <p>
-那RNN是如何做到這點的呢?這種“記憶”是通過網絡中的循環連接實現的。這些連接使得訊息可以在模型的一層之間前後流動，就像你在看連續劇時保持對劇情的記憶一樣。我們先來看圖<a href="#orgd8631e9">3</a>，右邊是我們熟悉的神經網路(例如<a href="20221023101414-卷積神經網路.html#ID-20221023T101414.457264">CNN</a>、DNN)，資料一律由模型的左側layer往右側傳送；而左邊的RNN則有點不同，每一層的神經元在將資料往右傳遞的同時，還偷偷留了一份給 <b><b>自己</b></b> ，這裡說的自己不是真正的自己，而是 <b><b>下一個回合的自己</b></b> 。<br />
+那RNN是如何做到這點的呢?這種“記憶”是通過網絡中的循環連接實現的。這些連接使得訊息可以在模型的一層之間前後流動，就像你在看連續劇時保持對劇情的記憶一樣。我們先來看圖<a href="#orgacbe7f8">3</a>，左邊(a,b)是我們熟悉的<a href="20221023101414-卷積神經網路.html#ID-20221023T101414.457264">CNN</a>神經網路，資料一律由模型的左側layer往右側傳送；而右邊的RNN(圖<a href="#orgacbe7f8">3</a>c, 圖<a href="#orgacbe7f8">3</a>d)則有點不同，每一層的神經元在將資料往右傳遞的同時，還偷偷留了一份給 <b><b>自己</b></b> (參考圖中的紅色虛線) ，這裡說的自己不是真正的自己，而是 <b><b>下一個回合的自己</b></b>  。<br />
 </p>
 
 
-<div id="orgd8631e9" class="figure">
-<p><img src="images/遞迴神經網路(Recurrent_Neural_Networks,_RNNs)/2024-05-10_08-43-10_RNN-03.png" alt="2024-05-10_08-43-10_RNN-03.png" width="500" /><br />
+<div id="orgacbe7f8" class="figure">
+<p><img src="images/RNN/CNNRNN.png" alt="CNNRNN.png" width="600" /><br />
 </p>
 <p><span class="figure-number">Figure 3: </span>CNN v.s. RNN</p>
 </div>
 
 <p>
-聽起來好像有點抽象，沒關係，我們現在把圖<a href="#orgd8631e9">3</a>中左側RNN的某一個神經元單獨抽出來分解它的內部動作，我們把圖<a href="#orgd8631e9">3</a>中的那個循環的箭頭拆解成如圖<a href="#orgd60ed51">4</a>。<br />
+聽起來好像有點抽象，沒關係，我們現在把圖<a href="#orgacbe7f8">3</a>中右側RNN的某一個神經元單獨抽出來分解它的內部動作(結果如圖<a href="#org07e80d0">4</a>)。<br />
 </p>
 
 
-<div id="orgd60ed51" class="figure">
-<p><img src="images/遞迴神經網路(Recurrent_Neural_Networks,_RNNs)/2024-05-10_09-01-35_RNN-Cell-1.png" alt="2024-05-10_09-01-35_RNN-Cell-1.png" width="500" /><br />
+<div id="org07e80d0" class="figure">
+<p><img src="images/RNN/2024-05-10_09-01-35_RNN-Cell-1.png" alt="2024-05-10_09-01-35_RNN-Cell-1.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 4: </span>RNN典型結構</p>
 </div>
 
 <p>
-要看懂圖<a href="#orgd60ed51">4</a>，你只要搞清楚三件事:<br />
+要看懂圖<a href="#org07e80d0">4</a>，你只要搞清楚三件事:<br />
 </p>
 <ol class="org-ol">
-<li>RNN不像<a href="20221023101414-卷積神經網路.html#ID-20221023T101414.457264">CNN</a>那樣每次讀入一整張圖，而是分批讀入序列資料，例如，第1次(也就是第1個時間點(\(t_0\))讀入\(X_0\)、第2次(也就是第2個時間點(\(t_1\))讀入\(X_1\)&#x2026;<br /></li>
-<li>圖中右側「展開後」的三神經元其實是同一個，分別代表不同時間點的神經元，我們可以由 \(h_{t-1}, h_{t}, h_{t+1}\) 和 \(X_{t-1}, X_{t}, X_{t+1}\) 觀察出同樣的意思。<br /></li>
-<li>原本常見的資料在模型中傳遞方向是由左而右，在圖<a href="#orgd60ed51">4</a>中則是由下而上，也就是輸入資料是底下的\(X_t\)、輸出為上面的\(h_t\)。<br /></li>
+<li>RNN不像<a href="20221023101414-卷積神經網路.html#ID-20221023T101414.457264">CNN</a>那樣每次讀入一整張圖，而是分批讀入序列資料，例如，第1次(也就是第1個時間點(\(t_0\))讀入\(x_0\)、第2次(也就是第2個時間點(\(t_1\))讀入\(x_1\)&#x2026;<br /></li>
+<li>圖中右側「展開後」的三神經元其實是同一個，分別代表不同時間點的神經元，我們可以由 \(h_{t-1}, h_{t}, h_{t+1}\) 和 \(x_{t-1}, x_{t}, x_{t+1}\) 觀察出同樣的意思。<br /></li>
+<li>原本常見的資料在模型中傳遞方向是由左而右，在圖<a href="#org07e80d0">4</a>中則是由下而上，也就是輸入資料是底下的\(x_t\)、輸出為上面的\(h_t\)。<br /></li>
 </ol>
 
 <p>
-圖<a href="#orgd60ed51">4</a>右側代表的意思是：<br />
+圖<a href="#org07e80d0">4</a>右側代表的意思是：<br />
 </p>
 <ol class="org-ol">
-<li>在第1個時間點(\(t-1\))取得輸入(\(X_{t-1}\))後，神經元會針對 \(X_{t-1}\) 進行運算，更新自己的「狀態」(這個就是會影響「下一個自己」的關鍵)然後輸出結果\(h_{t-1}\)<br /></li>
-<li>在第2個時間點(\(t\))取得輸入(\(X_{t}\))後，利用剛才(時間點{\(t-1\))更新的「狀態」來運算\(X_t\)(這就是神經元受到上一個自己影響的來源，也被稱為「記憶」)，然後再次更新自己的狀態並輸出結果\(h_t\)<br /></li>
-<li>最後，在第3個時間點(\(t+1\))取得輸入(\(X_{t+1}\))後，利用剛才(時間點{\(t\))更新的「狀態」來運算\(X_{t+1}\)，然後再次更新自己的狀態並輸出結果\(h_{t+1}\)<br /></li>
+<li>在第1個時間點(\(t-1\))取得輸入(\(x_{t-1}\))後，神經元會針對 \(x_{t-1}\) 進行運算，更新自己的「狀態」(這個就是會影響「下一個自己」的關鍵)然後輸出結果\(h_{t-1}\)<br /></li>
+<li>在第2個時間點(\(t\))取得輸入(\(x_{t}\))後，利用剛才(時間點{\(t-1\))更新的「狀態」來運算\(x_t\)(這就是神經元受到上一個自己影響的來源，也被稱為「記憶」)，然後再次更新自己的狀態並輸出結果\(h_t\)<br /></li>
+<li>最後，在第3個時間點(\(t+1\))取得輸入(\(x_{t+1}\))後，利用剛才(時間點{\(t\))更新的「狀態」來運算\(x_{t+1}\)，然後再次更新自己的狀態並輸出結果\(h_{t+1}\)<br /></li>
 </ol>
 
 <p>
@@ -357,8 +362,8 @@
 </p>
 
 
-<div id="orga243cb8" class="figure">
-<p><img src="images/遞迴神經網路(Recurrent_Neural_Networks,_RNNs)/2024-05-10_13-00-27_Fully_connected_Recurrent_Neural_Network.webp" alt="2024-05-10_13-00-27_Fully_connected_Recurrent_Neural_Network.webp" width="500" /><br />
+<div id="orge070540" class="figure">
+<p><img src="images/RNN/2024-05-10_13-00-27_Fully_connected_Recurrent_Neural_Network.webp" alt="2024-05-10_13-00-27_Fully_connected_Recurrent_Neural_Network.webp" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 5: </span>RNN的運作流程</p>
 </div>
@@ -378,7 +383,7 @@
 則接下來 RNN 會這樣處理剩下的句子：<br />
 </p>
 
-<div id="org06fe057" class="figure">
+<div id="org0c49479" class="figure">
 <p><img src="images/rnn-animate.gif" alt="rnn-animate.gif" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 6: </span>RNN如何處理自然語言</p>
@@ -389,12 +394,12 @@
 </p>
 
 <p>
-上面提及RNN的「記憶」能力是由神經元的「狀態」實作出來，這種狀態以一個隱藏向量(hidden vector)的形式存在於神經元中，如圖<a href="#orgc4c15d9">7</a>中的\(h_{t}\))。<br />
+上面提及RNN的「記憶」能力是由神經元的「狀態」實作出來，這種狀態以一個隱藏向量(hidden vector)的形式存在於神經元中，如圖<a href="#org0eb15dc">7</a>中的\(h_{t}\))。<br />
 </p>
 
 
-<div id="orgc4c15d9" class="figure">
-<p><img src="images/遞迴神經網路(Recurrent_Neural_Networks,_RNNs)/2024-05-10_15-39-00_RNN-Cell-2.png" alt="2024-05-10_15-39-00_RNN-Cell-2.png" width="500" /><br />
+<div id="org0eb15dc" class="figure">
+<p><img src="images/RNN/2024-05-10_15-39-00_RNN-Cell-2.png" alt="2024-05-10_15-39-00_RNN-Cell-2.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 7: </span>RNN神經元</p>
 </div>
@@ -405,9 +410,9 @@
 其中，<br />
 </p>
 <ul class="org-ul">
-<li>\(X_t\): 這是在每個時間點(\(t\))輸入給神經元給 RNN 的資料，例如句子中的單字、圖像中的像素或時間序列中的資料點。<br /></li>
+<li>\(x_t\): 這是在每個時間點(\(t\))輸入給神經元給 RNN 的資料，例如句子中的單字、圖像中的像素或時間序列中的資料點。<br /></li>
 <li>\(h_{t-1}\): 先前的隱藏狀態(\(h_{t-1}\))，可以把它看成前一個時間點(\(t-1\))的網路記憶，就是它封裝了重要的歷史訊息，以舊有的記憶協助 RNN 理解當前的資料。<br /></li>
-<li>權重矩陣(\(W_t, W_h\) ): 這些矩陣是模型訓練的目的，可以將其視為模型的「知識」。它們決定了應該對當前輸入(\(X_t\)) 和過去記憶(\(h_{t-1}\) ) 的重視程度。<br /></li>
+<li>權重矩陣(\(W_t, W_h\) ): 這些矩陣是模型訓練的目的，可以將其視為模型的「知識」。它們決定了應該對當前輸入(\(x_t\)) 和過去記憶(\(h_{t-1}\) ) 的重視程度。<br /></li>
 <li>偏移值(\(b\)): 偏差項可作為模型的微調器，確保激活函數與資料的固有特徵協調運作。<br /></li>
 <li>激活函數(\(f\)): RNN常用的激活函數有tanh 或 ReLU，讓RNN具備非線性的特徵，以捕捉線性模型可能忽略的複雜資料模式。<br /></li>
 </ul>
@@ -421,12 +426,12 @@
 </p>
 </div>
 </div>
-<div id="outline-container-orgd98dd1e" class="outline-2">
-<h2 id="orgd98dd1e"><span class="section-number-2">3.</span> RNN實作</h2>
+<div id="outline-container-org6ea20ee" class="outline-2">
+<h2 id="org6ea20ee"><span class="section-number-2">3.</span> RNN實作</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-orgc44fd4a" class="outline-3">
-<h3 id="orgc44fd4a"><span class="section-number-3">3.1.</span> RNN的程式運作示例</h3>
+<div id="outline-container-org46188af" class="outline-3">
+<h3 id="org46188af"><span class="section-number-3">3.1.</span> RNN的程式運作示例</h3>
 <div class="outline-text-3" id="text-3-1">
 <p>
 RNN的運作概念非常簡單，就是在每個時間點 t，RNN 會讀入一個新的序列資料 input_t，並利用這個資料以及自己的記憶狀態 state_t 來產生一個輸出 output_t。這個過程可以用下面的程式碼來表示：<br />
@@ -475,8 +480,8 @@ RNN神經元在時間點t的輸出 \(h_t\) 由以下公式計算:<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org9ce6595" class="outline-3">
-<h3 id="org9ce6595"><span class="section-number-3">3.2.</span> RNN的程式模型架構</h3>
+<div id="outline-container-org0aba971" class="outline-3">
+<h3 id="org0aba971"><span class="section-number-3">3.2.</span> RNN的程式模型架構</h3>
 <div class="outline-text-3" id="text-3-2">
 <p>
 RNN的模型架構非常簡單，只需要一個 RNN 層即可。以 Keras 為例，建立一個 RNN 層只需要建立一個 SimpleRNN 層即可。以下是一個簡單的 RNN 模型架構：<br />
@@ -503,7 +508,7 @@ RNN的模型架構非常簡單，只需要一個 RNN 層即可。以 Keras 為�
 </pre>
 </div>
 
-<pre class="example" id="org00679de">
+<pre class="example" id="orgbcfb6ec">
 Model: "functional"
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓
 ┃ Layer (type)                    ┃ Output Shape           ┃       Param # ┃
@@ -522,15 +527,15 @@ Model: "functional"
 上述模型架構的資料流向如下：<br />
 </p>
 
-<div id="org5a823e5" class="figure">
+<div id="org6961248" class="figure">
 <p><img src="rnn_model.png" alt="rnn_model.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 8: </span>RNN架構</p>
 </div>
 </div>
 </div>
-<div id="outline-container-org4902ed4" class="outline-3">
-<h3 id="org4902ed4"><span class="section-number-3">3.3.</span> 應用情境</h3>
+<div id="outline-container-orgf7e6d64" class="outline-3">
+<h3 id="orgf7e6d64"><span class="section-number-3">3.3.</span> 應用情境</h3>
 <div class="outline-text-3" id="text-3-3">
 <p>
 針對上述模型，我們可以設想一個智慧工廠中的機器維護預測系統，這個工廠中的一台重要機器每分鐘會傳回 4 個感測器數據：溫度、壓力、振動幅度和電流。這些數據會被送進 RNN 模型中，並根據目前時間點的數值預測機器的異常風險和維修建議指數。<br />
@@ -578,9 +583,291 @@ Model: "functional"
 </div>
 </div>
 </div>
-<div id="outline-container-orged3d88c" class="outline-2">
-<h2 id="orged3d88c"><span class="section-number-2">4.</span> LSTM</h2>
+<div id="outline-container-org972c24b" class="outline-2">
+<h2 id="org972c24b"><span class="section-number-2">4.</span> RNN模型練習</h2>
 <div class="outline-text-2" id="text-4">
+</div>
+<div id="outline-container-org4fbb9fe" class="outline-3">
+<h3 id="org4fbb9fe"><span class="section-number-3">4.1.</span> 匯入與資料產生</h3>
+<div class="outline-text-3" id="text-4-1">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 2: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
+<span class="linenr"> 3: </span>
+<span class="linenr"> 4: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">1. &#29983;&#25104; sin(x) + cos(x) &#20006;&#21152;&#20837;&#38620;&#35338;&#30340;&#26178;&#38291;&#24207;&#21015;&#36039;&#26009;</span>
+<span class="linenr"> 5: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">generate_sin_cos_data</span>(total_length=<span style="color: #da8548; font-weight: bold;">3000</span>, noise_std=<span style="color: #da8548; font-weight: bold;">0.1</span>):
+<span class="linenr"> 6: </span>    <span style="color: #dcaeea;">x</span> = np.linspace(<span style="color: #da8548; font-weight: bold;">0</span>, total_length * <span style="color: #da8548; font-weight: bold;">0.1</span>, total_length)
+<span class="linenr"> 7: </span>    <span style="color: #dcaeea;">clean</span> = np.sin(x) + np.cos(x * <span style="color: #da8548; font-weight: bold;">0.5</span>)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#19981;&#21516;&#38971;&#29575;&#22686;&#21152;&#35722;&#21270;&#24615;</span>
+<span class="linenr"> 8: </span>    <span style="color: #dcaeea;">noise</span> = np.random.normal(<span style="color: #da8548; font-weight: bold;">0</span>, noise_std, size=clean.shape)
+<span class="linenr"> 9: </span>    <span style="color: #dcaeea;">noisy_data</span> = clean + noise
+<span class="linenr">10: </span>    <span style="color: #51afef;">return</span> x, noisy_data.reshape(-<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">1</span>), clean.reshape(-<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr">11: </span>
+<span class="linenr">12: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">2. &#32362;&#22294;&#23637;&#31034; sin + cos &#27874;&#22411;&#65288;&#21547;&#38620;&#35338;&#65289;</span>
+<span class="linenr">13: </span><span style="color: #dcaeea;">x</span>, <span style="color: #dcaeea;">noisy_data</span>, <span style="color: #dcaeea;">clean_data</span> = generate_sin_cos_data()
+<span class="linenr">14: </span>
+<span class="linenr">15: </span>plt.figure(figsize=(<span style="color: #da8548; font-weight: bold;">12</span>, <span style="color: #da8548; font-weight: bold;">4</span>))
+<span class="linenr">16: </span>plt.plot(x, clean_data, label=<span style="color: #98be65;">'Clean sin(x) + cos(0.5x)'</span>, alpha=<span style="color: #da8548; font-weight: bold;">0.6</span>)
+<span class="linenr">17: </span>plt.plot(x, noisy_data, label=<span style="color: #98be65;">'Noisy signal'</span>, alpha=<span style="color: #da8548; font-weight: bold;">0.8</span>)
+<span class="linenr">18: </span>plt.title(<span style="color: #98be65;">"Time Series: sin(x) + cos(0.5x) with Noise"</span>)
+<span class="linenr">19: </span>plt.xlabel(<span style="color: #98be65;">"x"</span>)
+<span class="linenr">20: </span>plt.ylabel(<span style="color: #98be65;">"Value"</span>)
+<span class="linenr">21: </span>plt.legend()
+<span class="linenr">22: </span>plt.grid(<span style="color: #a9a1e1;">True</span>)
+<span class="linenr">23: </span>plt.tight_layout()
+<span class="linenr">24: </span>plt.show()
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgee63362" class="outline-3">
+<h3 id="orgee63362"><span class="section-number-3">4.2.</span> 前處理與序列資料製作</h3>
+<div class="outline-text-3" id="text-4-2">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> tensorflow <span style="color: #51afef;">as</span> tf
+<span class="linenr"> 2: </span><span style="color: #51afef;">from</span> tensorflow <span style="color: #51afef;">import</span> keras
+<span class="linenr"> 3: </span><span style="color: #51afef;">from</span> sklearn.preprocessing <span style="color: #51afef;">import</span> MinMaxScaler
+<span class="linenr"> 4: </span>
+<span class="linenr"> 5: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27161;&#28310;&#21270;</span>
+<span class="linenr"> 6: </span><span style="color: #dcaeea;">scaler</span> = MinMaxScaler()
+<span class="linenr"> 7: </span><span style="color: #dcaeea;">scaled</span> = scaler.fit_transform(noisy_data)
+<span class="linenr"> 8: </span>
+<span class="linenr"> 9: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;&#31435;&#24207;&#21015;</span>
+<span class="linenr">10: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">create_sequences</span>(data, seq_len=<span style="color: #da8548; font-weight: bold;">20</span>):
+<span class="linenr">11: </span>    <span style="color: #dcaeea;">X</span>, <span style="color: #dcaeea;">y</span> = [], []
+<span class="linenr">12: </span>    <span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #c678dd;">len</span>(data) - seq_len):
+<span class="linenr">13: </span>        X.append(data[i:i+seq_len])
+<span class="linenr">14: </span>        y.append(data[i+seq_len])
+<span class="linenr">15: </span>    <span style="color: #51afef;">return</span> np.array(X), np.array(y)
+<span class="linenr">16: </span>
+<span class="linenr">17: </span><span style="color: #dcaeea;">SEQ_LEN</span> = <span style="color: #da8548; font-weight: bold;">20</span>
+<span class="linenr">18: </span><span style="color: #dcaeea;">X</span>, <span style="color: #dcaeea;">y</span> = create_sequences(scaled, SEQ_LEN)
+<span class="linenr">19: </span>
+<span class="linenr">20: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20998;&#35347;&#32244;&#33287;&#28204;&#35430;&#38598;</span>
+<span class="linenr">21: </span><span style="color: #dcaeea;">split</span> = <span style="color: #c678dd;">int</span>(<span style="color: #c678dd;">len</span>(X) * <span style="color: #da8548; font-weight: bold;">0.8</span>)
+<span class="linenr">22: </span><span style="color: #dcaeea;">X_train</span>, <span style="color: #dcaeea;">y_train</span> = X[:split], y[:split]
+<span class="linenr">23: </span><span style="color: #dcaeea;">X_test</span>, <span style="color: #dcaeea;">y_test</span> = X[split:], y[split:]
+<span class="linenr">24: </span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org57c0f24" class="outline-3">
+<h3 id="org57c0f24"><span class="section-number-3">4.3.</span> 建立RNN模型</h3>
+<div class="outline-text-3" id="text-4-3">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">model</span> = keras.models.Sequential([
+<span class="linenr">2: </span>    keras.layers.SimpleRNN(<span style="color: #da8548; font-weight: bold;">1</span>, input_shape=[<span style="color: #a9a1e1;">None</span>, <span style="color: #da8548; font-weight: bold;">1</span>])  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38928;&#35373; activation='tanh'</span>
+<span class="linenr">3: </span>])
+<span class="linenr">4: </span>model.<span style="color: #c678dd;">compile</span>(loss=<span style="color: #98be65;">'mse'</span>, optimizer=<span style="color: #98be65;">'adam'</span>)
+<span class="linenr">5: </span>model.summary()
+</pre>
+</div>
+
+<p>
+在 Keras 中，input_shape=[None, 1] 的意思是：<br />
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">維度</td>
+<td class="org-left">代表什麼</td>
+<td class="org-left">解釋</td>
+</tr>
+
+<tr>
+<td class="org-left">None</td>
+<td class="org-left">時間步長（timesteps）</td>
+<td class="org-left">不指定具體長度，代表可以處理「任意長度」的序列</td>
+</tr>
+
+<tr>
+<td class="org-left">1</td>
+<td class="org-left">每個時間點的特徵數</td>
+<td class="org-left">這裡是一個數字（例如只有一個值：sin+cos），所以是 1 維特徵</td>
+</tr>
+</tbody>
+</table>
+<p>
+在 Keras RNN 中，每筆資料會被視為一個 3 維陣列：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>[&#27171;&#26412;&#25976;, &#26178;&#38291;&#27493;&#38263; (<span style="color: #a9a1e1;">None</span>), &#29305;&#24501;&#25976;]
+</pre>
+</div>
+<p>
+舉個例子：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>X.<span style="color: #dcaeea;">shape</span> = (<span style="color: #da8548; font-weight: bold;">1000</span>, <span style="color: #da8548; font-weight: bold;">20</span>, <span style="color: #da8548; font-weight: bold;">1</span>)
+</pre>
+</div>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-right">維度</td>
+<td class="org-left">代表</td>
+<td class="org-left">舉例</td>
+</tr>
+
+<tr>
+<td class="org-right">1000</td>
+<td class="org-left">有 1000 筆序列</td>
+<td class="org-left">訓練樣本數</td>
+</tr>
+
+<tr>
+<td class="org-right">20</td>
+<td class="org-left">每筆序列長度是 20 步</td>
+<td class="org-left">每筆是一段長度 20 的時間序列</td>
+</tr>
+
+<tr>
+<td class="org-right">1</td>
+<td class="org-left">每步只有 1 個數字</td>
+<td class="org-left">像是 sin 值、溫度、股價</td>
+</tr>
+</tbody>
+</table>
+<p>
+我們現在只知道每個時間點有 1 個特徵（像是溫度），但不知道資料序列會多長，因此時間的維度就交給模型在運作時決定，所以寫 None。」<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org647968e" class="outline-3">
+<h3 id="org647968e"><span class="section-number-3">4.4.</span> 訓練模型</h3>
+<div class="outline-text-3" id="text-4-4">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>model.fit(X_train, y_train, epochs=<span style="color: #da8548; font-weight: bold;">20</span>)
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org02bc6b9" class="outline-3">
+<h3 id="org02bc6b9"><span class="section-number-3">4.5.</span> 評估預測效果並繪圖</h3>
+<div class="outline-text-3" id="text-4-5">
+<p>
+幾種RNN模型的評估指標如下：<br />
+</p>
+<ol class="org-ol">
+<li>MSE（均方誤差，Mean Squared Error）, 是預測值與實際值之間的平均平方差，越小越好, 單位是平方的數值。計算公式如下：<br />
+\[ MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 \]<br />
+其中，$y_i$是實際值，$\hat{y}_i$是預測值，$n$是樣本數。<br /></li>
+<li>MAE（平均絕對誤差，Mean Absolute Error）, 是預測值與實際值之間的平均絕對差，越小越好, 單位與資料本身一致, 優點是不容易被極端值影響。計算公式如下：<br />
+\[ MAE = \frac{1}{n} \sum_{i=1}^{n} |y_i - \hat{y}_i| \]<br />
+其中，$y_i$是實際值，$\hat{y}_i$是預測值，$n$是樣本數。<br /></li>
+<li>RMSE（均方根誤差，Root Mean Squared Error）, 是預測值與實際值之間的均方根誤差，越小越好, 單位是平方根的數值，常用在實際工程應用。 計算公式如下：<br />
+\[ RMSE = \sqrt{\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2} \]<br />
+其中，$y_i$是實際值，$\hat{y}_i$是預測值，$n$是樣本數。<br /></li>
+<li>\(R^2\)（決定係數，Coefficient of Determination），是用來評估模型預測能力的指標，值介於0~1之間，越接近1表示模型越好。$R^2$的計算公式如下：<br />
+\[ R^2 = 1 - \frac{\sum_{i=1}^{n} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{n} (y_i - \bar{y})^2} \]<br /></li>
+</ol>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #dcaeea;">predicted</span> = model.predict(X_test)
+<span class="linenr"> 2: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36996;&#21407;&#22238;&#21407;&#22987;&#25976;&#20540;</span>
+<span class="linenr"> 3: </span><span style="color: #dcaeea;">predicted_inv</span> = scaler.inverse_transform(predicted)
+<span class="linenr"> 4: </span><span style="color: #dcaeea;">actual_inv</span> = scaler.inverse_transform(y_test)
+<span class="linenr"> 5: </span>
+<span class="linenr"> 6: </span>plt.figure(figsize=(<span style="color: #da8548; font-weight: bold;">12</span>, <span style="color: #da8548; font-weight: bold;">4</span>))
+<span class="linenr"> 7: </span>plt.plot(actual_inv, label=<span style="color: #98be65;">'Clean Target'</span>, alpha=<span style="color: #da8548; font-weight: bold;">0.6</span>)
+<span class="linenr"> 8: </span>plt.plot(predicted_inv, label=<span style="color: #98be65;">'Predicted'</span>, alpha=<span style="color: #da8548; font-weight: bold;">0.8</span>)
+<span class="linenr"> 9: </span>plt.title(<span style="color: #98be65;">"Keras SimpleRNN Prediction"</span>)
+<span class="linenr">10: </span>plt.xlabel(<span style="color: #98be65;">"Time step"</span>)
+<span class="linenr">11: </span>plt.ylabel(<span style="color: #98be65;">"Value"</span>)
+<span class="linenr">12: </span>plt.legend()
+<span class="linenr">13: </span>plt.grid(<span style="color: #a9a1e1;">True</span>)
+<span class="linenr">14: </span>plt.show()
+<span class="linenr">15: </span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org1bc9410" class="outline-3">
+<h3 id="org1bc9410"><span class="section-number-3">4.6.</span> 提升效能</h3>
+<div class="outline-text-3" id="text-4-6">
+</div>
+<ol class="org-ol">
+<li><a id="org95487a2"></a>增加隱藏層神經元數量<br />
+<div class="outline-text-4" id="text-4-6-1">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>keras.layers.SimpleRNN(<span style="color: #da8548; font-weight: bold;">8</span>, input_shape=[<span style="color: #a9a1e1;">None</span>, <span style="color: #da8548; font-weight: bold;">1</span>])
+</pre>
+</div>
+</div>
+</li>
+<li><a id="org982c5e2"></a>增加隱藏層數量<br />
+<div class="outline-text-4" id="text-4-6-2">
+<p>
+例如：SimpleRNN層、Dense層、Dropout層<br />
+</p>
+</div>
+<ol class="org-ol">
+<li><a id="orgcd3a820"></a>SimpleRNN層<br />
+<div class="outline-text-5" id="text-4-6-2-1">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">model</span> = keras.models.Sequential([
+<span class="linenr">2: </span>    keras.layers.SimpleRNN(<span style="color: #da8548; font-weight: bold;">4</span>, return_sequences=<span style="color: #a9a1e1;">True</span>, input_shape=[<span style="color: #a9a1e1;">None</span>, <span style="color: #da8548; font-weight: bold;">1</span>]),  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31532;&#19968;&#23652;&#35201;&#22238;&#20659;&#24207;&#21015;</span>
+<span class="linenr">3: </span>    keras.layers.SimpleRNN(<span style="color: #da8548; font-weight: bold;">4</span>),  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31532;&#20108;&#23652;&#30452;&#25509;&#25509;&#25910;&#25972;&#27573;&#24207;&#21015;&#36039;&#35338;</span>
+<span class="linenr">4: </span>    keras.layers.Dense(<span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr">5: </span>])
+</pre>
+</div>
+<p>
+return_sequences=True：告訴第一層 RNN 回傳「每個時間步的輸出」，否則下一層 RNN 沒辦法處理。<br />
+</p>
+</div>
+</li>
+<li><a id="org450e338"></a>Dense層<br />
+<div class="outline-text-5" id="text-4-6-2-2">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">model</span> = keras.models.Sequential([
+<span class="linenr">2: </span>    keras.layers.SimpleRNN(<span style="color: #da8548; font-weight: bold;">4</span>, input_shape=[<span style="color: #a9a1e1;">None</span>, <span style="color: #da8548; font-weight: bold;">1</span>]),  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#22686;&#21152;&#23481;&#37327;</span>
+<span class="linenr">3: </span>    keras.layers.Dense(<span style="color: #da8548; font-weight: bold;">1</span>)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21152;&#36664;&#20986;&#23652;</span>
+<span class="linenr">4: </span>])
+</pre>
+</div>
+</div>
+</li>
+<li><a id="org463be20"></a>Dropout層<br />
+<div class="outline-text-5" id="text-4-6-2-3">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">model</span> = keras.models.Sequential([
+<span class="linenr">2: </span>    keras.layers.SimpleRNN(<span style="color: #da8548; font-weight: bold;">4</span>, return_sequences=<span style="color: #a9a1e1;">True</span>, input_shape=[<span style="color: #a9a1e1;">None</span>, <span style="color: #da8548; font-weight: bold;">1</span>]),
+<span class="linenr">3: </span>    keras.layers.SimpleRNN(<span style="color: #da8548; font-weight: bold;">4</span>),
+<span class="linenr">4: </span>    keras.layers.Dropout(<span style="color: #da8548; font-weight: bold;">0.2</span>),
+<span class="linenr">5: </span>    keras.layers.Dense(<span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr">6: </span>])
+</pre>
+</div>
+</div>
+</li>
+</ol>
+</li>
+<li><a id="orgcfd1ba6"></a>增加訓練次數<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-org0f846d3" class="outline-2">
+<h2 id="org0f846d3"><span class="section-number-2">5.</span> LSTM</h2>
+<div class="outline-text-2" id="text-5">
 <p>
 RNN的一個主要問題是，當序列變得很長時，它們很難記住遠處的資訊。這是因為在 RNN 中，每個時間點的輸出都是由當前輸入和上一個時間點的輸出共同決定的。這意味著當序列變得很長時，RNN 會遺忘遠處的資訊，導致模型無法很好地理解整個序列。<br />
 </p>
@@ -589,15 +876,43 @@ RNN的一個主要問題是，當序列變得很長時，它們很難記住遠�
 為了加強這種RNN的「記憶能力」，人們開發各種各樣的變形體，如非常著名的Long Short-term Memory(LSTM)，用於解決「長期及遠距離的依賴關係」。<br />
 </p>
 </div>
-<div id="outline-container-org4360c79" class="outline-3">
-<h3 id="org4360c79"><span class="section-number-3">4.1.</span> LSTM的運作原理</h3>
-<div class="outline-text-3" id="text-4-1">
+<div id="outline-container-org6105ba2" class="outline-3">
+<h3 id="org6105ba2"><span class="section-number-3">5.1.</span> LSTM的運作原理</h3>
+<div class="outline-text-3" id="text-5-1">
 <p>
 想象你有一個書包（LSTM的內部結構），你可以決定在上課前放入什麼書籍、何時取出某本書，或者甚至決定更新裡面的某些書，你每天上學就利用書包裡的書來學習新的知識。LSTM也有類似的機制來處理信息，這些機制就是一個個的閘門(Gate)。<br />
 </p>
 
 <p>
-典型的LSTM架構如圖<a href="#orgdc5612e">9</a>所示，可以看出除了原本的資料輸入(input)，LSTM還多了三個輸入，分別是input(模型輸入），forget gate(遺忘門)，input gate(輸入門)，以及output gate(輸出門)。因此相比普通的神經網路，LSTM的參數量是它們的4倍。這3個門訊號都是處於0～1之間的實數，1代表完全打開，0代表關閉。<br />
+LSTM利用一個新的機制：記憶狀態（Cell State ）來達到保留長期記憶，如圖<a href="#org1c3c1db">9</a>所示，我們可以想像LSTM將RNN的隱藏狀態拆成兩部份：記憶狀態的變化較慢，能儘量保留先前的記憶、而隱藏狀態則隨輸入不同而有較多變化。<br />
+</p>
+
+
+<div id="org1c3c1db" class="figure">
+<p><img src="images/RNNLSTM.png" alt="RNNLSTM.png" width="500" /><br />
+</p>
+<p><span class="figure-number">Figure 9: </span>RNN v.s. LSTM</p>
+</div>
+
+<p>
+除了記憶狀態，LSTM還多了三個閘門來管控資訊的保留與遺忘：遺忘閘（forget gate）、輸入閘（input gate）、輸出閘（output gate）。其相應功能大致如下(參考圖<a href="#orgb82f79b">10</a>)：<br />
+</p>
+<ol class="org-ol">
+<li>遺忘閘（forget gate）：控制模型中有哪些資訊可以被遺忘。<br /></li>
+<li>輸入閘（input gate）：控制當前的輸入資訊能對記憶狀態產生多大的影響。<br /></li>
+<li>輸出閘（output gate）：控制記憶狀態中的哪些資訊可以被傳遞到隱藏狀態並往後傳遞。<br /></li>
+</ol>
+
+
+<div id="orgb82f79b" class="figure">
+<p><img src="images/LSTM.png" alt="LSTM.png" width="500" /><br />
+</p>
+<p><span class="figure-number">Figure 10: </span>LSTM</p>
+</div>
+
+
+<p>
+典型的LSTM架構如圖<a href="#orgb82f79b">10</a>所示，可以看出除了原本的資料輸入(input)，LSTM還多了三個輸入，分別是input(模型輸入），forget gate(遺忘閘)，input gate(輸入閘)，以及output gate(輸出閘)。因此相比普通的神經網路，LSTM的參數量是它們的4倍。這3個閘訊號都是處於0～1之間的實數，1代表完全打開，0代表關閉。<br />
 </p>
 
 <ol class="org-ol">
@@ -607,58 +922,75 @@ RNN的一個主要問題是，當序列變得很長時，它們很難記住遠�
 <li>記憶單元（Memory Cell）：這是LSTM的核心，它負責記錄和更新所有的記憶。記憶單元是一個長期的記憶存儲，可以通過遺忘閘和輸入閘來更新。LSTM 中的 Memory Cell（也就是記憶狀態，通常記為 Cₜ）的核心功能，就是要 跨時間步保持資訊的狀態，這也是它的關鍵設計。<br /></li>
 </ol>
 
+<p>
+圖<a href="#orgb82f79b">10</a>為時間點t時資料在神經元中流動示意，進一步的處理流程如下所述：<br />
+</p>
+<ul class="org-ul">
+<li>LSTM神經元於時間點t收到三項輸入資料：<br />
+<ol class="org-ol">
+<li>x_t：代表當前時間點的輸入資料。<br /></li>
+<li>h_(t-1)：上一時間點的隱藏狀態。<br /></li>
+<li>c_(t-1)：上一時間點的記憶狀態。<br /></li>
+</ol></li>
+<li>LSTM神經元於時間點t輸出兩項資料：<br />
+<ol class="org-ol">
+<li>c_t：代表當前的記憶狀態，c_t的值來自以下兩部份：<br /></li>
+<li>輸出閘：決定有多少來自c_t的資訊可以傳遞到h_t。<br /></li>
+</ol></li>
+</ul>
 
-<div id="orgdc5612e" class="figure">
+
+<div id="org707c2dc" class="figure">
 <p><img src="lstm_model.png" alt="lstm_model.png" width="600" /><br />
 </p>
-<p><span class="figure-number">Figure 9: </span>LSTM架構</p>
+<p><span class="figure-number">Figure 11: </span>LSTM架構</p>
 </div>
 
 <p>
 進一步從時間序列的角度來看，LSTM運作過程中的資料流向如下：<br />
 </p>
 <ul class="org-ul">
-<li>遺忘閘(Forget Gate)：該閘決定在特定時間點(timestamp, 例如圖<a href="#orge472887">10</a>中的\(t\) )，前一個時間點(\(t-1\)) 的模型記憶(也就是狀態, state)是否會被記住保留參與這個時間點的運算，或是直接被遺忘。當遺忘門打開時，前一刻的記憶會被保留，當遺忘門關閉時，前一刻的記憶就會被清空。換句話說，就讓模型具備選擇性遺忘部份訊息的能力，這個機制可以由激活函數sigmoid來實作，其中0代表完全忘記，1代表完全記住。<br /></li>
-<li>輸入閘(Input Gate): 決定目前這個時間點有哪些神經元的輸入(\(X\))中有哪些是足夠重要到可以保留下來加入「目前狀態」中，因為在序列輸入中，並不是每個時刻的輸入的資訊都是同等重要的，當輸入完全沒有用時，輸入門關閉，也就是此時刻的輸入資訊被丟棄了。這個機制同樣也可以由sigmoid 激活函數來實作，sigmoid產生的值介於0到1之間，可以被看作是一個閘控信號，這個閘控信號​和tanh函數生成的候選隱藏狀態相乘，確定了從候選狀態中將多少資訊添加到當前的單元狀態​中。<br /></li>
-<li>輸出閘(Output Gate): 決定目前神經元的狀態中有哪一部分可以輸出(流向下一個狀態)，同樣由激活函數來sigmoid來決定，這個輸出會通過tanh函數來調整，因為Tanh能夠將單元狀態的值正規化到-1到1之間，這有助於控制神經網絡的激活範圍。再由Tanh來提供輸出權重。<br /></li>
+<li>遺忘閘(Forget Gate)：該閘決定在特定時間點(timestamp, 例如圖<a href="#orgd68dcf1">12</a>中的\(t\) )，前一個時間點(\(t-1\)) 的模型記憶(也就是狀態, state)是否會被記住保留參與這個時間點的運算，或是直接被遺忘。當遺忘閘打開時，前一刻的記憶會被保留，當遺忘閘關閉時，前一刻的記憶就會被清空。換句話說，就讓模型具備選擇性遺忘部份訊息的能力，這個機制可以由激活函數sigmoid來實作，其中0代表完全忘記，1代表完全記住。<br /></li>
+<li>輸入閘(Input Gate): 決定目前這個時間點有哪些神經元的輸入(\(x\))中有哪些是足夠重要到可以保留下來加入「目前狀態」中，因為在序列輸入中，並不是每個時刻的輸入的資訊都是同等重要的，當輸入完全沒有用時，輸入閘關閉，也就是此時刻的輸入資訊被丟棄了。這個機制同樣也可以由sigmoid 激活函數來實作，sigmoid產生的值介於0到1之間，可以被看作是一個閘控信號，這個閘控信號​和tanh函數生成的候選隱藏狀態相乘，確定了從候選狀態中將多少資訊添加到當前的單元狀態​中。<br /></li>
+<li>輸出閘(Output Gate): 決定目前神經元的狀態中有哪一部分可以輸出(流向下一個狀態)，同樣由激活函數來sigmoid來決定，這個輸出會通過tanh函數來調整，因為Tanh能夠將單元狀態的值正規化到-1到1之間，這有助於控制神經網路的激活範圍。再由Tanh來提供輸出權重。<br /></li>
 <li>記憶單元(Memory Cell): 這是LSTM的核心，它負責記錄和更新所有的記憶。記憶單元是一個長期的記憶存儲，可以通過遺忘閘和輸入閘來更新。LSTM 中的 Memory Cell（也就是記憶狀態，通常記為 Cₜ）的核心功能，就是要 跨時間步保持資訊的狀態，這也是它的關鍵設計。在數學公式中，LSTM 的記憶更新如下：\(C_t=f_t \times C_{t−1}+i_t \times \tilde{C}_t\)，其中：<br />
 <ol class="org-ol">
-<li>\(f_t\) ：忘記門輸出（控制保留多少舊記憶）<br /></li>
+<li>\(f_t\) ：忘記閘輸出（控制保留多少舊記憶）<br /></li>
 <li>\(C_{t-1}\) ：上一個時間步的記憶狀態<br /></li>
-<li>\(i_t\) ：輸入門輸出（控制加入多少新資訊）<br /></li>
+<li>\(i_t\) ：輸入閘輸出（控制加入多少新資訊）<br /></li>
 <li>\(\tilde{C}_t\) ：由當前輸入與前一隱藏狀態計算出的新候選記憶<br /></li>
 </ol></li>
 </ul>
 
 
-<div id="orge472887" class="figure">
+<div id="orgd68dcf1" class="figure">
 <p><img src="images/LSTM/2024-05-10_21-14-18_LSTM-arch-01.png" alt="2024-05-10_21-14-18_LSTM-arch-01.png" width="800" /><br />
 </p>
-<p><span class="figure-number">Figure 10: </span>LSTM運作原理</p>
+<p><span class="figure-number">Figure 12: </span>LSTM運作原理</p>
 </div>
 
 <p>
-因為這樣的機制，讓 LSTM 即使面對很長的序列資料也能有效處理，不遺忘以前的記憶。因為效果卓越，LSTM 非常廣泛地被使用。事實上，當有人跟你說他用 RNN 做了什麼 NLP 專案時，有 9 成機率他是使用 LSTM 或是 GRU（LSTM 的改良版，只使用 2 個閘門） 來實作，而不是使用最簡單的 SimpleRNN。<br />
+因為這樣的機制，讓 LSTM 即使面對很長的序列資料也能有效處理，不遺忘以前的記憶。因為效果卓越，LSTM 非常廣泛地被使用。事實上，當有人跟你說他用 RNN 做了什麼 NLP 專案時，有 9 成機率他是使用 LSTM 或是 GRU（LSTM 的改良版，只使用 2 個閘閘） 來實作，而不是使用最簡單的 SimpleRNN。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgded9922" class="outline-3">
-<h3 id="orgded9922"><span class="section-number-3">4.2.</span> LSTM的程式運作示例</h3>
-<div class="outline-text-3" id="text-4-2">
+<div id="outline-container-org9b2759a" class="outline-3">
+<h3 id="org9b2759a"><span class="section-number-3">5.2.</span> LSTM的程式運作示例</h3>
+<div class="outline-text-3" id="text-5-2">
 <p>
-LSTM 的設計引入了三個「門」（gate）：<br />
+LSTM 的設計引入了三個「閘」（gate）：<br />
 </p>
 <ul class="org-ul">
-<li>**遺忘門 forget gate**：決定應該忘記多少過去的記憶<br /></li>
-<li>**輸入門 input gate**：決定應該加入多少新的資訊進入記憶<br /></li>
-<li>**輸出門 output gate**：決定應該輸出多少目前的記憶內容<br /></li>
+<li>**遺忘閘 forget gate**：決定應該忘記多少過去的記憶<br /></li>
+<li>**輸入閘 input gate**：決定應該加入多少新的資訊進入記憶<br /></li>
+<li>**輸出閘 output gate**：決定應該輸出多少目前的記憶內容<br /></li>
 </ul>
 
 <p>
 此外，LSTM 維持了兩種狀態：<br />
 </p>
 <ul class="org-ul">
-<li>**cell state（長期記憶）C_t**：透過門控機制被有選擇地保留或更新<br /></li>
+<li>**cell state（長期記憶）C_t**：透過閘控機制被有選擇地保留或更新<br /></li>
 <li>**hidden state（短期輸出）h_t**：實際傳給下一層網路的輸出<br /></li>
 </ul>
 
@@ -687,9 +1019,9 @@ LSTM 解決了 RNN 無法長期保留資訊的問題，特別適用於像語言�
 </p>
 </div>
 </div>
-<div id="outline-container-org547c33a" class="outline-3">
-<h3 id="org547c33a"><span class="section-number-3">4.3.</span> LSTM的程式模型架構</h3>
-<div class="outline-text-3" id="text-4-3">
+<div id="outline-container-org801a02c" class="outline-3">
+<h3 id="org801a02c"><span class="section-number-3">5.3.</span> LSTM的程式模型架構</h3>
+<div class="outline-text-3" id="text-5-3">
 <p>
 LSTM 是一種改良版的 RNN，可記住更長期的資訊。只需將 SimpleRNN 改為 LSTM 層即可。以下是一個 LSTM 模型的寫法：<br />
 </p>
@@ -715,7 +1047,7 @@ LSTM 是一種改良版的 RNN，可記住更長期的資訊。只需將 SimpleR
 </pre>
 </div>
 
-<pre class="example" id="orgc749217">
+<pre class="example" id="orgc91436a">
 Model: "functional"
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓
 ┃ Layer (type)                    ┃ Output Shape           ┃       Param # ┃
@@ -732,24 +1064,24 @@ Model: "functional"
 </pre>
 </div>
 </div>
-<div id="outline-container-org875d06d" class="outline-3">
-<h3 id="org875d06d"><span class="section-number-3">4.4.</span> 實作: 以AI預測股價-隔日漲跌</h3>
-<div class="outline-text-3" id="text-4-4">
+<div id="outline-container-org74f10d3" class="outline-3">
+<h3 id="org74f10d3"><span class="section-number-3">5.4.</span> 實作: 以AI預測股價-隔日漲跌</h3>
+<div class="outline-text-3" id="text-5-4">
 <p>
 <a href="https://colab.research.google.com/drive/1IehBuskagMTm6RK6WB-dsf3NPZKTNVqs?usp=sharing">當AI遇上股票-LSTM.ipynb</a><br />
 </p>
 </div>
 <ol class="org-ol">
-<li><a id="org7aeb63c"></a>安裝相關套件<br />
-<div class="outline-text-4" id="text-4-4-1">
+<li><a id="org1d33e42"></a>安裝相關套件<br />
+<div class="outline-text-4" id="text-5-4-1">
 <div class="org-src-container">
 <pre class="src src-shell"><span class="linenr">1: </span>pip install yfinance
 </pre>
 </div>
 </div>
 </li>
-<li><a id="orga06891d"></a>下載股價資訊<br />
-<div class="outline-text-4" id="text-4-4-2">
+<li><a id="org643826d"></a>下載股價資訊<br />
+<div class="outline-text-4" id="text-5-4-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> yfinance <span style="color: #51afef;">as</span> yf
 <span class="linenr">2: </span>
@@ -759,8 +1091,8 @@ Model: "functional"
 </div>
 </div>
 <ol class="org-ol">
-<li><a id="org273dcf9"></a>查看下載的資料集<br />
-<div class="outline-text-5" id="text-4-4-2-1">
+<li><a id="org8b3b6aa"></a>查看下載的資料集<br />
+<div class="outline-text-5" id="text-5-4-2-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span>df
 <span class="linenr">2: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">print(df[:5])</span>
@@ -768,8 +1100,8 @@ Model: "functional"
 </div>
 </div>
 </li>
-<li><a id="orgc3eb526"></a>取出需要的特徵值<br />
-<div class="outline-text-5" id="text-4-4-2-2">
+<li><a id="orga626565"></a>取出需要的特徵值<br />
+<div class="outline-text-5" id="text-5-4-2-2">
 <p>
 此次將成交量納入考慮<br />
 </p>
@@ -782,8 +1114,8 @@ Model: "functional"
 </li>
 </ol>
 </li>
-<li><a id="org0ddb6dd"></a>觀察原始資料/日K圖<br />
-<div class="outline-text-4" id="text-4-4-3">
+<li><a id="org9f7714b"></a>觀察原始資料/日K圖<br />
+<div class="outline-text-4" id="text-5-4-3">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
 <span class="linenr">2: </span>plt.clf()
@@ -793,8 +1125,8 @@ Model: "functional"
 </div>
 </div>
 </li>
-<li><a id="org7cfb7af"></a>將資料標準化<br />
-<div class="outline-text-4" id="text-4-4-4">
+<li><a id="orgb4ee65d"></a>將資料標準化<br />
+<div class="outline-text-4" id="text-5-4-4">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">from</span> sklearn.preprocessing <span style="color: #51afef;">import</span> MinMaxScaler
 <span class="linenr">2: </span><span style="color: #dcaeea;">scaler</span> = MinMaxScaler(feature_range=(<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">1</span>))
@@ -805,10 +1137,10 @@ Model: "functional"
 </div>
 </div>
 </li>
-<li><a id="org46c43b6"></a>建立、分割資料<br />
+<li><a id="org41b3699"></a>建立、分割資料<br />
 <ol class="org-ol">
-<li><a id="org5e40543"></a>建立資料集及標籤<br />
-<div class="outline-text-5" id="text-4-4-5-1">
+<li><a id="org63b3e31"></a>建立資料集及標籤<br />
+<div class="outline-text-5" id="text-5-4-5-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 <span class="linenr"> 2: </span>
@@ -829,8 +1161,8 @@ Model: "functional"
 </div>
 </div>
 </li>
-<li><a id="orgd6a1079"></a>分割訓練集與測試集<br />
-<div class="outline-text-5" id="text-4-4-5-2">
+<li><a id="org4897a4e"></a>分割訓練集與測試集<br />
+<div class="outline-text-5" id="text-5-4-5-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #dcaeea;">ratio</span> = <span style="color: #da8548; font-weight: bold;">0.8</span>
 <span class="linenr"> 2: </span><span style="color: #dcaeea;">train_size</span> = <span style="color: #c678dd;">round</span>(<span style="color: #c678dd;">len</span>(x_data) * ratio)
@@ -848,10 +1180,10 @@ Model: "functional"
 </li>
 </ol>
 </li>
-<li><a id="org078a9b0"></a>建立、編譯、訓練模型<br />
+<li><a id="orgcccd318"></a>建立、編譯、訓練模型<br />
 <ol class="org-ol">
-<li><a id="orge674352"></a>建立模型<br />
-<div class="outline-text-5" id="text-4-4-6-1">
+<li><a id="orgd18a3a1"></a>建立模型<br />
+<div class="outline-text-5" id="text-5-4-6-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> tensorflow <span style="color: #51afef;">as</span> tf
 <span class="linenr">2: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#24314;&#27083;LSTM&#27169;&#22411;</span>
@@ -868,16 +1200,16 @@ Model: "functional"
 </div>
 </div>
 </li>
-<li><a id="org1d20521"></a>編譯模型<br />
-<div class="outline-text-5" id="text-4-4-6-2">
+<li><a id="orgaa6bd67"></a>編譯模型<br />
+<div class="outline-text-5" id="text-5-4-6-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span>model.<span style="color: #c678dd;">compile</span>(loss=<span style="color: #98be65;">'mse'</span>, optimizer=<span style="color: #98be65;">'adam'</span>, metrics=[<span style="color: #98be65;">'accuracy'</span>])
 </pre>
 </div>
 </div>
 </li>
-<li><a id="org3f3bb35"></a>訓練模型<br />
-<div class="outline-text-5" id="text-4-4-6-3">
+<li><a id="orgb77f71a"></a>訓練模型<br />
+<div class="outline-text-5" id="text-5-4-6-3">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span>model.fit(x_train, y_train,
 <span class="linenr">2: </span>          validation_split=<span style="color: #da8548; font-weight: bold;">0.2</span>,
@@ -888,10 +1220,10 @@ Model: "functional"
 </li>
 </ol>
 </li>
-<li><a id="orged7fa44"></a>性能測試<br />
+<li><a id="org24a64c3"></a>性能測試<br />
 <ol class="org-ol">
-<li><a id="org908a5f7"></a>loss<br />
-<div class="outline-text-5" id="text-4-4-7-1">
+<li><a id="org91b724d"></a>loss<br />
+<div class="outline-text-5" id="text-5-4-7-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">score</span> = model.evaluate(x_test, y_test)
 <span class="linenr">2: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'loss:'</span>, score[<span style="color: #da8548; font-weight: bold;">0</span>])
@@ -899,8 +1231,8 @@ Model: "functional"
 </div>
 </div>
 </li>
-<li><a id="orgdc2e1cf"></a>predict<br />
-<div class="outline-text-5" id="text-4-4-7-2">
+<li><a id="orgc3cc4b9"></a>predict<br />
+<div class="outline-text-5" id="text-5-4-7-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">predict</span> = model.predict(x_test)
 <span class="linenr">2: </span><span style="color: #dcaeea;">predict</span> = scaler.inverse_transform(predict)
@@ -913,8 +1245,8 @@ Model: "functional"
 </div>
 </div>
 </li>
-<li><a id="org43b85a9"></a>plot<br />
-<div class="outline-text-5" id="text-4-4-7-3">
+<li><a id="orge68fcd2"></a>plot<br />
+<div class="outline-text-5" id="text-5-4-7-3">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span>plt.plot(predict)
 <span class="linenr">2: </span>plt.plot(ans)
@@ -926,258 +1258,6 @@ Model: "functional"
 </ol>
 </li>
 </ol>
-</div>
-</div>
-<div id="outline-container-orgb95a974" class="outline-2">
-<h2 id="orgb95a974"><span class="section-number-2">5.</span> 貼圖</h2>
-<div class="outline-text-2" id="text-5">
-</div>
-<div id="outline-container-orge39366d" class="outline-3">
-<h3 id="orge39366d"><span class="section-number-3">5.1.</span> 讀圖</h3>
-<div class="outline-text-3" id="text-5-1">
-<p>
-讀入並分析這張圖，等一下我想利用它來做幾張LINE貼圖上架賣錢<br />
-</p>
-
-<p>
-設計如下的幾個情境，不用配文字，圖形設計更童稚一點，更接近原圖的拙稚風格<br />
-</p>
-
-<ol class="org-ol">
-<li>害怕退縮、夾尾巴<br />
-<ul class="org-ul">
-<li>姿勢建議：<br />
-<ul class="org-ul">
-<li>狗狗身體縮成一團，尾巴夾在兩腿之間。<br /></li>
-<li>眼睛瞪大，嘴巴向下彎表示害怕。<br /></li>
-<li>耳朵下垂甚至貼緊頭部，強調害怕感。<br /></li>
-</ul></li>
-<li>情境細節：<br />
-<ul class="org-ul">
-<li>可以增加輕微的抖動線條或陰影，表現更真實的害怕感。<br /></li>
-</ul></li>
-</ul></li>
-<li>高興快樂、搖尾巴<br />
-<ul class="org-ul">
-<li>姿勢建議：<br />
-<ul class="org-ul">
-<li>狗狗尾巴高舉且左右搖動，尾巴加上動感線條強調擺動感。<br /></li>
-<li>眼睛笑瞇瞇、舌頭伸出，耳朵微微上揚，展現活力。<br /></li>
-</ul></li>
-<li>情境細節：<br />
-<ul class="org-ul">
-<li>加入代表開心的「♪」或「❤」符號在周圍，突出快樂氛圍。<br /></li>
-</ul></li>
-</ul></li>
-<li>肚子餓，加上一個空碗<br />
-<ul class="org-ul">
-<li>姿勢建議：<br />
-<ul class="org-ul">
-<li>狗狗坐著或站著，身前放著一個空碗。<br /></li>
-<li>表情無奈或可憐巴巴，眼睛睜大或下垂，舌頭稍微伸出來表示渴望。<br /></li>
-</ul></li>
-<li>情境細節：<br />
-<ul class="org-ul">
-<li>空碗上加一兩條細線表示空蕩蕩，增強肚子餓的情境。<br /></li>
-</ul></li>
-</ul></li>
-<li>躲在牆角傷心流淚<br />
-<ul class="org-ul">
-<li>姿勢建議：<br />
-<ul class="org-ul">
-<li>狗狗坐在角落，背朝外、面向牆角。<br /></li>
-<li>頭微微低下，有幾滴淚珠流下。<br /></li>
-<li>尾巴垂下，耳朵耷拉下來，更增添悲傷的情緒。<br /></li>
-</ul></li>
-<li>情境細節：<br />
-<ul class="org-ul">
-<li>牆角的線條要明顯，以凸顯出被孤立的感覺。<br /></li>
-<li>頭上可以加上幾朵烏雲或一兩滴淚珠，更加明顯地表達傷心。<br /></li>
-</ul></li>
-</ul></li>
-<li>生病感冒，流鼻涕<br />
-<ul class="org-ul">
-<li>姿勢建議：<br />
-<ul class="org-ul">
-<li>狗狗坐著或躺著，手上拿著一條紙巾。<br /></li>
-<li>鼻子紅腫，眼睛紅腫，嘴巴微微張開，表示呼吸困難。<br /></li>
-<li>鼻子下方有一條鼻涕線，表示流鼻涕。<br /></li>
-<li>頭上有一個水袋，表示發燒。<br /></li>
-</ul></li>
-<li>情境細節：<br />
-<ul class="org-ul">
-<li>紙巾上可以加上一兩條鼻涕線，突出生病的感覺。<br /></li>
-</ul></li>
-</ul></li>
-<li>感到驚訝（配感嘆號）<br />
-<ul class="org-ul">
-<li>姿勢：<br />
-<ul class="org-ul">
-<li>狗狗雙眼瞪大，嘴巴微張呈圓形，尾巴向上豎直表示驚訝。<br /></li>
-<li>耳朵略向後傾，表達震驚。<br /></li>
-</ul></li>
-<li>情境細節：<br />
-<ul class="org-ul">
-<li>頭頂上方繪製粗線條的感嘆號「！」。<br /></li>
-</ul></li>
-</ul></li>
-<li>感到憤怒（配火焰）<br />
-<ul class="org-ul">
-<li>姿勢：<br />
-<ul class="org-ul">
-<li>狗狗站立，雙眼微瞇成三角形，嘴巴閉緊或呈現不滿的表情。<br /></li>
-<li>尾巴豎起且線條略顯凌亂，表達激烈情緒。<br /></li>
-</ul></li>
-<li>情境細節：<br />
-<ul class="org-ul">
-<li>身體周圍或頭頂上方加入代表憤怒情緒的火焰圖案，線條簡單明確。<br /></li>
-</ul></li>
-</ul></li>
-<li>感到驚喜（配驚嘆號）<br />
-<ul class="org-ul">
-<li>姿勢：<br />
-<ul class="org-ul">
-<li>狗狗雙眼閃亮、嘴角上揚，呈現開心又驚喜的表情。<br /></li>
-<li>前腳稍微抬起或呈現輕跳狀，表達情緒高漲。<br /></li>
-<li>尾巴高舉，且微微抖動以展現興奮。<br /></li>
-</ul></li>
-<li>情境細節：<br />
-<ul class="org-ul">
-<li>頭頂上方繪製代表驚喜的驚嘆號「！」（可加粗或加上動態線條表現）。<br /></li>
-</ul></li>
-</ul></li>
-<li>熟睡中（有 Zzz）<br />
-<ul class="org-ul">
-<li>姿勢建議：<br />
-<ul class="org-ul">
-<li>狗狗蜷縮成一團或側躺，眼睛閉上、表情平靜。<br /></li>
-<li>耳朵自然下垂，尾巴環繞身體或放鬆地搭在地上。<br /></li>
-</ul></li>
-<li>情境細節：<br />
-<ul class="org-ul">
-<li>頭部上方畫出「Zzz」符號，表達正在熟睡。<br /></li>
-<li>可加一點打呼的波浪線或泡泡，讓畫面更溫馨。<br /></li>
-</ul></li>
-</ul></li>
-<li>玩耍中（有球或繩子）<br />
-<ul class="org-ul">
-<li>姿勢建議：<br />
-<ul class="org-ul">
-<li>狗狗雙腳張開，身體前傾，尾巴高高翹起，呈現興奮姿態。<br /></li>
-<li>嘴巴微張、舌頭吐出，眼睛閃閃發亮。<br /></li>
-</ul></li>
-<li>情境細節：<br />
-<ul class="org-ul">
-<li>身旁畫出一顆球或一條狗玩繩，球可畫成條紋球，繩子可用彎曲線條呈現。<br /></li>
-<li>可加幾條動態線條表現奔跑或搖尾巴感。<br /></li>
-</ul></li>
-</ul></li>
-<li>跳舞中（有音符）<br />
-<ul class="org-ul">
-<li>姿勢建議：<br />
-<ul class="org-ul">
-<li>狗狗呈現單腳起跳或揮舞前腳的姿勢，身體偏一側。<br /></li>
-<li>表情開心，眼睛瞇成倒 U 形，舌頭外吐。<br /></li>
-</ul></li>
-<li>情境細節：<br />
-<ul class="org-ul">
-<li>周圍加上音符符號 ♪ ♫，表現正在享受音樂。<br /></li>
-<li>可以搭配旋轉線條或移動線，加強舞動氛圍。<br /></li>
-</ul></li>
-</ul></li>
-<li>上班中（認真打電腦）<br />
-<ul class="org-ul">
-<li>姿勢建議：<br />
-<ul class="org-ul">
-<li>狗狗坐在桌前，前腳放在鍵盤上。<br /></li>
-<li>臉部表情專注，眼神直視螢幕。<br /></li>
-</ul></li>
-<li>情境細節：<br />
-<ul class="org-ul">
-<li>桌上放一台簡單的筆電或螢幕，畫法可以極簡但清楚。<br /></li>
-<li>狗狗可以戴眼鏡增加「上班狗」的認真感，也可以加咖啡杯營造辦公氣氛。<br /></li>
-</ul></li>
-</ul></li>
-<li>健身中（認真舉重）<br />
-<ul class="org-ul">
-<li>姿勢建議：<br />
-<ul class="org-ul">
-<li>狗狗坐姿或半蹲，雙前腳抬起舉著啞鈴（可畫成橢圓形加圓點代表）。<br /></li>
-<li>嘴巴咬緊，眉毛內縮，眼神專注或咬牙切齒。<br /></li>
-</ul></li>
-<li>情境細節：<br />
-<ul class="org-ul">
-<li>啞鈴可以畫得誇張一點增加趣味。<br /></li>
-<li>頭頂或身體旁可以加上汗珠線條，呈現努力用力的感覺。<br /></li>
-</ul></li>
-</ul></li>
-<li>表達「我愛妳」<br />
-<ul class="org-ul">
-<li>姿勢建議：<br />
-<ul class="org-ul">
-<li>狗狗坐姿或雙手打開像是要抱抱。<br /></li>
-<li>表情溫柔、微笑，眼睛可畫成愛心形或閉眼微笑。<br /></li>
-</ul></li>
-<li>情境細節：<br />
-<ul class="org-ul">
-<li>頭頂或旁邊畫出愛心符號 ❤，一個或多個皆可。<br /></li>
-<li>可加兩隻前腳合掌形狀、或放在胸前像在「比心」。<br /></li>
-</ul></li>
-</ul></li>
-<li>表示感謝<br />
-<ul class="org-ul">
-<li>姿勢建議：<br />
-<ul class="org-ul">
-<li>狗狗低頭、合掌（或兩手碰一起），表情感激。<br /></li>
-<li>也可設計成略為鞠躬的姿勢。<br /></li>
-</ul></li>
-<li>情境細節：<br />
-<ul class="org-ul">
-<li>頭上或旁邊可以畫出閃亮的星星 ✨ 或「感謝」的代表動作線。<br /></li>
-<li>臉上可加一點微笑或淚光，表現真摯的情緒。<br /></li>
-</ul></li>
-</ul></li>
-<li>表示抱歉<br />
-<ul class="org-ul">
-<li>姿勢建議：<br />
-<ul class="org-ul">
-<li>狗狗低頭，耳朵耷拉，尾巴垂下。<br /></li>
-<li>雙手交握或抱在胸前，表情愧疚。<br /></li>
-</ul></li>
-<li>情境細節：<br />
-<ul class="org-ul">
-<li>頭頂可畫出一個小汗珠或漩渦，增強歉意。<br /></li>
-<li>背後畫出淚滴、或在牆角站立也可以加強效果。<br /></li>
-</ul></li>
-</ul></li>
-<li>表示崇拜（眼裡有星星）<br />
-<ul class="org-ul">
-<li>姿勢建議：<br />
-<ul class="org-ul">
-<li>狗狗仰望上方，前腳舉高、表情超興奮。<br /></li>
-<li>尾巴翹起，嘴巴張開、舌頭伸出。<br /></li>
-</ul></li>
-<li>情境細節：<br />
-<ul class="org-ul">
-<li>雙眼畫成閃亮的星星 ✨✨ 或充滿光芒的圓點。<br /></li>
-<li>頭上可加仰望線條或光芒線，展現「哇～」的感覺。<br /></li>
-</ul></li>
-</ul></li>
-<li>正在認真思考，眉頭緊皺<br />
-<ul class="org-ul">
-<li>姿勢建議：<br />
-<ul class="org-ul">
-<li>狗狗坐姿、前腳托著下巴或頭歪一邊。<br /></li>
-<li>眉毛明顯畫成「八字眉」或集中線條。<br /></li>
-</ul></li>
-<li>情境細節：<br />
-<ul class="org-ul">
-<li>頭頂畫出「問號」❓或幾條思考線、齒輪圖示。<br /></li>
-<li>也可畫個小泡泡框，有點像漫畫角色思考的樣子。<br /></li>
-</ul></li>
-</ul></li>
-</ol>
-</div>
 </div>
 </div>
 <div id="footnotes">
@@ -1193,7 +1273,7 @@ Model: "functional"
 </div></div>
 <div id="postamble" class="status">
 <p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2025-03-30 Sun 14:38</p>
+<p class="date">Created: 2025-04-17 四 22:12</p>
 </div>
 </body>
 </html>

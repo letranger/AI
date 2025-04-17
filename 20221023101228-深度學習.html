@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2025-02-16 Sun 19:47 -->
+<!-- 2025-02-21 Fri 16:06 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>深度學習</title>
@@ -194,6 +194,7 @@
   .org-svg { }
 </style>
 <link rel="stylesheet" type="text/css" href="../css/muse.css" />
+<script src="../css/copy_code.js"></script>
 <script>
   window.MathJax = {
     tex: {
@@ -234,37 +235,41 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org09a3032">1. 深度學習</a>
+<li><a href="#org7d4965f">1. 深度學習</a>
 <ul>
-<li><a href="#org900d5a0">1.1. 深度學習的知名模型</a></li>
-<li><a href="#org43f48d6">1.2. 深度學習的高速化</a></li>
+<li><a href="#org92578a8">1.1. 深度學習的知名模型</a></li>
+<li><a href="#org4b74847">1.2. 深度學習的高速化</a></li>
 </ul>
 </li>
-<li><a href="#orgfe5c112">2. 深度學習運作原理</a>
+<li><a href="#orgbf5a08c">2. 深度學習運作原理</a>
 <ul>
-<li><a href="#orgf3fa592">2.1. 機器學習的SOP</a></li>
-<li><a href="#org411401b">2.2. 資料的分割</a></li>
-<li><a href="#orgbdfe997">2.3. Layer, 損失函數與優化器</a></li>
+<li><a href="#org6a9c7f5">2.1. 機器學習的SOP</a></li>
+<li><a href="#orgb3aa687">2.2. 資料的分割</a></li>
+<li><a href="#org4c226b5">2.3. Layer, 損失函數與優化器</a></li>
 </ul>
 </li>
-<li><a href="#org952ef85">3. 實作範例</a>
+<li><a href="#org2a05300">3. 實作範例</a>
 <ul>
-<li><a href="#orgdbb9b6f">3.1. 二元分類：IMDB</a></li>
-<li><a href="#orgd8d32ae">3.2. 多類別分類：數位新聞</a></li>
-<li><a href="#org7360769">3.3. 迴歸問題：預測房價</a></li>
-<li><a href="#org9350d08">3.4. 圖片識別: MNIST</a></li>
-<li><a href="#orgb74b81e">3.5. 圖片識別版本2: MNIST</a></li>
+<li><a href="#org8cc1422">3.1. 二元分類：IMDB</a></li>
+<li><a href="#org4d125ed">3.2. 資料分割: IRIS / K-Fold Cross Validation</a></li>
+<li><a href="#org2be627d">3.3. 多類別分類：數位新聞</a></li>
+<li><a href="#orgfbbeaa5">3.4. 迴歸問題：預測房價</a></li>
+<li><a href="#org3e6e2f5">3.5. 圖片識別: MNIST</a></li>
+<li><a href="#orgbe33058">3.6. 圖片識別版本2: MNIST</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 <a href="https://letranger.github.io/AI/20221023101228-深度學習.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20221023101228-深度學習.html.svg"/></a>
-<div id="outline-container-org09a3032" class="outline-2">
-<h2 id="org09a3032"><span class="section-number-2">1.</span> 深度學習</h2>
+<div id="outline-container-org7d4965f" class="outline-2">
+<h2 id="org7d4965f"><span class="section-number-2">1.</span> 深度學習</h2>
 <div class="outline-text-2" id="text-1">
+<p>
+所謂深度學習是指<br />
+</p>
 
-<div id="orgd228327" class="figure">
+<div id="org5170284" class="figure">
 <p><img src="images/AI,_Machine_Learning與Deep_Learning/2024-02-19_16-24-48_2024-02-19_16-23-09.png" alt="2024-02-19_16-24-48_2024-02-19_16-23-09.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 1: </span>AI, Machine Learning與Deep Learning</p>
@@ -284,22 +289,22 @@
 </p>
 
 <p>
-典型的深度學習如圖<a href="#org6787159">2</a>，在此例中，輸入為一張手寫數字的影像，經由 4 層的深度學習模型後得知此數字為 4。<br />
+典型的深度學習如圖<a href="#org5ac9e7d">2</a>，在此例中，輸入為一張手寫數字的影像，經由 4 層的深度學習模型後得知此數字為 4。<br />
 </p>
 
 
-<div id="org6787159" class="figure">
+<div id="org5ac9e7d" class="figure">
 <p><img src="images/img-191107113927.jpg" alt="img-191107113927.jpg" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 2: </span>典型的深度神經網路-1</p>
 </div>
 
 <p>
-圖<a href="#orgc62ce27">3</a>進一步說明網路模型中每一層的作用，可以將每一層網路視為對影像的特殊運算，如此一層一層逐一精煉(purified)，最後得到結果。<br />
+圖<a href="#org641d601">3</a>進一步說明網路模型中每一層的作用，可以將每一層網路視為對影像的特殊運算，如此一層一層逐一精煉(purified)，最後得到結果。<br />
 </p>
 
 
-<div id="orgc62ce27" class="figure">
+<div id="org641d601" class="figure">
 <p><img src="images/img-1911071139277.jpg" alt="img-1911071139277.jpg" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 3: </span>典型的深度神經網路-2</p>
@@ -316,71 +321,71 @@
 <li>加深層數可以階層性的傳遞資料，例如，擷取出邊界的下一層會使用邊界資料來學習更高階的問題（如判斷形狀）。<br /></li>
 </ol>
 </div>
-<div id="outline-container-org900d5a0" class="outline-3">
-<h3 id="org900d5a0"><span class="section-number-3">1.1.</span> 深度學習的知名模型</h3>
+<div id="outline-container-org92578a8" class="outline-3">
+<h3 id="org92578a8"><span class="section-number-3">1.1.</span> 深度學習的知名模型</h3>
 <div class="outline-text-3" id="text-1-1">
 <p>
 幾個知名的深度學習模型如下：<br />
 </p>
 </div>
-<div id="outline-container-orgdec4cbe" class="outline-4">
-<h4 id="orgdec4cbe"><span class="section-number-4">1.1.1.</span> VGG</h4>
+<div id="outline-container-orgbd8cae9" class="outline-4">
+<h4 id="orgbd8cae9"><span class="section-number-4">1.1.1.</span> VGG</h4>
 <div class="outline-text-4" id="text-1-1-1">
 <p>
 VGG 為由卷積層與池化層構成的基本 CNN。特色是含權重層（卷積層及全連接層）共 16-19 層，有時會稱為 VGG16<sup><a id="fnr.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup> 或 VGG19<sup><a id="fnr.3" class="footref" href="#fn.3" role="doc-backlink">3</a></sup>。VGG 由於結構非常簡單，應用性高，所以多數技術人員喜歡使用以 VGG 為最基礎的網路。<br />
 </p>
 
 
-<div id="org3ce5826" class="figure">
+<div id="org42268b4" class="figure">
 <p><img src="images/深度學習/2024-03-21_15-57-59_2024-03-21_15-57-03.png" alt="2024-03-21_15-57-59_2024-03-21_15-57-03.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 4: </span>VGG-16</p>
 </div>
 
 
-<div id="org43c32d1" class="figure">
+<div id="org22b307b" class="figure">
 <p><img src="images/深度學習/2024-03-21_16-01-45_2024-03-21_16-01-21.png" alt="2024-03-21_16-01-45_2024-03-21_16-01-21.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 5: </span>VGG-19</p>
 </div>
 </div>
 </div>
-<div id="outline-container-org9e44fc2" class="outline-4">
-<h4 id="org9e44fc2"><span class="section-number-4">1.1.2.</span> GoogLeNet</h4>
+<div id="outline-container-orgbd8218b" class="outline-4">
+<h4 id="orgbd8218b"><span class="section-number-4">1.1.2.</span> GoogLeNet</h4>
 <div class="outline-text-4" id="text-1-1-2">
 <p>
 GoogLeNet<sup><a id="fnr.4" class="footref" href="#fn.4" role="doc-backlink">4</a></sup>為2014 年 ILSVRC (ImageNet Large Scale Visual Recognition Competition)圖像分類競賽的冠軍得主，與 VGGNet（該年的亞軍）相比具有相對較低的錯誤率。GoogLeNet基本上與 CNN 相同，其特色是不僅會往垂直方向加深網路，也會往水平方向加深。GoogLeNet 往水平方向的做法稱為「Inception 結構」。<br />
 </p>
 
-<div id="org65d43a4" class="figure">
+<div id="org97a8d42" class="figure">
 <p><img src="images/深度學習/2024-03-21_16-04-21_2024-03-21_16-04-02.png" alt="2024-03-21_16-04-21_2024-03-21_16-04-02.png" width="700" /><br />
 </p>
 <p><span class="figure-number">Figure 6: </span>GoogLeNet</p>
 </div>
 </div>
 </div>
-<div id="outline-container-org4f77e9b" class="outline-4">
-<h4 id="org4f77e9b"><span class="section-number-4">1.1.3.</span> ResNet</h4>
+<div id="outline-container-org918aa0e" class="outline-4">
+<h4 id="org918aa0e"><span class="section-number-4">1.1.3.</span> ResNet</h4>
 <div class="outline-text-4" id="text-1-1-3">
 <p>
 ResNet<sup><a id="fnr.5" class="footref" href="#fn.5" role="doc-backlink">5</a></sup>是由 Microsoft 團隊開發的網路，特色是具有能加深比過去更多層的「結構」，為了解決因加深過多層數無法順利學習的問題，ResNet 導入了「跳躍結構」（也稱為捷徑或分流）。跳躍結構是「直接」傳遞輸入資料，所以在反向傳播時，也會將上層的梯度「直接」傳遞給下層。透過這種跳躍結構，不用擔心梯度變小（或變得太大），可以把「具有意義的梯度」傳遞給上層。因此，跳躍結構能減少之前因為加深層數，使得梯度變小，出現梯度消失的問題。<br />
 </p>
 
-<div id="org18bc1b2" class="figure">
+<div id="org3c02837" class="figure">
 <p><img src="images/深度學習/2024-03-21_16-13-12_2024-03-21_16-13-03.png" alt="2024-03-21_16-13-12_2024-03-21_16-13-03.png" width="700" /><br />
 </p>
 <p><span class="figure-number">Figure 7: </span>ResNet</p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgee5f378" class="outline-4">
-<h4 id="orgee5f378"><span class="section-number-4">1.1.4.</span> ImageNet大賽</h4>
+<div id="outline-container-org42b2b89" class="outline-4">
+<h4 id="org42b2b89"><span class="section-number-4">1.1.4.</span> ImageNet大賽</h4>
 <div class="outline-text-4" id="text-1-1-4">
 <p>
 從下圖可觀察到，網路的層數從2014年GoogLeNet的22層爆增到2015年ResNet的152層，足足多了130層。這個結果證實了越深的網路，在沒有Overfitting的情況下，效果是越好的<sup><a id="fnr.6" class="footref" href="#fn.6" role="doc-backlink">6</a></sup>。<br />
 </p>
 
-<div id="orged21d0d" class="figure">
+<div id="org9a0a606" class="figure">
 <p><img src="images/深度學習/2024-03-21_16-28-03_2024-03-21_16-26-55.png" alt="2024-03-21_16-28-03_2024-03-21_16-26-55.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 8: </span>ImageNet歷年冠軍</p>
@@ -391,7 +396,7 @@ ResNet<sup><a id="fnr.5" class="footref" href="#fn.5" role="doc-backlink">5</a><
 </p>
 
 
-<div id="orga2aaa72" class="figure">
+<div id="orga988784" class="figure">
 <p><img src="images/深度學習/2024-03-21_16-38-24_2024-03-21_16-38-14.png" alt="2024-03-21_16-38-24_2024-03-21_16-38-14.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 9: </span>DNN層數與誤差的實驗</p>
@@ -403,11 +408,11 @@ ResNet<sup><a id="fnr.5" class="footref" href="#fn.5" role="doc-backlink">5</a><
 </div>
 </div>
 </div>
-<div id="outline-container-org43f48d6" class="outline-3">
-<h3 id="org43f48d6"><span class="section-number-3">1.2.</span> 深度學習的高速化</h3>
+<div id="outline-container-org4b74847" class="outline-3">
+<h3 id="org4b74847"><span class="section-number-3">1.2.</span> 深度學習的高速化</h3>
 <div class="outline-text-3" id="text-1-2">
 <p>
-由於大數據(big data)與大型網路的關係，使得深度學習必須進行大量運算，過去我們使用 CPU 來進行運算，如今多數深度學習的框架多支援 GPU，甚至支援以多個 GPU 與多台裝置進行分散式學習。GPU 原本是圖形專用處理器，可以快速處理平行運算，GPU 運算的目標是把其強大的效能運用在各種用途。比較 CPU 與 GPU 在 AlexNet 的學習，CPU 需花費 40 天以上，GPU 則可以在 6 天內完成。<br />
+由於大資料(big data)與大型網路的關係，使得深度學習必須進行大量運算，過去我們使用 CPU 來進行運算，如今多數深度學習的框架多支援 GPU，甚至支援以多個 GPU 與多台裝置進行分散式學習。GPU 原本是圖形專用處理器，可以快速處理平行運算，GPU 運算的目標是把其強大的效能運用在各種用途。比較 CPU 與 GPU 在 AlexNet 的學習，CPU 需花費 40 天以上，GPU 則可以在 6 天內完成。<br />
 </p>
 
 <p>
@@ -418,18 +423,18 @@ ResNet<sup><a id="fnr.5" class="footref" href="#fn.5" role="doc-backlink">5</a><
 在深度學習的高速化過程中，包含運算量在內，記憶體容量、匯流排頻寬等，都會造成瓶頸，就記憶體容量來說，必須考慮到大量權重參數及中間資料會儲存在記憶體的情況。至於匯流排頻寛，一旦通過 GPU(或 CPU)的匯流排資料超過一定的限制，該處就會形成瓶頸，所以，最好能儘量減少通過網路的資料位元數。<br />
 </p>
 </div>
-<div id="outline-container-org3fe21b2" class="outline-4">
-<h4 id="org3fe21b2"><span class="section-number-4">1.2.1.</span> GPU v.s. CPU</h4>
+<div id="outline-container-orgeec72a7" class="outline-4">
+<h4 id="orgeec72a7"><span class="section-number-4">1.2.1.</span> GPU v.s. CPU</h4>
 <div class="outline-text-4" id="text-1-2-1">
 
-<div id="org6cb2081" class="figure">
+<div id="org6d613c4" class="figure">
 <p><img src="images/深度學習/2024-02-20_10-26-27_2024-02-20_10-25-03.png" alt="2024-02-20_10-26-27_2024-02-20_10-25-03.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 10: </span>CPU 與 GPU 在架構上的設計差異</p>
 </div>
 
 <p>
-如圖<a href="#org6cb2081">10</a>，CPU 和 GPU 的差異起源於其相異的設計目標與應用場景， CPU的設計目的是處理各種不同的數據運算、邏輯判斷和中斷要求;而 GPU 的設計目的則是為了圖形運算， 其優勢在於能快速對同類型的數據進行平行運算<sup><a id="fnr.8" class="footref" href="#fn.8" role="doc-backlink">8</a></sup>。二者主要差異大致如下：<br />
+如圖<a href="#org6d613c4">10</a>，CPU 和 GPU 的差異起源於其相異的設計目標與應用場景， CPU的設計目的是處理各種不同的資料運算、邏輯判斷和中斷要求;而 GPU 的設計目的則是為了圖形運算， 其優勢在於能快速對同類型的資料進行平行運算<sup><a id="fnr.8" class="footref" href="#fn.8" role="doc-backlink">8</a></sup>。二者主要差異大致如下：<br />
 </p>
 <ul class="org-ul">
 <li>CPU 是由幾個每次可處理數個獨立「執行緒」(threads)的核心(core)所組成；GPU 則有數百個這樣的核心，同時可以處理上千個執行緒<br /></li>
@@ -441,12 +446,12 @@ ResNet<sup><a id="fnr.5" class="footref" href="#fn.5" role="doc-backlink">5</a><
 </div>
 </div>
 </div>
-<div id="outline-container-orgfe5c112" class="outline-2">
-<h2 id="orgfe5c112"><span class="section-number-2">2.</span> 深度學習運作原理</h2>
+<div id="outline-container-orgbf5a08c" class="outline-2">
+<h2 id="orgbf5a08c"><span class="section-number-2">2.</span> 深度學習運作原理</h2>
 <div class="outline-text-2" id="text-2">
 </div>
-<div id="outline-container-orgf3fa592" class="outline-3">
-<h3 id="orgf3fa592"><span class="section-number-3">2.1.</span> 機器學習的SOP</h3>
+<div id="outline-container-org6a9c7f5" class="outline-3">
+<h3 id="org6a9c7f5"><span class="section-number-3">2.1.</span> 機器學習的SOP</h3>
 <div class="outline-text-3" id="text-2-1">
 <ol class="org-ol">
 <li>資料載入和預處理<br /></li>
@@ -457,23 +462,23 @@ ResNet<sup><a id="fnr.5" class="footref" href="#fn.5" role="doc-backlink">5</a><
 </ol>
 </div>
 </div>
-<div id="outline-container-org411401b" class="outline-3">
-<h3 id="org411401b"><span class="section-number-3">2.2.</span> 資料的分割</h3>
+<div id="outline-container-orgb3aa687" class="outline-3">
+<h3 id="orgb3aa687"><span class="section-number-3">2.2.</span> 資料的分割</h3>
 <div class="outline-text-3" id="text-2-2">
 <p>
 訓練模型時通常會將資料集分割為訓練集、測試集，有時還會再細分出驗證集。<br />
 其具體分割方式可以分為以下幾類：<br />
 </p>
 </div>
-<div id="outline-container-orge57cd0e" class="outline-4">
-<h4 id="orge57cd0e"><span class="section-number-4">2.2.1.</span> 基本資料分割</h4>
+<div id="outline-container-org7992b1f" class="outline-4">
+<h4 id="org7992b1f"><span class="section-number-4">2.2.1.</span> 基本資料分割</h4>
 <div class="outline-text-4" id="text-2-2-1">
 <p>
-以下這些方法用於基本的模型訓練與評估，適合初步模型測試或大規模數據。<br />
+以下這些方法用於基本的模型訓練與評估，適合初步模型測試或大規模資料。<br />
 </p>
 </div>
-<div id="outline-container-org1525673" class="outline-5">
-<h5 id="org1525673"><span class="section-number-5">2.2.1.1.</span> 訓練/測試分割（train-Test Split)</h5>
+<div id="outline-container-orge36e96a" class="outline-5">
+<h5 id="orge36e96a"><span class="section-number-5">2.2.1.1.</span> 訓練/測試分割（train-Test Split)</h5>
 <div class="outline-text-5" id="text-2-2-1-1">
 <p>
 部份文獻也稱為Holdout Method，就是我們平時最常見的資料分割方式，把資料集分為以下兩部份：<br />
@@ -518,8 +523,8 @@ ResNet<sup><a id="fnr.5" class="footref" href="#fn.5" role="doc-backlink">5</a><
 </div>
 </div>
 </div>
-<div id="outline-container-org911adca" class="outline-5">
-<h5 id="org911adca"><span class="section-number-5">2.2.1.2.</span> 訓練/驗證/測試分割（Train-Validation-Test Split）</h5>
+<div id="outline-container-orgb02cef0" class="outline-5">
+<h5 id="orgb02cef0"><span class="section-number-5">2.2.1.2.</span> 訓練/驗證/測試分割（Train-Validation-Test Split）</h5>
 <div class="outline-text-5" id="text-2-2-1-2">
 <p>
 這個方法的主要目的為了調整模型的超參數，避免測試集的資料洩漏，做法是將資料集分為以下三部份：<br />
@@ -567,15 +572,15 @@ ResNet<sup><a id="fnr.5" class="footref" href="#fn.5" role="doc-backlink">5</a><
 </div>
 </div>
 </div>
-<div id="outline-container-orgbade2d8" class="outline-4">
-<h4 id="orgbade2d8"><span class="section-number-4">2.2.2.</span> 交叉驗證（Cross-Validation, CV）</h4>
+<div id="outline-container-org42ce71e" class="outline-4">
+<h4 id="org42ce71e"><span class="section-number-4">2.2.2.</span> 交叉驗證（Cross-Validation, CV）</h4>
 <div class="outline-text-4" id="text-2-2-2">
 <p>
 多次切分資料，讓每個資料點都能當一次測試集，避免評估的不穩定性。<br />
 </p>
 </div>
-<div id="outline-container-org7052002" class="outline-5">
-<h5 id="org7052002"><span class="section-number-5">2.2.2.1.</span> K-Fold Cross-Validation</h5>
+<div id="outline-container-org2038392" class="outline-5">
+<h5 id="org2038392"><span class="section-number-5">2.2.2.1.</span> K-Fold Cross-Validation</h5>
 <div class="outline-text-5" id="text-2-2-2-1">
 <p>
 K-Fold 交叉驗證的主要目的之一是評估不同模型或超參數組合的表現，進而選擇最佳的設定。完整的流程如下：<br />
@@ -583,7 +588,7 @@ K-Fold 交叉驗證的主要目的之一是評估不同模型或超參數組合�
 <ol class="org-ol">
 <li>先劃分出測試集<br />
 <ul class="org-ul">
-<li>測試集不參與 K-Fold 交叉驗證，確保它是真正未見過的數據。<br /></li>
+<li>測試集不參與 K-Fold 交叉驗證，確保它是真正未見過的資料。<br /></li>
 <li>此步驟確保我們最終的模型評估是公平的，不會發生資訊洩漏（Data Leakage）。<br /></li>
 </ul></li>
 <li>在訓練集上使用 K-Fold 進行超參數調整<br />
@@ -606,7 +611,7 @@ K-Fold 交叉驗證的主要目的之一是評估不同模型或超參數組合�
 </p>
 
 
-<div id="org14f2236" class="figure">
+<div id="org7283aa3" class="figure">
 <p><img src="./images/screenshot-20250216-154539.png" alt="screenshot-20250216-154539.png" width="500" /><br />
 </p>
 </div>
@@ -616,7 +621,7 @@ K-Fold 交叉驗證的主要目的之一是評估不同模型或超參數組合�
 </p>
 </div>
 <ol class="org-ol">
-<li><a id="orge426cd8"></a>以K-Fold交叉驗證選擇最佳超參數的方法1: 手動調整<br />
+<li><a id="org8f52fe2"></a>手動調整<br />
 <div class="outline-text-6" id="text-2-2-2-1-1">
 <ol class="org-ol">
 <li>定義超參數組合（例如 max_depth 和 n_estimators）。<br /></li>
@@ -678,7 +683,7 @@ K-Fold 交叉驗證的主要目的之一是評估不同模型或超參數組合�
 </p>
 </div>
 </li>
-<li><a id="org336a160"></a>以K-Fold交叉驗證選擇最佳超參數的方法2: GridSearchCV<br />
+<li><a id="org216c018"></a>GridSearchCV<br />
 <div class="outline-text-6" id="text-2-2-2-1-2">
 <p>
 GridSearchCV 是 Scikit-Learn 提供的一個自動化調參工具，可以幫助我們快速找到最佳超參數組合。它會自動遍歷所有超參數組合，並使用 K-Fold 交叉驗證來評估每組超參數的表現，最後返回最佳超參數組合。<br />
@@ -723,7 +728,7 @@ GridSearchCV 是 Scikit-Learn 提供的一個自動化調參工具，可以幫�
 </ul>
 </div>
 </li>
-<li><a id="org341f613"></a>以K-Fold交叉驗證選擇最佳超參數的方法3: RandomizedSearchCV<br />
+<li><a id="org2916750"></a>RandomizedSearchCV<br />
 <div class="outline-text-6" id="text-2-2-2-1-3">
 <p>
 RandomizedSearchCV 與 GridSearchCV 類似，但是它不是遍歷所有超參數組合，而是隨機選取一部分超參數組合進行測試，這樣可以節省時間，尤其是當超參數範圍很大時。<br />
@@ -770,8 +775,8 @@ RandomizedSearchCV 與 GridSearchCV 類似，但是它不是遍歷所有超參�
 </li>
 </ol>
 </div>
-<div id="outline-container-org611f717" class="outline-5">
-<h5 id="org611f717"><span class="section-number-5">2.2.2.2.</span> LOOCV (Leave-One-Out Cross Validation)</h5>
+<div id="outline-container-orgc5248f8" class="outline-5">
+<h5 id="orgc5248f8"><span class="section-number-5">2.2.2.2.</span> LOOCV (Leave-One-Out Cross Validation)</h5>
 <div class="outline-text-5" id="text-2-2-2-2">
 <p>
 LOOCV 是一種特殊的交叉驗證方法，是 K-fold 其中一種特例，此作法相當簡單明瞭，但是訓練負擔會非常重且耗時。將資料集分為訓練集和測試集，其中測試集只包含 <b>一筆樣本資料</b> ，訓練集包含 <b>其餘N-1筆樣本</b> ，整個訓練會重複進行N次(N為樣本數），最後取所有測試結果的平均值作為模型的性能評估。這樣的分割方式可以:<br />
@@ -783,7 +788,7 @@ LOOCV 是一種特殊的交叉驗證方法，是 K-fold 其中一種特例，此
 </ul>
 
 
-<div id="org9720612" class="figure">
+<div id="org2358013" class="figure">
 <p><img src="./images/screenshot-20250216-124914.png" alt="screenshot-20250216-124914.png" width="500" /><br />
 </p>
 </div>
@@ -792,8 +797,8 @@ LOOCV 是一種特殊的交叉驗證方法，是 K-fold 其中一種特例，此
 適用情境：<br />
 </p>
 <ul class="org-ul">
-<li>小型資料集（如 N &lt; 100），因為可以最大化利用訓練數據<br /></li>
-<li>不適合大規模數據集，因為計算成本過高。<br /></li>
+<li>小型資料集（如 N &lt; 100），因為可以最大化利用訓練資料<br /></li>
+<li>不適合大規模資料集，因為計算成本過高。<br /></li>
 </ul>
 
 <p>
@@ -831,8 +836,8 @@ LOOCV 是一種特殊的交叉驗證方法，是 K-fold 其中一種特例，此
 </div>
 </div>
 </div>
-<div id="outline-container-org1fda525" class="outline-5">
-<h5 id="org1fda525"><span class="section-number-5">2.2.2.3.</span> Stratified K-fold Cross-Validation</h5>
+<div id="outline-container-org817159d" class="outline-5">
+<h5 id="org817159d"><span class="section-number-5">2.2.2.3.</span> Stratified K-fold Cross-Validation</h5>
 <div class="outline-text-5" id="text-2-2-2-3">
 <p>
 Stratified K-fold Cross-Validation 是 K-fold Cross-Validation 的一種變形，主要是針對分類問題而設計的。在 K-fold Cross-Validation 中，每次分割都是隨機的，可能會導致某些類別的樣本在訓練集和測試集中的比例不均衡，進而影響模型的性能評估。Stratified K-fold Cross-Validation 通過保持每個類別在每個分割中的比例來解決這個問題，確保每個類別在訓練集和測試集中的比例相同。<br />
@@ -844,7 +849,7 @@ Stratified K-fold Cross-Validation 是 K-fold Cross-Validation 的一種變形�
 <ul class="org-ul">
 <li>類別不均衡問題（例如詐欺檢測、罕見疾病分類）<br /></li>
 <li>確保所有類別都能在每個 fold 中出現，避免某些 fold 缺少少數類別<br /></li>
-<li>小型數據集時特別重要，避免某些類別完全未出現在特定 fold<br /></li>
+<li>小型資料集時特別重要，避免某些類別完全未出現在特定 fold<br /></li>
 </ul>
 
 <p>
@@ -865,11 +870,11 @@ Stratified K-fold Cross-Validation 是 K-fold Cross-Validation 的一種變形�
 </div>
 </div>
 </div>
-<div id="outline-container-orgc26d1c7" class="outline-4">
-<h4 id="orgc26d1c7"><span class="section-number-4">2.2.3.</span> 時間序列交叉驗證（Time Series Split）</h4>
+<div id="outline-container-org29a7108" class="outline-4">
+<h4 id="org29a7108"><span class="section-number-4">2.2.3.</span> 時間序列交叉驗證（Time Series Split）</h4>
 <div class="outline-text-4" id="text-2-2-3">
 <p>
-Time Series Split 是時序數據（如股市、氣象預測）的專用分割方式，確保未來的資料不會洩漏到訓練中。<br />
+Time Series Split 是時序資料（如股市、氣象預測）的專用分割方式，確保未來的資料不會洩漏到訓練中。<br />
 </p>
 
 <p>
@@ -879,7 +884,7 @@ Time Series Split 是時序數據（如股市、氣象預測）的專用分割�
 <li>股票預測<br /></li>
 <li>氣象預測<br /></li>
 <li>銷售趨勢分析<br /></li>
-<li>任何未來數據不可提前出現的應用<br /></li>
+<li>任何未來資料不可提前出現的應用<br /></li>
 </ul>
 
 <p>
@@ -897,15 +902,15 @@ Time Series Split 是時序數據（如股市、氣象預測）的專用分割�
 <p>
 輸出示意<br />
 </p>
-<pre class="example" id="org8f45694">
+<pre class="example" id="org25f8d0b">
 第一次訓練: 1 2 3 4  -&gt; 測試 5
 第二次訓練: 1 2 3 4 5 -&gt; 測試 6
 第三次訓練: 1 2 3 4 5 6 -&gt; 測試 7
 </pre>
 </div>
 </div>
-<div id="outline-container-orgddd83c3" class="outline-4">
-<h4 id="orgddd83c3"><span class="section-number-4">2.2.4.</span> 自助抽樣（Bootstrap Sampling）</h4>
+<div id="outline-container-org4150bf1" class="outline-4">
+<h4 id="org4150bf1"><span class="section-number-4">2.2.4.</span> 自助抽樣（Bootstrap Sampling）</h4>
 <div class="outline-text-4" id="text-2-2-4">
 <p>
 一種隨機抽樣方法，主要用於統計學與集成學習（如隨機森林）。以 <b>抽完放回</b> 的方式從原始資料集中隨機抽取樣本，形成新的訓練集。<br />
@@ -915,7 +920,7 @@ Time Series Split 是時序數據（如股市、氣象預測）的專用分割�
 適用場景<br />
 </p>
 <ul class="org-ul">
-<li>當數據量較小時，希望模擬多次抽樣的效果。<br /></li>
+<li>當資料量較小時，希望模擬多次抽樣的效果。<br /></li>
 <li>隨機森林（Random Forest）、統計學中的區間估計<br /></li>
 </ul>
 
@@ -957,15 +962,15 @@ Time Series Split 是時序數據（如股市、氣象預測）的專用分割�
 </div>
 </div>
 </div>
-<div id="outline-container-org14c91c1" class="outline-4">
-<h4 id="org14c91c1"><span class="section-number-4">2.2.5.</span> 交叉驗證的效能評估指標</h4>
+<div id="outline-container-org012a375" class="outline-4">
+<h4 id="org012a375"><span class="section-number-4">2.2.5.</span> 交叉驗證的效能評估指標</h4>
 <div class="outline-text-4" id="text-2-2-5">
 <p>
 在機器學習中，我們通常使用一些指標來評估模型的性能，這些指標可以幫助我們了解模型的表現，並選擇最佳模型。以下是一些常見的效能評估指標：<br />
 </p>
 </div>
-<div id="outline-container-orgd1a7d72" class="outline-5">
-<h5 id="orgd1a7d72"><span class="section-number-5">2.2.5.1.</span> 分類問題</h5>
+<div id="outline-container-org779b7bf" class="outline-5">
+<h5 id="org779b7bf"><span class="section-number-5">2.2.5.1.</span> 分類問題</h5>
 <div class="outline-text-5" id="text-2-2-5-1">
 <ul class="org-ul">
 <li>準確率（Accuracy）：正確預測的樣本數除以總樣本數。<br /></li>
@@ -977,8 +982,8 @@ Time Series Split 是時序數據（如股市、氣象預測）的專用分割�
 </ul>
 </div>
 </div>
-<div id="outline-container-org4afbb98" class="outline-5">
-<h5 id="org4afbb98"><span class="section-number-5">2.2.5.2.</span> 回歸問題</h5>
+<div id="outline-container-orgb1a7818" class="outline-5">
+<h5 id="orgb1a7818"><span class="section-number-5">2.2.5.2.</span> 回歸問題</h5>
 <div class="outline-text-5" id="text-2-2-5-2">
 <ul class="org-ul">
 <li>平均絕對誤差（Mean Absolute Error, MAE）：預測值和真實值之間的絕對誤差的平均值。<br /></li>
@@ -995,11 +1000,11 @@ Time Series Split 是時序數據（如股市、氣象預測）的專用分割�
 </div>
 </div>
 </div>
-<div id="outline-container-orgbdfe997" class="outline-3">
-<h3 id="orgbdfe997"><span class="section-number-3">2.3.</span> Layer, 損失函數與優化器</h3>
+<div id="outline-container-org4c226b5" class="outline-3">
+<h3 id="org4c226b5"><span class="section-number-3">2.3.</span> Layer, 損失函數與優化器</h3>
 <div class="outline-text-3" id="text-2-3">
 <p>
-前節深度學習中的每一「層」(layer)如何運作，取決於儲存於該層的權重(weight)，而權重是由多個數字組成。從技術層面來看，layer 是由各個權重參數(parameters)來和輸入的資料(如圖<a href="#org17de41c">11</a>中的X)進行運算以執行資料轉換的工作(如圖<a href="#org17de41c">11</a>)。而所謂的學習，指的就是幫助神經網路的每一層找出適當的權重值，讓神經網路可以將輸入的訓練資料經由與權重的運作推導出接近標準答案的運算結果(即圖<a href="#org17de41c">11</a>中的預測 Y)。<br />
+前節深度學習中的每一「層」(layer)如何運作，取決於儲存於該層的權重(weight)，而權重是由多個數字組成。從技術層面來看，layer 是由各個權重參數(parameters)來和輸入的資料(如圖<a href="#orgc2c4a1e">11</a>中的X)進行運算以執行資料轉換的工作(如圖<a href="#orgc2c4a1e">11</a>)。而所謂的學習，指的就是幫助神經網路的每一層找出適當的權重值，讓神經網路可以將輸入的訓練資料經由與權重的運作推導出接近標準答案的運算結果(即圖<a href="#orgc2c4a1e">11</a>中的預測 Y)。<br />
 </p>
 
 <p>
@@ -1007,18 +1012,18 @@ Time Series Split 是時序數據（如股市、氣象預測）的專用分割�
 </p>
 
 
-<div id="org17de41c" class="figure">
+<div id="orgc2c4a1e" class="figure">
 <p><img src="images/img-191107115233.jpg" alt="img-191107115233.jpg" width="400" /><br />
 </p>
 <p><span class="figure-number">Figure 11: </span>nn 中 layer 的 parameter</p>
 </div>
 
 <p>
-為了提高神經網路的效能(預測的準確率)，我們要即時的掌握目前的輸出(Y)與真正的標準答案Y還差多少，這個評估由神經網路的損失函數(loss function;或稱目標函數, objective function;或稱成本函數, cost function<sup><a id="fnr.9" class="footref" href="#fn.9" role="doc-backlink">9</a></sup>)來負責，如圖<a href="#org041f0c3">12</a>。損失函數會取得神經網路的預測結果與標準答案二者的損失分數(又稱差距分數)，做為每一次學習的表現效能之評估標準。<br />
+為了提高神經網路的效能(預測的準確率)，我們要即時的掌握目前的輸出(Y)與真正的標準答案Y還差多少，這個評估由神經網路的損失函數(loss function;或稱目標函數, objective function;或稱成本函數, cost function<sup><a id="fnr.9" class="footref" href="#fn.9" role="doc-backlink">9</a></sup>)來負責，如圖<a href="#org59ae78c">12</a>。損失函數會取得神經網路的預測結果與標準答案二者的損失分數(又稱差距分數)，做為每一次學習的表現效能之評估標準。<br />
 </p>
 
 
-<div id="org041f0c3" class="figure">
+<div id="org59ae78c" class="figure">
 <p><img src="images/img-191107115304.jpg" alt="img-191107115304.jpg" width="400" /><br />
 </p>
 <p><span class="figure-number">Figure 12: </span>損失函數</p>
@@ -1029,7 +1034,7 @@ Time Series Split 是時序數據（如股市、氣象預測）的專用分割�
 </p>
 
 
-<div id="orgcf70745" class="figure">
+<div id="org0f76600" class="figure">
 <p><img src="images/img-1911071153041.jpg" alt="img-1911071153041.jpg" width="400" /><br />
 </p>
 <p><span class="figure-number">Figure 13: </span>優化器</p>
@@ -1052,7 +1057,7 @@ Time Series Split 是時序數據（如股市、氣象預測）的專用分割�
 是的，就如同考試時你面對陌生選擇題的反應，神經網路也決定這麼幹，隨便丟一些數值填到矩陣中當成第一批參數。事實上，同樣的策略我們在<a href="20221023154410-regression.html#ID-7cd4a142-4cd9-46b6-b9a4-2ad750ae622f">線性迴歸:年齡身高預測/隨機的力量</a>裡已經玩過了，當初在找出方程式的最佳參數組合時，我們也是閉上眼睛隨便選一組。不管整個網路中有多少參數，當我們隨機設定好了所有參數的最初值後，整個神經網就就可以運作了，嗯&#x2026;至少已經可以依照前向傳播的流程輸出第一個預測結果了，你看，我們已經朝完美的人工智慧跨近一大步了-_-<br />
 </p>
 
-<div id="org18c60b5" class="figure">
+<div id="org1bb1a79" class="figure">
 <p><img src="images/類神經網路/2024-02-18_10-23-40_2024-02-18_10-20-52.png" alt="2024-02-18_10-23-40_2024-02-18_10-20-52.png" width="400" /><br />
 </p>
 </div>
@@ -1064,23 +1069,23 @@ Time Series Split 是時序數據（如股市、氣象預測）的專用分割�
 </div>
 </div>
 </div>
-<div id="outline-container-org952ef85" class="outline-2">
-<h2 id="org952ef85"><span class="section-number-2">3.</span> 實作範例</h2>
+<div id="outline-container-org2a05300" class="outline-2">
+<h2 id="org2a05300"><span class="section-number-2">3.</span> 實作範例</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-orgdbb9b6f" class="outline-3">
-<h3 id="orgdbb9b6f"><span class="section-number-3">3.1.</span> 二元分類：IMDB</h3>
+<div id="outline-container-org8cc1422" class="outline-3">
+<h3 id="org8cc1422"><span class="section-number-3">3.1.</span> 二元分類：IMDB</h3>
 <div class="outline-text-3" id="text-3-1">
 <p>
 自 IMDB 資料集中取得 50000 個正/負評論，各 25000 個，該資料集已內建於 Keras 中，且資料已先預處理，電影評論內容為由單字構成的 list 結構，例如，若評論內容為<br />
 </p>
-<pre class="example" id="org0e30c7e">
+<pre class="example" id="org323899d">
 In a Wonderful morning...
 </pre>
 <p>
 其 list 結構可能為<br />
 </p>
-<pre class="example" id="orgdc99cfe">
+<pre class="example" id="orgfdf5a14">
 (8, 3, 386, 1969...)
 </pre>
 <p>
@@ -1133,8 +1138,8 @@ In a Wonderful morning...
 上述程式中第<a href="#coderef-wordIndex" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-wordIndex');" onmouseout="CodeHighlightOff(this, 'coderef-wordIndex');">2</a>行主要負責取得單字(key)的對應數字(value)的字典，再藉由第<a href="#coderef-reverseWordIndex" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-reverseWordIndex');" onmouseout="CodeHighlightOff(this, 'coderef-reverseWordIndex');">5</a>行將(key:value)轉換為(value:key)，最後第<a href="#coderef-decodedReview" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-decodedReview');" onmouseout="CodeHighlightOff(this, 'coderef-decodedReview');">11</a>行將字典中的單字回復至原始評論，程式中(i-3)的原因是imdb.load_data已預留了第 0~2 個位置做特殊用途。<br />
 </p>
 </div>
-<div id="outline-container-org4ef6121" class="outline-4">
-<h4 id="org4ef6121"><span class="section-number-4">3.1.1.</span> 準備資料</h4>
+<div id="outline-container-org5e2e254" class="outline-4">
+<h4 id="org5e2e254"><span class="section-number-4">3.1.1.</span> 準備資料</h4>
 <div class="outline-text-4" id="text-3-1-1">
 <p>
 由於 IMDB 匯入 train_data 及 test_data 均為 list 型態，要先轉換為 tensor 才能輸入至神經網路，方法有二：<br />
@@ -1180,8 +1185,8 @@ In a Wonderful morning...
 </pre>
 </div>
 </div>
-<div id="outline-container-org3c0aae3" class="outline-4">
-<h4 id="org3c0aae3"><span class="section-number-4">3.1.2.</span> 建立神經網路</h4>
+<div id="outline-container-org28feb8b" class="outline-4">
+<h4 id="org28feb8b"><span class="section-number-4">3.1.2.</span> 建立神經網路</h4>
 <div class="outline-text-4" id="text-3-1-2">
 <p>
 要建構一個 Dense 層堆疊架構的神經網路，要考慮兩個關鍵：<br />
@@ -1192,11 +1197,11 @@ In a Wonderful morning...
 </ol>
 
 <p>
-此處使用兩個中間層、一個輸出層，如圖<a href="#org90724c9">14</a>，一般的神經網路中，對那些介於輸入層和輸出層間的layer，我們習慣上稱之為隱藏層(hidden layers)，但此處 Keras 的輸入層也有隱藏層的特性。圖<a href="#org90724c9">14</a>的 hidden layer 以 relu 為啟動函數，輸出層以 sigmoid 啟動函數輸出機率值。<br />
+此處使用兩個中間層、一個輸出層，如圖<a href="#orgb128230">14</a>，一般的神經網路中，對那些介於輸入層和輸出層間的layer，我們習慣上稱之為隱藏層(hidden layers)，但此處 Keras 的輸入層也有隱藏層的特性。圖<a href="#orgb128230">14</a>的 hidden layer 以 relu 為啟動函數，輸出層以 sigmoid 啟動函數輸出機率值。<br />
 </p>
 
 
-<div id="org90724c9" class="figure">
+<div id="orgb128230" class="figure">
 <p><img src="images/nn3-6.png" alt="nn3-6.png" width="300" /><br />
 </p>
 <p><span class="figure-number">Figure 14: </span>IMDB model 架構</p>
@@ -1216,40 +1221,40 @@ model.add(layers.Dense(<span style="color: #da8548; font-weight: bold;">16</span
 </p>
 
 
-<div id="org1b92283" class="figure">
+<div id="org6cc4402" class="figure">
 <p><img src="images/ReLUPlot.png" alt="ReLUPlot.png" width="300" /><br />
 </p>
 <p><span class="figure-number">Figure 15: </span>ReLU 函數圖</p>
 </div>
 </div>
 </div>
-<div id="outline-container-org0ec7d09" class="outline-4">
-<h4 id="org0ec7d09"><span class="section-number-4">3.1.3.</span> 為什麼要加入<a href="20240215153606-activationfunction.html#ID-d3bcc30a-3d94-4a3c-8e66-baaac7325c75">Activation Function</a></h4>
+<div id="outline-container-orgf1ef702" class="outline-4">
+<h4 id="orgf1ef702"><span class="section-number-4">3.1.3.</span> 為什麼要加入<a href="20240215153606-activationfunction.html#ID-d3bcc30a-3d94-4a3c-8e66-baaac7325c75">Activation Function</a></h4>
 <div class="outline-text-4" id="text-3-1-3">
 <p>
-為何要有 relu 等啟動函數？原因之一是這類函數為非線性函數(如圖<a href="#orgb2fa62e">18</a>)，回顧<a href="20221025104603-神經網路.html#ID-d6daa102-05bb-475d-b619-db8b61e86030">神經網路</a>中的「學測成績預測模型」，像圖<a href="#orga75b9f2">16</a>的模型，我們也只是在解一個如\(f(x)=x_1*w_1+x_2*w_2+x_3*w_3+...+x_7*w_7\)這樣的函式問題。<br />
+為何要有 relu 等啟動函數？原因之一是這類函數為非線性函數(如圖<a href="#orgb8669a7">18</a>)，回顧<a href="20221025104603-神經網路.html#ID-d6daa102-05bb-475d-b619-db8b61e86030">神經網路</a>中的「學測成績預測模型」，像圖<a href="#org295c795">16</a>的模型，我們也只是在解一個如\(f(x)=x_1*w_1+x_2*w_2+x_3*w_3+...+x_7*w_7\)這樣的函式問題。<br />
 </p>
 
 
-<div id="orga75b9f2" class="figure">
+<div id="org295c795" class="figure">
 <p><img src="images/exam-network2p.png" alt="exam-network2p.png" width="400" /><br />
 </p>
 <p><span class="figure-number">Figure 16: </span>學測成績預測模型#2</p>
 </div>
 
 <p>
-就算我們把模型2進化為模型3(如圖<a href="#org2972b24">17</a>)，本質上也仍只是一層，再多的層數也能合併為一層，此類模型並無助於複雜的學習。<br />
+就算我們把模型2進化為模型3(如圖<a href="#orge88fcb2">17</a>)，本質上也仍只是一層，再多的層數也能合併為一層，此類模型並無助於複雜的學習。<br />
 </p>
 
 
-<div id="org2972b24" class="figure">
+<div id="orge88fcb2" class="figure">
 <p><img src="images/exam-network3p.png" alt="exam-network3p.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 17: </span>學測成績預測模型#3</p>
 </div>
 
 <p>
-以圖<a href="#org2972b24">17</a>為例，最後對學測成績\(\hat{y}\)的預測為：<br />
+以圖<a href="#orge88fcb2">17</a>為例，最後對學測成績\(\hat{y}\)的預測為：<br />
 \[
 \hat{y}=y_1w_8+y_2w_9+y_3w_{10}
 \]<br />
@@ -1294,29 +1299,29 @@ y_3 &=& x_5w_{53} + x_6w_{63} + x_7w_{73}
 </p>
 
 <p>
-為了有效讓模型更加複雜，此處可以在模型中加入非線性轉換，如圖<a href="#orgb2fa62e">18</a>中的ReLU<a href="20240215153606-activationfunction.html#ID-d3bcc30a-3d94-4a3c-8e66-baaac7325c75">激勵函數</a>，其結果如圖<a href="#org6622797">19</a>所示。<br />
+為了有效讓模型更加複雜，此處可以在模型中加入非線性轉換，如圖<a href="#orgb8669a7">18</a>中的ReLU<a href="20240215153606-activationfunction.html#ID-d3bcc30a-3d94-4a3c-8e66-baaac7325c75">激勵函數</a>，其結果如圖<a href="#org1e71ee8">19</a>所示。<br />
 </p>
 
 
-<div id="orgb2fa62e" class="figure">
+<div id="orgb8669a7" class="figure">
 <p><img src="images/ReLUPlot.png" alt="ReLUPlot.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 18: </span>ReLU 函數圖</p>
 </div>
 
 
-<div id="org6622797" class="figure">
+<div id="org1e71ee8" class="figure">
 <p><img src="images/exam-network4p.png" alt="exam-network4p.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 19: </span>學測成績預測模型#4</p>
 </div>
 </div>
 </div>
-<div id="outline-container-orga55e96e" class="outline-4">
-<h4 id="orga55e96e"><span class="section-number-4">3.1.4.</span> 程式實作</h4>
+<div id="outline-container-org658e43a" class="outline-4">
+<h4 id="org658e43a"><span class="section-number-4">3.1.4.</span> 程式實作</h4>
 <div class="outline-text-4" id="text-3-1-4">
 <p>
-圖<a href="#org90724c9">14</a>的實作程式如下，此處以最簡單的 NN (Neural Network) 作為範例。以 Keras 的核心為模型，應用最常使用 Sequential 模型。藉由.add()我們可以一層一層的將神經網路疊起。在每一層之中我們只需要簡單的設定每層的大小(units)與激勵函數(activation function)。<br />
+圖<a href="#orgb128230">14</a>的實作程式如下，此處以最簡單的 NN (Neural Network) 作為範例。以 Keras 的核心為模型，應用最常使用 Sequential 模型。藉由.add()我們可以一層一層的將神經網路疊起。在每一層之中我們只需要簡單的設定每層的大小(units)與激勵函數(activation function)。<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">from</span> keras <span style="color: #51afef;">import</span> models
@@ -1373,8 +1378,8 @@ y_3 &=& x_5w_{53} + x_6w_{63} + x_7w_{73}
 </p>
 </div>
 </div>
-<div id="outline-container-orga4886b0" class="outline-4">
-<h4 id="orga4886b0"><span class="section-number-4">3.1.5.</span> 驗證神經網路的 model</h4>
+<div id="outline-container-orgc724812" class="outline-4">
+<h4 id="orgc724812"><span class="section-number-4">3.1.5.</span> 驗證神經網路的 model</h4>
 <div class="outline-text-4" id="text-3-1-5">
 <p>
 為了在訓練期間監控 model 對新資料的準確度，可以從原始訓練資料中分離出 10000 個樣本來建立驗證資料集。<br />
@@ -1400,7 +1405,7 @@ y_3 &=& x_5w_{53} + x_6w_{63} + x_7w_{73}
 </pre>
 </div>
 
-<pre class="example" id="orgf6d75bf">
+<pre class="example" id="org237c20d">
 Epoch 1/20
 30/30 ━━━━━━━━━━━━━━━━━━━━ 2s 34ms/step - binary_accuracy: 0.6895 - loss: 0.5987 - val_binary_accuracy: 0.8637 - val_loss: 0.3995
 ...略...
@@ -1409,7 +1414,7 @@ Epoch 20/20
 </pre>
 
 <p>
-model.fit()會回傳一個 history 物件，這物件本身有一個 history 屬性，為一個包含有關訓練過程中相關數據的字典，這個字期包含有 4 個項目(val_loss, val_acc, loss, acc)，為訓練和驗證時監控的指標。<br />
+model.fit()會回傳一個 history 物件，這物件本身有一個 history 屬性，為一個包含有關訓練過程中相關資料的字典，這個字期包含有 4 個項目(val_loss, val_acc, loss, acc)，為訓練和驗證時監控的指標。<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #c678dd;">print</span>(history.history)
@@ -1473,25 +1478,25 @@ dict_keys(['binary_accuracy', 'loss', 'val_binary_accuracy', 'val_loss'])
 
 
 
-<div id="orgd63dfa7" class="figure">
+<div id="org6c3cdbf" class="figure">
 <p><img src="images/imdb-Keras-1.png" alt="imdb-Keras-1.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 20: </span>IMDB-Keras-1</p>
 </div>
 
 
-<div id="orgbde08c9" class="figure">
+<div id="orge59a6a4" class="figure">
 <p><img src="images/imdb-Keras-2.png" alt="imdb-Keras-2.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 21: </span>IMDB-Keras-2</p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgd50f81f" class="outline-4">
-<h4 id="orgd50f81f"><span class="section-number-4">3.1.6.</span> 優化 model</h4>
+<div id="outline-container-orgdd91536" class="outline-4">
+<h4 id="orgdd91536"><span class="section-number-4">3.1.6.</span> 優化 model</h4>
 <div class="outline-text-4" id="text-3-1-6">
 <p>
-由圖<a href="#org1071815">23</a>、<a href="#org3f01141">24</a>可以看出，上述 model 雖然在訓練階段的效能不錯，loss function 隨 epoch 下降、accuracy 也隨 epoch 升高，但在驗證階段的表現卻十分不理想，不僅 accuracy 隨 epoch 的增加呈緩降趨勢，loss function 甚至還往上急升。<br />
+由圖<a href="#org815d28f">23</a>、<a href="#orge9a6eae">24</a>可以看出，上述 model 雖然在訓練階段的效能不錯，loss function 隨 epoch 下降、accuracy 也隨 epoch 升高，但在驗證階段的表現卻十分不理想，不僅 accuracy 隨 epoch 的增加呈緩降趨勢，loss function 甚至還往上急升。<br />
 </p>
 
 <p>
@@ -1499,10 +1504,10 @@ dict_keys(['binary_accuracy', 'loss', 'val_binary_accuracy', 'val_loss'])
 </p>
 <ul class="org-ul">
 <li>將資料向量化(vectorize_sequences())<br /></li>
-<li>加入了兩層 layer 以及 dropout 層，其架構如圖<a href="#org45a32c9">22</a><br /></li>
+<li>加入了兩層 layer 以及 dropout 層，其架構如圖<a href="#orga9ed1cd">22</a><br /></li>
 </ul>
 
-<div id="org45a32c9" class="figure">
+<div id="orga9ed1cd" class="figure">
 <p><img src="images/nn3-6-2.png" alt="nn3-6-2.png" width="300" /><br />
 </p>
 <p><span class="figure-number">Figure 22: </span>IMDB model 架構#2</p>
@@ -1542,7 +1547,7 @@ dict_keys(['binary_accuracy', 'loss', 'val_binary_accuracy', 'val_loss'])
 <span class="linenr">31: </span>model.<span style="color: #c678dd;">compile</span>(optimizer=opt, loss=<span style="color: #98be65;">'binary_crossentropy'</span>,
 <span class="linenr">32: </span>              metrics=[metrics.binary_accuracy])
 <span class="linenr">33: </span>
-<span class="linenr">34: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39511;&#35657;&#25976;&#25818;&#38598;</span>
+<span class="linenr">34: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39511;&#35657;&#36039;&#26009;&#38598;</span>
 <span class="linenr">35: </span><span style="color: #dcaeea;">x_val</span> = x_train[:<span style="color: #da8548; font-weight: bold;">10000</span>] <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21069;10000&#20491;&#36039;&#26009;&#28858;&#39511;&#35657;&#38598;</span>
 <span class="linenr">36: </span><span style="color: #dcaeea;">partial_x_train</span> = x_train[<span style="color: #da8548; font-weight: bold;">10000</span>:] <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31532;10000&#20491;&#20197;&#24460;&#28858;&#35347;&#32244;&#38598;</span>
 <span class="linenr">37: </span><span style="color: #dcaeea;">y_val</span> = y_train[:<span style="color: #da8548; font-weight: bold;">10000</span>]
@@ -1607,28 +1612,28 @@ dict_keys(['binary_accuracy', 'loss', 'val_binary_accuracy', 'val_loss'])
 
 
 
-<div id="org1071815" class="figure">
+<div id="org815d28f" class="figure">
 <p><img src="images/imdb-Keras-1.png" alt="imdb-Keras-1.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 23: </span>IMDB-Keras-1</p>
 </div>
 
 
-<div id="org3f01141" class="figure">
+<div id="orge9a6eae" class="figure">
 <p><img src="images/imdb-Keras-2.png" alt="imdb-Keras-2.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 24: </span>IMDB-Keras-2</p>
 </div>
 
 
-<div id="org0e63834" class="figure">
+<div id="org5d92579" class="figure">
 <p><img src="images/imdb-Keras-3.png" alt="imdb-Keras-3.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 25: </span>IMDB-Keras-3</p>
 </div>
 
 
-<div id="org68ac99f" class="figure">
+<div id="org1fc7d08" class="figure">
 <p><img src="images/imdb-Keras-4.png" alt="imdb-Keras-4.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 26: </span>IMDB-Keras-4</p>
@@ -1640,16 +1645,110 @@ dict_keys(['binary_accuracy', 'loss', 'val_binary_accuracy', 'val_loss'])
 </div>
 </div>
 </div>
-<div id="outline-container-orgd8d32ae" class="outline-3">
-<h3 id="orgd8d32ae"><span class="section-number-3">3.2.</span> 多類別分類：數位新聞</h3>
+<div id="outline-container-org4d125ed" class="outline-3">
+<h3 id="org4d125ed"><span class="section-number-3">3.2.</span> 資料分割: IRIS / K-Fold Cross Validation</h3>
 <div class="outline-text-3" id="text-3-2">
+</div>
+<div id="outline-container-org32f8954" class="outline-4">
+<h4 id="org32f8954"><span class="section-number-4">3.2.1.</span> GridSearchCV</h4>
+<div class="outline-text-4" id="text-3-2-1">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 2: </span><span style="color: #51afef;">import</span> tensorflow <span style="color: #51afef;">as</span> tf
+<span class="linenr"> 3: </span><span style="color: #51afef;">from</span> sklearn.datasets <span style="color: #51afef;">import</span> load_iris
+<span class="linenr"> 4: </span><span style="color: #51afef;">from</span> sklearn.preprocessing <span style="color: #51afef;">import</span> StandardScaler
+<span class="linenr"> 5: </span><span style="color: #51afef;">from</span> sklearn.model_selection <span style="color: #51afef;">import</span> train_test_split, GridSearchCV
+<span class="linenr"> 6: </span><span style="color: #51afef;">from</span> sklearn.metrics <span style="color: #51afef;">import</span> classification_report, accuracy_score
+<span class="linenr"> 7: </span><span style="color: #51afef;">from</span> tensorflow <span style="color: #51afef;">import</span> keras
+<span class="linenr"> 8: </span><span style="color: #51afef;">from</span> tensorflow.keras.models <span style="color: #51afef;">import</span> Sequential
+<span class="linenr"> 9: </span><span style="color: #51afef;">from</span> tensorflow.keras.layers <span style="color: #51afef;">import</span> Dense
+<span class="linenr">10: </span><span style="color: #51afef;">from</span> scikeras.wrappers <span style="color: #51afef;">import</span> KerasClassifier
+<span class="linenr">11: </span>
+<span class="linenr">12: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36617;&#20837;IRIS&#36039;&#26009;&#38598;</span>
+<span class="linenr">13: </span><span style="color: #dcaeea;">iris</span> = load_iris()
+<span class="linenr">14: </span><span style="color: #dcaeea;">x</span>, <span style="color: #dcaeea;">y</span> = iris.data, iris.target
+<span class="linenr">15: </span>
+<span class="linenr">16: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36039;&#26009;&#27161;&#28310;&#21270;</span>
+<span class="linenr">17: </span><span style="color: #dcaeea;">scaler</span> = StandardScaler()
+<span class="linenr">18: </span><span style="color: #dcaeea;">x</span> = scaler.fit_transform(x)
+<span class="linenr">19: </span>
+<span class="linenr">20: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20998;&#21106;&#36039;&#26009;&#38598;&#28858;&#35347;&#32244;&#38598;&#21644;&#28204;&#35430;&#38598;</span>
+<span class="linenr">21: </span><span style="color: #dcaeea;">x_train</span>, <span style="color: #dcaeea;">x_test</span>, <span style="color: #dcaeea;">y_train</span>, <span style="color: #dcaeea;">y_test</span> = train_test_split(
+<span class="linenr">22: </span>    x, y, test_size=<span style="color: #da8548; font-weight: bold;">0.2</span>, random_state=<span style="color: #da8548; font-weight: bold;">9527</span>
+<span class="linenr">23: </span>)
+<span class="linenr">24: </span>
+<span class="linenr">25: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;&#31435;&#27169;&#22411;&#30340;&#20989;&#25976; (&#29992;&#26044; KerasClassifier)</span>
+<span class="linenr">26: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">create_model</span>(optimizer=<span style="color: #98be65;">'adam'</span>, activation=<span style="color: #98be65;">'relu'</span>):
+<span class="linenr">27: </span>    <span style="color: #dcaeea;">model</span> = Sequential()
+<span class="linenr">28: </span>    model.add(Dense(<span style="color: #da8548; font-weight: bold;">16</span>, input_dim=<span style="color: #da8548; font-weight: bold;">4</span>, activation=activation))
+<span class="linenr">29: </span>    model.add(Dense(<span style="color: #da8548; font-weight: bold;">8</span>, activation=activation))
+<span class="linenr">30: </span>    model.add(Dense(<span style="color: #da8548; font-weight: bold;">3</span>, activation=<span style="color: #98be65;">'softmax'</span>))
+<span class="linenr">31: </span>
+<span class="linenr">32: </span>    model.<span style="color: #c678dd;">compile</span>(optimizer=optimizer,
+<span class="linenr">33: </span>                  loss=<span style="color: #98be65;">'sparse_categorical_crossentropy'</span>,
+<span class="linenr">34: </span>                  metrics=[<span style="color: #98be65;">'accuracy'</span>])
+<span class="linenr">35: </span>    <span style="color: #51afef;">return</span> model
+<span class="linenr">36: </span>
+<span class="linenr">37: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20351;&#29992; scikeras &#30340; KerasClassifier</span>
+<span class="linenr">38: </span><span style="color: #dcaeea;">model</span> = KerasClassifier(model=create_model, verbose=<span style="color: #da8548; font-weight: bold;">0</span>)
+<span class="linenr">39: </span>
+<span class="linenr">40: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35373;&#23450;&#21443;&#25976;&#32178;&#26684; (&#38656;&#21152;&#19978; model__ &#21069;&#32180;)</span>
+<span class="linenr">41: </span><span style="color: #dcaeea;">param_grid</span> = {
+<span class="linenr">42: </span>    <span style="color: #98be65;">'batch_size'</span>: [<span style="color: #da8548; font-weight: bold;">10</span>, <span style="color: #da8548; font-weight: bold;">20</span>, <span style="color: #da8548; font-weight: bold;">32</span>],
+<span class="linenr">43: </span>    <span style="color: #98be65;">'epochs'</span>: [<span style="color: #da8548; font-weight: bold;">50</span>, <span style="color: #da8548; font-weight: bold;">100</span>],
+<span class="linenr">44: </span>    <span style="color: #98be65;">'model__optimizer'</span>: [<span style="color: #98be65;">'adam'</span>, <span style="color: #98be65;">'sgd'</span>],
+<span class="linenr">45: </span>    <span style="color: #98be65;">'model__activation'</span>: [<span style="color: #98be65;">'relu'</span>, <span style="color: #98be65;">'tanh'</span>]
+<span class="linenr">46: </span>}
+<span class="linenr">47: </span>
+<span class="linenr">48: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;&#31435; GridSearchCV &#29289;&#20214;</span>
+<span class="linenr">49: </span><span style="color: #dcaeea;">grid</span> = GridSearchCV(estimator=model,
+<span class="linenr">50: </span>                    param_grid=param_grid,
+<span class="linenr">51: </span>                    cv=<span style="color: #da8548; font-weight: bold;">5</span>,
+<span class="linenr">52: </span>                    n_jobs=-<span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr">53: </span>
+<span class="linenr">54: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#22519;&#34892;&#21443;&#25976;&#25628;&#23563;</span>
+<span class="linenr">55: </span><span style="color: #dcaeea;">grid_result</span> = grid.fit(x_train, y_train)
+<span class="linenr">56: </span>
+<span class="linenr">57: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36664;&#20986;&#26368;&#20339;&#21443;&#25976;&#21450;&#26368;&#20339;&#20998;&#25976;</span>
+<span class="linenr">58: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#26368;&#20339;&#21443;&#25976;: </span>{grid_result.best_params_}<span style="color: #98be65;">"</span>)
+<span class="linenr">59: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#26368;&#20339;&#39511;&#35657;&#28310;&#30906;&#24230;: </span>{grid_result.best_score_:.4f}<span style="color: #98be65;">"</span>)
+<span class="linenr">60: </span>
+<span class="linenr">61: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20197;&#26368;&#20339;&#27169;&#22411;&#22312;&#28204;&#35430;&#38598;&#19978;&#35413;&#20272;&#25928;&#26524;</span>
+<span class="linenr">62: </span><span style="color: #dcaeea;">best_model</span> = grid_result.best_estimator_
+<span class="linenr">63: </span><span style="color: #dcaeea;">y_pred</span> = best_model.predict(x_test)
+<span class="linenr">64: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#28204;&#35430;&#38598;&#28310;&#30906;&#24230;: </span>{accuracy_score(y_test, y_pred):.4f}<span style="color: #98be65;">"</span>)
+<span class="linenr">65: </span><span style="color: #c678dd;">print</span>(classification_report(y_test, y_pred))
+</pre>
+</div>
+
+
+<pre class="example" id="org009f01d">
+最佳參數: {'batch_size': 10, 'epochs': 100, 'model__activation': 'tanh', 'model__optimizer': 'adam'}
+最佳驗證準確度: 0.9583
+測試集準確度: 1.0000
+              precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00        13
+           1       1.00      1.00      1.00         6
+           2       1.00      1.00      1.00        11
+
+    accuracy                           1.00        30
+   macro avg       1.00      1.00      1.00        30
+weighted avg       1.00      1.00      1.00        30
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org2be627d" class="outline-3">
+<h3 id="org2be627d"><span class="section-number-3">3.3.</span> 多類別分類：數位新聞</h3>
+<div class="outline-text-3" id="text-3-3">
 <p>
 目標：將路透社(Reuters)的數位新聞專欄分成 46 個主題，這屬於多類別分類(multiclass classification)問題，每個資料點只會被歸入一個類別；如果每個資料點可能屬於多個類別，則屬於多標籤多類別(multilabel multiclass classification)問題。<br />
 </p>
 </div>
-<div id="outline-container-org8f94139" class="outline-4">
-<h4 id="org8f94139"><span class="section-number-4">3.2.1.</span> 資料集</h4>
-<div class="outline-text-4" id="text-3-2-1">
+<div id="outline-container-org32e41c2" class="outline-4">
+<h4 id="org32e41c2"><span class="section-number-4">3.3.1.</span> 資料集</h4>
+<div class="outline-text-4" id="text-3-3-1">
 <p>
 和 MNIST、IMDB 一樣，這組由 Reuters 在 1986 年發布的簡短新聞主題資料集也內建在 Keras 中，這個資料集總共分為 46 個不同主題。<br />
 </p>
@@ -1718,9 +1817,9 @@ dict_keys(['binary_accuracy', 'loss', 'val_binary_accuracy', 'val_loss'])
 </pre>
 </div>
 </div>
-<div id="outline-container-orgecab5cd" class="outline-4">
-<h4 id="orgecab5cd"><span class="section-number-4">3.2.2.</span> 建立神經網路模型</h4>
-<div class="outline-text-4" id="text-3-2-2">
+<div id="outline-container-orga703b56" class="outline-4">
+<h4 id="orga703b56"><span class="section-number-4">3.3.2.</span> 建立神經網路模型</h4>
+<div class="outline-text-4" id="text-3-3-2">
 <p>
 此次面臨的問題不似 IMDB 只分成兩類，而是共有 46 類，若每個 Dense layer 仍只使用16個維度，可能無法學會區分 46 個不同類別，故有需要將維度增加：<br />
 </p>
@@ -1751,9 +1850,9 @@ dict_keys(['binary_accuracy', 'loss', 'val_binary_accuracy', 'val_loss'])
 </p>
 </div>
 </div>
-<div id="outline-container-orgea4aa43" class="outline-4">
-<h4 id="orgea4aa43"><span class="section-number-4">3.2.3.</span> 驗證數據集</h4>
-<div class="outline-text-4" id="text-3-2-3">
+<div id="outline-container-orgbed31f0" class="outline-4">
+<h4 id="orgbed31f0"><span class="section-number-4">3.3.3.</span> 驗證資料集</h4>
+<div class="outline-text-4" id="text-3-3-3">
 <p>
 由訓練集抽出 1000 個樣本來驗證：<br />
 </p>
@@ -1767,9 +1866,9 @@ dict_keys(['binary_accuracy', 'loss', 'val_binary_accuracy', 'val_loss'])
 </div>
 </div>
 </div>
-<div id="outline-container-org3166d92" class="outline-4">
-<h4 id="org3166d92"><span class="section-number-4">3.2.4.</span> 訓練模型</h4>
-<div class="outline-text-4" id="text-3-2-4">
+<div id="outline-container-orgc579119" class="outline-4">
+<h4 id="orgc579119"><span class="section-number-4">3.3.4.</span> 訓練模型</h4>
+<div class="outline-text-4" id="text-3-3-4">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">history</span> = model.fit(partial_x_train,
 <span class="linenr">2: </span>                    partial_y_train,
@@ -1787,9 +1886,9 @@ dict_keys(['accuracy', 'loss', 'val_accuracy', 'val_loss'])
 </pre>
 </div>
 </div>
-<div id="outline-container-org0fae44c" class="outline-4">
-<h4 id="org0fae44c"><span class="section-number-4">3.2.5.</span> 評估模型</h4>
-<div class="outline-text-4" id="text-3-2-5">
+<div id="outline-container-orgf50b289" class="outline-4">
+<h4 id="orgf50b289"><span class="section-number-4">3.3.5.</span> 評估模型</h4>
+<div class="outline-text-4" id="text-3-3-5">
 <p>
 程式第<a href="#coderef-modelEvaluate" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-modelEvaluate');" onmouseout="CodeHighlightOff(this, 'coderef-modelEvaluate');">6</a>行的model.evaluate()會傳回兩個結果:<br />
 </p>
@@ -1816,7 +1915,7 @@ dict_keys(['accuracy', 'loss', 'val_accuracy', 'val_loss'])
 </pre>
 </div>
 
-<pre class="example" id="org941c92f">
+<pre class="example" id="orga1fad50">
 loss: [3.0026934146881104, 1.6911225318908691, 1.232879877090454, 0.995611846446991, 0.8247262835502625, 0.6870928406715393, 0.5740740299224854, 0.4755861163139343, 0.4013058543205261]
 accuracy: [0.47619643807411194, 0.6736406683921814, 0.7411676049232483, 0.7872713804244995, 0.8251065015792847, 0.8561763763427734, 0.8801052570343018, 0.9030318260192871, 0.9189426302909851]
 val_accuracy: [0.6200000047683716, 0.6959999799728394, 0.7379999756813049, 0.765999972820282, 0.7929999828338623, 0.8069999814033508, 0.8130000233650208, 0.8069999814033508, 0.8130000233650208]
@@ -1843,9 +1942,9 @@ val_accuracy: [0.6200000047683716, 0.6959999799728394, 0.7379999756813049, 0.765
 </p>
 </div>
 </div>
-<div id="outline-container-org68588e9" class="outline-4">
-<h4 id="org68588e9"><span class="section-number-4">3.2.6.</span> 評估結果視覺化</h4>
-<div class="outline-text-4" id="text-3-2-6">
+<div id="outline-container-org50755bb" class="outline-4">
+<h4 id="org50755bb"><span class="section-number-4">3.3.6.</span> 評估結果視覺化</h4>
+<div class="outline-text-4" id="text-3-3-6">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#30059;&#22294;</span>
 <span class="linenr"> 2: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
@@ -1885,23 +1984,23 @@ val_accuracy: [0.6200000047683716, 0.6959999799728394, 0.7379999756813049, 0.765
 </div>
 
 
-<div id="org1e5be65" class="figure">
+<div id="orgc0cfa2b" class="figure">
 <p><img src="images/reuters-1.png" alt="reuters-1.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 27: </span>Reuters-1</p>
 </div>
 
 
-<div id="org6a280b5" class="figure">
+<div id="orgd2d4ea3" class="figure">
 <p><img src="images/reuters-2.png" alt="reuters-2.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 28: </span>Reuters-2</p>
 </div>
 </div>
 </div>
-<div id="outline-container-orga8bd4eb" class="outline-4">
-<h4 id="orga8bd4eb"><span class="section-number-4">3.2.7.</span> 優化 model</h4>
-<div class="outline-text-4" id="text-3-2-7">
+<div id="outline-container-orgb5ac882" class="outline-4">
+<h4 id="orgb5ac882"><span class="section-number-4">3.3.7.</span> 優化 model</h4>
+<div class="outline-text-4" id="text-3-3-7">
 <p>
 上例中的中間層若將神經元數(維度)降到 4，則其驗證準確率會降至 71%，主要原因是因為這樣會壓縮大量資訊到一個低維度的中間層表示空間，雖然神經網路能將大部份必要的資訊塞進這 4 維表示法中，但仍顯不足。若再提升維度、增加層數、加入 Dropout，結果似乎沒有顯著改善，為什麼？<br />
 </p>
@@ -1980,7 +2079,7 @@ val_accuracy: [0.6200000047683716, 0.6959999799728394, 0.7379999756813049, 0.765
 </pre>
 </div>
 
-<pre class="example" id="orgd52df05">
+<pre class="example" id="org9e337b3">
 /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/keras/src/layers/core/dense.py:85: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
   super().__init__(activity_regularizer=activity_regularizer, **kwargs)
 dict_keys(['accuracy', 'loss', 'val_accuracy', 'val_loss'])
@@ -2006,28 +2105,28 @@ dict_keys(['accuracy', 'loss', 'val_accuracy', 'val_loss'])
 </pre>
 
 
-<div id="org74c3914" class="figure">
+<div id="org58e6bef" class="figure">
 <p><img src="images/reuters-1.png" alt="reuters-1.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 29: </span>Rueter-1</p>
 </div>
 
 
-<div id="orgf2f38e5" class="figure">
+<div id="org01d0911" class="figure">
 <p><img src="images/reuters-2.png" alt="reuters-2.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 30: </span>Rueter-2</p>
 </div>
 
 
-<div id="orgc80b62f" class="figure">
+<div id="orga741364" class="figure">
 <p><img src="images/reuters-3.png" alt="reuters-3.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 31: </span>Rueter-3</p>
 </div>
 
 
-<div id="orgb344745" class="figure">
+<div id="org13ead3f" class="figure">
 <p><img src="images/reuters-4.png" alt="reuters-4.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 32: </span>Rueter-4</p>
@@ -2035,13 +2134,13 @@ dict_keys(['accuracy', 'loss', 'val_accuracy', 'val_loss'])
 </div>
 </div>
 </div>
-<div id="outline-container-org7360769" class="outline-3">
-<h3 id="org7360769"><span class="section-number-3">3.3.</span> 迴歸問題：預測房價</h3>
-<div class="outline-text-3" id="text-3-3">
+<div id="outline-container-orgfbbeaa5" class="outline-3">
+<h3 id="orgfbbeaa5"><span class="section-number-3">3.4.</span> 迴歸問題：預測房價</h3>
+<div class="outline-text-3" id="text-3-4">
 </div>
-<div id="outline-container-orgf41d406" class="outline-4">
-<h4 id="orgf41d406"><span class="section-number-4">3.3.1.</span> 準備資料</h4>
-<div class="outline-text-4" id="text-3-3-1">
+<div id="outline-container-org5af199c" class="outline-4">
+<h4 id="org5af199c"><span class="section-number-4">3.4.1.</span> 準備資料</h4>
+<div class="outline-text-4" id="text-3-4-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">from</span> keras.datasets <span style="color: #51afef;">import</span> boston_housing
 <span class="linenr">2: </span>
@@ -2057,9 +2156,9 @@ dict_keys(['accuracy', 'loss', 'val_accuracy', 'val_loss'])
 (102, 13)
 </pre>
 </div>
-<div id="outline-container-orgb728fc5" class="outline-5">
-<h5 id="orgb728fc5"><span class="section-number-5">3.3.1.1.</span> 資料集標準化</h5>
-<div class="outline-text-5" id="text-3-3-1-1">
+<div id="outline-container-org1774460" class="outline-5">
+<h5 id="org1774460"><span class="section-number-5">3.4.1.1.</span> 資料集標準化</h5>
+<div class="outline-text-5" id="text-3-4-1-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">mean</span> = train_data.mean(axis=<span style="color: #da8548; font-weight: bold;">0</span>)
 <span class="linenr">2: </span><span style="color: #dcaeea;">train_data</span> -= mean
@@ -2073,9 +2172,9 @@ dict_keys(['accuracy', 'loss', 'val_accuracy', 'val_loss'])
 </div>
 </div>
 </div>
-<div id="outline-container-orga924476" class="outline-4">
-<h4 id="orga924476"><span class="section-number-4">3.3.2.</span> 建立神經網路</h4>
-<div class="outline-text-4" id="text-3-3-2">
+<div id="outline-container-org28d793d" class="outline-4">
+<h4 id="org28d793d"><span class="section-number-4">3.4.2.</span> 建立神經網路</h4>
+<div class="outline-text-4" id="text-3-4-2">
 <p>
 由於可用的樣本很少，所以使用一個較小的神經網路，一般來說，訓練資料集越少，過度配適的情況會越嚴重。<br />
 </p>
@@ -2103,15 +2202,15 @@ dict_keys(['accuracy', 'loss', 'val_accuracy', 'val_loss'])
 </p>
 </div>
 </div>
-<div id="outline-container-orgad1bdf5" class="outline-4">
-<h4 id="orgad1bdf5"><span class="section-number-4">3.3.3.</span> 驗證</h4>
-<div class="outline-text-4" id="text-3-3-3">
+<div id="outline-container-org4ac30f5" class="outline-4">
+<h4 id="org4ac30f5"><span class="section-number-4">3.4.3.</span> 驗證</h4>
+<div class="outline-text-4" id="text-3-4-3">
 <p>
-本例中由於資料點少，驗證集也只有 100 筆資料，故驗證分數可能會因驗證資料點或訓練資料點的選用而有很大的變化，因而阻礙評估 model 優劣的可靠性。在這種情況下，最好的方式是選用 K-fold corss validation，做法如圖<a href="#org02950b5">33</a>，原理是將資料拆分為 K 個區域(通常 K=4 或 5)，每次取一個區域做為驗證資料集，最後求 K 次驗證分數的平均值。<br />
+本例中由於資料點少，驗證集也只有 100 筆資料，故驗證分數可能會因驗證資料點或訓練資料點的選用而有很大的變化，因而阻礙評估 model 優劣的可靠性。在這種情況下，最好的方式是選用 K-fold corss validation，做法如圖<a href="#orgfdd9052">33</a>，原理是將資料拆分為 K 個區域(通常 K=4 或 5)，每次取一個區域做為驗證資料集，最後求 K 次驗證分數的平均值。<br />
 </p>
 
 
-<div id="org02950b5" class="figure">
+<div id="orgfdd9052" class="figure">
 <p><img src="images/k-fold-validation.png" alt="k-fold-validation.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 33: </span>K-fold 交叉驗證</p>
@@ -2158,9 +2257,9 @@ processing fold # 3
 </pre>
 </div>
 </div>
-<div id="outline-container-orgf6dc938" class="outline-4">
-<h4 id="orgf6dc938"><span class="section-number-4">3.3.4.</span> 查看結果</h4>
-<div class="outline-text-4" id="text-3-3-4">
+<div id="outline-container-org8cb2787" class="outline-4">
+<h4 id="org8cb2787"><span class="section-number-4">3.4.4.</span> 查看結果</h4>
+<div class="outline-text-4" id="text-3-4-4">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #c678dd;">print</span>(all_scores)
 <span class="linenr">2: </span><span style="color: #c678dd;">print</span>(np.mean(all_scores))
@@ -2188,9 +2287,9 @@ processing fold # 3
 </pre>
 </div>
 </div>
-<div id="outline-container-orgbfbfbbd" class="outline-5">
-<h5 id="orgbfbfbbd"><span class="section-number-5">3.3.4.1.</span> 評估結果視覺化</h5>
-<div class="outline-text-5" id="text-3-3-4-1">
+<div id="outline-container-org18393e8" class="outline-5">
+<h5 id="org18393e8"><span class="section-number-5">3.4.4.1.</span> 評估結果視覺化</h5>
+<div class="outline-text-5" id="text-3-4-4-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">Some memory clean-up</span>
 <span class="linenr"> 2: </span><span style="color: #dcaeea;">k</span> = <span style="color: #da8548; font-weight: bold;">4</span>
@@ -2259,14 +2358,14 @@ processing fold # 3
 
 
 
-<div id="org46be68e" class="figure">
+<div id="orge057be3" class="figure">
 <p><img src="images/Boston-House-Price.png" alt="Boston-House-Price.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 34: </span>Boston House Price Training MAE</p>
 </div>
 
 <p>
-圖<a href="#org46be68e">34</a>是由每一訓練週期的平均 MAE 分數所繪出的折線圖，由於單位刻度與 y 軸刻度問題，此圖失去了部份重要細節，經由下列方式進行修正：<br />
+圖<a href="#orge057be3">34</a>是由每一訓練週期的平均 MAE 分數所繪出的折線圖，由於單位刻度與 y 軸刻度問題，此圖失去了部份重要細節，經由下列方式進行修正：<br />
 </p>
 <ul class="org-ul">
 <li>省略前 10 個資料點，<br /></li>
@@ -2289,7 +2388,7 @@ EMA 的數學函式如下：<br />
 </ul>
 
 <p>
-為什麼前例中前 10 筆數據的與其他數據差異如此巨大？我們以前 10 天的資料(一天一筆)來看，第 10 天的 EMA 為：<br />
+為什麼前例中前 10 筆資料的與其他資料差異如此巨大？我們以前 10 天的資料(一天一筆)來看，第 10 天的 EMA 為：<br />
 \( E_{10} = aV_{10} + (1-a)E_9 \)<br />
 展開第 9 天的\(E_9\)後<br />
 \( E_{10} = aV_{10} + (1-a)[aV_9 + (1-a)E_8] \)<br />
@@ -2301,21 +2400,21 @@ EMA 的數學函式如下：<br />
 </p>
 
 
-<div id="orgb4e5844" class="figure">
+<div id="org7754281" class="figure">
 <p><img src="images/Boston-House-Price-ex10.png" alt="Boston-House-Price-ex10.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 35: </span>Boston House Price Training MAE (排除前 10 個資料點)</p>
 </div>
 
 <p>
-由圖<a href="#orgb4e5844">35</a>是可看出 MAE 在 80 個週期後已停止改善，然後開始往上升，即，過了這點就開始發生過度適配的情況。<br />
+由圖<a href="#org7754281">35</a>是可看出 MAE 在 80 個週期後已停止改善，然後開始往上升，即，過了這點就開始發生過度適配的情況。<br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgddc505d" class="outline-4">
-<h4 id="orgddc505d"><span class="section-number-4">3.3.5.</span> 小結</h4>
-<div class="outline-text-4" id="text-3-3-5">
+<div id="outline-container-orgf47fe00" class="outline-4">
+<h4 id="orgf47fe00"><span class="section-number-4">3.4.5.</span> 小結</h4>
+<div class="outline-text-4" id="text-3-4-5">
 <p>
 由此範例可知：<br />
 </p>
@@ -2328,16 +2427,16 @@ EMA 的數學函式如下：<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org9350d08" class="outline-3">
-<h3 id="org9350d08"><span class="section-number-3">3.4.</span> 圖片識別: MNIST</h3>
-<div class="outline-text-3" id="text-3-4">
+<div id="outline-container-org3e6e2f5" class="outline-3">
+<h3 id="org3e6e2f5"><span class="section-number-3">3.5.</span> 圖片識別: MNIST</h3>
+<div class="outline-text-3" id="text-3-5">
 <p>
 此處以最簡單的 NN (Neural Network) 作為範例。以 Keras 的核心為模型，應用最常使用 Sequential 模型。藉由.add()我們可以一層一層的將神經網路疊起。在每一層之中我們只需要簡單的設定每層的大小(units)與激勵函數(activation function)。需要特別記得的是：第一層要記得寫輸入的向量大小、最後一層的 units 要等於輸出的向量大小。在這邊我們最後一層使用的激活函數(activation function)為 softmax。<br />
 </p>
 </div>
-<div id="outline-container-orgf7a420b" class="outline-4">
-<h4 id="orgf7a420b"><span class="section-number-4">3.4.1.</span> Import Library</h4>
-<div class="outline-text-4" id="text-3-4-1">
+<div id="outline-container-org2ba6e6e" class="outline-4">
+<h4 id="org2ba6e6e"><span class="section-number-4">3.5.1.</span> Import Library</h4>
+<div class="outline-text-4" id="text-3-5-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">from</span> keras.datasets <span style="color: #51afef;">import</span> mnist
 <span class="linenr"> 2: </span><span style="color: #51afef;">from</span> tensorflow.keras.utils <span style="color: #51afef;">import</span> to_categorical
@@ -2356,9 +2455,9 @@ EMA 的數學函式如下：<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org3fe6c46" class="outline-4">
-<h4 id="org3fe6c46"><span class="section-number-4">3.4.2.</span> 建立模型</h4>
-<div class="outline-text-4" id="text-3-4-2">
+<div id="outline-container-org7fb0d3a" class="outline-4">
+<h4 id="org7fb0d3a"><span class="section-number-4">3.5.2.</span> 建立模型</h4>
+<div class="outline-text-4" id="text-3-5-2">
 <ul class="org-ul">
 <li>Keras的模型有Sequential與Model兩類<br /></li>
 <li>決定好要設計的模型類別，還要決定模型裡的layer如何叠力，layer有許多選擇，例如<a href="https://keras.io/api/layers/">Layer</a>的種類就有Dense layer, Activation layer, Conv1D layer, Dropout layer&#x2026;..<br /></li>
@@ -2379,7 +2478,7 @@ EMA 的數學函式如下：<br />
 </pre>
 </div>
 
-<pre class="example" id="org9a5ccc5">
+<pre class="example" id="org7f66dc7">
 /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/keras/src/layers/core/dense.py:85: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
   super().__init__(activity_regularizer=activity_regularizer, **kwargs)
 Model: "sequential"
@@ -2406,9 +2505,9 @@ Model: "sequential"
 </p>
 </div>
 </div>
-<div id="outline-container-orge4a1a63" class="outline-4">
-<h4 id="orge4a1a63"><span class="section-number-4">3.4.3.</span> 訓練模型</h4>
-<div class="outline-text-4" id="text-3-4-3">
+<div id="outline-container-orgbba1077" class="outline-4">
+<h4 id="orgbba1077"><span class="section-number-4">3.5.3.</span> 訓練模型</h4>
+<div class="outline-text-4" id="text-3-5-3">
 <p>
 訓練模型時要決定使用何種loss function、使用何種optimizer，可以到官網(<a href="https://keras.io/api/models/model_training_apis/">Model training APIs</a>)查看有哪些選項可使用以及何種選項適合哪些類型的資料集與問題。<br />
 </p>
@@ -2422,7 +2521,7 @@ Model: "sequential"
 </pre>
 </div>
 
-<pre class="example" id="org9f43514">
+<pre class="example" id="org20b3415">
 Epoch 1/50
 48/48 - 1s - 27ms/step - accuracy: 0.9686 - loss: 0.1297 - val_accuracy: 0.9424 - val_loss: 0.4813
 ...略...
@@ -2431,9 +2530,9 @@ Epoch 50/50
 </pre>
 </div>
 </div>
-<div id="outline-container-org209b8e9" class="outline-4">
-<h4 id="org209b8e9"><span class="section-number-4">3.4.4.</span> 查看訓練過程</h4>
-<div class="outline-text-4" id="text-3-4-4">
+<div id="outline-container-orga612f52" class="outline-4">
+<h4 id="orga612f52"><span class="section-number-4">3.5.4.</span> 查看訓練過程</h4>
+<div class="outline-text-4" id="text-3-5-4">
 <p>
 看一下history的結構<br />
 </p>
@@ -2469,23 +2568,23 @@ dict_keys(['accuracy', 'loss', 'val_accuracy', 'val_loss'])
 訓練完就可以透過accuracy與loss來評估模型的效能，可以粗略看出隨著epoch的增加，精確度也隨之提升、loss則隨之下降。<br />
 </p>
 
-<div id="org63bd28c" class="figure">
+<div id="org7b82ccb" class="figure">
 <p><img src="images/mnist-acc-val.png" alt="mnist-acc-val.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 36: </span>Accuracy</p>
 </div>
 
 
-<div id="orgb3a5de5" class="figure">
+<div id="org2f18a91" class="figure">
 <p><img src="images/mnist-loss-val.png" alt="mnist-loss-val.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 37: </span>Loss</p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgb917c42" class="outline-4">
-<h4 id="orgb917c42"><span class="section-number-4">3.4.5.</span> 評估模型準確率</h4>
-<div class="outline-text-4" id="text-3-4-5">
+<div id="outline-container-orgc2e876e" class="outline-4">
+<h4 id="orgc2e876e"><span class="section-number-4">3.5.5.</span> 評估模型準確率</h4>
+<div class="outline-text-4" id="text-3-5-5">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">score</span> = model.evaluate(X_train, Y_train, batch_size = <span style="color: #da8548; font-weight: bold;">200</span>)
 <span class="linenr">2: </span><span style="color: #c678dd;">print</span> (<span style="color: #98be65;">'</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">Train Acc:'</span>, score[<span style="color: #da8548; font-weight: bold;">1</span>])
@@ -2504,9 +2603,9 @@ Test Acc: 0.9627000093460083
 </pre>
 </div>
 </div>
-<div id="outline-container-org58ae436" class="outline-4">
-<h4 id="org58ae436"><span class="section-number-4">3.4.6.</span> 實際預測結果</h4>
-<div class="outline-text-4" id="text-3-4-6">
+<div id="outline-container-orgeed849e" class="outline-4">
+<h4 id="orgeed849e"><span class="section-number-4">3.5.6.</span> 實際預測結果</h4>
+<div class="outline-text-4" id="text-3-5-6">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">prediction</span>=model.predict(X_test)
 <span class="linenr">2: </span><span style="color: #c678dd;">print</span>(prediction.shape)
@@ -2554,7 +2653,7 @@ Test Acc: 0.9627000093460083
 最後輸出測試資料集的前20筆資料的圖、label以及預測結果<br />
 </p>
 
-<div id="orga8184d3" class="figure">
+<div id="org95c0ffb" class="figure">
 <p><img src="images/mnist-predic-perf.png" alt="mnist-predic-perf.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 38: </span>前20筆測試集預測結果</p>
@@ -2562,13 +2661,13 @@ Test Acc: 0.9627000093460083
 </div>
 </div>
 </div>
-<div id="outline-container-orgb74b81e" class="outline-3">
-<h3 id="orgb74b81e"><span class="section-number-3">3.5.</span> 圖片識別版本2: MNIST</h3>
-<div class="outline-text-3" id="text-3-5">
+<div id="outline-container-orgbe33058" class="outline-3">
+<h3 id="orgbe33058"><span class="section-number-3">3.6.</span> 圖片識別版本2: MNIST</h3>
+<div class="outline-text-3" id="text-3-6">
 </div>
-<div id="outline-container-orgcfcdd43" class="outline-4">
-<h4 id="orgcfcdd43"><span class="section-number-4">3.5.1.</span> 另一版本</h4>
-<div class="outline-text-4" id="text-3-5-1">
+<div id="outline-container-org0807fcb" class="outline-4">
+<h4 id="org0807fcb"><span class="section-number-4">3.6.1.</span> 另一版本</h4>
+<div class="outline-text-4" id="text-3-6-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36617;&#20837;&#36039;&#26009;</span>
 <span class="linenr"> 2: </span><span style="color: #51afef;">from</span> keras.datasets <span style="color: #51afef;">import</span> mnist
@@ -2631,7 +2730,7 @@ Test Acc: 0.9627000093460083
 </pre>
 </div>
 
-<pre class="example" id="org565f254">
+<pre class="example" id="orgb95b6ce">
 Model: "sequential"
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓
 ┃ Layer (type)                    ┃ Output Shape           ┃       Param # ┃
@@ -2744,7 +2843,7 @@ label
 </div></div>
 <div id="postamble" class="status">
 <p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2025-02-16 Sun 19:47</p>
+<p class="date">Created: 2025-02-21 Fri 16:06</p>
 </div>
 </body>
 </html>

@@ -3,13 +3,13 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-11-29 Fri 00:20 -->
+<!-- 2024-12-27 Fri 08:53 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>監督式學習</title>
 <meta name="author" content="Yung-Chin Yen" />
 <meta name="generator" content="Org Mode" />
-<style type="text/css">
+<style>
   #content { max-width: 60em; margin: auto; }
   .title  { text-align: center;
              margin-bottom: .2em; }
@@ -194,6 +194,7 @@
   .org-svg { }
 </style>
 <link rel="stylesheet" type="text/css" href="../css/muse.css" />
+<script src="../css/copy_code.js"></script>
 <script>
   window.MathJax = {
     tex: {
@@ -234,54 +235,54 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org6dca5ef">1. 簡介</a>
+<li><a href="#org77b5298">1. 簡介</a>
 <ul>
-<li><a href="#org19a8075">1.1. 監督式學習的主要類型</a></li>
-<li><a href="#orgeabd75a">1.2. 範例</a></li>
-<li><a href="#org6bc4ed7">1.3. 特例</a></li>
+<li><a href="#orgb32e348">1.1. 監督式學習的主要類型</a></li>
+<li><a href="#orge27475f">1.2. 範例</a></li>
+<li><a href="#org3639077">1.3. 特例</a></li>
 </ul>
 </li>
-<li><a href="#org6938994">2. 監督式學習基本步驟</a></li>
-<li><a href="#orge7f3f8d">3. 監督式學習演算法</a>
+<li><a href="#orge0dacb2">2. 監督式學習基本步驟</a></li>
+<li><a href="#orgdcd4f8a">3. 監督式學習演算法</a>
 <ul>
-<li><a href="#orgfb60f0f">3.1. K-nearest neighbors (KNN)</a></li>
-<li><a href="#org2cbd8b4">3.2. Methods based on tree(Decision tree and Random Forest)</a></li>
-<li><a href="#org455cca4">3.3. Boosting</a></li>
-<li><a href="#org1db777d">3.4. SVM(Support Vector Machines)</a></li>
-<li><a href="#org1fa3b0a">3.5. 神經網路</a></li>
+<li><a href="#org38e43fc">3.1. K-nearest neighbors (KNN)</a></li>
+<li><a href="#org4697449">3.2. Methods based on tree(Decision tree and Random Forest)</a></li>
+<li><a href="#orgb3fd031">3.3. Boosting</a></li>
+<li><a href="#orge263232">3.4. SVM(Support Vector Machines)</a></li>
+<li><a href="#orgb38805c">3.5. 神經網路</a></li>
 </ul>
 </li>
-<li><a href="#org38d6952">4. 監督式學習實作</a></li>
+<li><a href="#org8af92f9">4. 監督式學習實作</a></li>
 </ul>
 </div>
 </div>
 <a href="https://letranger.github.io/AI/20221023101626-監督式學習.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20221023101626-監督式學習.html.svg"/></a>
-<div id="outline-container-org6dca5ef" class="outline-2">
-<h2 id="org6dca5ef"><span class="section-number-2">1.</span> 簡介</h2>
+<div id="outline-container-org77b5298" class="outline-2">
+<h2 id="org77b5298"><span class="section-number-2">1.</span> 簡介</h2>
 <div class="outline-text-2" id="text-1">
 <p>
-監督式學習獲得的結果可以是數值、也可以是類別，以結果分類，我們可以將監督式學分大致分為兩類：<a href="20221023154410-regression.html#ID-6ae7fb7a-0b38-4448-b19f-073d262513f2">迴歸</a>(結果為數值)與<a href="20231204210821-分類.html#ID-1592687a-cca7-4473-83a0-682a36394a28">分類</a>(結果為類別)。
+監督式學習獲得的結果可以是數值、也可以是類別，以結果分類，我們可以將監督式學分大致分為兩類：<a href="../../../../../Dropbox/notes/roam/20221023154410-regression.html#ID-6ae7fb7a-0b38-4448-b19f-073d262513f2">迴歸</a>(結果為數值)與<a href="../../../../../Dropbox/notes/roam/20231204210821-分類.html#ID-1592687a-cca7-4473-83a0-682a36394a28">分類</a>(結果為類別)。
 </p>
 
-<div id="org217097c" class="figure">
+<div id="orgcbd07ae" class="figure">
 <p><img src="images/AI,_Machine_Learning與Deep_Learning/2024-02-19_16-24-48_2024-02-19_16-23-09.png" alt="2024-02-19_16-24-48_2024-02-19_16-23-09.png" width="500" />
 </p>
 <p><span class="figure-number">Figure 1: </span>AI, Machine Learning與Deep Learning</p>
 </div>
 </div>
-<div id="outline-container-org19a8075" class="outline-3">
-<h3 id="org19a8075"><span class="section-number-3">1.1.</span> 監督式學習的主要類型</h3>
+<div id="outline-container-orgb32e348" class="outline-3">
+<h3 id="orgb32e348"><span class="section-number-3">1.1.</span> 監督式學習的主要類型</h3>
 <div class="outline-text-3" id="text-1-1">
 </div>
-<div id="outline-container-org8dda282" class="outline-4">
-<h4 id="org8dda282"><span class="section-number-4">1.1.1.</span> 分類(Cliasification)</h4>
+<div id="outline-container-org50ce24d" class="outline-4">
+<h4 id="org50ce24d"><span class="section-number-4">1.1.1.</span> 分類(Cliasification)</h4>
 <div class="outline-text-4" id="text-1-1-1">
 <p>
 分類問題也稱為離散(discrete)預測問題，因為每個分類都是一個離散群組。In supervised learning, the training set you feed to the algorithm includes the desired solutions, called labels<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>.
 </p>
 
 
-<div id="orgd6c86e5" class="figure">
+<div id="org073728e" class="figure">
 <p><img src="images/2022-04-30_10-38-58.jpg" alt="2022-04-30_10-38-58.jpg" width="500" />
 </p>
 <p><span class="figure-number">Figure 2: </span>典型的監督式學習：垃圾郵件分類</p>
@@ -300,11 +301,11 @@
 </p>
 </div>
 </div>
-<div id="outline-container-orgc28da90" class="outline-4">
-<h4 id="orgc28da90"><span class="section-number-4">1.1.2.</span> 迴歸(Regression)</h4>
+<div id="outline-container-orgd3ed718" class="outline-4">
+<h4 id="orgd3ed718"><span class="section-number-4">1.1.2.</span> 迴歸(Regression)</h4>
 <div class="outline-text-4" id="text-1-1-2">
 <p>
-另一種監督式學習為<a href="20221023154410-regression.html#ID-6ae7fb7a-0b38-4448-b19f-073d262513f2">迴歸</a>（regression），即，根據一組預測特徵（predictor，如里程數、車齡、品牌）來預測目標數值（如二手車車價）<sup><a id="fnr.1.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>，這個目標數值也是label。
+另一種監督式學習為<a href="../../../../../Dropbox/notes/roam/20221023154410-regression.html#ID-6ae7fb7a-0b38-4448-b19f-073d262513f2">迴歸</a>（regression），即，根據一組預測特徵（predictor，如里程數、車齡、品牌）來預測目標數值（如二手車車價）<sup><a id="fnr.1.100" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>，這個目標數值也是label。
 </p>
 
 <p>
@@ -336,28 +337,28 @@
 </div>
 </div>
 </div>
-<div id="outline-container-orgeabd75a" class="outline-3">
-<h3 id="orgeabd75a"><span class="section-number-3">1.2.</span> 範例</h3>
+<div id="outline-container-orge27475f" class="outline-3">
+<h3 id="orge27475f"><span class="section-number-3">1.2.</span> 範例</h3>
 <div class="outline-text-3" id="text-1-2">
 </div>
-<div id="outline-container-orgcca8e20" class="outline-4">
-<h4 id="orgcca8e20"><span class="section-number-4">1.2.1.</span> 信用卡詐欺</h4>
+<div id="outline-container-org2a21fae" class="outline-4">
+<h4 id="org2a21fae"><span class="section-number-4">1.2.1.</span> 信用卡詐欺</h4>
 <div class="outline-text-4" id="text-1-2-1">
 <p>
 以信用卡公司來說，信用卡詐欺可以透過各種資料對照評分，預測出該事件的分數。例如地點：一個平時生活在台灣的用戶忽然在日本刷卡、或一個平時都是白天刷卡消費的用戶忽然在凌晨三點刷卡，這些事件都可以當成評分指標(特徵)，提供模型做為預測是否為信用卡詐欺的預測依據。
 </p>
 </div>
 </div>
-<div id="outline-container-org5b9523e" class="outline-4">
-<h4 id="org5b9523e"><span class="section-number-4">1.2.2.</span> 影像辨識</h4>
+<div id="outline-container-orgcd44945" class="outline-4">
+<h4 id="orgcd44945"><span class="section-number-4">1.2.2.</span> 影像辨識</h4>
 <div class="outline-text-4" id="text-1-2-2">
 <p>
 例如，資料可能是手寫數字的影像，這些影像會加上註解，以指示其所代表的數字。只要有足夠的標記資料，監督式學習系統最終會辨識出與每個手寫數字關聯的像素和形狀類別。機器學習在影像辨識上的精準度目前已可超過人類的水準。
 </p>
 </div>
 </div>
-<div id="outline-container-org70d7314" class="outline-4">
-<h4 id="org70d7314"><span class="section-number-4">1.2.3.</span> 學測成績</h4>
+<div id="outline-container-orgaba7840" class="outline-4">
+<h4 id="orgaba7840"><span class="section-number-4">1.2.3.</span> 學測成績</h4>
 <div class="outline-text-4" id="text-1-2-3">
 <p>
 如果目標是要「預測學生學測總級分」，那麼，我們得先了解有那些因素會影響學生的學測成績，初步估計也許包括以下因素：
@@ -373,10 +374,10 @@
 </ol>
 
 <p>
-此時，我們的預測模型就如圖<a href="#orga8e90ca">3</a>所示
+此時，我們的預測模型就如圖<a href="#orgf8af43b">3</a>所示
 </p>
 
-<div id="orga8e90ca" class="figure">
+<div id="orgf8af43b" class="figure">
 <p><img src="images/exam-network1.png" alt="exam-network1.png" width="500" />
 </p>
 <p><span class="figure-number">Figure 3: </span>學測成績預測模型#1</p>
@@ -468,10 +469,10 @@
 </table>
 
 <p>
-此時，我們的預測模型就如圖<a href="#org4f54f1b">4</a>所示，換言之，是在解一個\(f(x)=x_1*w_1+x_2*w_2+x_3*w_3+...+x_7*w_7\)的函式問題。我們可以先針對這些特徵值對學生進行問卷調查，並追踪學生的學測成績，最後將取得的大量的特徵值輸入到到我們的函數模型（圖<a href="#org4f54f1b">4</a>）中，觀察計算結果與實際資料的吻合程度，藉由不斷的調整參數（權重）來控制函數，讓輸出的計算結果與實際答案完全吻合，以便求得最準確的函數。
+此時，我們的預測模型就如圖<a href="#org9e2d5aa">4</a>所示，換言之，是在解一個\(f(x)=x_1*w_1+x_2*w_2+x_3*w_3+...+x_7*w_7\)的函式問題。我們可以先針對這些特徵值對學生進行問卷調查，並追踪學生的學測成績，最後將取得的大量的特徵值輸入到到我們的函數模型（圖<a href="#org9e2d5aa">4</a>）中，觀察計算結果與實際資料的吻合程度，藉由不斷的調整參數（權重）來控制函數，讓輸出的計算結果與實際答案完全吻合，以便求得最準確的函數。
 </p>
 
-<div id="org4f54f1b" class="figure">
+<div id="org9e2d5aa" class="figure">
 <p><img src="images/exam-network2.png" alt="exam-network2.png" width="500" />
 </p>
 <p><span class="figure-number">Figure 4: </span>學測成績預測模型#2</p>
@@ -483,11 +484,11 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org6bc4ed7" class="outline-3">
-<h3 id="org6bc4ed7"><span class="section-number-3">1.3.</span> 特例</h3>
+<div id="outline-container-org3639077" class="outline-3">
+<h3 id="org3639077"><span class="section-number-3">1.3.</span> 特例</h3>
 <div class="outline-text-3" id="text-1-3">
 <p>
-<a href="20221023101626-監督式學習.html#ID-20221023T101626.420918">監督式學習</a>主要包括<a href="20231204210821-分類.html#ID-1592687a-cca7-4473-83a0-682a36394a28">分類</a>和<a href="20221023154410-regression.html#ID-6ae7fb7a-0b38-4448-b19f-073d262513f2">迴歸</a>，但也包括以下奇特的例子：
+<a href="../../../../../Dropbox/notes/roam/20221023101626-監督式學習.html#ID-20221023T101626.420918">監督式學習</a>主要包括<a href="../../../../../Dropbox/notes/roam/20231204210821-分類.html#ID-1592687a-cca7-4473-83a0-682a36394a28">分類</a>和<a href="../../../../../Dropbox/notes/roam/20221023154410-regression.html#ID-6ae7fb7a-0b38-4448-b19f-073d262513f2">迴歸</a>，但也包括以下奇特的例子：
 </p>
 <ul class="org-ul">
 <li>序列生成(sequence generation)：給定一張圖，產生一個標題來描述該圖片，有時也可以使用一部份連續的資料進行預測。</li>
@@ -510,8 +511,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org6938994" class="outline-2">
-<h2 id="org6938994"><span class="section-number-2">2.</span> 監督式學習基本步驟</h2>
+<div id="outline-container-orge0dacb2" class="outline-2">
+<h2 id="orge0dacb2"><span class="section-number-2">2.</span> 監督式學習基本步驟</h2>
 <div class="outline-text-2" id="text-2">
 <ol class="org-ol">
 <li>準備學習對象的資料</li>
@@ -523,12 +524,12 @@
 </ol>
 </div>
 </div>
-<div id="outline-container-orge7f3f8d" class="outline-2">
-<h2 id="orge7f3f8d"><span class="section-number-2">3.</span> 監督式學習演算法</h2>
+<div id="outline-container-orgdcd4f8a" class="outline-2">
+<h2 id="orgdcd4f8a"><span class="section-number-2">3.</span> 監督式學習演算法</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-orgfb60f0f" class="outline-3">
-<h3 id="orgfb60f0f"><span class="section-number-3">3.1.</span> K-nearest neighbors (KNN)</h3>
+<div id="outline-container-org38e43fc" class="outline-3">
+<h3 id="org38e43fc"><span class="section-number-3">3.1.</span> K-nearest neighbors (KNN)</h3>
 <div class="outline-text-3" id="text-3-1">
 <p>
 KNN藉由找出與新資料點最相近的 <i>k</i> 個已具有label的資料點，讓這些資料點投票決定新資料點的label。
@@ -540,8 +541,8 @@ KNN藉由找出與新資料點最相近的 <i>k</i> 個已具有label的資料�
 </ul>
 </div>
 </div>
-<div id="outline-container-org2cbd8b4" class="outline-3">
-<h3 id="org2cbd8b4"><span class="section-number-3">3.2.</span> Methods based on tree(Decision tree and Random Forest)</h3>
+<div id="outline-container-org4697449" class="outline-3">
+<h3 id="org4697449"><span class="section-number-3">3.2.</span> Methods based on tree(Decision tree and Random Forest)</h3>
 <div class="outline-text-3" id="text-3-2">
 <ul class="org-ul">
 <li>Single decision tree: 遍歷所有訓練資枓來建立規則，但容易過度擬合</li>
@@ -550,8 +551,8 @@ KNN藉由找出與新資料點最相近的 <i>k</i> 個已具有label的資料�
 </ul>
 </div>
 </div>
-<div id="outline-container-org455cca4" class="outline-3">
-<h3 id="org455cca4"><span class="section-number-3">3.3.</span> Boosting</h3>
+<div id="outline-container-orgb3fd031" class="outline-3">
+<h3 id="orgb3fd031"><span class="section-number-3">3.3.</span> Boosting</h3>
 <div class="outline-text-3" id="text-3-3">
 <p>
 同樣是建立許多樹，但是它 <b>依多建立每棵decision tree</b> , 利用前一棵decision所習得的資訊來改善下一棵decision tree的預測結果。是所有tree-based solution中表現最好的方式，也是許多machine learning比賽的常勝軍。
@@ -562,24 +563,24 @@ KNN藉由找出與新資料點最相近的 <i>k</i> 個已具有label的資料�
 </ul>
 </div>
 </div>
-<div id="outline-container-org1db777d" class="outline-3">
-<h3 id="org1db777d"><span class="section-number-3">3.4.</span> SVM(Support Vector Machines)</h3>
+<div id="outline-container-orge263232" class="outline-3">
+<h3 id="orge263232"><span class="section-number-3">3.4.</span> SVM(Support Vector Machines)</h3>
 <div class="outline-text-3" id="text-3-4">
 <p>
 使用演算法和已知的label在空間中建構超平面來分類資料
 </p>
 </div>
 </div>
-<div id="outline-container-org1fa3b0a" class="outline-3">
-<h3 id="org1fa3b0a"><span class="section-number-3">3.5.</span> 神經網路</h3>
+<div id="outline-container-orgb38805c" class="outline-3">
+<h3 id="orgb38805c"><span class="section-number-3">3.5.</span> 神經網路</h3>
 </div>
 </div>
-<div id="outline-container-org38d6952" class="outline-2">
-<h2 id="org38d6952"><span class="section-number-2">4.</span> 監督式學習實作</h2>
+<div id="outline-container-org8af92f9" class="outline-2">
+<h2 id="org8af92f9"><span class="section-number-2">4.</span> 監督式學習實作</h2>
 <div class="outline-text-2" id="text-4">
 <ul class="org-ul">
-<li><a href="20221023154410-regression.html#ID-6ae7fb7a-0b38-4448-b19f-073d262513f2">迴歸</a></li>
-<li><a href="20231204210821-分類.html#ID-1592687a-cca7-4473-83a0-682a36394a28">分類</a></li>
+<li><a href="../../../../../Dropbox/notes/roam/20221023154410-regression.html#ID-6ae7fb7a-0b38-4448-b19f-073d262513f2">迴歸</a></li>
+<li><a href="../../../../../Dropbox/notes/roam/20231204210821-分類.html#ID-1592687a-cca7-4473-83a0-682a36394a28">分類</a></li>
 </ul>
 </div>
 </div>
@@ -596,7 +597,7 @@ Hands-On Machine Learning with Scikit-Learn: Aurelien Geron
 </div></div>
 <div id="postamble" class="status">
 <p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2024-11-29 Fri 00:20</p>
+<p class="date">Created: 2024-12-27 Fri 08:53</p>
 </div>
 </body>
 </html>
