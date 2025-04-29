@@ -3,13 +3,13 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-05-11 Sat 09:40 -->
+<!-- 2024-11-20 Wed 20:39 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>當AI遇上股票</title>
 <meta name="author" content="Yung-Chin Yen" />
 <meta name="generator" content="Org Mode" />
-<style>
+<style type="text/css">
   #content { max-width: 60em; margin: auto; }
   .title  { text-align: center;
              margin-bottom: .2em; }
@@ -202,35 +202,35 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org4d34783">1. CNN-1: 以AI預測股價-隔日漲跌</a>
+<li><a href="#org52ac12a">1. CNN-1: 以AI預測股價-隔日漲跌</a>
 <ul>
-<li><a href="#org00a91a8">1.1. 安裝相關套件</a></li>
-<li><a href="#org3f63775">1.2. 下載股價資訊</a></li>
-<li><a href="#org858c41c">1.3. 觀察原始資料/日K圖</a></li>
-<li><a href="#org4e3aec9">1.4. 將資料標準化</a></li>
-<li><a href="#org6ae7c0e">1.5. 建立、分割資料</a></li>
-<li><a href="#org62c5522">1.6. 建立、編譯、訓練模型</a></li>
-<li><a href="#orgc46fba4">1.7. 性能測試</a></li>
-<li><a href="#org7599afa">1.8. 能怎麼胡搞</a></li>
+<li><a href="#org69357a9">1.1. 安裝相關套件</a></li>
+<li><a href="#orgf5115a6">1.2. 下載股價資訊</a></li>
+<li><a href="#orge883b1b">1.3. 觀察原始資料/日K圖</a></li>
+<li><a href="#orgca2dd4d">1.4. 將資料標準化</a></li>
+<li><a href="#org05ca5ab">1.5. 建立、分割資料</a></li>
+<li><a href="#orged33caa">1.6. 建立、編譯、訓練模型</a></li>
+<li><a href="#orgc15a241">1.7. 性能測試</a></li>
+<li><a href="#org5d8b89e">1.8. 能怎麼胡搞</a></li>
 </ul>
 </li>
-<li><a href="#org5d9fae8">2. CNN-2: 以AI預測股價-隔日漲跌</a>
+<li><a href="#orge47137e">2. CNN-2: 以AI預測股價-隔日漲跌</a>
 <ul>
-<li><a href="#org91f45c8">2.1. 安裝相關套件</a></li>
-<li><a href="#orga0be268">2.2. 下載股價資訊</a></li>
-<li><a href="#org388e1b9">2.3. 觀察原始資料/日K圖</a></li>
-<li><a href="#org4df3bdf">2.4. 將資料標準化</a></li>
-<li><a href="#orga9f510a">2.5. 建立、分割資料</a></li>
-<li><a href="#org2e0084b">2.6. 建立、編譯、訓練模型</a></li>
-<li><a href="#org3fe45ba">2.7. 性能測試</a></li>
-<li><a href="#orgf838079">2.8. 能怎麼胡搞</a></li>
+<li><a href="#orgf68c17b">2.1. 安裝相關套件</a></li>
+<li><a href="#org21defa5">2.2. 下載股價資訊</a></li>
+<li><a href="#org68b8af3">2.3. 觀察原始資料/日K圖</a></li>
+<li><a href="#orgec49cb8">2.4. 將資料標準化</a></li>
+<li><a href="#orgb29c4ce">2.5. 建立、分割資料</a></li>
+<li><a href="#org8a30224">2.6. 建立、編譯、訓練模型</a></li>
+<li><a href="#orgd6d780d">2.7. 性能測試</a></li>
+<li><a href="#org51a23f1">2.8. 能怎麼胡搞</a></li>
 </ul>
 </li>
-<li><a href="#orgb60aef5">3. CNN-3 以AI預測股價-後5日漲跌</a></li>
-<li><a href="#orgbea42eb">4. LSTM: 以AI預測股價-後5日漲跌</a>
+<li><a href="#org82f3152">3. CNN-3 以AI預測股價-後5日漲跌</a></li>
+<li><a href="#org389c30b">4. LSTM: 以AI預測股價-後5日漲跌</a>
 <ul>
-<li><a href="#org2a31697">4.1. 參考程式碼</a></li>
-<li><a href="#orgece977b">4.2. 能怎麼胡搞</a></li>
+<li><a href="#org1a9a49f">4.1. 參考程式碼</a></li>
+<li><a href="#org1a45887">4.2. 能怎麼胡搞</a></li>
 </ul>
 </li>
 </ul>
@@ -241,15 +241,15 @@
 <p>
 以下範例均假設於Google Colab上執行，若於本機IDE(如PyCharm、Spyder)上執行，則部份指令執行方式要略做修正。
 </p>
-<div id="outline-container-org4d34783" class="outline-2">
-<h2 id="org4d34783"><span class="section-number-2">1.</span> CNN-1: 以AI預測股價-隔日漲跌</h2>
+<div id="outline-container-org52ac12a" class="outline-2">
+<h2 id="org52ac12a"><span class="section-number-2">1.</span> CNN-1: 以AI預測股價-隔日漲跌</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 <a href="https://colab.research.google.com/drive/1YMzBxndwnKamoJGX3rVvlO43drpl6GWz?usp=sharing">當AI遇上股票-CNN-1.ipynb</a>
 </p>
 </div>
-<div id="outline-container-org00a91a8" class="outline-3">
-<h3 id="org00a91a8"><span class="section-number-3">1.1.</span> 安裝相關套件</h3>
+<div id="outline-container-org69357a9" class="outline-3">
+<h3 id="org69357a9"><span class="section-number-3">1.1.</span> 安裝相關套件</h3>
 <div class="outline-text-3" id="text-1-1">
 <div class="org-src-container">
 <pre class="src src-shell"><span class="linenr">1: </span>pip install yfinance
@@ -257,8 +257,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org3f63775" class="outline-3">
-<h3 id="org3f63775"><span class="section-number-3">1.2.</span> 下載股價資訊</h3>
+<div id="outline-container-orgf5115a6" class="outline-3">
+<h3 id="orgf5115a6"><span class="section-number-3">1.2.</span> 下載股價資訊</h3>
 <div class="outline-text-3" id="text-1-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> yfinance <span style="color: #51afef;">as</span> yf
@@ -268,8 +268,8 @@
 </pre>
 </div>
 </div>
-<div id="outline-container-org82363b9" class="outline-4">
-<h4 id="org82363b9"><span class="section-number-4">1.2.1.</span> 查看下載的資料集</h4>
+<div id="outline-container-org78940d5" class="outline-4">
+<h4 id="org78940d5"><span class="section-number-4">1.2.1.</span> 查看下載的資料集</h4>
 <div class="outline-text-4" id="text-1-2-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span>df
@@ -278,8 +278,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org66f6821" class="outline-4">
-<h4 id="org66f6821"><span class="section-number-4">1.2.2.</span> 取出需要的收盤價</h4>
+<div id="outline-container-org98c949a" class="outline-4">
+<h4 id="org98c949a"><span class="section-number-4">1.2.2.</span> 取出需要的收盤價</h4>
 <div class="outline-text-4" id="text-1-2-2">
 <p>
 從陣列中讀出收盤價
@@ -292,8 +292,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org858c41c" class="outline-3">
-<h3 id="org858c41c"><span class="section-number-3">1.3.</span> 觀察原始資料/日K圖</h3>
+<div id="outline-container-orge883b1b" class="outline-3">
+<h3 id="orge883b1b"><span class="section-number-3">1.3.</span> 觀察原始資料/日K圖</h3>
 <div class="outline-text-3" id="text-1-3">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
@@ -304,8 +304,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org4e3aec9" class="outline-3">
-<h3 id="org4e3aec9"><span class="section-number-3">1.4.</span> 將資料標準化</h3>
+<div id="outline-container-orgca2dd4d" class="outline-3">
+<h3 id="orgca2dd4d"><span class="section-number-3">1.4.</span> 將資料標準化</h3>
 <div class="outline-text-3" id="text-1-4">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">from</span> sklearn.preprocessing <span style="color: #51afef;">import</span> MinMaxScaler
@@ -317,12 +317,12 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org6ae7c0e" class="outline-3">
-<h3 id="org6ae7c0e"><span class="section-number-3">1.5.</span> 建立、分割資料</h3>
+<div id="outline-container-org05ca5ab" class="outline-3">
+<h3 id="org05ca5ab"><span class="section-number-3">1.5.</span> 建立、分割資料</h3>
 <div class="outline-text-3" id="text-1-5">
 </div>
-<div id="outline-container-org6b2e7af" class="outline-4">
-<h4 id="org6b2e7af"><span class="section-number-4">1.5.1.</span> 建立資料集及標籤</h4>
+<div id="outline-container-org2caacf8" class="outline-4">
+<h4 id="org2caacf8"><span class="section-number-4">1.5.1.</span> 建立資料集及標籤</h4>
 <div class="outline-text-4" id="text-1-5-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
@@ -344,8 +344,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org0a78a17" class="outline-4">
-<h4 id="org0a78a17"><span class="section-number-4">1.5.2.</span> 分割訓練集與測試集</h4>
+<div id="outline-container-orgc23a5d6" class="outline-4">
+<h4 id="orgc23a5d6"><span class="section-number-4">1.5.2.</span> 分割訓練集與測試集</h4>
 <div class="outline-text-4" id="text-1-5-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #dcaeea;">ratio</span> = <span style="color: #da8548; font-weight: bold;">0.8</span>
@@ -366,12 +366,12 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org62c5522" class="outline-3">
-<h3 id="org62c5522"><span class="section-number-3">1.6.</span> 建立、編譯、訓練模型</h3>
+<div id="outline-container-orged33caa" class="outline-3">
+<h3 id="orged33caa"><span class="section-number-3">1.6.</span> 建立、編譯、訓練模型</h3>
 <div class="outline-text-3" id="text-1-6">
 </div>
-<div id="outline-container-org3e66fc1" class="outline-4">
-<h4 id="org3e66fc1"><span class="section-number-4">1.6.1.</span> 建立模型</h4>
+<div id="outline-container-org6fd1264" class="outline-4">
+<h4 id="org6fd1264"><span class="section-number-4">1.6.1.</span> 建立模型</h4>
 <div class="outline-text-4" id="text-1-6-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">CNN&#27169;&#22411;</span>
@@ -392,8 +392,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-orgfe92289" class="outline-4">
-<h4 id="orgfe92289"><span class="section-number-4">1.6.2.</span> 編譯模型</h4>
+<div id="outline-container-org1b2f9d7" class="outline-4">
+<h4 id="org1b2f9d7"><span class="section-number-4">1.6.2.</span> 編譯模型</h4>
 <div class="outline-text-4" id="text-1-6-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span>model.<span style="color: #c678dd;">compile</span>(loss=<span style="color: #98be65;">'mse'</span>, optimizer=<span style="color: #98be65;">'adam'</span>, metrics=[<span style="color: #98be65;">'accuracy'</span>])
@@ -401,8 +401,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-orga2fdbff" class="outline-4">
-<h4 id="orga2fdbff"><span class="section-number-4">1.6.3.</span> 訓練模型</h4>
+<div id="outline-container-orge8d24cd" class="outline-4">
+<h4 id="orge8d24cd"><span class="section-number-4">1.6.3.</span> 訓練模型</h4>
 <div class="outline-text-4" id="text-1-6-3">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span>model.fit(x_train, y_train,
@@ -413,12 +413,12 @@
 </div>
 </div>
 </div>
-<div id="outline-container-orgc46fba4" class="outline-3">
-<h3 id="orgc46fba4"><span class="section-number-3">1.7.</span> 性能測試</h3>
+<div id="outline-container-orgc15a241" class="outline-3">
+<h3 id="orgc15a241"><span class="section-number-3">1.7.</span> 性能測試</h3>
 <div class="outline-text-3" id="text-1-7">
 </div>
-<div id="outline-container-org8cb5aa8" class="outline-4">
-<h4 id="org8cb5aa8"><span class="section-number-4">1.7.1.</span> loss</h4>
+<div id="outline-container-orgcbde963" class="outline-4">
+<h4 id="orgcbde963"><span class="section-number-4">1.7.1.</span> loss</h4>
 <div class="outline-text-4" id="text-1-7-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">score</span> = model.evaluate(x_test, y_test)
@@ -427,8 +427,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org69aa27c" class="outline-4">
-<h4 id="org69aa27c"><span class="section-number-4">1.7.2.</span> predict</h4>
+<div id="outline-container-orgaf465d1" class="outline-4">
+<h4 id="orgaf465d1"><span class="section-number-4">1.7.2.</span> predict</h4>
 <div class="outline-text-4" id="text-1-7-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">predict</span> = model.predict(x_test)
@@ -442,8 +442,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-orgd30baa4" class="outline-4">
-<h4 id="orgd30baa4"><span class="section-number-4">1.7.3.</span> plot</h4>
+<div id="outline-container-org9e069a3" class="outline-4">
+<h4 id="org9e069a3"><span class="section-number-4">1.7.3.</span> plot</h4>
 <div class="outline-text-4" id="text-1-7-3">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span>plt.plot(predict)
@@ -454,8 +454,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org7599afa" class="outline-3">
-<h3 id="org7599afa"><span class="section-number-3">1.8.</span> 能怎麼胡搞</h3>
+<div id="outline-container-org5d8b89e" class="outline-3">
+<h3 id="org5d8b89e"><span class="section-number-3">1.8.</span> 能怎麼胡搞</h3>
 <div class="outline-text-3" id="text-1-8">
 <ul class="org-ul">
 <li>多讀些原始資料</li>
@@ -468,15 +468,15 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org5d9fae8" class="outline-2">
-<h2 id="org5d9fae8"><span class="section-number-2">2.</span> CNN-2: 以AI預測股價-隔日漲跌</h2>
+<div id="outline-container-orge47137e" class="outline-2">
+<h2 id="orge47137e"><span class="section-number-2">2.</span> CNN-2: 以AI預測股價-隔日漲跌</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 <a href="https://colab.research.google.com/drive/11CXwpdKtfCB0q3mejuRv5yQA0xKsWlgJ?usp=sharing">當AI遇上股票-CNN-2.ipynb</a>
 </p>
 </div>
-<div id="outline-container-org91f45c8" class="outline-3">
-<h3 id="org91f45c8"><span class="section-number-3">2.1.</span> 安裝相關套件</h3>
+<div id="outline-container-orgf68c17b" class="outline-3">
+<h3 id="orgf68c17b"><span class="section-number-3">2.1.</span> 安裝相關套件</h3>
 <div class="outline-text-3" id="text-2-1">
 <div class="org-src-container">
 <pre class="src src-shell"><span class="linenr">1: </span>pip install yfinance
@@ -484,8 +484,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-orga0be268" class="outline-3">
-<h3 id="orga0be268"><span class="section-number-3">2.2.</span> 下載股價資訊</h3>
+<div id="outline-container-org21defa5" class="outline-3">
+<h3 id="org21defa5"><span class="section-number-3">2.2.</span> 下載股價資訊</h3>
 <div class="outline-text-3" id="text-2-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> yfinance <span style="color: #51afef;">as</span> yf
@@ -495,8 +495,8 @@
 </pre>
 </div>
 </div>
-<div id="outline-container-org671a536" class="outline-4">
-<h4 id="org671a536"><span class="section-number-4">2.2.1.</span> 查看下載的資料集</h4>
+<div id="outline-container-org747012c" class="outline-4">
+<h4 id="org747012c"><span class="section-number-4">2.2.1.</span> 查看下載的資料集</h4>
 <div class="outline-text-4" id="text-2-2-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span>df
@@ -505,8 +505,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org378621b" class="outline-4">
-<h4 id="org378621b"><span class="section-number-4">2.2.2.</span> 取出需要的特徵值</h4>
+<div id="outline-container-org5ef644b" class="outline-4">
+<h4 id="org5ef644b"><span class="section-number-4">2.2.2.</span> 取出需要的特徵值</h4>
 <div class="outline-text-4" id="text-2-2-2">
 <p>
 此次將成交量納入考慮
@@ -519,8 +519,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org388e1b9" class="outline-3">
-<h3 id="org388e1b9"><span class="section-number-3">2.3.</span> 觀察原始資料/日K圖</h3>
+<div id="outline-container-org68b8af3" class="outline-3">
+<h3 id="org68b8af3"><span class="section-number-3">2.3.</span> 觀察原始資料/日K圖</h3>
 <div class="outline-text-3" id="text-2-3">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
@@ -534,8 +534,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org4df3bdf" class="outline-3">
-<h3 id="org4df3bdf"><span class="section-number-3">2.4.</span> 將資料標準化</h3>
+<div id="outline-container-orgec49cb8" class="outline-3">
+<h3 id="orgec49cb8"><span class="section-number-3">2.4.</span> 將資料標準化</h3>
 <div class="outline-text-3" id="text-2-4">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">from</span> sklearn.preprocessing <span style="color: #51afef;">import</span> MinMaxScaler
@@ -551,12 +551,12 @@
 </div>
 </div>
 </div>
-<div id="outline-container-orga9f510a" class="outline-3">
-<h3 id="orga9f510a"><span class="section-number-3">2.5.</span> 建立、分割資料</h3>
+<div id="outline-container-orgb29c4ce" class="outline-3">
+<h3 id="orgb29c4ce"><span class="section-number-3">2.5.</span> 建立、分割資料</h3>
 <div class="outline-text-3" id="text-2-5">
 </div>
-<div id="outline-container-orgc154170" class="outline-4">
-<h4 id="orgc154170"><span class="section-number-4">2.5.1.</span> 建立資料集及標籤</h4>
+<div id="outline-container-org9bad145" class="outline-4">
+<h4 id="org9bad145"><span class="section-number-4">2.5.1.</span> 建立資料集及標籤</h4>
 <div class="outline-text-4" id="text-2-5-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
@@ -578,8 +578,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org42ff638" class="outline-4">
-<h4 id="org42ff638"><span class="section-number-4">2.5.2.</span> 分割訓練集與測試集</h4>
+<div id="outline-container-org6ad6c4e" class="outline-4">
+<h4 id="org6ad6c4e"><span class="section-number-4">2.5.2.</span> 分割訓練集與測試集</h4>
 <div class="outline-text-4" id="text-2-5-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #dcaeea;">ratio</span> = <span style="color: #da8548; font-weight: bold;">0.8</span>
@@ -597,12 +597,12 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org2e0084b" class="outline-3">
-<h3 id="org2e0084b"><span class="section-number-3">2.6.</span> 建立、編譯、訓練模型</h3>
+<div id="outline-container-org8a30224" class="outline-3">
+<h3 id="org8a30224"><span class="section-number-3">2.6.</span> 建立、編譯、訓練模型</h3>
 <div class="outline-text-3" id="text-2-6">
 </div>
-<div id="outline-container-org8c03826" class="outline-4">
-<h4 id="org8c03826"><span class="section-number-4">2.6.1.</span> 建立模型</h4>
+<div id="outline-container-org81c1a55" class="outline-4">
+<h4 id="org81c1a55"><span class="section-number-4">2.6.1.</span> 建立模型</h4>
 <div class="outline-text-4" id="text-2-6-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">CNN&#27169;&#22411;</span>
@@ -625,8 +625,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-orgd84c92c" class="outline-4">
-<h4 id="orgd84c92c"><span class="section-number-4">2.6.2.</span> 編譯模型</h4>
+<div id="outline-container-org59cc888" class="outline-4">
+<h4 id="org59cc888"><span class="section-number-4">2.6.2.</span> 編譯模型</h4>
 <div class="outline-text-4" id="text-2-6-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span>model.<span style="color: #c678dd;">compile</span>(loss=<span style="color: #98be65;">'mse'</span>, optimizer=<span style="color: #98be65;">'adam'</span>, metrics=[<span style="color: #98be65;">'accuracy'</span>])
@@ -634,8 +634,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org60e0b6e" class="outline-4">
-<h4 id="org60e0b6e"><span class="section-number-4">2.6.3.</span> 訓練模型</h4>
+<div id="outline-container-orgc9dee04" class="outline-4">
+<h4 id="orgc9dee04"><span class="section-number-4">2.6.3.</span> 訓練模型</h4>
 <div class="outline-text-4" id="text-2-6-3">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span>model.fit(x_train, y_train,
@@ -646,12 +646,12 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org3fe45ba" class="outline-3">
-<h3 id="org3fe45ba"><span class="section-number-3">2.7.</span> 性能測試</h3>
+<div id="outline-container-orgd6d780d" class="outline-3">
+<h3 id="orgd6d780d"><span class="section-number-3">2.7.</span> 性能測試</h3>
 <div class="outline-text-3" id="text-2-7">
 </div>
-<div id="outline-container-org9879b2d" class="outline-4">
-<h4 id="org9879b2d"><span class="section-number-4">2.7.1.</span> loss</h4>
+<div id="outline-container-org8d1343c" class="outline-4">
+<h4 id="org8d1343c"><span class="section-number-4">2.7.1.</span> loss</h4>
 <div class="outline-text-4" id="text-2-7-1">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">score</span> = model.evaluate(x_test, y_test)
@@ -660,8 +660,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org7a5704f" class="outline-4">
-<h4 id="org7a5704f"><span class="section-number-4">2.7.2.</span> predict</h4>
+<div id="outline-container-orgbf95159" class="outline-4">
+<h4 id="orgbf95159"><span class="section-number-4">2.7.2.</span> predict</h4>
 <div class="outline-text-4" id="text-2-7-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">predict</span> = model.predict(x_test)
@@ -675,8 +675,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-orgcd40130" class="outline-4">
-<h4 id="orgcd40130"><span class="section-number-4">2.7.3.</span> plot</h4>
+<div id="outline-container-org432d2d2" class="outline-4">
+<h4 id="org432d2d2"><span class="section-number-4">2.7.3.</span> plot</h4>
 <div class="outline-text-4" id="text-2-7-3">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span>plt.plot(predict)
@@ -687,8 +687,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-orgf838079" class="outline-3">
-<h3 id="orgf838079"><span class="section-number-3">2.8.</span> 能怎麼胡搞</h3>
+<div id="outline-container-org51a23f1" class="outline-3">
+<h3 id="org51a23f1"><span class="section-number-3">2.8.</span> 能怎麼胡搞</h3>
 <div class="outline-text-3" id="text-2-8">
 <ul class="org-ul">
 <li>多讀些原始資料</li>
@@ -701,8 +701,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-orgb60aef5" class="outline-2">
-<h2 id="orgb60aef5"><span class="section-number-2">3.</span> CNN-3 以AI預測股價-後5日漲跌</h2>
+<div id="outline-container-org82f3152" class="outline-2">
+<h2 id="org82f3152"><span class="section-number-2">3.</span> CNN-3 以AI預測股價-後5日漲跌</h2>
 <div class="outline-text-2" id="text-3">
 <p>
 為了讓大家都能交出作業，這裡提供一個利用CNN模型的程式參考範例
@@ -783,12 +783,12 @@
 </div>
 </div>
 </div>
-<div id="outline-container-orgbea42eb" class="outline-2">
-<h2 id="orgbea42eb"><span class="section-number-2">4.</span> LSTM: 以AI預測股價-後5日漲跌</h2>
+<div id="outline-container-org389c30b" class="outline-2">
+<h2 id="org389c30b"><span class="section-number-2">4.</span> LSTM: 以AI預測股價-後5日漲跌</h2>
 <div class="outline-text-2" id="text-4">
 </div>
-<div id="outline-container-org2a31697" class="outline-3">
-<h3 id="org2a31697"><span class="section-number-3">4.1.</span> 參考程式碼</h3>
+<div id="outline-container-org1a9a49f" class="outline-3">
+<h3 id="org1a9a49f"><span class="section-number-3">4.1.</span> 參考程式碼</h3>
 <div class="outline-text-3" id="text-4-1">
 <div class="org-src-container">
 <pre class="src src-shell"><span class="linenr"> 1: </span>import yfinance as yf
@@ -852,8 +852,8 @@
 </div>
 </div>
 </div>
-<div id="outline-container-orgece977b" class="outline-3">
-<h3 id="orgece977b"><span class="section-number-3">4.2.</span> 能怎麼胡搞</h3>
+<div id="outline-container-org1a45887" class="outline-3">
+<h3 id="org1a45887"><span class="section-number-3">4.2.</span> 能怎麼胡搞</h3>
 <div class="outline-text-3" id="text-4-2">
 <ul class="org-ul">
 <li>多讀些原始資料</li>
@@ -869,7 +869,7 @@
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2024-05-11 Sat 09:40</p>
+<p class="date">Created: 2024-11-20 Wed 20:39</p>
 </div>
 </body>
 </html>
