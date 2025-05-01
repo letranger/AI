@@ -3,10 +3,10 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2025-04-25 Fri 13:38 -->
+<!-- 2025-05-01 Thu 14:31 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>YOLO</title>
+<title>You Only Look Once</title>
 <meta name="author" content="Yung-Chin Yen" />
 <meta name="generator" content="Org Mode" />
 <style type="text/css">
@@ -198,50 +198,59 @@
 </head>
 <body>
 <div id="content" class="content">
-<h1 class="title">YOLO</h1>
+<h1 class="title">You Only Look Once</h1>
 <div id="table-of-contents" role="doc-toc">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org2ca45d5">1. YOLO</a>
+<li><a href="#orgd152090">1. YOLO</a>
 <ul>
-<li><a href="#org9bb306e">1.1. YOLO的歷史</a></li>
-<li><a href="#org88a6ad1">1.2. YOLO工作原理</a></li>
-<li><a href="#org1666cae">1.3. YOLO8</a></li>
-<li><a href="#orgf291272">1.4. YOLOv8 模型種類：</a></li>
+<li><a href="#org0e97426">1.1. YOLO的歷史</a></li>
+<li><a href="#org5fb3b2c">1.2. YOLO工作原理</a></li>
+<li><a href="#org60e2afa">1.3. YOLO8</a></li>
+<li><a href="#org117e64a">1.4. YOLOv8 模型種類：</a></li>
 </ul>
 </li>
-<li><a href="#orge7c87e8">2. YOLO實作(現成模型)</a>
+<li><a href="#orgc208559">2. YOLO實作(現成模型)</a>
 <ul>
-<li><a href="#org596f745">2.1. 偵測靜態照片</a></li>
-<li><a href="#orgae66105">2.2. 即時偵測(本機)</a></li>
-<li><a href="#org5de0ec6">2.3. OpenCV版的人臉偵測</a></li>
-<li><a href="#org9af6acb">2.4. 功能比較（YOLO vs OpenCV）：</a></li>
+<li><a href="#org98acd40">2.1. 偵測靜態照片</a></li>
+<li><a href="#orgce8d776">2.2. 即時偵測(本機)</a></li>
+<li><a href="#org91a5b67">2.3. OpenCV版的人臉偵測</a></li>
+<li><a href="#org2dfbc40">2.4. 功能比較（YOLO vs OpenCV）：</a></li>
 </ul>
 </li>
-<li><a href="#orga136106">3. 現成模型(擴充應用)</a>
+<li><a href="#org198ac19">3. 現成模型(擴充應用)</a>
 <ul>
-<li><a href="#org670ebfe">3.1. Face Recognition</a></li>
-<li><a href="#org84bec86">3.2. 細部屬性辨識（例如：是否戴口罩）</a></li>
-<li><a href="#org218c2c2">3.3. 進一步應用整合方式</a></li>
-<li><a href="#org48c5032">3.4. YOLO + Face Recognition</a></li>
-<li><a href="#org17888f3">3.5. YOLO + Object Detection</a></li>
+<li><a href="#orgf1286d3">3.1. Face Recognition</a></li>
+<li><a href="#orgcc21a4b">3.2. 細部屬性辨識（例如：是否戴口罩）</a></li>
+<li><a href="#orgc84f50e">3.3. Face Recognition</a></li>
+<li><a href="#org415c290">3.4. 中文問題</a></li>
+<li><a href="#org7e3d1b3">3.5. YOLO + Face Recognition</a></li>
 </ul>
 </li>
-<li><a href="#orgb66558b">4. 課堂任務</a></li>
+<li><a href="#org68ad6d2">4. YOLO + Object Detection</a>
+<ul>
+<li><a href="#orgd7a93b9">4.1. 設計流程</a></li>
+<li><a href="#org00bd924">4.2. 訓練模型</a></li>
+<li><a href="#orgb737898">4.3. 測試模型</a></li>
+<li><a href="#org919ef31">4.4. 結合原本的YOLO辨識功能</a></li>
+<li><a href="#orge9d59af">4.5. 進階(辨識成功後加入特定動作)</a></li>
+</ul>
+</li>
+<li><a href="#orga8d85a5">5. 課堂任務</a></li>
 </ul>
 </div>
 </div>
 <a href="https://letranger.github.io/AI/20221023101228-深度學習.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20221023101228-深度學習.html.svg"/></a>
-<div id="outline-container-org2ca45d5" class="outline-2">
-<h2 id="org2ca45d5"><span class="section-number-2">1.</span> YOLO</h2>
+<div id="outline-container-orgd152090" class="outline-2">
+<h2 id="orgd152090"><span class="section-number-2">1.</span> YOLO</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 YOLO(You Only Look Once)是一種即時物件檢測系統,它的目標是在要一張圖片中檢測出所有的物件,並且給出每個物件的邊界框和類別標籤. YOLO的特點是速度快, 準確率高, 適合實時(real-time)應用。<br />
 </p>
 </div>
-<div id="outline-container-org9bb306e" class="outline-3">
-<h3 id="org9bb306e"><span class="section-number-3">1.1.</span> YOLO的歷史</h3>
+<div id="outline-container-org0e97426" class="outline-3">
+<h3 id="org0e97426"><span class="section-number-3">1.1.</span> YOLO的歷史</h3>
 <div class="outline-text-3" id="text-1-1">
 <p>
 YOLO最早是由Joseph Redmon等人於2015年提出的, 其後經過多次改進, 包括YOLOv2、YOLOv3、YOLOv4、YOLOv5、YOLOv6、YOLOv7, YOLOv8&#x2026;. YOLO系列模型在物件檢測領域取得了很大的成功, 並且被廣泛應用於各種實際場景中.<br />
@@ -277,16 +286,16 @@ YOLO系列模型的發展歷程如下<sup><a id="fnr.1" class="footref" href="#f
 </ol>
 </div>
 </div>
-<div id="outline-container-org88a6ad1" class="outline-3">
-<h3 id="org88a6ad1"><span class="section-number-3">1.2.</span> YOLO工作原理</h3>
+<div id="outline-container-org5fb3b2c" class="outline-3">
+<h3 id="org5fb3b2c"><span class="section-number-3">1.2.</span> YOLO工作原理</h3>
 <div class="outline-text-3" id="text-1-2">
 <p>
 YOLO的特點是將物件檢測視為一個回歸問題, 直接從圖像像素到邊界框和類別概率的映射, 這樣可以實現即時檢測. YOLO的網路結構是基於全卷積網路(FCN), 將整張圖像分成SxS的格子, 每個格子預測B個邊界框和C個類別概率. YOLO的優點是速度快, 準確率高, 適合實時應用.<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org1666cae" class="outline-3">
-<h3 id="org1666cae"><span class="section-number-3">1.3.</span> YOLO8</h3>
+<div id="outline-container-org60e2afa" class="outline-3">
+<h3 id="org60e2afa"><span class="section-number-3">1.3.</span> YOLO8</h3>
 <div class="outline-text-3" id="text-1-3">
 <p>
 目前YOLO的最新版本為YOLO12, YOLOv12是一個最新的物件偵測模型，具有創新的注意力機制架構，顯著提升了速度和準確性。為了配合403教室沒有GPU且執行效能令人哀傷的Mac Mini，這裡使用的是YOLOv8的輕量級版本，這個版本的模型大小和運算量都比YOLOv7小得多，適合在資源有限的環境中使用。<br />
@@ -327,8 +336,8 @@ Ultralytics 官方的預訓練模型（如 yolov8n.pt, yolov8s.pt, yolov8m.pt �
 </pre>
 </div>
 </div>
-<div id="outline-container-orgf291272" class="outline-3">
-<h3 id="orgf291272"><span class="section-number-3">1.4.</span> YOLOv8 模型種類：</h3>
+<div id="outline-container-org117e64a" class="outline-3">
+<h3 id="org117e64a"><span class="section-number-3">1.4.</span> YOLOv8 模型種類：</h3>
 <div class="outline-text-3" id="text-1-4">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
@@ -398,16 +407,16 @@ Ultralytics 官方的預訓練模型（如 yolov8n.pt, yolov8s.pt, yolov8m.pt �
 </div>
 </div>
 </div>
-<div id="outline-container-orge7c87e8" class="outline-2">
-<h2 id="orge7c87e8"><span class="section-number-2">2.</span> YOLO實作(現成模型)</h2>
+<div id="outline-container-orgc208559" class="outline-2">
+<h2 id="orgc208559"><span class="section-number-2">2.</span> YOLO實作(現成模型)</h2>
 <div class="outline-text-2" id="text-2">
 </div>
-<div id="outline-container-org596f745" class="outline-3">
-<h3 id="org596f745"><span class="section-number-3">2.1.</span> 偵測靜態照片</h3>
+<div id="outline-container-org98acd40" class="outline-3">
+<h3 id="org98acd40"><span class="section-number-3">2.1.</span> 偵測靜態照片</h3>
 <div class="outline-text-3" id="text-2-1">
 </div>
-<div id="outline-container-org01ebf49" class="outline-4">
-<h4 id="org01ebf49"><span class="section-number-4">2.1.1.</span> 安裝所需套件</h4>
+<div id="outline-container-orgb4c8f8d" class="outline-4">
+<h4 id="orgb4c8f8d"><span class="section-number-4">2.1.1.</span> 安裝所需套件</h4>
 <div class="outline-text-4" id="text-2-1-1">
 <p>
 ultralytics套件是YOLOv8的官方實作，這裡使用的是最新版本的ultralytics套件，這個版本的模型大小和運算量都比YOLOv7小得多，適合在資源有限的環境中使用。<br />
@@ -422,8 +431,8 @@ ultralytics套件是YOLOv8的官方實作，這裡使用的是最新版本的ult
 </div>
 </div>
 </div>
-<div id="outline-container-orgc4c781b" class="outline-4">
-<h4 id="orgc4c781b"><span class="section-number-4">2.1.2.</span> 本機執行</h4>
+<div id="outline-container-orgde48688" class="outline-4">
+<h4 id="orgde48688"><span class="section-number-4">2.1.2.</span> 本機執行</h4>
 <div class="outline-text-4" id="text-2-1-2">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">from</span> ultralytics <span style="color: #51afef;">import</span> YOLO
@@ -439,8 +448,8 @@ ultralytics套件是YOLOv8的官方實作，這裡使用的是最新版本的ult
 </div>
 </div>
 </div>
-<div id="outline-container-org4c7c651" class="outline-4">
-<h4 id="org4c7c651"><span class="section-number-4">2.1.3.</span> colab執行</h4>
+<div id="outline-container-org9ac7ace" class="outline-4">
+<h4 id="org9ac7ace"><span class="section-number-4">2.1.3.</span> colab執行</h4>
 <div class="outline-text-4" id="text-2-1-3">
 <p>
 如果在colab上則需要使用以下指令<br />
@@ -465,8 +474,8 @@ ultralytics套件是YOLOv8的官方實作，這裡使用的是最新版本的ult
 </div>
 </div>
 </div>
-<div id="outline-container-orgae66105" class="outline-3">
-<h3 id="orgae66105"><span class="section-number-3">2.2.</span> 即時偵測(本機)</h3>
+<div id="outline-container-orgce8d776" class="outline-3">
+<h3 id="orgce8d776"><span class="section-number-3">2.2.</span> 即時偵測(本機)</h3>
 <div class="outline-text-3" id="text-2-2">
 <p>
 OpenCV 是一個跨平台的電腦視覺套件，全名為 Open Source Computer Vision Library。此處我們以OpenCV 來啟用 mac mini 的 webcam，並使用 YOLOv8 進行即時偵測。<br />
@@ -521,15 +530,15 @@ OpenCV 是一個跨平台的電腦視覺套件，全名為 Open Source Computer 
 </div>
 </div>
 </div>
-<div id="outline-container-org5de0ec6" class="outline-3">
-<h3 id="org5de0ec6"><span class="section-number-3">2.3.</span> OpenCV版的人臉偵測</h3>
+<div id="outline-container-org91a5b67" class="outline-3">
+<h3 id="org91a5b67"><span class="section-number-3">2.3.</span> OpenCV版的人臉偵測</h3>
 <div class="outline-text-3" id="text-2-3">
 <p>
 OpenCV 也可以做人臉辨識（Face Detection / Recognition），而且它還提供兩種層次的功能：<br />
 </p>
 </div>
-<div id="outline-container-org1ab97b9" class="outline-4">
-<h4 id="org1ab97b9"><span class="section-number-4">2.3.1.</span> 人臉「偵測」（Face Detection）</h4>
+<div id="outline-container-org4baa4e5" class="outline-4">
+<h4 id="org4baa4e5"><span class="section-number-4">2.3.1.</span> 人臉「偵測」（Face Detection）</h4>
 <div class="outline-text-4" id="text-2-3-1">
 <p>
 這是找出影像中哪裡有臉（畫框框），常用於攝影機即時預覽或手機臉部對焦功能。常用方法：<br />
@@ -547,8 +556,8 @@ OpenCV 也可以做人臉辨識（Face Detection / Recognition），而且它還
 </ul>
 </div>
 </div>
-<div id="outline-container-orgc1bade1" class="outline-4">
-<h4 id="orgc1bade1"><span class="section-number-4">2.3.2.</span> 2. 人臉「辨識」（Face Recognition）</h4>
+<div id="outline-container-org69665ac" class="outline-4">
+<h4 id="org69665ac"><span class="section-number-4">2.3.2.</span> 2. 人臉「辨識」（Face Recognition）</h4>
 <div class="outline-text-4" id="text-2-3-2">
 <p>
 進一步判斷「這張臉是誰」，需要先進行訓練或比對特徵。<br />
@@ -569,8 +578,8 @@ OpenCV 也可以做人臉辨識（Face Detection / Recognition），而且它還
 </div>
 </div>
 </div>
-<div id="outline-container-org9af6acb" class="outline-3">
-<h3 id="org9af6acb"><span class="section-number-3">2.4.</span> 功能比較（YOLO vs OpenCV）：</h3>
+<div id="outline-container-org2dfbc40" class="outline-3">
+<h3 id="org2dfbc40"><span class="section-number-3">2.4.</span> 功能比較（YOLO vs OpenCV）：</h3>
 <div class="outline-text-3" id="text-2-4">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
@@ -669,16 +678,16 @@ OpenCV 也可以做人臉辨識（Face Detection / Recognition），而且它還
 </div>
 </div>
 </div>
-<div id="outline-container-orga136106" class="outline-2">
-<h2 id="orga136106"><span class="section-number-2">3.</span> 現成模型(擴充應用)</h2>
+<div id="outline-container-org198ac19" class="outline-2">
+<h2 id="org198ac19"><span class="section-number-2">3.</span> 現成模型(擴充應用)</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-org670ebfe" class="outline-3">
-<h3 id="org670ebfe"><span class="section-number-3">3.1.</span> Face Recognition</h3>
+<div id="outline-container-orgf1286d3" class="outline-3">
+<h3 id="orgf1286d3"><span class="section-number-3">3.1.</span> Face Recognition</h3>
 <div class="outline-text-3" id="text-3-1">
 </div>
-<div id="outline-container-org80d97f8" class="outline-4">
-<h4 id="org80d97f8"><span class="section-number-4">3.1.1.</span> 目標</h4>
+<div id="outline-container-orgbaf7e8b" class="outline-4">
+<h4 id="orgbaf7e8b"><span class="section-number-4">3.1.1.</span> 目標</h4>
 <div class="outline-text-4" id="text-3-1-1">
 <ul class="org-ul">
 <li>解法：結合 YOLOv8 的人臉偵測與 face recognition（臉部辨識模型）<br /></li>
@@ -686,8 +695,8 @@ OpenCV 也可以做人臉辨識（Face Detection / Recognition），而且它還
 </ul>
 </div>
 </div>
-<div id="outline-container-org7e39331" class="outline-4">
-<h4 id="org7e39331"><span class="section-number-4">3.1.2.</span> 程式邏輯</h4>
+<div id="outline-container-orgecb3f5d" class="outline-4">
+<h4 id="orgecb3f5d"><span class="section-number-4">3.1.2.</span> 程式邏輯</h4>
 <div class="outline-text-4" id="text-3-1-2">
 <ul class="org-ul">
 <li>使用 YOLO 偵測「人」或「人臉」的位置<br /></li>
@@ -696,8 +705,8 @@ OpenCV 也可以做人臉辨識（Face Detection / Recognition），而且它還
 </ul>
 </div>
 </div>
-<div id="outline-container-orgf1181e2" class="outline-4">
-<h4 id="orgf1181e2"><span class="section-number-4">3.1.3.</span> 實際應用場景：</h4>
+<div id="outline-container-org715ef98" class="outline-4">
+<h4 id="org715ef98"><span class="section-number-4">3.1.3.</span> 實際應用場景：</h4>
 <div class="outline-text-4" id="text-3-1-3">
 <ul class="org-ul">
 <li>學生點名系統<br /></li>
@@ -707,8 +716,8 @@ OpenCV 也可以做人臉辨識（Face Detection / Recognition），而且它還
 </div>
 </div>
 </div>
-<div id="outline-container-org84bec86" class="outline-3">
-<h3 id="org84bec86"><span class="section-number-3">3.2.</span> 細部屬性辨識（例如：是否戴口罩）</h3>
+<div id="outline-container-orgcc21a4b" class="outline-3">
+<h3 id="orgcc21a4b"><span class="section-number-3">3.2.</span> 細部屬性辨識（例如：是否戴口罩）</h3>
 <div class="outline-text-3" id="text-3-2">
 <ul class="org-ul">
 <li>目標：偵測到人之後，再判斷是否戴口罩、穿制服、舉手等行為<br /></li>
@@ -723,8 +732,8 @@ OpenCV 也可以做人臉辨識（Face Detection / Recognition），而且它還
 </ul></li>
 </ul>
 </div>
-<div id="outline-container-org8e45973" class="outline-4">
-<h4 id="org8e45973"><span class="section-number-4">3.2.1.</span> 可採用策略：</h4>
+<div id="outline-container-orgd31b64d" class="outline-4">
+<h4 id="orgd31b64d"><span class="section-number-4">3.2.1.</span> 可採用策略：</h4>
 <div class="outline-text-4" id="text-3-2-1">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
@@ -754,8 +763,8 @@ OpenCV 也可以做人臉辨識（Face Detection / Recognition），而且它還
 </table>
 </div>
 </div>
-<div id="outline-container-org1ec928e" class="outline-4">
-<h4 id="org1ec928e"><span class="section-number-4">3.2.2.</span> 實際應用場景：</h4>
+<div id="outline-container-org8dfee24" class="outline-4">
+<h4 id="org8dfee24"><span class="section-number-4">3.2.2.</span> 實際應用場景：</h4>
 <div class="outline-text-4" id="text-3-2-2">
 <ul class="org-ul">
 <li>校園口罩政策監測<br /></li>
@@ -764,10 +773,9 @@ OpenCV 也可以做人臉辨識（Face Detection / Recognition），而且它還
 </ul>
 </div>
 </div>
-</div>
-<div id="outline-container-org218c2c2" class="outline-3">
-<h3 id="org218c2c2"><span class="section-number-3">3.3.</span> 進一步應用整合方式</h3>
-<div class="outline-text-3" id="text-3-3">
+<div id="outline-container-org614f757" class="outline-4">
+<h4 id="org614f757"><span class="section-number-4">3.2.3.</span> 進一步應用整合方式</h4>
+<div class="outline-text-4" id="text-3-2-3">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -813,13 +821,10 @@ OpenCV 也可以做人臉辨識（Face Detection / Recognition），而且它還
 </table>
 </div>
 </div>
-<div id="outline-container-org48c5032" class="outline-3">
-<h3 id="org48c5032"><span class="section-number-3">3.4.</span> YOLO + Face Recognition</h3>
-<div class="outline-text-3" id="text-3-4">
-<p>
-同學們可以先做這個簡單版的人臉辨識，然後再進行進一步的擴充應用。這裡的程式碼是使用 YOLOv8 的預訓練模型來進行人臉偵測，然後使用 face_recognition 套件來進行人臉辨識。<br />
-</p>
-
+</div>
+<div id="outline-container-orgc84f50e" class="outline-3">
+<h3 id="orgc84f50e"><span class="section-number-3">3.3.</span> Face Recognition</h3>
+<div class="outline-text-3" id="text-3-3">
 <p>
 這裡用的是face recognition的套件，這個套件是基於dlib的臉部辨識模型，使用了HOG和CNN兩種方法來進行臉部特徵提取和比對。這個套件的優點是簡單易用，並且可以在CPU上運行。但是該套件預設是辨識完整臉部特徵（包含鼻子與嘴巴）戴口罩會遮住 50% 以上的臉部資訊，導致：<br />
 </p>
@@ -832,43 +837,41 @@ OpenCV 也可以做人臉辨識（Face Detection / Recognition），而且它還
 所以，只適合用於辨識「不戴口罩」的臉部特徵<br />
 </p>
 
-
-
 <div class="org-src-container">
 <pre class="src src-shell"><span class="linenr">1: </span>pip install face_recognition opencv-python
 </pre>
 </div>
 </div>
-<div id="outline-container-org2d22d55" class="outline-4">
-<h4 id="org2d22d55"><span class="section-number-4">3.4.1.</span> 資料準備</h4>
-<div class="outline-text-4" id="text-3-4-1">
+<div id="outline-container-org155c565" class="outline-4">
+<h4 id="org155c565"><span class="section-number-4">3.3.1.</span> 資料準備</h4>
+<div class="outline-text-4" id="text-3-3-1">
 <p>
 各組組員準備5-10張不同角度、光線的自拍照片，命名規則為「姓名_n.jpg」，例如：<br />
 </p>
 <ul class="org-ul">
-<li>王小明_1.jpg<br /></li>
-<li>王小明_2.jpg<br /></li>
+<li>James_1.jpg<br /></li>
+<li>James_2.jpg<br /></li>
 <li>&#x2026;<br /></li>
-<li>王小明_10.jpg<br /></li>
+<li>James_10.jpg<br /></li>
 <li>&#x2026;<br /></li>
-<li>陳大明_1.jpg<br /></li>
-<li>陳大明_2.jpg<br /></li>
+<li>Vanessa_1.jpg<br /></li>
+<li>Vanessa_2.jpg<br /></li>
 <li>&#x2026;<br /></li>
-<li>陳大明_9.jpg<br /></li>
+<li>Vanessa_9.jpg<br /></li>
 </ul>
 
 <p>
-，並放在同一個資料夾中。這裡假設資料夾路徑為「/Users/letranger/Downloads/images」。<br />
+檔名請先不要使用中文，並將照片放在同一個資料夾中。這裡假設資料夾路徑為「/Users/letranger/Downloads/images」。<br />
 </p>
 
 <p>
-如果你使用403教室的Mac Mini，請將照片放在「/Users/student/Desktop/images」資料夾中。<br />
+如果你使用403教室的Mac Mini，請將照片放在「/Users/student/Desktop/images」資料夾中。如果你是用自己的電腦，請自行修改路徑。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgbc0b5ae" class="outline-4">
-<h4 id="orgbc0b5ae"><span class="section-number-4">3.4.2.</span> save_encodings.py</h4>
-<div class="outline-text-4" id="text-3-4-2">
+<div id="outline-container-org2cc6cf3" class="outline-4">
+<h4 id="org2cc6cf3"><span class="section-number-4">3.3.2.</span> save_encodings.py</h4>
+<div class="outline-text-4" id="text-3-3-2">
 <p>
 這個程式會將所有照片的特徵向量與姓名儲存到一個pickle檔案(encodings.pkl)中，這樣在辨識的時候就可以直接載入這個檔案，而不需要每次都重新計算特徵向量。<br />
 </p>
@@ -893,7 +896,7 @@ OpenCV 也可以做人臉辨識（Face Detection / Recognition），而且它還
 <span class="linenr">18: </span>    <span style="color: #51afef;">except</span> UnidentifiedImageError:
 <span class="linenr">19: </span>        <span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#10060; &#28961;&#27861;&#36776;&#35672;&#30340;&#22294;&#29255;&#27284;&#26696;&#65306;</span>{<span style="color: #c678dd;">file</span>}<span style="color: #98be65;">"</span>)
 <span class="linenr">20: </span>
-<span class="linenr">21: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20786;&#23384;&#29305;&#24501;&#33287;&#21517;&#31281;</span>
+<span class="linenr">21: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20786;&#23384;&#29305;&#24501;&#33287;&#21517;&#31281;&#65292;&#36889;&#20491;&#36335;&#24465;&#35201;&#35352;&#24471;&#65292;&#24213;&#19979;&#26371;&#29992;&#21040;</span>
 <span class="linenr">22: </span><span style="color: #51afef;">with</span> <span style="color: #c678dd;">open</span>(<span style="color: #98be65;">"/Users/letranger/Downloads/images/encodings.pkl"</span>, <span style="color: #98be65;">"wb"</span>) <span style="color: #51afef;">as</span> f:
 <span class="linenr">23: </span>    pickle.dump((known_encodings, known_names), f)
 <span class="linenr">24: </span>
@@ -901,9 +904,9 @@ OpenCV 也可以做人臉辨識（Face Detection / Recognition），而且它還
 </div>
 </div>
 </div>
-<div id="outline-container-org0a89658" class="outline-4">
-<h4 id="org0a89658"><span class="section-number-4">3.4.3.</span> realtime_recognition.py</h4>
-<div class="outline-text-4" id="text-3-4-3">
+<div id="outline-container-org34aaccf" class="outline-4">
+<h4 id="org34aaccf"><span class="section-number-4">3.3.3.</span> realtime_recognition.py</h4>
+<div class="outline-text-4" id="text-3-3-3">
 <p>
 上面的程式已經將所有照片的特徵向量與姓名儲存到一個pickle檔案(encodings.pkl)中，這樣在辨識的時候就可以直接載入這個檔案，而不需要每次都重新計算特徵向量。這裡的程式碼是使用 YOLOv8 的預訓練模型(encodings.pkl)來進行人臉偵測，然後使用 face_recognition 套件來進行人臉辨識。<br />
 </p>
@@ -912,7 +915,7 @@ OpenCV 也可以做人臉辨識（Face Detection / Recognition），而且它還
 <span class="linenr"> 2: </span><span style="color: #51afef;">import</span> cv2, face_recognition
 <span class="linenr"> 3: </span><span style="color: #51afef;">from</span> ultralytics <span style="color: #51afef;">import</span> YOLO
 <span class="linenr"> 4: </span>
-<span class="linenr"> 5: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36617;&#20837;&#29305;&#24501;&#36039;&#26009;</span>
+<span class="linenr"> 5: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36617;&#20837;&#19978;&#19968;&#25903;&#31243;&#24335;&#30340; encodings.pkl</span>
 <span class="linenr"> 6: </span><span style="color: #51afef;">with</span> <span style="color: #c678dd;">open</span>(<span style="color: #98be65;">"/Users/letranger/Downloads/images/encodings.pkl"</span>, <span style="color: #98be65;">"rb"</span>) <span style="color: #51afef;">as</span> f:
 <span class="linenr"> 7: </span>    <span style="color: #dcaeea;">known_encodings</span>, <span style="color: #dcaeea;">known_names</span> = pickle.load(f)
 <span class="linenr"> 8: </span>
@@ -946,28 +949,215 @@ OpenCV 也可以做人臉辨識（Face Detection / Recognition），而且它還
 </div>
 </div>
 </div>
-<div id="outline-container-org17888f3" class="outline-3">
-<h3 id="org17888f3"><span class="section-number-3">3.5.</span> YOLO + Object Detection</h3>
+<div id="outline-container-org415c290" class="outline-3">
+<h3 id="org415c290"><span class="section-number-3">3.4.</span> 中文問題</h3>
+<div class="outline-text-3" id="text-3-4">
+<p>
+上面的程式碼使用了 OpenCV 的預設字型，這個字型不支援中文，所以如果要顯示中文的話需要使用其他的字型。這裡提供另一個版本的範例程式。如此一來就可以在畫面上顯示中文的姓名了。例如<br />
+</p>
+<ul class="org-ul">
+<li>王小明_1.jpg<br /></li>
+<li>王小明_2.jpg<br /></li>
+<li>&#x2026;<br /></li>
+<li>王小明_10.jpg<br /></li>
+<li>&#x2026;<br /></li>
+<li>陳大明_1.jpg<br /></li>
+<li>陳大明_2.jpg<br /></li>
+<li>&#x2026;<br /></li>
+<li>陳大明_9.jpg<br /></li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">from</span> PIL <span style="color: #51afef;">import</span> ImageFont, ImageDraw, Image
+<span class="linenr"> 2: </span><span style="color: #51afef;">import</span> cv2, face_recognition, platform, pickle
+<span class="linenr"> 3: </span><span style="color: #51afef;">from</span> ultralytics <span style="color: #51afef;">import</span> YOLO
+<span class="linenr"> 4: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 5: </span>
+<span class="linenr"> 6: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#26681;&#25818;&#20316;&#26989;&#31995;&#32113;&#33258;&#21205;&#36984;&#25799;&#20013;&#25991;&#23383;&#22411;</span>
+<span class="linenr"> 7: </span><span style="color: #dcaeea;">system</span> = platform.system()
+<span class="linenr"> 8: </span><span style="color: #51afef;">if</span> system == <span style="color: #98be65;">"Windows"</span>:
+<span class="linenr"> 9: </span>    <span style="color: #dcaeea;">font_path</span> = <span style="color: #98be65;">"C:/Windows/Fonts/msjh.ttc"</span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24494;&#36575;&#27491;&#40657;&#39636;</span>
+<span class="linenr">10: </span><span style="color: #51afef;">elif</span> system == <span style="color: #98be65;">"Darwin"</span>:
+<span class="linenr">11: </span>    <span style="color: #dcaeea;">font_path</span> = <span style="color: #98be65;">"/System/Library/Fonts/STHeiti Medium.ttc"</span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">macOS &#33775;&#25991;&#40657;&#39636;</span>
+<span class="linenr">12: </span><span style="color: #51afef;">else</span>:
+<span class="linenr">13: </span>    <span style="color: #dcaeea;">font_path</span> = <span style="color: #98be65;">"/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc"</span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Linux (&#36889;&#20491;&#38656;&#33258;&#24049;&#23433;&#35037;&#24605;&#28304;&#40657;&#39636;)</span>
+<span class="linenr">14: </span><span style="color: #dcaeea;">font</span> = ImageFont.truetype(font_path, <span style="color: #da8548; font-weight: bold;">32</span>)
+<span class="linenr">15: </span>
+<span class="linenr">16: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21855;&#29992; MacBook &#30340;&#20839;&#24314; webcam</span>
+<span class="linenr">17: </span><span style="color: #dcaeea;">cap</span> = cv2.VideoCapture(<span style="color: #da8548; font-weight: bold;">0</span>)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">0 &#26159;&#38928;&#35373;&#25885;&#24433;&#27231;&#35037;&#32622;</span>
+<span class="linenr">18: </span>
+<span class="linenr">19: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24213;&#19979;&#30340;pkl&#35201;&#25913;&#25104;&#20320;&#33258;&#24049;&#30340;&#36335;&#24465;</span>
+<span class="linenr">20: </span><span style="color: #51afef;">with</span> <span style="color: #c678dd;">open</span>(<span style="color: #98be65;">"/Users/letranger/Downloads/images/encodings.pkl"</span>, <span style="color: #98be65;">"rb"</span>) <span style="color: #51afef;">as</span> f:
+<span class="linenr">21: </span>    <span style="color: #dcaeea;">known_encodings</span>, <span style="color: #dcaeea;">known_names</span> = pickle.load(f)
+<span class="linenr">22: </span>
+<span class="linenr">23: </span><span style="color: #dcaeea;">model</span> = YOLO(<span style="color: #98be65;">"yolov8n.pt"</span>)
+<span class="linenr">24: </span>
+<span class="linenr">25: </span>
+<span class="linenr">26: </span>
+<span class="linenr">27: </span><span style="color: #51afef;">while</span> <span style="color: #a9a1e1;">True</span>:
+<span class="linenr">28: </span>    <span style="color: #dcaeea;">ret</span>, <span style="color: #dcaeea;">frame</span> = cap.read()
+<span class="linenr">29: </span>    <span style="color: #dcaeea;">results</span> = model(frame)
+<span class="linenr">30: </span>
+<span class="linenr">31: </span>    <span style="color: #51afef;">for</span> box <span style="color: #51afef;">in</span> results[<span style="color: #da8548; font-weight: bold;">0</span>].boxes.xyxy:
+<span class="linenr">32: </span>        <span style="color: #dcaeea;">x1</span>, <span style="color: #dcaeea;">y1</span>, <span style="color: #dcaeea;">x2</span>, <span style="color: #dcaeea;">y2</span> = <span style="color: #c678dd;">map</span>(<span style="color: #c678dd;">int</span>, box)
+<span class="linenr">33: </span>        <span style="color: #dcaeea;">face_img</span> = frame[y1:y2, x1:x2]
+<span class="linenr">34: </span>        <span style="color: #dcaeea;">rgb_face</span> = cv2.cvtColor(face_img, cv2.COLOR_BGR2RGB)
+<span class="linenr">35: </span>
+<span class="linenr">36: </span>        <span style="color: #dcaeea;">encodings</span> = face_recognition.face_encodings(rgb_face)
+<span class="linenr">37: </span>        <span style="color: #51afef;">if</span> encodings:
+<span class="linenr">38: </span>            <span style="color: #51afef;">match</span> = face_recognition.compare_faces(known_encodings, encodings[<span style="color: #da8548; font-weight: bold;">0</span>])
+<span class="linenr">39: </span>            <span style="color: #dcaeea;">name</span> = known_names[<span style="color: #51afef;">match</span>.index(<span style="color: #a9a1e1;">True</span>)] <span style="color: #51afef;">if</span> <span style="color: #a9a1e1;">True</span> <span style="color: #51afef;">in</span> <span style="color: #51afef;">match</span> <span style="color: #51afef;">else</span> <span style="color: #98be65;">"&#26410;&#30693;"</span>
+<span class="linenr">40: </span>
+<span class="linenr">41: </span>            <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23559; OpenCV &#22294;&#20687;&#36681;&#25104; PIL &#26684;&#24335;&#20358;&#30059;&#20013;&#25991;&#23383;</span>
+<span class="linenr">42: </span>            <span style="color: #dcaeea;">frame_pil</span> = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+<span class="linenr">43: </span>            <span style="color: #dcaeea;">draw</span> = ImageDraw.Draw(frame_pil)
+<span class="linenr">44: </span>            draw.text((x1, y1-<span style="color: #da8548; font-weight: bold;">40</span>), name, font=font, fill=(<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">255</span>, <span style="color: #da8548; font-weight: bold;">0</span>))  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39023;&#31034;&#20013;&#25991;</span>
+<span class="linenr">45: </span>
+<span class="linenr">46: </span>            <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36681;&#22238; OpenCV &#22294;&#20687;</span>
+<span class="linenr">47: </span>            <span style="color: #dcaeea;">frame</span> = cv2.cvtColor(np.array(frame_pil), cv2.COLOR_RGB2BGR)
+<span class="linenr">48: </span>
+<span class="linenr">49: </span>    cv2.imshow(<span style="color: #98be65;">"Face Recognition + YOLO"</span>, frame)
+<span class="linenr">50: </span>    <span style="color: #51afef;">if</span> cv2.waitKey(<span style="color: #da8548; font-weight: bold;">1</span>) &amp; 0xFF == <span style="color: #c678dd;">ord</span>(<span style="color: #98be65;">'q'</span>):
+<span class="linenr">51: </span>        <span style="color: #51afef;">break</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org7e3d1b3" class="outline-3">
+<h3 id="org7e3d1b3"><span class="section-number-3">3.5.</span> YOLO + Face Recognition</h3>
 <div class="outline-text-3" id="text-3-5">
 <p>
-上面的程式示範了如何使用 YOLOv8 來進行即時人臉辨識，這裡的程式碼是使用 YOLOv8 的預訓練模型來進行人臉及物件偵測，並且將檢測到的人臉/物件畫在圖片上。<br />
+上面的程式只能用來辨識你所拍到的人臉，因為我們用的模型是利用face_recognition訓練出來的(save_encodings.py)，如果我們希望在辨識自訂人像的同時也能辨識出其他物件，像是貓、狗、車子等，這時候就需要使用 YOLOv8 的預訓練模型來進行物件偵測了。<br />
 </p>
 
+<p>
+程式設計的邏輯如下：<br />
+</p>
+<ol class="org-ol">
+<li>先使用YOLO進行webcam即時偵測，讓YOLO來辨識畫面上有什麼物件。<br /></li>
+<li>如果畫面中出現人臉(0: person)，再利用剛剛寫的realtime_recognition.py來進行人臉辨識。<br /></li>
+</ol>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> cv2,
+<span class="linenr"> 2: </span><span style="color: #51afef;">import</span> pickle
+<span class="linenr"> 3: </span><span style="color: #51afef;">import</span> platform
+<span class="linenr"> 4: </span><span style="color: #51afef;">import</span> face_recognition
+<span class="linenr"> 5: </span><span style="color: #51afef;">from</span> ultralytics <span style="color: #51afef;">import</span> YOLO
+<span class="linenr"> 6: </span><span style="color: #51afef;">from</span> PIL <span style="color: #51afef;">import</span> Image, ImageDraw, ImageFont
+<span class="linenr"> 7: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 8: </span>
+<span class="linenr"> 9: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36617;&#20837; YOLOv8 &#27169;&#22411;</span>
+<span class="linenr">10: </span><span style="color: #dcaeea;">model</span> = YOLO(<span style="color: #98be65;">"yolov8n.pt"</span>)
+<span class="linenr">11: </span>
+<span class="linenr">12: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36617;&#20837;&#33225;&#37096;&#29305;&#24501;&#36039;&#26009;</span>
+<span class="linenr">13: </span><span style="color: #51afef;">with</span> <span style="color: #c678dd;">open</span>(<span style="color: #98be65;">"/Users/letranger/Dropbox/YOLO8/faces/encodings.pkl"</span>, <span style="color: #98be65;">"rb"</span>) <span style="color: #51afef;">as</span> f:
+<span class="linenr">14: </span>    <span style="color: #dcaeea;">known_encodings</span>, <span style="color: #dcaeea;">known_names</span> = pickle.load(f)
+<span class="linenr">15: </span>
+<span class="linenr">16: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36617;&#20837;&#20013;&#25991;&#23383;&#22411;</span>
+<span class="linenr">17: </span><span style="color: #dcaeea;">system</span> = platform.system()
+<span class="linenr">18: </span><span style="color: #51afef;">if</span> system == <span style="color: #98be65;">"Windows"</span>:
+<span class="linenr">19: </span>    <span style="color: #dcaeea;">font_path</span> = <span style="color: #98be65;">"C:/Windows/Fonts/msjh.ttc"</span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24494;&#36575;&#27491;&#40657;&#39636;</span>
+<span class="linenr">20: </span><span style="color: #51afef;">elif</span> system == <span style="color: #98be65;">"Darwin"</span>:
+<span class="linenr">21: </span>    <span style="color: #dcaeea;">font_path</span> = <span style="color: #98be65;">"/System/Library/Fonts/STHeiti Medium.ttc"</span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">macOS &#33775;&#25991;&#40657;&#39636;</span>
+<span class="linenr">22: </span><span style="color: #51afef;">else</span>:
+<span class="linenr">23: </span>    <span style="color: #dcaeea;">font_path</span> = <span style="color: #98be65;">"/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc"</span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Linux &#24605;&#28304;&#40657;&#39636;&#65288;&#38656;&#33258;&#34892;&#23433;&#35037;&#65289;</span>
+<span class="linenr">24: </span>
+<span class="linenr">25: </span><span style="color: #dcaeea;">font</span> = ImageFont.truetype(font_path, <span style="color: #da8548; font-weight: bold;">28</span>)
+<span class="linenr">26: </span>
+<span class="linenr">27: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38283;&#21855;&#25885;&#24433;&#27231;</span>
+<span class="linenr">28: </span><span style="color: #dcaeea;">cap</span> = cv2.VideoCapture(<span style="color: #da8548; font-weight: bold;">0</span>)
+<span class="linenr">29: </span>
+<span class="linenr">30: </span><span style="color: #51afef;">while</span> <span style="color: #a9a1e1;">True</span>:
+<span class="linenr">31: </span>    <span style="color: #dcaeea;">ret</span>, <span style="color: #dcaeea;">frame</span> = cap.read()
+<span class="linenr">32: </span>    <span style="color: #51afef;">if</span> <span style="color: #51afef;">not</span> ret:
+<span class="linenr">33: </span>        <span style="color: #51afef;">break</span>
+<span class="linenr">34: </span>
+<span class="linenr">35: </span>    <span style="color: #dcaeea;">results</span> = model(frame)
+<span class="linenr">36: </span>    <span style="color: #dcaeea;">boxes</span> = results[<span style="color: #da8548; font-weight: bold;">0</span>].boxes
+<span class="linenr">37: </span>    <span style="color: #dcaeea;">cls_names</span> = results[<span style="color: #da8548; font-weight: bold;">0</span>].names
+<span class="linenr">38: </span>
+<span class="linenr">39: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#29992; PIL &#30059;&#22294;&#65292;&#25903;&#25588;&#20013;&#25991;</span>
+<span class="linenr">40: </span>    <span style="color: #dcaeea;">image_pil</span> = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+<span class="linenr">41: </span>    <span style="color: #dcaeea;">draw</span> = ImageDraw.Draw(image_pil)
+<span class="linenr">42: </span>
+<span class="linenr">43: </span>    <span style="color: #51afef;">for</span> i, box <span style="color: #51afef;">in</span> <span style="color: #c678dd;">enumerate</span>(boxes.xyxy):
+<span class="linenr">44: </span>        <span style="color: #dcaeea;">x1</span>, <span style="color: #dcaeea;">y1</span>, <span style="color: #dcaeea;">x2</span>, <span style="color: #dcaeea;">y2</span> = <span style="color: #c678dd;">map</span>(<span style="color: #c678dd;">int</span>, box.tolist())
+<span class="linenr">45: </span>        <span style="color: #dcaeea;">cls_id</span> = <span style="color: #c678dd;">int</span>(boxes.cls[i])
+<span class="linenr">46: </span>
+<span class="linenr">47: </span>        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#22914;&#26524;&#26159;&#20154;&#65292;&#20570;&#33225;&#37096;&#36776;&#35672;</span>
+<span class="linenr">48: </span>        <span style="color: #51afef;">if</span> cls_id == <span style="color: #da8548; font-weight: bold;">0</span>:
+<span class="linenr">49: </span>            <span style="color: #dcaeea;">face_img</span> = frame[y1:y2, x1:x2]
+<span class="linenr">50: </span>            <span style="color: #dcaeea;">rgb_face</span> = cv2.cvtColor(face_img, cv2.COLOR_BGR2RGB)
+<span class="linenr">51: </span>            <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20351;&#29992; face_recognition &#36914;&#34892;&#33225;&#37096;&#36776;&#35672;</span>
+<span class="linenr">52: </span>            <span style="color: #dcaeea;">encodings</span> = face_recognition.face_encodings(rgb_face)
+<span class="linenr">53: </span>
+<span class="linenr">54: </span>            <span style="color: #dcaeea;">name</span> = <span style="color: #98be65;">"&#26410;&#30693;"</span>
+<span class="linenr">55: </span>            <span style="color: #51afef;">if</span> encodings:
+<span class="linenr">56: </span>                <span style="color: #dcaeea;">matches</span> = face_recognition.compare_faces(known_encodings, encodings[<span style="color: #da8548; font-weight: bold;">0</span>])
+<span class="linenr">57: </span>                <span style="color: #51afef;">if</span> <span style="color: #a9a1e1;">True</span> <span style="color: #51afef;">in</span> matches:
+<span class="linenr">58: </span>                    <span style="color: #dcaeea;">name</span> = known_names[matches.index(<span style="color: #a9a1e1;">True</span>)]
+<span class="linenr">59: </span>
+<span class="linenr">60: </span>            draw.rectangle([(x1, y1), (x2, y2)], outline=<span style="color: #98be65;">"green"</span>, width=<span style="color: #da8548; font-weight: bold;">3</span>)
+<span class="linenr">61: </span>            draw.text((x1, y1 - <span style="color: #da8548; font-weight: bold;">30</span>), name, font=font, fill=(<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">255</span>, <span style="color: #da8548; font-weight: bold;">0</span>))
+<span class="linenr">62: </span>
+<span class="linenr">63: </span>        <span style="color: #51afef;">else</span>:
+<span class="linenr">64: </span>            <span style="color: #dcaeea;">label</span> = cls_names[cls_id]
+<span class="linenr">65: </span>            draw.rectangle([(x1, y1), (x2, y2)], outline=<span style="color: #98be65;">"blue"</span>, width=<span style="color: #da8548; font-weight: bold;">3</span>)
+<span class="linenr">66: </span>            draw.text((x1, y1 - <span style="color: #da8548; font-weight: bold;">30</span>), label, font=font, fill=(<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">255</span>))
+<span class="linenr">67: </span>
+<span class="linenr">68: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39023;&#31034;&#32080;&#26524;</span>
+<span class="linenr">69: </span>    <span style="color: #dcaeea;">frame</span> = cv2.cvtColor(np.array(image_pil), cv2.COLOR_RGB2BGR)
+<span class="linenr">70: </span>    cv2.imshow(<span style="color: #98be65;">"YOLO + Face Recognition &#20013;&#25991;&#29256;"</span>, frame)
+<span class="linenr">71: </span>    <span style="color: #51afef;">if</span> cv2.waitKey(<span style="color: #da8548; font-weight: bold;">1</span>) &amp; 0xFF == <span style="color: #c678dd;">ord</span>(<span style="color: #98be65;">'q'</span>):
+<span class="linenr">72: </span>        <span style="color: #51afef;">break</span>
+<span class="linenr">73: </span>
+<span class="linenr">74: </span>cap.release()
+<span class="linenr">75: </span>cv2.destroyAllWindows()
+<span class="linenr">76: </span>
+</pre>
+</div>
+</div>
+<div id="outline-container-orgaddfb1d" class="outline-4">
+<h4 id="orgaddfb1d"><span class="section-number-4">3.5.1.</span> 延伸應用</h4>
+<div class="outline-text-4" id="text-3-5-1">
+<p>
+體驗完上面的程式後，你可以試著將這個程式碼擴展到其他的應用場景，例如：<br />
+</p>
+<ol class="org-ol">
+<li>辨識你家的貓或狗，並且在畫面上顯示牠們的名字。<br /></li>
+<li>辨識門口的訪客，並且在畫面上顯示他們的名字。<br /></li>
+<li>自動拍照，當偵測到你或你的朋友時，拍下照片並儲存到指定的資料夾中。<br /></li>
+<li>結合ESP32等嵌入式設備，用來控制自動門禁系統，當偵測到你或你的朋友時，自動開門。<br /></li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org68ad6d2" class="outline-2">
+<h2 id="org68ad6d2"><span class="section-number-2">4.</span> YOLO + Object Detection</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+YOLO目前可以辨識的物件類別有80種，包含人、貓、狗、汽車、飛機等，如果你想為YOLO新增一些其他物品的辨識功能(如學生證、原子筆)，那我們就要準備好大量的訓練資料(照片及標註)，然後使用 YOLOv8 來進行訓練。照片部份可以使用手機拍攝，然後上傳到電腦中。標註的部份可以使用<a href="https://www.makesense.ai/">makesense.ai</a>網站來進行標註，這個網站提供了簡單易用的標註工具，可以讓你快速地為圖片加上標籤與邊界框。<br />
+</p>
+</div>
+<div id="outline-container-orgd7a93b9" class="outline-3">
+<h3 id="orgd7a93b9"><span class="section-number-3">4.1.</span> 設計流程</h3>
+<div class="outline-text-3" id="text-4-1">
 <p>
 整個流程大致如下：<br />
 </p>
 <ol class="org-ol">
 <li>建立資料夾：在你的Python Project資料夾下建一個images資料夾，裡面再建一個train資料夾與val資料夾，分別放訓練與驗證的圖片。<br /></li>
-<li>準備資料集：為每位組員和要拍攝的物件準備至少 10 張圖片(各種角度及光線)，大概7張放在images/train中，3張放images/val中，照片數量越多越好。<br /></li>
+<li>準備資料集：為每位組員和要拍攝的物件準備至少 15 張圖片(各種角度及光線，越多越好)，大概10張放在images/train中，5張放images/val中，照片數量越多越好。<br /></li>
+<li>一種偷懶的做法是每種圖片拍10張，train和val放一樣的內容&#x2026;.壞處是會導致模型過擬合(overfitting)，所以建議還是要分開。<br /></li>
 <li>為照片資料加上標籤：使用<a href="https://www.makesense.ai/">makesense.ai</a>網站上傳圖片，加入label並且標註每一個物件的邊界框，然後下載標註好的資料。<br /></li>
 <li>生成data.yaml檔案：這個檔案是用來告訴 YOLOv8 你的資料集的結構，包括訓練資料和驗證資料的路徑，以及物件的類別名稱。<br /></li>
 <li>訓練模型：使用 YOLOv8 的預訓練模型來進行物件偵測，並且將檢測到的物件畫在圖片上。<br /></li>
 <li>測試模型：使用 YOLOv8 的預訓練模型來進行物件偵測，並且將檢測到的物件畫在圖片上。<br /></li>
 </ol>
 </div>
-<div id="outline-container-org20475b4" class="outline-4">
-<h4 id="org20475b4"><span class="section-number-4">3.5.1.</span> 系統環境</h4>
-<div class="outline-text-4" id="text-3-5-1">
+<div id="outline-container-orgcfda11c" class="outline-4">
+<h4 id="orgcfda11c"><span class="section-number-4">4.1.1.</span> 系統環境</h4>
+<div class="outline-text-4" id="text-4-1-1">
 <p>
 假設你的Python專案YOLO放在桌面(/Users/letranger/Desktop/YOLO)，大概的檔案結構如下：<br />
 </p>
@@ -984,22 +1174,22 @@ OpenCV 也可以做人臉辨識（Face Detection / Recognition），而且它還
 </div>
 </div>
 </div>
-<div id="outline-container-orged9f021" class="outline-4">
-<h4 id="orged9f021"><span class="section-number-4">3.5.2.</span> 準備圖片資料</h4>
-<div class="outline-text-4" id="text-3-5-2">
+<div id="outline-container-org9ca9cde" class="outline-4">
+<h4 id="org9ca9cde"><span class="section-number-4">4.1.2.</span> 準備圖片資料</h4>
+<div class="outline-text-4" id="text-4-1-2">
 <ul class="org-ul">
 <li>準備要拍攝的圖片，每種物件至少要有 10 張圖片，並且將這些圖片分別放到訓練資料夾(train)與驗證資料夾(val)中，每一種物體或人臉的照片請以 「物件名稱_編號」的方式命名，例如(這裡假設資料夾路徑為「/Users/student/Deskltop/YOLO/images/train」):<br />
 <ul class="org-ul">
 <li>dog_1.jpg<br /></li>
 <li>dog_2.jpg<br /></li>
 <li>&#x2026;<br /></li>
-<li>dog_7.jpg<br /></li>
+<li>dog_10.jpg<br /></li>
 <li>cat_1.jpg<br /></li>
 <li>cat_2.jpg<br /></li>
 <li>&#x2026;<br /></li>
-<li>cat_7.jpg<br /></li>
+<li>cat_10.jpg<br /></li>
 </ul></li>
-<li>另外再準備一組驗證集資料夾，裡面放 3 張圖片，命名規則與訓練集相同<br /></li>
+<li>另外再準備一組驗證集資料夾，裡面放另外5組圖片，命名規則與訓練集相同<br /></li>
 </ul>
 <div class="org-src-container">
 <pre class="src src-shell"><span class="linenr"> 1: </span>/Users/student/Desktop/YOLO
@@ -1023,15 +1213,15 @@ OpenCV 也可以做人臉辨識（Face Detection / Recognition），而且它還
 </div>
 </div>
 </div>
-<div id="outline-container-orgae51517" class="outline-4">
-<h4 id="orgae51517"><span class="section-number-4">3.5.3.</span> 設定標籤</h4>
-<div class="outline-text-4" id="text-3-5-3">
+<div id="outline-container-org5443477" class="outline-4">
+<h4 id="org5443477"><span class="section-number-4">4.1.3.</span> 設定標籤</h4>
+<div class="outline-text-4" id="text-4-1-3">
 <ol class="org-ol">
 <li><p>
 至<a href="https://www.makesense.ai/">https://www.makesense.ai/</a>網站上傳圖片，加入label並且標註每一個物件的邊界框<br />
 </p>
 
-<div id="org76ce82c" class="figure">
+<div id="org116088a" class="figure">
 <p><img src="images/MakeSense-1.png" alt="MakeSense-1.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 1: </span>Caption</p>
@@ -1042,7 +1232,7 @@ OpenCV 也可以做人臉辨識（Face Detection / Recognition），而且它還
 選擇 Export Annotations<br />
 </p>
 
-<div id="org96d554f" class="figure">
+<div id="org0c37fd1" class="figure">
 <p><img src="images/MakeSense-2.png" alt="MakeSense-2.png" width="400" /><br />
 </p>
 <p><span class="figure-number">Figure 2: </span>Caption</p>
@@ -1051,7 +1241,7 @@ OpenCV 也可以做人臉辨識（Face Detection / Recognition），而且它還
 以YOLO格式下載，並解壓縮檔案<br />
 </p>
 
-<div id="org665b29f" class="figure">
+<div id="org1948a58" class="figure">
 <p><img src="images/MakeSense-3.png" alt="MakeSense-3.png" width="400" /><br />
 </p>
 <p><span class="figure-number">Figure 3: </span>Caption</p>
@@ -1062,53 +1252,71 @@ OpenCV 也可以做人臉辨識（Face Detection / Recognition），而且它還
 分別把images中train與val的圖片上傳、標註資料、再下載zip檔、解壓縮zip，然後把相對應的txt移至labels中的train與val資料夾中<br />
 </p>
 
-<div id="org1d3e79b" class="figure">
+<div id="orgd8816a4" class="figure">
 <p><img src="images/MakeSense-4.png" alt="MakeSense-4.png" width="500" /><br />
 </p>
 <p><span class="figure-number">Figure 4: </span>Caption</p>
 </div></li>
 </ol>
 <div class="org-src-container">
-<pre class="src src-shell"><span class="linenr"> 1: </span>/Users/letranger/Desktop/YOLO
-<span class="linenr"> 2: </span>&#9500;&#9472;&#9472; main.py
-<span class="linenr"> 3: </span>&#9500;&#9472;&#9472; images
-<span class="linenr"> 4: </span>&#9474;&#160;&#160; &#9500;&#9472;&#9472; train
-<span class="linenr"> 5: </span>&#9474;&#160;&#160; &#9474;&#160;&#160; &#9500;&#9472;&#9472; CoffeeCup_1.jpg
-<span class="linenr"> 6: </span>&#9474;&#160;&#160; &#9474;&#160;&#160; &#9500;&#9472;&#9472; CoffeeCup_2.jpg
-<span class="linenr"> 7: </span>....
-<span class="linenr"> 8: </span>&#9474;&#160;&#160; &#9474;&#160;&#160; &#9500;&#9472;&#9472; CryBaby_1.jpg
-<span class="linenr"> 9: </span>&#9474;&#160;&#160; &#9474;&#160;&#160; &#9500;&#9472;&#9472; CryBaby_2.jpg
-<span class="linenr">10: </span>...
-<span class="linenr">11: </span>&#9474;&#160;&#160; &#9492;&#9472;&#9472; val
-<span class="linenr">12: </span>&#9474;&#160;&#160;     &#9500;&#9472;&#9472; CoffeeCup_11.jpg
-<span class="linenr">13: </span>&#9474;&#160;&#160;     &#9500;&#9472;&#9472; CoffeeCup_12.jpg
-<span class="linenr">14: </span>...
-<span class="linenr">15: </span>&#9474;&#160;&#160;     &#9500;&#9472;&#9472; CryBaby_11.jpg
-<span class="linenr">16: </span>&#9474;&#160;&#160;     &#9500;&#9472;&#9472; CryBaby_12.jpg
-<span class="linenr">17: </span>...
-<span class="linenr">18: </span>&#9500;&#9472;&#9472; labels
-<span class="linenr">19: </span>&#9474;&#160;&#160; &#9500;&#9472;&#9472; train <span style="color: #51afef;">(</span>&#36889;&#35041;&#26159;&#35347;&#32244;&#38598;&#22294;&#29255;&#30340;annotation<span style="color: #51afef;">)</span>
-<span class="linenr">20: </span>&#9474;&#160;&#160; &#9474;&#160;&#160; &#9500;&#9472;&#9472; CoffeeCup_1.txt
-<span class="linenr">21: </span>&#9474;&#160;&#160; &#9474;&#160;&#160; &#9500;&#9472;&#9472; CoffeeCup_2.txt
-<span class="linenr">22: </span>...
-<span class="linenr">23: </span>&#9474;&#160;&#160; &#9474;&#160;&#160; &#9500;&#9472;&#9472; CryBaby_1.txt
-<span class="linenr">24: </span>&#9474;&#160;&#160; &#9474;&#160;&#160; &#9500;&#9472;&#9472; CryBaby_2.txt
-<span class="linenr">25: </span>...
-<span class="linenr">26: </span>&#9474;&#160;&#160; &#9500;&#9472;&#9472; val<span style="color: #51afef;">(</span>&#36889;&#35041;&#26159;&#39511;&#35657;&#38598;&#22294;&#29255;&#30340;annotation<span style="color: #51afef;">)</span>
-<span class="linenr">27: </span>&#9474;&#160;&#160; &#9474;&#160;&#160; &#9500;&#9472;&#9472; CoffeeCup_11.txt
-<span class="linenr">28: </span>&#9474;&#160;&#160; &#9474;&#160;&#160; &#9500;&#9472;&#9472; CoffeeCup_12.txt
-<span class="linenr">29: </span>...
-<span class="linenr">30: </span>&#9474;&#160;&#160; &#9474;&#160;&#160; &#9500;&#9472;&#9472; CryBaby_11.txt
-<span class="linenr">31: </span>&#9474;&#160;&#160; &#9474;&#160;&#160; &#9500;&#9472;&#9472; CryBaby_12.txt
-<span class="linenr">32: </span>...
-<span class="linenr">33: </span>&#9492;&#9472;&#9472; yolov8n.pt
+<pre class="src src-shell"><span class="linenr"> 1: </span>
+<span class="linenr"> 2: </span>/Users/letranger/Desktop/YOLO
+<span class="linenr"> 3: </span>&#9500;&#9472;&#9472; main.py
+<span class="linenr"> 4: </span>&#9500;&#9472;&#9472; images
+<span class="linenr"> 5: </span>&#9474;&#160;&#160; &#9500;&#9472;&#9472; train
+<span class="linenr"> 6: </span>&#9474;&#160;&#160; &#9474;&#160;&#160; &#9500;&#9472;&#9472; &#30382;&#23610;_1.jpg
+<span class="linenr"> 7: </span>&#9474;&#160;&#160; &#9474;&#160;&#160; &#9500;&#9472;&#9472; &#30382;&#23610;_2.jpg
+<span class="linenr"> 8: </span>....
+<span class="linenr"> 9: </span>&#9474;&#160;&#160; &#9474;&#160;&#160; &#9500;&#9472;&#9472; &#23416;&#29983;&#35657;_1.jpg
+<span class="linenr">10: </span>&#9474;&#160;&#160; &#9474;&#160;&#160; &#9500;&#9472;&#9472; &#23416;&#29983;&#35657;_2.jpg
+<span class="linenr">11: </span>...
+<span class="linenr">12: </span>&#9474;&#160;&#160; &#9492;&#9472;&#9472; val
+<span class="linenr">13: </span>&#9474;&#160;&#160;     &#9500;&#9472;&#9472; &#30382;&#23610;_11.jpg
+<span class="linenr">14: </span>&#9474;&#160;&#160;     &#9500;&#9472;&#9472; &#30382;&#23610;_12.jpg
+<span class="linenr">15: </span>...
+<span class="linenr">16: </span>&#9474;&#160;&#160;     &#9500;&#9472;&#9472; &#23416;&#29983;&#35657;_11.jpg
+<span class="linenr">17: </span>&#9474;&#160;&#160;     &#9500;&#9472;&#9472; &#23416;&#29983;&#35657;_12.jpg
+<span class="linenr">18: </span>...
+<span class="linenr">19: </span>&#9500;&#9472;&#9472; labels
+<span class="linenr">20: </span>&#9474;&#160;&#160; &#9500;&#9472;&#9472; train <span style="color: #51afef;">(</span>&#36889;&#35041;&#26159;&#35347;&#32244;&#38598;&#22294;&#29255;&#30340;annotation<span style="color: #51afef;">)</span>
+<span class="linenr">21: </span>&#9474;&#160;&#160; &#9474;&#160;&#160; &#9500;&#9472;&#9472; &#30382;&#23610;_1.txt
+<span class="linenr">22: </span>&#9474;&#160;&#160; &#9474;&#160;&#160; &#9500;&#9472;&#9472; &#30382;&#23610;_2.txt
+<span class="linenr">23: </span>...
+<span class="linenr">24: </span>&#9474;&#160;&#160; &#9474;&#160;&#160; &#9500;&#9472;&#9472; &#23416;&#29983;&#35657;_1.txt
+<span class="linenr">25: </span>&#9474;&#160;&#160; &#9474;&#160;&#160; &#9500;&#9472;&#9472; &#23416;&#29983;&#35657;_2.txt
+<span class="linenr">26: </span>...
+<span class="linenr">27: </span>&#9474;&#160;&#160; &#9500;&#9472;&#9472; val<span style="color: #51afef;">(</span>&#36889;&#35041;&#26159;&#39511;&#35657;&#38598;&#22294;&#29255;&#30340;annotation<span style="color: #51afef;">)</span>
+<span class="linenr">28: </span>&#9474;&#160;&#160; &#9474;&#160;&#160; &#9500;&#9472;&#9472; &#30382;&#23610;_11.txt
+<span class="linenr">29: </span>&#9474;&#160;&#160; &#9474;&#160;&#160; &#9500;&#9472;&#9472; &#30382;&#23610;_12.txt
+<span class="linenr">30: </span>...
+<span class="linenr">31: </span>&#9474;&#160;&#160; &#9474;&#160;&#160; &#9500;&#9472;&#9472; &#23416;&#29983;&#35657;_11.txt
+<span class="linenr">32: </span>&#9474;&#160;&#160; &#9474;&#160;&#160; &#9500;&#9472;&#9472; &#23416;&#29983;&#35657;_12.txt
+<span class="linenr">33: </span>...
+<span class="linenr">34: </span>&#9492;&#9472;&#9472; yolov8n.pt
 </pre>
 </div>
+<p>
+我的資枓夾結構如下：<br />
+</p>
+
+<div id="orge2fc89d" class="figure">
+<p><img src="images/2025-05-01_13-35-40.png" alt="2025-05-01_13-35-40.png" width="500" /><br />
+</p>
+</div>
+
+<p>
+train資料夾裡的檔案內容如下:<br />
+</p>
+
+<div id="orga84e8f0" class="figure">
+<p><img src="images/2025-05-01_13-35-23.png" alt="2025-05-01_13-35-23.png" width="500" /><br />
+</p>
 </div>
 </div>
-<div id="outline-container-orgeb8f47e" class="outline-4">
-<h4 id="orgeb8f47e"><span class="section-number-4">3.5.4.</span> 編輯data.yaml</h4>
-<div class="outline-text-4" id="text-3-5-4">
+</div>
+<div id="outline-container-org9ab818e" class="outline-4">
+<h4 id="org9ab818e"><span class="section-number-4">4.1.4.</span> 編輯data.yaml</h4>
+<div class="outline-text-4" id="text-4-1-4">
 <ul class="org-ul">
 <li>nc: 物件種類<br /></li>
 <li>names: 所有的物件標籤，就是你在MakeSense中設定的label<br /></li>
@@ -1116,15 +1324,16 @@ OpenCV 也可以做人臉辨識（Face Detection / Recognition），而且它還
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span>train: /Users/student/Desktop/YOLO/images/train
 <span class="linenr">2: </span>val: /Users/student/Desktop/YOLO/images/val
-<span class="linenr">3: </span>nc: <span style="color: #da8548; font-weight: bold;">5</span>
-<span class="linenr">4: </span>names: [<span style="color: #98be65;">'CoffeeCup'</span>, <span style="color: #98be65;">'CryBaby'</span>, <span style="color: #98be65;">'DigitalFortress'</span>, <span style="color: #98be65;">'KeyChain'</span>, <span style="color: #98be65;">'SigBox'</span>]
+<span class="linenr">3: </span>nc: <span style="color: #da8548; font-weight: bold;">2</span>
+<span class="linenr">4: </span>names: [<span style="color: #98be65;">'&#30382;&#23610;'</span>, <span style="color: #98be65;">'&#23416;&#29983;&#35657;'</span>]
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-org100ee7f" class="outline-4">
-<h4 id="org100ee7f"><span class="section-number-4">3.5.5.</span> 訓練模型</h4>
-<div class="outline-text-4" id="text-3-5-5">
+</div>
+<div id="outline-container-org00bd924" class="outline-3">
+<h3 id="org00bd924"><span class="section-number-3">4.2.</span> 訓練模型</h3>
+<div class="outline-text-3" id="text-4-2">
 <div class="org-src-container">
 <pre class="src src-shell"><span class="linenr">1: </span>yolo detect train <span style="color: #dcaeea;">model</span>=yolov8n.pt <span style="color: #dcaeea;">data</span>=data.yaml <span style="color: #dcaeea;">epochs</span>=<span style="color: #da8548; font-weight: bold;">50</span> <span style="color: #dcaeea;">imgsz</span>=<span style="color: #da8548; font-weight: bold;">640</span>
 </pre>
@@ -1132,7 +1341,7 @@ OpenCV 也可以做人臉辨識（Face Detection / Recognition），而且它還
 <p>
 訓練結束後會出現如下資訊:<br />
 </p>
-<pre class="example" id="org8555f16">
+<pre class="example" id="org068a6b9">
 5 epochs completed in 0.015 hours.
 Optimizer stripped from /Users/letranger/Dropbox/notes/roam/runs/detect/train4/weights/last.pt, 6.2MB
 Optimizer stripped from /Users/letranger/Dropbox/notes/roam/runs/detect/train4/weights/best.pt, 6.2MB
@@ -1154,7 +1363,7 @@ Results saved to /Users/letranger/Desktop/yolo/runs/detect/train4
 <p>
 留意倒數第二列的資訊，這裡告訴你訓練後的模型存在什麼資料夾，內容如下：<br />
 </p>
-<pre class="example" id="orgb501e0a">
+<pre class="example" id="orgc93e3a9">
 ❯ ls -l /Users/letranger/Dropbox/notes/roam/runs/detect/train4
 total 9064
 -rw-r--r--@ 1 letranger  staff    1525  4 20 16:58 args.yaml
@@ -1180,47 +1389,202 @@ drwxr-xr-x@ 4 letranger  staff     128  4 20 16:59 weights
 </p>
 </div>
 </div>
-<div id="outline-container-org220324b" class="outline-4">
-<h4 id="org220324b"><span class="section-number-4">3.5.6.</span> 測試模型</h4>
-<div class="outline-text-4" id="text-3-5-6">
+<div id="outline-container-orgb737898" class="outline-3">
+<h3 id="orgb737898"><span class="section-number-3">4.3.</span> 測試模型</h3>
+<div class="outline-text-3" id="text-4-3">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> cv2
-<span class="linenr"> 2: </span><span style="color: #51afef;">from</span> ultralytics <span style="color: #51afef;">import</span> YOLO
-<span class="linenr"> 3: </span>
-<span class="linenr"> 4: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36617;&#20837;&#35347;&#32244;&#24460;&#27169;&#22411;</span>
-<span class="linenr"> 5: </span><span style="color: #dcaeea;">model</span> = YOLO(<span style="color: #98be65;">"/Users/letranger/Dropbox/notes/roam/runs/detect/train2/weights/best.pt"</span>)
+<span class="linenr"> 2: </span><span style="color: #51afef;">import</span> platform
+<span class="linenr"> 3: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 4: </span><span style="color: #51afef;">from</span> PIL <span style="color: #51afef;">import</span> Image, ImageDraw, ImageFont
+<span class="linenr"> 5: </span><span style="color: #51afef;">from</span> ultralytics <span style="color: #51afef;">import</span> YOLO
 <span class="linenr"> 6: </span>
-<span class="linenr"> 7: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21855;&#29992;&#20839;&#24314;&#25885;&#24433;&#27231;</span>
-<span class="linenr"> 8: </span><span style="color: #dcaeea;">cap</span> = cv2.VideoCapture(<span style="color: #da8548; font-weight: bold;">0</span>)
+<span class="linenr"> 7: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36617;&#20837;&#35347;&#32244;&#22909;&#30340;&#27169;&#22411;&#65292;&#36889;&#35041;&#30340;&#36335;&#24465;&#35201;&#25913;&#25104;&#20320;&#33258;&#24049;&#30340;&#65292;&#23526;&#38555;&#30340;&#36039;&#26009;&#22846;&#20301;&#22336;&#35531;&#21443;&#32771;&#19978;&#38754;&#35347;&#32244;&#27169;&#22411;&#30340;&#32080;&#26524;</span>
+<span class="linenr"> 8: </span><span style="color: #dcaeea;">model</span> = YOLO(<span style="color: #98be65;">"/Users/letranger/Desktop/YOLO/runs/detect/train11/weights/best.pt"</span>)
 <span class="linenr"> 9: </span>
-<span class="linenr">10: </span><span style="color: #51afef;">while</span> <span style="color: #a9a1e1;">True</span>:
-<span class="linenr">11: </span>    <span style="color: #dcaeea;">ret</span>, <span style="color: #dcaeea;">frame</span> = cap.read()
-<span class="linenr">12: </span>    <span style="color: #51afef;">if</span> <span style="color: #51afef;">not</span> ret:
-<span class="linenr">13: </span>        <span style="color: #51afef;">break</span>
-<span class="linenr">14: </span>
-<span class="linenr">15: </span>    <span style="color: #dcaeea;">results</span> = model(frame)
-<span class="linenr">16: </span>    <span style="color: #dcaeea;">annotated</span> = results[<span style="color: #da8548; font-weight: bold;">0</span>].plot()
-<span class="linenr">17: </span>
-<span class="linenr">18: </span>    cv2.imshow(<span style="color: #98be65;">"YOLOv8 Real-Time Detection"</span>, annotated)
-<span class="linenr">19: </span>    <span style="color: #51afef;">if</span> cv2.waitKey(<span style="color: #da8548; font-weight: bold;">1</span>) &amp; 0xFF == <span style="color: #c678dd;">ord</span>(<span style="color: #98be65;">'q'</span>):
-<span class="linenr">20: </span>        <span style="color: #51afef;">break</span>
-<span class="linenr">21: </span>
-<span class="linenr">22: </span>cap.release()
-<span class="linenr">23: </span>cv2.destroyAllWindows()
+<span class="linenr">10: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#26681;&#25818;&#20316;&#26989;&#31995;&#32113;&#36984;&#25799;&#20013;&#25991;&#23383;&#22411;</span>
+<span class="linenr">11: </span><span style="color: #dcaeea;">system</span> = platform.system()
+<span class="linenr">12: </span><span style="color: #51afef;">if</span> system == <span style="color: #98be65;">"Windows"</span>:
+<span class="linenr">13: </span>    <span style="color: #dcaeea;">font_path</span> = <span style="color: #98be65;">"C:/Windows/Fonts/msjh.ttc"</span>
+<span class="linenr">14: </span><span style="color: #51afef;">elif</span> system == <span style="color: #98be65;">"Darwin"</span>:
+<span class="linenr">15: </span>    <span style="color: #dcaeea;">font_path</span> = <span style="color: #98be65;">"/System/Library/Fonts/STHeiti Medium.ttc"</span>
+<span class="linenr">16: </span><span style="color: #51afef;">else</span>:
+<span class="linenr">17: </span>    <span style="color: #dcaeea;">font_path</span> = <span style="color: #98be65;">"/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc"</span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Linux &#24605;&#28304;&#40657;&#39636;&#65288;&#38656;&#20808;&#23433;&#35037;&#65289;</span>
+<span class="linenr">18: </span>
+<span class="linenr">19: </span><span style="color: #dcaeea;">font</span> = ImageFont.truetype(font_path, <span style="color: #da8548; font-weight: bold;">28</span>)
+<span class="linenr">20: </span>
+<span class="linenr">21: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21855;&#29992;&#25885;&#24433;&#27231;</span>
+<span class="linenr">22: </span><span style="color: #dcaeea;">cap</span> = cv2.VideoCapture(<span style="color: #da8548; font-weight: bold;">0</span>)
+<span class="linenr">23: </span>
+<span class="linenr">24: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21487;&#36984;&#65306;&#35373;&#23450;&#35299;&#26512;&#24230;&#25552;&#21319;&#20597;&#28204;&#25928;&#26524;</span>
+<span class="linenr">25: </span>cap.<span style="color: #c678dd;">set</span>(cv2.CAP_PROP_FRAME_WIDTH, <span style="color: #da8548; font-weight: bold;">640</span>)
+<span class="linenr">26: </span>cap.<span style="color: #c678dd;">set</span>(cv2.CAP_PROP_FRAME_HEIGHT, <span style="color: #da8548; font-weight: bold;">480</span>)
+<span class="linenr">27: </span>
+<span class="linenr">28: </span><span style="color: #51afef;">while</span> <span style="color: #a9a1e1;">True</span>:
+<span class="linenr">29: </span>    <span style="color: #dcaeea;">ret</span>, <span style="color: #dcaeea;">frame</span> = cap.read()
+<span class="linenr">30: </span>    <span style="color: #51afef;">if</span> <span style="color: #51afef;">not</span> ret:
+<span class="linenr">31: </span>        <span style="color: #51afef;">break</span>
+<span class="linenr">32: </span>
+<span class="linenr">33: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">YOLO &#25512;&#35542;&#65288;&#21487;&#21152;&#20837; conf=0.1 &#38477;&#20302;&#38272;&#27323;&#65289;</span>
+<span class="linenr">34: </span>    <span style="color: #dcaeea;">results</span> = model(frame, conf=<span style="color: #da8548; font-weight: bold;">0.1</span>)
+<span class="linenr">35: </span>
+<span class="linenr">36: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20351;&#29992; PIL &#34389;&#29702;&#20013;&#25991;&#23383;&#32362;&#22294;</span>
+<span class="linenr">37: </span>    <span style="color: #dcaeea;">image_pil</span> = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+<span class="linenr">38: </span>    <span style="color: #dcaeea;">draw</span> = ImageDraw.Draw(image_pil)
+<span class="linenr">39: </span>
+<span class="linenr">40: </span>    <span style="color: #51afef;">for</span> box <span style="color: #51afef;">in</span> results[<span style="color: #da8548; font-weight: bold;">0</span>].boxes:
+<span class="linenr">41: </span>        <span style="color: #dcaeea;">cls_id</span> = <span style="color: #c678dd;">int</span>(box.cls[<span style="color: #da8548; font-weight: bold;">0</span>])
+<span class="linenr">42: </span>        <span style="color: #dcaeea;">conf</span> = <span style="color: #c678dd;">float</span>(box.conf[<span style="color: #da8548; font-weight: bold;">0</span>])
+<span class="linenr">43: </span>        <span style="color: #dcaeea;">label</span> = f<span style="color: #98be65;">"</span>{model.names[cls_id]}<span style="color: #98be65;"> (</span>{conf:.2f}<span style="color: #98be65;">)"</span>
+<span class="linenr">44: </span>
+<span class="linenr">45: </span>        <span style="color: #dcaeea;">x1</span>, <span style="color: #dcaeea;">y1</span>, <span style="color: #dcaeea;">x2</span>, <span style="color: #dcaeea;">y2</span> = <span style="color: #c678dd;">map</span>(<span style="color: #c678dd;">int</span>, box.xyxy[<span style="color: #da8548; font-weight: bold;">0</span>])
+<span class="linenr">46: </span>        draw.rectangle([(x1, y1), (x2, y2)], outline=(<span style="color: #da8548; font-weight: bold;">255</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>), width=<span style="color: #da8548; font-weight: bold;">3</span>)
+<span class="linenr">47: </span>        draw.text((x1, y1 - <span style="color: #da8548; font-weight: bold;">30</span>), label, font=font, fill=(<span style="color: #da8548; font-weight: bold;">255</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>))
+<span class="linenr">48: </span>
+<span class="linenr">49: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#22238;&#36681;&#28858; OpenCV &#39023;&#31034;&#26684;&#24335;</span>
+<span class="linenr">50: </span>    <span style="color: #dcaeea;">annotated</span> = cv2.cvtColor(np.array(image_pil), cv2.COLOR_RGB2BGR)
+<span class="linenr">51: </span>    cv2.imshow(<span style="color: #98be65;">"YOLOv8 Real-Time Detection &#20013;&#25991;&#29256;"</span>, annotated)
+<span class="linenr">52: </span>
+<span class="linenr">53: </span>    <span style="color: #dcaeea;">key</span> = cv2.waitKey(<span style="color: #da8548; font-weight: bold;">1</span>) &amp; 0xFF
+<span class="linenr">54: </span>    <span style="color: #51afef;">if</span> key == <span style="color: #c678dd;">ord</span>(<span style="color: #98be65;">'q'</span>):
+<span class="linenr">55: </span>        <span style="color: #51afef;">break</span>
+<span class="linenr">56: </span>    <span style="color: #51afef;">elif</span> key == <span style="color: #c678dd;">ord</span>(<span style="color: #98be65;">'s'</span>):
+<span class="linenr">57: </span>        cv2.imwrite(<span style="color: #98be65;">"snapshot.jpg"</span>, frame)
+<span class="linenr">58: </span>        <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#128248; &#24050;&#20786;&#23384;&#30059;&#38754; snapshot.jpg"</span>)
+<span class="linenr">59: </span>
+<span class="linenr">60: </span>cap.release()
+<span class="linenr">61: </span>cv2.destroyAllWindows()
 </pre>
 </div>
 </div>
+<div id="outline-container-org824d759" class="outline-4">
+<h4 id="org824d759"><span class="section-number-4">4.3.1.</span> 執行結果</h4>
+<div class="outline-text-4" id="text-4-3-1">
+
+<div id="org35380a7" class="figure">
+<p><img src="images/2025-05-01_13-51-13 (1).gif" alt="2025-05-01_13-51-13 (1).gif" width="500" /><br />
+</p>
+<p><span class="figure-number">Figure 5: </span>YOLO物件偵測</p>
 </div>
-<div id="outline-container-orgb229624" class="outline-4">
-<h4 id="orgb229624"><span class="section-number-4">3.5.7.</span> 進階</h4>
-<div class="outline-text-4" id="text-3-5-7">
+</div>
+</div>
+</div>
+<div id="outline-container-org919ef31" class="outline-3">
+<h3 id="org919ef31"><span class="section-number-3">4.4.</span> 結合原本的YOLO辨識功能</h3>
+<div class="outline-text-3" id="text-4-4">
+<p>
+和人臉辨識一樣，上面那支程式碼只能用來辨識我們準備好的物件，如果我們希望在辨識自訂物件的同時也能辨識出其他物件，像是YOLO原本就能辨識的貓、狗、車子等，這時候就需要使用 YOLOv8 的預訓練模型來進行物件偵測了。<br />
+</p>
+
+<p>
+在上面YOLO+face_recognition的程式碼中，我們是先用YOLOv8來偵測，發現是person後再利用自己的模型來進一步做人臉辨識，這樣就可以同時辨識人臉和其他物件了。<br />
+</p>
+
+<p>
+其實，我們也可以 <b><b>同時</b></b> 使用兩個模型(YOLO, 物件偵測模型)將結果同時放在一個畫面中。<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> cv2
+<span class="linenr"> 2: </span><span style="color: #51afef;">import</span> platform
+<span class="linenr"> 3: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 4: </span><span style="color: #51afef;">from</span> PIL <span style="color: #51afef;">import</span> Image, ImageDraw, ImageFont
+<span class="linenr"> 5: </span><span style="color: #51afef;">from</span> ultralytics <span style="color: #51afef;">import</span> YOLO
+<span class="linenr"> 6: </span>
+<span class="linenr"> 7: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36617;&#20837; COCO &#27169;&#22411;&#33287;&#33258;&#35347;&#27169;&#22411;</span>
+<span class="linenr"> 8: </span><span style="color: #dcaeea;">model_coco</span> = YOLO(<span style="color: #98be65;">"yolov8n.pt"</span>)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21407;&#29983; 80 &#39006;</span>
+<span class="linenr"> 9: </span><span style="color: #dcaeea;">model_custom</span> = YOLO(<span style="color: #98be65;">"/Users/letranger/Desktop/YOLO/runs/detect/train11/weights/best.pt"</span>)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20320;&#35347;&#32244;&#30340;&#27169;&#22411;</span>
+<span class="linenr">10: </span>
+<span class="linenr">11: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23383;&#22411;&#36617;&#20837;</span>
+<span class="linenr">12: </span><span style="color: #dcaeea;">system</span> = platform.system()
+<span class="linenr">13: </span><span style="color: #51afef;">if</span> system == <span style="color: #98be65;">"Windows"</span>:
+<span class="linenr">14: </span>    <span style="color: #dcaeea;">font_path</span> = <span style="color: #98be65;">"C:/Windows/Fonts/msjh.ttc"</span>
+<span class="linenr">15: </span><span style="color: #51afef;">elif</span> system == <span style="color: #98be65;">"Darwin"</span>:
+<span class="linenr">16: </span>    <span style="color: #dcaeea;">font_path</span> = <span style="color: #98be65;">"/System/Library/Fonts/STHeiti Medium.ttc"</span>
+<span class="linenr">17: </span><span style="color: #51afef;">else</span>:
+<span class="linenr">18: </span>    <span style="color: #dcaeea;">font_path</span> = <span style="color: #98be65;">"/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc"</span>
+<span class="linenr">19: </span>
+<span class="linenr">20: </span><span style="color: #dcaeea;">font</span> = ImageFont.truetype(font_path, <span style="color: #da8548; font-weight: bold;">28</span>)
+<span class="linenr">21: </span>
+<span class="linenr">22: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38283;&#21855;&#25885;&#24433;&#27231;</span>
+<span class="linenr">23: </span><span style="color: #dcaeea;">cap</span> = cv2.VideoCapture(<span style="color: #da8548; font-weight: bold;">0</span>)
+<span class="linenr">24: </span>cap.<span style="color: #c678dd;">set</span>(cv2.CAP_PROP_FRAME_WIDTH, <span style="color: #da8548; font-weight: bold;">640</span>)
+<span class="linenr">25: </span>cap.<span style="color: #c678dd;">set</span>(cv2.CAP_PROP_FRAME_HEIGHT, <span style="color: #da8548; font-weight: bold;">480</span>)
+<span class="linenr">26: </span>
+<span class="linenr">27: </span><span style="color: #51afef;">while</span> <span style="color: #a9a1e1;">True</span>:
+<span class="linenr">28: </span>    <span style="color: #dcaeea;">ret</span>, <span style="color: #dcaeea;">frame</span> = cap.read()
+<span class="linenr">29: </span>    <span style="color: #51afef;">if</span> <span style="color: #51afef;">not</span> ret:
+<span class="linenr">30: </span>        <span style="color: #51afef;">break</span>
+<span class="linenr">31: </span>
+<span class="linenr">32: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20351;&#29992;&#20841;&#20491;&#27169;&#22411;&#25512;&#35542;</span>
+<span class="linenr">33: </span>    <span style="color: #dcaeea;">results_coco</span> = model_coco(frame, conf=<span style="color: #da8548; font-weight: bold;">0.3</span>)
+<span class="linenr">34: </span>    <span style="color: #dcaeea;">results_custom</span> = model_custom(frame, conf=<span style="color: #da8548; font-weight: bold;">0.1</span>)
+<span class="linenr">35: </span>
+<span class="linenr">36: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38283;&#21855; PIL &#30059;&#24067;</span>
+<span class="linenr">37: </span>    <span style="color: #dcaeea;">image_pil</span> = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+<span class="linenr">38: </span>    <span style="color: #dcaeea;">draw</span> = ImageDraw.Draw(image_pil)
+<span class="linenr">39: </span>
+<span class="linenr">40: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#30059; COCO &#27169;&#22411;&#32080;&#26524;&#65288;&#34253;&#26694;&#65289;</span>
+<span class="linenr">41: </span>    <span style="color: #51afef;">for</span> box <span style="color: #51afef;">in</span> results_coco[<span style="color: #da8548; font-weight: bold;">0</span>].boxes:
+<span class="linenr">42: </span>        <span style="color: #dcaeea;">cls_id</span> = <span style="color: #c678dd;">int</span>(box.cls[<span style="color: #da8548; font-weight: bold;">0</span>])
+<span class="linenr">43: </span>        <span style="color: #dcaeea;">conf</span> = <span style="color: #c678dd;">float</span>(box.conf[<span style="color: #da8548; font-weight: bold;">0</span>])
+<span class="linenr">44: </span>        <span style="color: #dcaeea;">label</span> = f<span style="color: #98be65;">"</span>{model_coco.names[cls_id]}<span style="color: #98be65;"> (</span>{conf:.2f}<span style="color: #98be65;">)"</span>
+<span class="linenr">45: </span>        <span style="color: #dcaeea;">x1</span>, <span style="color: #dcaeea;">y1</span>, <span style="color: #dcaeea;">x2</span>, <span style="color: #dcaeea;">y2</span> = <span style="color: #c678dd;">map</span>(<span style="color: #c678dd;">int</span>, box.xyxy[<span style="color: #da8548; font-weight: bold;">0</span>])
+<span class="linenr">46: </span>        draw.rectangle([(x1, y1), (x2, y2)], outline=(<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">255</span>), width=<span style="color: #da8548; font-weight: bold;">2</span>)
+<span class="linenr">47: </span>        draw.text((x1, y1 - <span style="color: #da8548; font-weight: bold;">30</span>), label, font=font, fill=(<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">255</span>))
+<span class="linenr">48: </span>
+<span class="linenr">49: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#30059;&#33258;&#35347;&#27169;&#22411;&#32080;&#26524;&#65288;&#32005;&#26694;&#65289;</span>
+<span class="linenr">50: </span>    <span style="color: #51afef;">for</span> box <span style="color: #51afef;">in</span> results_custom[<span style="color: #da8548; font-weight: bold;">0</span>].boxes:
+<span class="linenr">51: </span>        <span style="color: #dcaeea;">cls_id</span> = <span style="color: #c678dd;">int</span>(box.cls[<span style="color: #da8548; font-weight: bold;">0</span>])
+<span class="linenr">52: </span>        <span style="color: #dcaeea;">conf</span> = <span style="color: #c678dd;">float</span>(box.conf[<span style="color: #da8548; font-weight: bold;">0</span>])
+<span class="linenr">53: </span>        <span style="color: #dcaeea;">label</span> = f<span style="color: #98be65;">"</span>{model_custom.names[cls_id]}<span style="color: #98be65;"> (</span>{conf:.2f}<span style="color: #98be65;">)"</span>
+<span class="linenr">54: </span>        <span style="color: #dcaeea;">x1</span>, <span style="color: #dcaeea;">y1</span>, <span style="color: #dcaeea;">x2</span>, <span style="color: #dcaeea;">y2</span> = <span style="color: #c678dd;">map</span>(<span style="color: #c678dd;">int</span>, box.xyxy[<span style="color: #da8548; font-weight: bold;">0</span>])
+<span class="linenr">55: </span>        draw.rectangle([(x1, y1), (x2, y2)], outline=(<span style="color: #da8548; font-weight: bold;">255</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>), width=<span style="color: #da8548; font-weight: bold;">3</span>)
+<span class="linenr">56: </span>        draw.text((x1, y1 - <span style="color: #da8548; font-weight: bold;">30</span>), label, font=font, fill=(<span style="color: #da8548; font-weight: bold;">255</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>))
+<span class="linenr">57: </span>
+<span class="linenr">58: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39023;&#31034;&#24433;&#20687;</span>
+<span class="linenr">59: </span>    <span style="color: #dcaeea;">annotated</span> = cv2.cvtColor(np.array(image_pil), cv2.COLOR_RGB2BGR)
+<span class="linenr">60: </span>    cv2.imshow(<span style="color: #98be65;">"YOLOv8 COCO + &#33258;&#35347;&#27169;&#22411;"</span>, annotated)
+<span class="linenr">61: </span>
+<span class="linenr">62: </span>    <span style="color: #dcaeea;">key</span> = cv2.waitKey(<span style="color: #da8548; font-weight: bold;">1</span>) &amp; 0xFF
+<span class="linenr">63: </span>    <span style="color: #51afef;">if</span> key == <span style="color: #c678dd;">ord</span>(<span style="color: #98be65;">'q'</span>):
+<span class="linenr">64: </span>        <span style="color: #51afef;">break</span>
+<span class="linenr">65: </span>    <span style="color: #51afef;">elif</span> key == <span style="color: #c678dd;">ord</span>(<span style="color: #98be65;">'s'</span>):
+<span class="linenr">66: </span>        cv2.imwrite(<span style="color: #98be65;">"snapshot.jpg"</span>, frame)
+<span class="linenr">67: </span>        <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#128248; &#24050;&#20786;&#23384;&#30059;&#38754; snapshot.jpg"</span>)
+<span class="linenr">68: </span>
+<span class="linenr">69: </span>cap.release()
+<span class="linenr">70: </span>cv2.destroyAllWindows()
+<span class="linenr">71: </span>
+</pre>
+</div>
+</div>
+<div id="outline-container-orga7f784c" class="outline-4">
+<h4 id="orga7f784c"><span class="section-number-4">4.4.1.</span> 執行結果</h4>
+<div class="outline-text-4" id="text-4-4-1">
+
+<div id="orgad3dc9d" class="figure">
+<p><img src="images/2025-05-01_14-25-13 (1).gif" alt="2025-05-01_14-25-13 (1).gif" width="500" /><br />
+</p>
+<p><span class="figure-number">Figure 6: </span>YOLO物件偵測+自訂物件辨識</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orge9d59af" class="outline-3">
+<h3 id="orge9d59af"><span class="section-number-3">4.5.</span> 進階(辨識成功後加入特定動作)</h3>
+<div class="outline-text-3" id="text-4-5">
+<p>
+在Python中播放聲音:<br />
+</p>
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> subprocess
 <span class="linenr">2: </span>subprocess.run([<span style="color: #98be65;">"afplay"</span>, <span style="color: #98be65;">"/System/Library/Sounds/Glass.aiff"</span>])
 </pre>
 </div>
-
-
+<p>
+將播放聲音的程式碼加入到上面的程式碼中:<br />
+</p>
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> threading
 <span class="linenr"> 2: </span><span style="color: #51afef;">import</span> subprocess
@@ -1264,15 +1628,14 @@ drwxr-xr-x@ 4 letranger  staff     128  4 20 16:59 weights
 </div>
 </div>
 </div>
-</div>
-<div id="outline-container-orgb66558b" class="outline-2">
-<h2 id="orgb66558b"><span class="section-number-2">4.</span> 課堂任務</h2>
-<div class="outline-text-2" id="text-4">
+<div id="outline-container-orga8d85a5" class="outline-2">
+<h2 id="orga8d85a5"><span class="section-number-2">5.</span> 課堂任務</h2>
+<div class="outline-text-2" id="text-5">
 <ul class="org-ul">
 <li>基本要求<br />
 <ol class="org-ol">
 <li>可以實時識別所有組員, 並顯示組員姓名<br /></li>
-<li>可以實時識別至少三種物品(其中應包括滑鼠及學生證)<br /></li>
+<li>可以實時識別至少三種物品(其中應包括學生證)<br /></li>
 </ol></li>
 <li>進階要求<br />
 <ol class="org-ol">
@@ -1299,7 +1662,7 @@ drwxr-xr-x@ 4 letranger  staff     128  4 20 16:59 weights
 </div></div>
 <div id="postamble" class="status">
 <p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2025-04-25 Fri 13:38</p>
+<p class="date">Created: 2025-05-01 Thu 14:31</p>
 </div>
 </body>
 </html>
