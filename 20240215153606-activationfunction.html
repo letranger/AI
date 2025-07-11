@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2025-04-29 Tue 08:49 -->
+<!-- 2025-07-11 Fri 13:23 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Activation Function</title>
@@ -235,93 +235,146 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgbe7a752">1. 簡介</a></li>
-<li><a href="#orge621c42">2. 重要性</a></li>
-<li><a href="#org519a1a6">3. 類型</a>
+<li><a href="#orgdb0d8d2">1. 簡介</a>
 <ul>
-<li><a href="#orga2db533">3.1. Step function</a></li>
-<li><a href="#org29021cb">3.2. Sigmoid</a></li>
-<li><a href="#org6c036cc">3.3. ReLU</a></li>
-<li><a href="#orgb292dd7">3.4. Softmax</a></li>
+<li><a href="#org0a755a3">1.1. 線性模型的限制與啟動函數的必要性</a></li>
+</ul>
+</li>
+<li><a href="#orgc4373fb">2. 常見的啟動函數（Activation Functions）</a>
+<ul>
+<li><a href="#orgd4cdb08">2.1. Step function階梯函數）</a></li>
+<li><a href="#orgd088b24">2.2. Sigmoid</a></li>
+<li><a href="#org0f2f6cd">2.3. ReLU</a></li>
+<li><a href="#orgb6b78c5">2.4. Softmax</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 <a href="https://hits.sh/letranger.github.io/PythonCourse/20240215153606-activationfunction.html/"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/PythonCourse/20240215153606-activationfunction.html.svg?style=plastic"/></a>
-<div id="outline-container-orgbe7a752" class="outline-2">
-<h2 id="orgbe7a752"><span class="section-number-2">1.</span> 簡介</h2>
+<div id="outline-container-orgdb0d8d2" class="outline-2">
+<h2 id="orgdb0d8d2"><span class="section-number-2">1.</span> 簡介</h2>
 <div class="outline-text-2" id="text-1">
 <p>
-Activation function有許多中譯方式：
+在神經網路中，有一個非常重要的元件叫做 Activation Function（啟動函數）。這個詞的中文翻譯有很多版本，常見的包括：
 </p>
 <ul class="org-ul">
 <li>啟動函數</li>
 <li>激勵函數</li>
 <li>激發函數</li>
-<li>激活函數</li>
+<li>激活函數（常見於中國用語）</li>
 </ul>
 
 <p>
-Activation function是神經網絡中極其重要的概念。它們決定了某個神經元是否被activate，這個神經元接受到的信息是否是有用的，是否該留下或者是該拋棄。
-Activation) function的形式如下<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>：
+要了解Activation Function在AI模型中所扮演的角色，我們可以這樣理解：它負責判斷一個神經元接收到的訊號值不值得被「啟動」留下來，或者該被「關閉」（等於沒貢獻）。
 </p>
+
+<p>
+Activation Function 是讓神經網路真正「有智慧」的關鍵之一，它賦予神經元選擇性與彈性，不只是單純的數學加總而已。一個神經元的計算流程大致如下：
+</p>
+<ol class="org-ol">
+<li>神經元接收到輸入值，乘上各自對應的權重（weights）</li>
+<li>計算加總後的結果</li>
+<li>經由 Activation Function 判斷這個訊號是否強大到需要被「啟動」
 <ul class="org-ul">
-<li>在神經元裡定義一些權重(weight)，經過計算之後，判斷結果是否超過一個閾值(threshold)，如果超過，神經元輸出為 1；反之，則輸出 0。</li>
-<li>如果不用Activation function，每一層output都是上層input的線性函數，無論神經網絡有多少層，輸出都是輸入的線性組合。</li>
-<li>加入非線性的function就能改變線性問題</li>
-</ul>
+<li>過了門檻（threshold）：輸出變為 1（或接近 1）</li>
+<li>沒過門檻：輸出變為 0（或接近 0）</li>
+</ul></li>
+</ol>
 </div>
-</div>
-<div id="outline-container-orge621c42" class="outline-2">
-<h2 id="orge621c42"><span class="section-number-2">2.</span> 重要性</h2>
-<div class="outline-text-2" id="text-2">
+<div id="outline-container-org0a755a3" class="outline-3">
+<h3 id="org0a755a3"><span class="section-number-3">1.1.</span> 線性模型的限制與啟動函數的必要性</h3>
+<div class="outline-text-3" id="text-1-1">
 <p>
-由沒有Activation Function的perceptron所組成的神網網路都只是linear model，linear model無法處理複雜的問題。
+如果一個神經網路由沒有使用 Activation Function 的感知器（Perceptron）所組成，那它本質上只是個線性模型。線性模型無法處理複雜的非線性問題。
 </p>
 
 <p>
-思考下方堆疊兩層感知器的例子(這裡我們捨棄偏權值b，使問題單純化)：
+為了解釋這個概念，我們來看看底下這個堆疊兩層<a href="20221023103538-感知器.html">感知器</a>的例子，這個例子中我們假設有兩個輸入特徵 \(x_1\) 和 \(x_2\)，沒有使用 Activation Function，為了讓概念更清楚，我們也暫時忽略偏移值(bias) \(b\)，只看權重\(w\)與輸入\(x\)。
+ 的感知器只能計算出一個線性組合：
 </p>
 
-<div id="org065ed39" class="figure">
-<p><img src="images/2perceptrons.png" alt="2perceptrons.png" width="500" />
+
+<div id="org0f15b1b" class="figure">
+<p><img src="./images/MLP-AC.png" alt="MLP-AC.png" width="500" />
 </p>
 <p><span class="figure-number">Figure 1: </span>Stacked perceptrons</p>
 </div>
 
 <p>
-其中
-\[
+其中每層的運算如下：
+</p>
+
+\begin{align}
 y_1 = w_1^1x_1 + w_2^1x_2 \\
 y_2 = w_3^1x_1 + w_4^1x_2 \\
 \hat{y} = w_1^2y_1 + w_2^2y_2
-\]
-若將\(y_1\)與\(y_2\)代入\(\hat{y}\)，可以發現仍然是原始數據的線性組合，代表即使堆疊多層的感知器時，若沒有使用激活函數，本質上可以被單層感知器取代，如下<sup><a id="fnr.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup>：
-\[\hat{y} = w_1^2y_1 + w_2^2y_2  = (w_1^1w_1^2 + w_2^1x_2^2)x_1 + (w_3^1w_1^2 + w_4^1x_2^2)x_2\]
+\end{align}
+
+<p>
+若將 \(y_1\) 與 \(y_2\) 代入 \(\hat{y}\) 中：
+\[\hat{y} = w_1^2(w_1^1x_1 + w_2^1x_2) + w_2^2(w_3^1x_1 + w_4^1x_2)\]
+整理後：
+\[\hat{y} = (w_1^1w_1^2 + w_2^1w_2^2)x_1 + (w_3^1w_1^2 + w_4^1w_2^2)x_2\]
 </p>
 
 <p>
-激活函數最重要的功能在於引入神經網路非線性，因為若未加入激活函數，卷積層與全連接層只是單純的線性運算，只是將上層的數據經過線性地組合成下層數據而已，對於線性不可分的問題仍然是無解的<sup><a id="fnr.3" class="footref" href="#fn.3" role="doc-backlink">3</a></sup>。
+這表示：
+</p>
+<ul class="org-ul">
+<li>雖然我們堆了兩層，但最後結果仍是 輸入變數 x1,x2x1​,x2​ 的線性組合。</li>
+<li>堆再多層都沒有用，本質上還是單一感知器可以做的事。</li>
+</ul>
+
+<p>
+啟動函數最重要的功能在於引入神經網路非線性，因為若未加入啟動函數，卷積層與全連接層只是單純的線性運算，只是將上層的數據經過線性地組合成下層數據而已，對於線性不可分的問題仍然是無解的<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。
 </p>
 
 <p>
-舉個常見的例子，如果輸入的資料如下圖(這是互斥或閘XOR的例子)，圈圈與叉叉分別是兩種不同的類別，我們的目標就是利用一條直線將兩類別切開，但實際上根本無法利用一條直線切割開，因此需要對輸入資料做特徵轉換(feature transform)，將其從x1-x2特徵平面映射其他線性可分的特徵平面(可單純利用一條直線切分)<sup><a id="fnr.3.3" class="footref" href="#fn.3" role="doc-backlink">3</a></sup>。
+舉個常見的例子，如果輸入的資料如圖<a href="#orgf8d5fdb">2</a>(這是互斥或閘XOR的例子)，紅點(B)與藍點(A)分別是兩種不同的類別，我們的目標就是利用一條直線將兩類別切開，但實際上根本辦不到，這就是線性模型的極限。
+</p>
+
+
+<div id="orgf8d5fdb" class="figure">
+<p><img src="images/2021-05-24_14-18-51.jpg" alt="2021-05-24_14-18-51.jpg" width="400" />
+</p>
+<p><span class="figure-number">Figure 2: </span>XOR Gate Solution ideas</p>
+</div>
+
+<p>
+如果沒有Activation Function（啟動函數）：
+</p>
+<ul class="org-ul">
+<li>卷積層與全連接層只是簡單的線性映射</li>
+<li>模型無法處理非線性可分問題</li>
+<li>不論疊幾層，都只是「線性換湯不換藥」</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc4373fb" class="outline-2">
+<h2 id="orgc4373fb"><span class="section-number-2">2.</span> 常見的啟動函數（Activation Functions）</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+在神經網路中，啟動函數的主要目的在於引入非線性，使得模型能處理複雜、非線性可分的問題。以下介紹幾種常見的啟動函數：
 </p>
 </div>
-</div>
-<div id="outline-container-org519a1a6" class="outline-2">
-<h2 id="org519a1a6"><span class="section-number-2">3.</span> 類型</h2>
-<div class="outline-text-2" id="text-3">
-</div>
-<div id="outline-container-orga2db533" class="outline-3">
-<h3 id="orga2db533"><span class="section-number-3">3.1.</span> Step function</h3>
-<div class="outline-text-3" id="text-3-1">
+<div id="outline-container-orgd4cdb08" class="outline-3">
+<h3 id="orgd4cdb08"><span class="section-number-3">2.1.</span> Step function階梯函數）</h3>
+<div class="outline-text-3" id="text-2-1">
 <p>
-Step function，若輸入超過 0，則輸出 1；若輪入小於等於 0，則輸出 0，如公式\eqref{orgc7f12e0}所示，其函數圖形則如圖<a href="#org4c18ec8">2</a>所示。
+Step 函數是最早期的啟動函數之一。它的規則很簡單：
+</p>
+<ul class="org-ul">
+<li>如果輸入大於 0，輸出為 1</li>
+<li>否則輸出為 0</li>
+</ul>
+
+<p>
+這裡是它的數學表示式（見公式 \eqref{org367db13}）與對應圖形（圖<a href="#orgc5ba627">3</a>)：
 </p>
 \begin{equation}
-\label{orgc7f12e0}
+\label{org367db13}
 h(x) = \begin{cases}
 1 & \text{if } x > 0 \\
 0 & \text{if } x\leq 0
@@ -344,31 +397,41 @@ h(x) = \begin{cases}
 </pre>
 </div>
 
-<div id="org4c18ec8" class="figure">
-<p><img src="images/stepFuncPlot.png" alt="stepFuncPlot.png" width="300" />
+<div id="orgc5ba627" class="figure">
+<p><img src="images/stepFuncPlot.png" alt="stepFuncPlot.png" width="400" />
 </p>
-<p><span class="figure-number">Figure 2: </span>階梯函數圖</p>
+<p><span class="figure-number">Figure 3: </span>階梯函數圖</p>
 </div>
 
+<p>
+Step 函數的優點在於：
+</p>
 <ul class="org-ul">
-<li>為什麼第<a href="#coderef-why" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-why');" onmouseout="CodeHighlightOff(this, 'coderef-why');">5</a>行(np.array(x&gt;0, dtype=np.int))這樣寫會變成0/1</li>
-<li>當調整參數時，節點輸出的值在 0 和 1 之間躍遷，對調整參數造成很大不便。</li>
+<li>簡單易懂：其邏輯非常直觀，容易實作。</li>
+<li>二元輸出：輸出只有 0 或 1，適合二元分類問題。</li>
+</ul>
+<p>
+至於其缺點則包括：
+</p>
+<ul class="org-ul">
+<li>不連續：在 0 處不連續，這會導致梯度下降法無法有效學習。</li>
+<li>無法處理多類別問題：只能處理二元分類，無法擴展到多類別問題。</li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org29021cb" class="outline-3">
-<h3 id="org29021cb"><span class="section-number-3">3.2.</span> Sigmoid</h3>
-<div class="outline-text-3" id="text-3-2">
+<div id="outline-container-orgd088b24" class="outline-3">
+<h3 id="orgd088b24"><span class="section-number-3">2.2.</span> Sigmoid</h3>
+<div class="outline-text-3" id="text-2-2">
 <p>
-公式\eqref{orgf6c62cd}即為 sigmoid 函數(sigmoid function)，其中的\(exp(-x)\)代表\(e^{-x}\)，\(e\)為納皮爾常數(Napier&rsquo;s constant)2.71828&#x2026;的實數。
+Sigmoid 函數能將輸入轉換為 0 到 1 之間的實數，曲線平滑，常用於輸出表示機率。公式\eqref{org3adef3a}即為 sigmoid 函數(sigmoid function)，其中的\(exp(-x)\)代表\(e^{-x}\)，\(e\)為納皮爾常數(Napier&rsquo;s constant)，這是一個值為2.71828的實數。
 </p>
 \begin{equation}
-\label{orgf6c62cd}
+\label{org3adef3a}
 h(x) = \frac{1}{1+exp(-x)} = \frac{1}{1+e^{-x}}
 \end{equation}
 
 <p>
-sigmoid 函數的 python 實作如下所述，而其圖形結果為平滑曲線(圖<a href="#org0dffc11">3</a>)，針對輸入產生連續性的輸出，但仍與階梯函數相同，以 0 為界線，這種平滑度對於神經網路有相當重要的意義。此外，step function只能回傳 0 或 1，而 sigmoid 函數可以回傳實數。
+sigmoid 函數的 python 實作如下所述，而其圖形結果為平滑曲線(圖<a href="#orgb299fec">4</a>)，針對輸入產生連續性的輸出，但仍與階梯函數相同，以 0 為界線，這種平滑度對於神經網路有相當重要的意義。此外，step function只能回傳 0 或 1，而 sigmoid 函數可以回傳實數。
 </p>
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
@@ -386,42 +449,46 @@ sigmoid 函數的 python 實作如下所述，而其圖形結果為平滑曲線(
 </pre>
 </div>
 
-<div id="org0dffc11" class="figure">
-<p><img src="images/sigmoidplot2.png" alt="sigmoidplot2.png" width="300" />
+<div id="orgb299fec" class="figure">
+<p><img src="images/sigmoidplot2.png" alt="sigmoidplot2.png" width="400" />
 </p>
-<p><span class="figure-number">Figure 3: </span>sigmoid 函數圖</p>
+<p><span class="figure-number">Figure 4: </span>sigmoid 函數圖</p>
 </div>
 
+<p>
+Sigmoid函數的特點：
+</p>
 <ul class="org-ul">
-<li>非線性功能</li>
-<li>輸出：（0,1）</li>
-<li>處理極端值</li>
-<li>常用於隱藏層和輸出層</li>
-<li>常用於二元分類</li>
-<li>梯度消失問題</li>
+<li>非線性、連續可導</li>
+<li>輸出範圍：(0, 1)</li>
+<li>適合表示「機率」</li>
 </ul>
-</div>
-</div>
-<div id="outline-container-org6c036cc" class="outline-3">
-<h3 id="org6c036cc"><span class="section-number-3">3.3.</span> ReLU</h3>
-<div class="outline-text-3" id="text-3-3">
 <p>
-神經網路感知器使用的活化函數多為非線性函數，如階梯函數與 sigmoid 函數，其主要原因在於，若在神經網路中使用線性函數，則不論加深多少層，這些函數都能合併為一個單一函數。例如，一個以\(h(x)=cx\)為活化函數的三層網路，其執行結果便相當於\(y(x)=h(h(h(x)))\)，亦即，其執行網果就如同一個以\(y(h)=ax\)為活化函數的一層網路，其中\(a=c^{3}\)。
+至於其缺點則是容易出現「梯度消失(vanishing gradient)」問題，這是因為在極端輸入下，sigmoid 函數的導數趨近於 0，這會導致梯度下降法學習速度變慢。
+</p>
+</div>
+</div>
+<div id="outline-container-org0f2f6cd" class="outline-3">
+<h3 id="org0f2f6cd"><span class="section-number-3">2.3.</span> ReLU</h3>
+<div class="outline-text-3" id="text-2-3">
+<p>
+h雖然 sigmoid 函數很早就應用於神經網路中，但目前最常使用的啟動函數銱晬為 ReLU (Rectified Linear Unit)函數，ReLU（Rectified Linear Unit）。ReLU的定義很簡單：若輸入超過 0，則直接輸出；若輪入小於 0，則輸出 0，如公式\eqref{org00e60e6}所示：
 </p>
 
-<p>
-雖然 sigmoid 函數很早就應用於神經網路中，但最近較常使用的為 ReLU (Rectified Linear Unit)函數，若輸入超過 0，則直接輸出；若輪入小於 0，則輸出 0，如公式\eqref{org87ce88c}所示，其函數圖形則如圖<a href="#org2cfe6f7">4</a>所示。
-</p>
 \begin{equation}
-\label{org87ce88c}
+\label{org00e60e6}
 h(x) = \begin{cases} x & \text{if } x > 0
 \\ 0 & \text{if } x\leq 0 \end{cases}
 \end{equation}
+
 <p>
-or
+或簡寫為：
 \[h(x) = max(0,x)\]
 </p>
 
+<p>
+至於其函數圖形則如圖<a href="#org63a7ea9">5</a>所示。
+</p>
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 <span class="linenr"> 2: </span><span style="color: #51afef;">import</span> matplotlib.pylab <span style="color: #51afef;">as</span> plt
@@ -438,27 +505,71 @@ or
 </pre>
 </div>
 
-<div id="org2cfe6f7" class="figure">
-<p><img src="images/ReLUPlot.png" alt="ReLUPlot.png" width="300" />
+<div id="org63a7ea9" class="figure">
+<p><img src="images/ReLUPlot.png" alt="ReLUPlot.png" width="400" />
 </p>
-<p><span class="figure-number">Figure 4: </span>ReLU 函數圖</p>
+<p><span class="figure-number">Figure 5: </span>ReLU 函數圖</p>
 </div>
+
+<p>
+ReLU函數的特點：
+</p>
 <ul class="org-ul">
-<li>非線性功能</li>
-<li>輸出範圍：（0，\(\infty\)）</li>
-<li>捨棄一些信息</li>
+<li>非線性但非常簡單</li>
+<li>計算快，收斂速度快</li>
+<li>輸出範圍：[0, ∞)</li>
 <li>常用於隱藏層</li>
-<li>梯度爆炸問題</li>
 </ul>
+
+<p>
+至於其缺點則是容易出現：輸入為負時會完全阻斷梯度（&ldquo;死亡 ReLU&rdquo;）。這是什麼意思呢？
+</p>
+
+<p>
+想像我們有一個神經元，就像一顆燈泡，輸入電流 xx 後才會亮（有輸出），但如果輸入是負的，它就不亮（輸出是 0）。這似乎也沒什麼問題對吧，但重點是：
+</p>
+<ul class="org-ul">
+<li>訓練神經網路的過程中，我們會根據輸出來調整權重 （這個調整的方式叫做「反向傳播」需要用到函數的導數）。</li>
+<li>而，ReLU 的導數在輸入小於等於 0 時是 0！</li>
+</ul>
+<p>
+也就是說：
+</p>
+<ul class="org-ul">
+<li>當一個神經元的輸入長期為負</li>
+<li>它的輸出永遠是 0</li>
+<li>而且因為導數也是 0，訓練的時候就完全無法更新它的權重</li>
+</ul>
+<p>
+這就像一顆「死掉」的燈泡，你再怎麼訓練，它都不會亮、不會改，這就是所謂的：死亡 ReLU（Dead ReLU）
+</p>
+
+<p>
+總之，ReLU 很快、效果好，但要小心它「對負數完全不回應」的這項特性。這意味著：如果某些神經元在一開始就輸入都是負數，很可能整場訓練它都不會作用。
+</p>
+
+<p>
+現在，你有沒有了解為什麼我們在進行<a href="20221023130936-資料預處理.html">資料預處理</a>時，常常會將數據標準化（normalization）或正規化（normalization）了？
+</p>
 </div>
 </div>
-<div id="outline-container-orgb292dd7" class="outline-3">
-<h3 id="orgb292dd7"><span class="section-number-3">3.4.</span> Softmax</h3>
-<div class="outline-text-3" id="text-3-4">
+<div id="outline-container-orgb6b78c5" class="outline-3">
+<h3 id="orgb6b78c5"><span class="section-number-3">2.4.</span> Softmax</h3>
+<div class="outline-text-3" id="text-2-4">
+<p>
+Softmax 函數主要用在輸出層，適合多分類問題。它的輸出：
+</p>
+<ul class="org-ul">
+<li>是 0 到 1 之間的實數</li>
+<li>並且總和為 1</li>
+</ul>
+<p>
+有什麼場景是很多小數總和為1的？答案是：「機率分布」
+</p>
 </div>
-<div id="outline-container-org8882903" class="outline-4">
-<h4 id="org8882903"><span class="section-number-4">3.4.1.</span> 特色</h4>
-<div class="outline-text-4" id="text-3-4-1">
+<div id="outline-container-org2845301" class="outline-4">
+<h4 id="org2845301"><span class="section-number-4">2.4.1.</span> 特色</h4>
+<div class="outline-text-4" id="text-2-4-1">
 <p>
 softmaxe 的輸出為介於 0 到 1 間的實數，此外，其輸出總和為 1，這個性質使的 softmax 函數的輸出也可解釋為「機率」。例如，前節程式碼的輸出結果為[0.01821127 0.24519181 0.73659691]，從以機率的角度我們可以說：分類的結果有 1.8%的機率為第 0 類；有 24.52%的機率為第 1 類；有 73.66%的機率為第 2 類。換言之，使用 softmax 函數可以針對問題提出對應的機率。
 softmax 函數的另一個特色是其輸出結果仍保持與輸入訊息一致的大小關係，這是因為惷數函數\(y=exp(x)\)為單週函數。一般而言，神經網路會把輸出最大神經元的類別當作辨識結果，然而，因為 softmax 不影響大小順序，所以一般會省略 softmax 函數。
@@ -469,18 +580,18 @@ softmax 函數的另一個特色是其輸出結果仍保持與輸入訊息一致
 </p>
 </div>
 </div>
-<div id="outline-container-org86c8d5b" class="outline-4">
-<h4 id="org86c8d5b"><span class="section-number-4">3.4.2.</span> 公式</h4>
-<div class="outline-text-4" id="text-3-4-2">
+<div id="outline-container-org4640b4b" class="outline-4">
+<h4 id="org4640b4b"><span class="section-number-4">2.4.2.</span> 公式</h4>
+<div class="outline-text-4" id="text-2-4-2">
 \begin{equation}
-\label{org63c7451}
+\label{org4418e81}
 y_k = \frac{exp(a_k)}{\sum_{i=1}^{n}exp(a_i)}
 \end{equation}
 </div>
 </div>
-<div id="outline-container-orgce8c9a1" class="outline-4">
-<h4 id="orgce8c9a1"><span class="section-number-4">3.4.3.</span> 實作</h4>
-<div class="outline-text-4" id="text-3-4-3">
+<div id="outline-container-orgf182753" class="outline-4">
+<h4 id="orgf182753"><span class="section-number-4">2.4.3.</span> 實作</h4>
+<div class="outline-text-4" id="text-2-4-3">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">python code for softmax funtion</span>
 <span class="linenr"> 2: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
@@ -506,15 +617,7 @@ y_k = \frac{exp(a_k)}{\sum_{i=1}^{n}exp(a_i)}
 <div id="text-footnotes">
 
 <div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
-<a href="https://kknews.cc/code/o8m4gpq.html">五分鐘理解深度學習中激活函數以及不同激活函數的使用場景</a>
-</p></div></div>
-
-<div class="footdef"><sup><a id="fn.2" class="footnum" href="#fnr.2" role="doc-backlink">2</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
-<a href="https://chih-sheng-huang821.medium.com/%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92-%E7%A5%9E%E7%B6%93%E7%B6%B2%E8%B7%AF-%E5%A4%9A%E5%B1%A4%E6%84%9F%E7%9F%A5%E6%A9%9F-multilayer-perceptron-mlp-%E9%81%8B%E4%BD%9C%E6%96%B9%E5%BC%8F-f0e108e8b9af">機器學習- 神經網路(多層感知機 Multilayer perceptron, MLP)運作方式</a>
-</p></div></div>
-
-<div class="footdef"><sup><a id="fn.3" class="footnum" href="#fnr.3" role="doc-backlink">3</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
-<a href="http://elmer-storage.blogspot.com/2018/07/cnn-activation-function-feature.html">CNN筆記 - 激活函數 (Activation Function)與特徵轉換 (Feature Transform) </a>
+<a href="http://elmer-storage.blogspot.com/2018/07/cnn-activation-function-feature.html">CNN筆記 - 啟動函數 (Activation Function)與特徵轉換 (Feature Transform) </a>
 </p></div></div>
 
 
@@ -522,7 +625,7 @@ y_k = \frac{exp(a_k)}{\sum_{i=1}^{n}exp(a_i)}
 </div></div>
 <div id="postamble" class="status">
 <p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2025-04-29 Tue 08:49</p>
+<p class="date">Created: 2025-07-11 Fri 13:23</p>
 </div>
 </body>
 </html>
