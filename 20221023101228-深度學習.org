@@ -8,15 +8,68 @@
 #+PROPERTY: header-args :eval never-export
 #+TAGS: AI, Python
 #+EXCLUDE_TAGS: noexport
-#+OPTIONS: toc:2 ^:nil num:3
+#+OPTIONS: toc:2 ^:nil num:5
 #+OPTIONS: H:4
 #+LATEX:\newpage
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/muse.css" />
+#+HTML_HEAD_EXTRA: <script src="../css/copy_code.js"></script>
 #+begin_export html
 <a href="https://letranger.github.io/AI/20221023101228-深度學習.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20221023101228-深度學習.html.svg"/></a>
 #+end_export
+* 為此 org 啟用 venv :noexport:
+#+begin_src shell -r -n :results output :exports no
+python3 -m venv ./venv
+source ./venv/bin/activate
+echo $VIRTUAL_ENV
+ls venv
+
+python3 -m pip install -U matplotlib
+python3 -m pip install -U ace_tools
+python3 -m pip install -U seaborn
+python3 -m pip install -U statsmodels
+#+end_src
+
+#+begin_src shell -r -n :results output :exports no
+python3 -m pip install -U scikeras
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Collecting scikeras
+  Downloading scikeras-0.13.0-py3-none-any.whl.metadata (3.1 kB)
+Requirement already satisfied: keras>=3.2.0 in ./venv/lib/python3.12/site-packages (from scikeras) (3.8.0)
+Requirement already satisfied: scikit-learn>=1.4.2 in ./venv/lib/python3.12/site-packages (from scikeras) (1.5.2)
+Requirement already satisfied: absl-py in ./venv/lib/python3.12/site-packages (from keras>=3.2.0->scikeras) (2.1.0)
+Requirement already satisfied: numpy in ./venv/lib/python3.12/site-packages (from keras>=3.2.0->scikeras) (1.26.4)
+Requirement already satisfied: rich in ./venv/lib/python3.12/site-packages (from keras>=3.2.0->scikeras) (13.7.1)
+Requirement already satisfied: namex in ./venv/lib/python3.12/site-packages (from keras>=3.2.0->scikeras) (0.0.8)
+Requirement already satisfied: h5py in ./venv/lib/python3.12/site-packages (from keras>=3.2.0->scikeras) (3.13.0)
+Requirement already satisfied: optree in ./venv/lib/python3.12/site-packages (from keras>=3.2.0->scikeras) (0.14.0)
+Requirement already satisfied: ml-dtypes in ./venv/lib/python3.12/site-packages (from keras>=3.2.0->scikeras) (0.4.1)
+Requirement already satisfied: packaging in ./venv/lib/python3.12/site-packages (from keras>=3.2.0->scikeras) (24.1)
+Requirement already satisfied: scipy>=1.6.0 in ./venv/lib/python3.12/site-packages (from scikit-learn>=1.4.2->scikeras) (1.13.1)
+Requirement already satisfied: joblib>=1.2.0 in ./venv/lib/python3.12/site-packages (from scikit-learn>=1.4.2->scikeras) (1.4.2)
+Requirement already satisfied: threadpoolctl>=3.1.0 in ./venv/lib/python3.12/site-packages (from scikit-learn>=1.4.2->scikeras) (3.5.0)
+Requirement already satisfied: typing-extensions>=4.5.0 in ./venv/lib/python3.12/site-packages (from optree->keras>=3.2.0->scikeras) (4.12.2)
+Requirement already satisfied: markdown-it-py>=2.2.0 in ./venv/lib/python3.12/site-packages (from rich->keras>=3.2.0->scikeras) (3.0.0)
+Requirement already satisfied: pygments<3.0.0,>=2.13.0 in ./venv/lib/python3.12/site-packages (from rich->keras>=3.2.0->scikeras) (2.18.0)
+Requirement already satisfied: mdurl~=0.1 in ./venv/lib/python3.12/site-packages (from markdown-it-py>=2.2.0->rich->keras>=3.2.0->scikeras) (0.1.2)
+Downloading scikeras-0.13.0-py3-none-any.whl (26 kB)
+Installing collected packages: scikeras
+Successfully installed scikeras-0.13.0
+#+end_example
+
+#+BEGIN_SRC emacs-lisp :exports no
+(pyvenv-activate "./venv")
+(setq org-babel-python-command "./venv/bin/python3")
+#+END_SRC
+
+
+#+RESULTS:
+: ./venv/bin/python3
 
 * 深度學習
+所謂深度學習是指
 #+CAPTION: AI, Machine Learning與Deep Learning
 #+LABEL:fig:Labl
 #+name: fig:Name
@@ -120,7 +173,7 @@ ResNet[fn:5]是由 Microsoft 團隊開發的網路，特色是具有能加深比
 這是為2016年IEEE Conference on Computer Vision and Pattern Recognition的一篇研究結果[fn:7]，實驗結果顯示一般深度網路層數越多，訓練誤差不降反增。
 
 ** 深度學習的高速化
-由於大數據(big data)與大型網路的關係，使得深度學習必須進行大量運算，過去我們使用 CPU 來進行運算，如今多數深度學習的框架多支援 GPU，甚至支援以多個 GPU 與多台裝置進行分散式學習。GPU 原本是圖形專用處理器，可以快速處理平行運算，GPU 運算的目標是把其強大的效能運用在各種用途。比較 CPU 與 GPU 在 AlexNet 的學習，CPU 需花費 40 天以上，GPU 則可以在 6 天內完成。
+由於大資料(big data)與大型網路的關係，使得深度學習必須進行大量運算，過去我們使用 CPU 來進行運算，如今多數深度學習的框架多支援 GPU，甚至支援以多個 GPU 與多台裝置進行分散式學習。GPU 原本是圖形專用處理器，可以快速處理平行運算，GPU 運算的目標是把其強大的效能運用在各種用途。比較 CPU 與 GPU 在 AlexNet 的學習，CPU 需花費 40 天以上，GPU 則可以在 6 天內完成。
 
 利用 GPU 除了可以大幅提升深度學習的運算速度，但是一旦變成多層網路時，就需要花費數天或數週的時間來學習，Google 的 TensorFlow、Microsoft 的 CNTK 便是針對分散式學習來開發的，100 個分散式的 GPU 可以提升比單一 GPU 高到 56 倍的速度，意味著原本要有天才能完成的學習，只要 3 小時就可以結束。
 
@@ -134,7 +187,7 @@ ResNet[fn:5]是由 Microsoft 團隊開發的網路，特色是具有能加深比
 #+ATTR_HTML: :width 500
 [[file:images/深度學習/2024-02-20_10-26-27_2024-02-20_10-25-03.png]]
 
-如圖[[fig:CPUGPU]]，CPU 和 GPU 的差異起源於其相異的設計目標與應用場景， CPU的設計目的是處理各種不同的數據運算、邏輯判斷和中斷要求;而 GPU 的設計目的則是為了圖形運算， 其優勢在於能快速對同類型的數據進行平行運算[fn:8]。二者主要差異大致如下：
+如圖[[fig:CPUGPU]]，CPU 和 GPU 的差異起源於其相異的設計目標與應用場景， CPU的設計目的是處理各種不同的資料運算、邏輯判斷和中斷要求;而 GPU 的設計目的則是為了圖形運算， 其優勢在於能快速對同類型的資料進行平行運算[fn:8]。二者主要差異大致如下：
 - CPU 是由幾個每次可處理數個獨立「執行緒」(threads)的核心(core)所組成；GPU 則有數百個這樣的核心，同時可以處理上千個執行緒
 - CPU 主要是線性執行； GPU 則是個高度平行化的單元
 - CPU 的發展主要致力於最佳化系統的遲滯時間，讓系統能有迅速流暢的反應；GPU 的發展則是朝頻寬最佳化努力。在深度神經網路中，頻寬為主要的系統瓶頸
@@ -197,6 +250,335 @@ MNIST 歷年的競賽前幾名都是以 CNN 為基礎，進一步提高辨識準
 人類是透過嚐試錯誤來學習，例如騎腳踏車，在電腦領域中，也有從嚐試錯誤的過程中進行自主學習的例子，稱為強化學習(reinforcement learning)。在強化學習中，代理人(Agent)根據環境狀況來決定要採取的行動，利用該行動讓㼈境變化。隨環境變化，代理人獲得某些報酬。強化學習的目的是決定代理人的行動方針，以獲得更好的報酬。典型的 DQN 可以讓遊戲自動學習，達到超越人類等級的能力，使用 DQN 的 CNN 可以輸入遊戲影像(如連續 4 個畫面)，最後針對遊戲的控制器動作(搖桿的動作與按鈕)分別輸出該動作的「價值」。由於 DQN 的輸入只是影像，所以不用隨著遊戲的不同來改變設定，同一套 DQN 可以學習「小精靈」與「Atari」。DQN 與 AlphaGo 都是 Google Deep Mind 公司的研究。* ex: 入侵偵測系統
 
 * 深度學習運作原理
+** 機器學習的SOP
+1. 資料載入和預處理
+1. 建立模型
+1. 訓練模型
+1. 評估模型/修改模型(回到3.)
+1. 發佈模型/應用
+
+** 資料的分割
+訓練模型時通常會將資料集分割為訓練集、測試集，有時還會再細分出驗證集。
+其具體分割方式可以分為以下幾類：
+*** 基本資料分割
+以下這些方法用於基本的模型訓練與評估，適合初步模型測試或大規模資料。
+**** 訓練/測試分割（train-Test Split)
+部份文獻也稱為Holdout Method，就是我們平時最常見的資料分割方式，把資料集分為以下兩部份：
+- 訓練集(Training set): 用於訓練模型
+- 測試集(Test set): 用於評估模型的性能
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:./images/screenshot-20250214-191559.png]]
+一般的分割比例常見為：
+1) 80% 訓練，20% 測試
+1) 70% 訓練，30% 測試
+
+適用情境：
+- 大規模資料集（如上萬筆以上）
+- 訓練成本較高時，因為只需要訓練一次
+
+缺點：
+- 結果依賴單次分割，可能因為某次隨機分割影響評估結果，導致高變異性（high variance）
+- 無法充分利用資料，因為測試集的部分資料未參與訓練，而這部分測試資料可能對模型的訓練有幫助，例如包含重要特徵
+
+範例程式
+#+begin_src python -r -n :results output :exports both
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+#+end_src
+
+**** 訓練/驗證/測試分割（Train-Validation-Test Split）
+這個方法的主要目的為了調整模型的超參數，避免測試集的資料洩漏，做法是將資料集分為以下三部份：
+- 訓練集(Training set): 用於訓練模型
+- 驗證集(Validation set): 用於調整模型的超參數
+- 測試集(Test set): 用於評估模型的性能
+
+常見比例：
+- 80% 訓練 / 10% 驗證 / 10% 測試
+- 70% 訓練 / 15% 驗證 / 15% 測試
+
+適用情境：
+- 需要調整超參數（如學習率、模型架構）
+- 確保測試集未參與模型選擇過程，避免資訊洩漏
+
+缺點：
+- 需要更多資料，否則訓練集會變小
+- 驗證結果可能受隨機分割影響
+
+範例程式
+#+begin_src python -r -n :results output :exports both
+from sklearn.model_selection import train_test_split
+
+X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.2, random_state=42)
+X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
+#+end_src
+*** 交叉驗證（Cross-Validation, CV）
+多次切分資料，讓每個資料點都能當一次測試集，避免評估的不穩定性。
+**** K-Fold Cross-Validation
+K-Fold 交叉驗證的主要目的之一是評估不同模型或超參數組合的表現，進而選擇最佳的設定。完整的流程如下：
+1. 先劃分出測試集
+   - 測試集不參與 K-Fold 交叉驗證，確保它是真正未見過的資料。
+   - 此步驟確保我們最終的模型評估是公平的，不會發生資訊洩漏（Data Leakage）。
+2. 在訓練集上使用 K-Fold 進行超參數調整
+   - 使用 K-Fold 交叉驗證來評估不同的超參數組合，選擇最佳的超參數。
+   - 此時測試集仍未被使用！我們只用交叉驗證來決定超參數。
+3. 使用完整的訓練集（不再做 K-Fold）訓練最終模型
+   - 找到最佳超參數後，我們不再使用 K-Fold，而是用完整的訓練集來訓練最終模型。
+4. 用測試集做最終評估
+   - 測試集應在第一步就獨立出來，不能參與 K-Fold 交叉驗證。交叉驗證應僅針對訓練集，確保泛化能力評估準確無誤
+
+實際進行資料分割時，K-folder將訓練集分為K組，每次取其中一組作為測試集，其餘的作為訓練集，重複K次，最後取平均值作為模型的性能評估。
+
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:./images/screenshot-20250216-154539.png]]
+
+至於如何利用驗證集找出最佳超參數或模型，可以參考以下三種方法：
+***** 手動調整
+1) 定義超參數組合（例如 max_depth 和 n_estimators）。
+2) 使用 K-Fold 交叉驗證來評估每組超參數的表現。
+3) 選擇具有最佳平均交叉驗證準確率的超參數組合。
+#+begin_src python -r -n :results output :exports both
+from sklearn.model_selection import KFold
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+import numpy as np
+
+# 定義超參數組合
+param_grid = [
+    {"n_estimators": 50, "max_depth": 5},
+    {"n_estimators": 100, "max_depth": 5},
+    {"n_estimators": 50, "max_depth": 10},
+    {"n_estimators": 100, "max_depth": 10}
+]
+
+best_params = None
+best_score = 0
+
+kf = KFold(n_splits=5, shuffle=True, random_state=42)
+
+# 遍歷所有超參數組合
+for params in param_grid:
+    val_scores = []
+
+    for train_idx, val_idx in kf.split(X_train):
+        model = RandomForestClassifier(n_estimators=params["n_estimators"], max_depth=params["max_depth"])
+        model.fit(X_train[train_idx], y_train[train_idx])  # 訓練模型
+        y_val_pred = model.predict(X_train[val_idx])  # 在驗證集上預測
+        val_acc = accuracy_score(y_train[val_idx], y_val_pred)  # 計算準確率
+        val_scores.append(val_acc)
+
+    avg_score = np.mean(val_scores)  # 計算交叉驗證的平均準確率
+
+    print(f"參數組合: {params}, 平均交叉驗證準確率: {avg_score:.4f}")
+
+    if avg_score > best_score:
+        best_score = avg_score
+        best_params = params
+
+print(f"最佳超參數: {best_params}, 最高交叉驗證準確率: {best_score:.4f}")
+#+end_src
+在上述程式中，我們做了以下幾個步驟：
+1) 定義 4 組不同的超參數組合（n_estimators 和 max_depth）。
+2) 對每組超參數執行 K-Fold 交叉驗證，計算 5 次的平均準確率。
+3) 選擇擁有最高交叉驗證準確率的超參數組合 作為最佳組合。
+
+缺點：如果超參數組合很多（例如 1000 種），這樣手動測試會非常耗時，因此可以使用 Grid SearchCV 或 RandomizedSearchCV 來自動搜尋最佳超參數。
+***** GridSearchCV
+GridSearchCV 是 Scikit-Learn 提供的一個自動化調參工具，可以幫助我們快速找到最佳超參數組合。它會自動遍歷所有超參數組合，並使用 K-Fold 交叉驗證來評估每組超參數的表現，最後返回最佳超參數組合。
+#+begin_src python -r -n :results output :exports both
+from sklearn.model_selection import GridSearchCV
+from sklearn.ensemble import RandomForestClassifier
+
+# 定義超參數搜索範圍
+param_grid = {
+    "n_estimators": [50, 100, 150],
+    "max_depth": [5, 10, 15]
+}
+
+# 建立隨機森林模型
+model = RandomForestClassifier()
+
+# 使用 GridSearchCV + K-Fold 交叉驗證來搜索最佳超參數
+grid_search = GridSearchCV(model, param_grid, cv=5, scoring='accuracy', n_jobs=-1)
+grid_search.fit(X_train, y_train)
+
+# 輸出最佳超參數和對應的分數
+print(f"最佳超參數: {grid_search.best_params_}")
+print(f"最佳交叉驗證準確率: {grid_search.best_score_:.4f}")
+#+end_src
+在上述程式中，我們做了以下幾個步驟：
+1) 定義超參數範圍（n_estimators 和 max_depth）。
+2) 使用 GridSearchCV 進行 K-Fold 交叉驗證，自動測試所有超參數組合。
+3) 輸出最佳超參數和最高的交叉驗證分數。
+
+優勢：
+- 完全自動化，不需要手動測試每組超參數。
+- 計算效能較高，可以使用 n_jobs=-1 同時運行多個超參數組合，提高速度。
+***** RandomizedSearchCV
+RandomizedSearchCV 與 GridSearchCV 類似，但是它不是遍歷所有超參數組合，而是隨機選取一部分超參數組合進行測試，這樣可以節省時間，尤其是當超參數範圍很大時。
+#+begin_src python -r -n :results output :exports both
+from sklearn.model_selection import RandomizedSearchCV
+from scipy.stats import randint
+
+# 定義超參數範圍（使用隨機分布）
+param_dist = {
+    "n_estimators": randint(50, 200),
+    "max_depth": randint(5, 20)
+}
+
+# 建立隨機森林模型
+model = RandomForestClassifier()
+
+# 使用 RandomizedSearchCV 進行隨機超參數搜尋
+random_search = RandomizedSearchCV(model, param_dist, cv=5, n_iter=10, scoring='accuracy', n_jobs=-1, random_state=42)
+random_search.fit(X_train, y_train)
+
+# 輸出最佳超參數和對應的分數
+print(f"最佳超參數: {random_search.best_params_}")
+print(f"最佳交叉驗證準確率: {random_search.best_score_:.4f}")
+#+end_src
+在上述程式中，我們做了以下幾個步驟：
+1. 使用 隨機分布 設定超參數範圍（randint(50, 200)）。
+1. n_iter=10 表示只隨機測試 10 組超參數組合，大幅減少計算時間。
+1. 使用 K-Fold 交叉驗證來評估每組超參數的表現。
+
+優勢：
+- 比 Grid Search 快速許多，適合超參數組合很多時使用。
+- 可以涵蓋更廣的搜尋範圍，避免限制於固定的超參數組合。
+**** LOOCV (Leave-One-Out Cross Validation)
+LOOCV 是一種特殊的交叉驗證方法，是 K-fold 其中一種特例，此作法相當簡單明瞭，但是訓練負擔會非常重且耗時。將資料集分為訓練集和測試集，其中測試集只包含 *一筆樣本資料* ，訓練集包含 *其餘N-1筆樣本* ，整個訓練會重複進行N次(N為樣本數），最後取所有測試結果的平均值作為模型的性能評估。這樣的分割方式可以:
+- 保證每個樣本都被用於測試一次，並且可以得到最穩定的結果
+- 充分利用資料，每筆資料都有機會成為測試集
+- 結果最穩定，不受特定分割影響
+
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:./images/screenshot-20250216-124914.png]]
+
+適用情境：
+- 小型資料集（如 N < 100），因為可以最大化利用訓練資料
+- 不適合大規模資料集，因為計算成本過高。
+
+優點：
+- 充分利用資料，每筆資料都有機會成為測試集
+- 結果最穩定，不受特定分割影響
+
+缺點
+- 訓練成本極高：因為有 N 筆資料，就需要 訓練 N 次，如果 N = 10000，則要訓練 10000 次，時間成本極高。
+- 對離群值（outliers）極度敏感：如果某個樣本是異常值，這個異常值在某次迭代會成為測試集，會嚴重影響模型表現。
+
+範例程式:
+#+begin_src python -r -n :results output :exports both
+from sklearn.model_selection import LeaveOneOut
+
+loo = LeaveOneOut()
+loo_accuracies = []
+
+for train_idx, test_idx in loo.split(X):
+    model.fit(X[train_idx], y[train_idx])
+    acc = model.score(X[test_idx], y[test_idx])
+    loo_accuracies.append(acc)
+
+print("平均準確率:", np.mean(loo_accuracies))
+#+end_src
+**** Stratified K-fold Cross-Validation
+Stratified K-fold Cross-Validation 是 K-fold Cross-Validation 的一種變形，主要是針對分類問題而設計的。在 K-fold Cross-Validation 中，每次分割都是隨機的，可能會導致某些類別的樣本在訓練集和測試集中的比例不均衡，進而影響模型的性能評估。Stratified K-fold Cross-Validation 通過保持每個類別在每個分割中的比例來解決這個問題，確保每個類別在訓練集和測試集中的比例相同。
+
+適用場景
+- 類別不均衡問題（例如詐欺檢測、罕見疾病分類）
+- 確保所有類別都能在每個 fold 中出現，避免某些 fold 缺少少數類別
+- 小型資料集時特別重要，避免某些類別完全未出現在特定 fold
+
+範例程式
+#+begin_src python -r -n :results output :exports both
+from sklearn.model_selection import StratifiedKFold
+from collections import Counter
+
+X = np.arange(20).reshape(-1, 1)  # 20 筆樣本
+y = np.array([0] * 18 + [1] * 2)  # 18 個類別 0，2 個類別 1
+
+skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+for fold, (train_idx, test_idx) in enumerate(skf.split(X, y)):
+    print(f"Fold {fold+1} - 測試集類別分佈:", Counter(y[test_idx]))
+#+end_src
+*** 時間序列交叉驗證（Time Series Split）
+Time Series Split 是時序資料（如股市、氣象預測）的專用分割方式，確保未來的資料不會洩漏到訓練中。
+
+適用場景
+- 股票預測
+- 氣象預測
+- 銷售趨勢分析
+- 任何未來資料不可提前出現的應用
+
+範例程式
+#+begin_src python -r -n :results output :exports both
+from sklearn.model_selection import TimeSeriesSplit
+
+tscv = TimeSeriesSplit(n_splits=5)
+for train_idx, val_idx in tscv.split(X):
+    model.fit(X[train_idx], y[train_idx])
+    acc = model.score(X[val_idx], y[val_idx])
+#+end_src
+輸出示意
+#+begin_example
+第一次訓練: 1 2 3 4  -> 測試 5
+第二次訓練: 1 2 3 4 5 -> 測試 6
+第三次訓練: 1 2 3 4 5 6 -> 測試 7
+#+end_example
+*** 自助抽樣（Bootstrap Sampling）
+一種隨機抽樣方法，主要用於統計學與集成學習（如隨機森林）。以 *抽完放回* 的方式從原始資料集中隨機抽取樣本，形成新的訓練集。
+
+適用場景
+- 當資料量較小時，希望模擬多次抽樣的效果。
+- 隨機森林（Random Forest）、統計學中的區間估計
+
+優點
+- 可以充分利用資料，因為每次抽樣都是隨機的，每次抽樣都有可能抽到重要樣本
+- 可以模擬多次抽樣的效果，得到更穩定的結果
+
+缺點
+- 會產生重複樣本，導致模型訓練時的方差增加
+- 計算成本高，因為要重複抽樣多次
+
+範例程式1
+#+begin_src python -r -n :results output :exports both
+from sklearn.utils import resample
+
+X_train_bootstrap, y_train_bootstrap = resample(X_train, y_train, replace=True, random_state=42)
+model.fit(X_train_bootstrap, y_train_bootstrap)
+#+end_src
+範例程式2: 隨機森林（Random Forest）
+#+begin_src python -r -n :results output :exports both
+from sklearn.ensemble import RandomForestClassifier
+
+model = RandomForestClassifier(n_estimators=100, bootstrap=True)
+model.fit(X_train, y_train)
+#+end_src
+*** 交叉驗證的效能評估指標
+在機器學習中，我們通常使用一些指標來評估模型的性能，這些指標可以幫助我們了解模型的表現，並選擇最佳模型。以下是一些常見的效能評估指標：
+**** 分類問題
+- 準確率（Accuracy）：正確預測的樣本數除以總樣本數。
+- 精確率（Precision）：正確預測為正例的樣本數除以所有預測為正例的樣本數。
+- 召回率（Recall）：正確預測為正例的樣本數除以所有真正為正例的樣本數。
+- F1 Score：精確率和召回率的調和平均數。
+- ROC 曲線（Receiver Operating Characteristic Curve）：以假陽性率（False Positive Rate）為橫軸，真陽性率（True Positive Rate）為縱軸繪製的曲線。
+- AUC（Area Under Curve）：ROC 曲線下的面積，用來衡量模型的性能。
+**** 回歸問題
+- 平均絕對誤差（Mean Absolute Error, MAE）：預測值和真實值之間的絕對誤差的平均值。
+- 均方誤差（Mean Squared Error, MSE）：預測值和真實值之間的誤差的平方的平均值。
+- 均方根誤差（Root Mean Squared Error, RMSE）：均方誤差的平方根。
+- R平方（R-squared）：模型解釋的變異量占總變異量的比例，取值範圍為0到1，越接近1表示模型越好。
+- MAPE（Mean Absolute Percentage Error）：預測值和真實值之間的絕對百分比誤差的平均值。
+- 決定係數（Coefficient of Determination）：R平方的另一種表示方法，也是模型解釋的變異量占總變異量的比例。
+- 殘差圖（Residual Plot）：用來檢查模型的殘差是否符合常態分佈，以及是否存在異方差性。
+- QQ 圖（Q-Q Plot）：用來檢查模型的殘差是否符合常態分佈。
+- 預測區間（Prediction Interval）：用來估計預測值的不確定性，通常是一個區間，表示預測值的範圍。
+
 ** Layer, 損失函數與優化器
 前節深度學習中的每一「層」(layer)如何運作，取決於儲存於該層的權重(weight)，而權重是由多個數字組成。從技術層面來看，layer 是由各個權重參數(parameters)來和輸入的資料(如圖[[fig:python-deep-learning-3]]中的X)進行運算以執行資料轉換的工作(如圖[[fig:python-deep-learning-3]])。而所謂的學習，指的就是幫助神經網路的每一層找出適當的權重值，讓神經網路可以將輸入的訓練資料經由與權重的運作推導出接近標準答案的運算結果(即圖[[fig:python-deep-learning-3]]中的預測 Y)。
 
@@ -250,13 +632,13 @@ MNIST 歷年的競賽前幾名都是以 CNN 為基礎，進一步提高辨識準
 * 實作範例
 ** 二元分類：IMDB
 自 IMDB 資料集中取得 50000 個正/負評論，各 25000 個，該資料集已內建於 Keras 中，且資料已先預處理，電影評論內容為由單字構成的 list 結構，例如，若評論內容為
-#+begin_src python -r :results output :exports both
+#+begin_example
 In a Wonderful morning...
-#+end_src
+#+end_example
 其 list 結構可能為
-#+begin_src python -r :results output :exports both
+#+begin_example
 (8, 3, 386, 1969...)
-#+end_src
+#+end_example
 即，每個單字都會依據其出現頻率給定一個編號，編號越小越常見。(與 IMDb 相關的 paper 參見[[https://paperswithcode.com/sota/sentiment-analysis-on-imdb][Sentiment Analysis on IMDb / paperswithcode]]
 
 #+BEGIN_SRC python -r -n :async :results output :exports both :session imdb
@@ -635,7 +1017,7 @@ Epoch 20/20
 [1m30/30[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 9ms/step - binary_accuracy: 0.9995 - loss: 0.0107 - val_binary_accuracy: 0.8726 - val_loss: 0.5637
 #+end_example
 
-model.fit()會回傳一個 history 物件，這物件本身有一個 history 屬性，為一個包含有關訓練過程中相關數據的字典，這個字期包含有 4 個項目(val_loss, val_acc, loss, acc)，為訓練和驗證時監控的指標。
+model.fit()會回傳一個 history 物件，這物件本身有一個 history 屬性，為一個包含有關訓練過程中相關資料的字典，這個字期包含有 4 個項目(val_loss, val_acc, loss, acc)，為訓練和驗證時監控的指標。
 #+BEGIN_SRC python -r -n :async :results output :exports both :session imdb
 print(history.history)
 print("binary_accuracy:",history.history['binary_accuracy'])
@@ -795,7 +1177,7 @@ opt = optimizers.RMSprop(learning_rate=0.0001)
 model.compile(optimizer=opt, loss='binary_crossentropy',
               metrics=[metrics.binary_accuracy])
 
-# 驗證數據集
+# 驗證資料集
 x_val = x_train[:10000] # 前10000個資料為驗證集
 partial_x_train = x_train[10000:] # 第10000個以後為訓練集
 y_val = y_train[:10000]
@@ -890,6 +1272,94 @@ plt.savefig("images/imdb-Keras-4.png")
 
 比較上述兩組結果，可以發現優化版的 model 在 loss function 以及 accuracy 的表現都有進步。
 
+** 資料分割: IRIS / K-Fold Cross Validation
+
+*** GridSearchCV
+#+begin_src python -r -n  :async :results output :exports both :session IRIS-KFold
+import numpy as np
+import tensorflow as tf
+from sklearn.datasets import load_iris
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.metrics import classification_report, accuracy_score
+from tensorflow import keras
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from scikeras.wrappers import KerasClassifier
+
+# 載入IRIS資料集
+iris = load_iris()
+x, y = iris.data, iris.target
+
+# 資料標準化
+scaler = StandardScaler()
+x = scaler.fit_transform(x)
+
+# 分割資料集為訓練集和測試集
+x_train, x_test, y_train, y_test = train_test_split(
+    x, y, test_size=0.2, random_state=9527
+)
+
+# 建立模型的函數 (用於 KerasClassifier)
+def create_model(optimizer='adam', activation='relu'):
+    model = Sequential()
+    model.add(Dense(16, input_dim=4, activation=activation))
+    model.add(Dense(8, activation=activation))
+    model.add(Dense(3, activation='softmax'))
+
+    model.compile(optimizer=optimizer,
+                  loss='sparse_categorical_crossentropy',
+                  metrics=['accuracy'])
+    return model
+
+# 使用 scikeras 的 KerasClassifier
+model = KerasClassifier(model=create_model, verbose=0)
+
+# 設定參數網格 (需加上 model__ 前綴)
+param_grid = {
+    'batch_size': [10, 20, 32],
+    'epochs': [50, 100],
+    'model__optimizer': ['adam', 'sgd'],
+    'model__activation': ['relu', 'tanh']
+}
+
+# 建立 GridSearchCV 物件
+grid = GridSearchCV(estimator=model,
+                    param_grid=param_grid,
+                    cv=5,
+                    n_jobs=-1)
+
+# 執行參數搜尋
+grid_result = grid.fit(x_train, y_train)
+
+# 輸出最佳參數及最佳分數
+print(f"最佳參數: {grid_result.best_params_}")
+print(f"最佳驗證準確度: {grid_result.best_score_:.4f}")
+
+# 以最佳模型在測試集上評估效果
+best_model = grid_result.best_estimator_
+y_pred = best_model.predict(x_test)
+print(f"測試集準確度: {accuracy_score(y_test, y_pred):.4f}")
+print(classification_report(y_test, y_pred))
+#+end_src
+
+
+#+RESULTS:
+#+begin_example
+最佳參數: {'batch_size': 10, 'epochs': 100, 'model__activation': 'tanh', 'model__optimizer': 'adam'}
+最佳驗證準確度: 0.9583
+測試集準確度: 1.0000
+              precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00        13
+           1       1.00      1.00      1.00         6
+           2       1.00      1.00      1.00        11
+
+    accuracy                           1.00        30
+   macro avg       1.00      1.00      1.00        30
+weighted avg       1.00      1.00      1.00        30
+#+end_example
+
 ** 多類別分類：數位新聞
 目標：將路透社(Reuters)的數位新聞專欄分成 46 個主題，這屬於多類別分類(multiclass classification)問題，每個資料點只會被歸入一個類別；如果每個資料點可能屬於多個類別，則屬於多標籤多類別(multilabel multiclass classification)問題。
 *** 資料集
@@ -972,7 +1442,7 @@ model.compile(optimizer='rmsprop', loss='categorical_crossentropy',
 
 此處的metrics用來儲存後續評估(model.evaluate)模型的記錄
 #+RESULTS:
-*** 驗證數據集
+*** 驗證資料集
 由訓練集抽出 1000 個樣本來驗證：
 #+BEGIN_SRC python -r -n :async :results output :exports both :session reuters
 x_val = x_train[:1000]
@@ -1435,7 +1905,7 @@ EMA 的數學函式如下：
 - \(V_t\)為時間點\(t\)的原始數值
 - \(E_{t-1}\)為時間點\(t-1\)的指數移動平均值
 
-為什麼前例中前 10 筆數據的與其他數據差異如此巨大？我們以前 10 天的資料(一天一筆)來看，第 10 天的 EMA 為：
+為什麼前例中前 10 筆資料的與其他資料差異如此巨大？我們以前 10 天的資料(一天一筆)來看，第 10 天的 EMA 為：
 \( E_{10} = aV_{10} + (1-a)E_9 \)
 展開第 9 天的\(E_9\)後
 \( E_{10} = aV_{10} + (1-a)[aV_9 + (1-a)E_8] \)

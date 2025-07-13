@@ -65,25 +65,25 @@ print('test')
 1. 數據特徵選取
 
 * AI處理的資料
-大數據與傳統資料的主要差異
+如前所述，機器學習在訓練模型時會需使用龐大的資料集，這些資料集某種程度上就是我們常聽到的「大數據(Big Data)」。大數據與傳統資料在以下幾個方面有顯著差異：
 ** 資料量：
 - 大數據：AI所需的大數據集規模通常極大，通常包含數十萬、數百萬甚至數十億筆記錄。這些資料可以來自網路使用者的行為、傳感器數據、社群媒體等。
 - 傳統資料：傳統意義上的資料通常規模較小，例如企業的銷售記錄、財務報表，或者手動收集的問卷調查結果。
 ** 資料結構：
 #+CAPTION: 結構化與非結構化資料
-#+LABEL:fig:Labl
-#+name: fig:Name
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
+#+LABEL:fig:strucdata
+#+name: fig:strucdata
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 400
 #+ATTR_HTML: :width 500
 [[file:images/strucdata.png]]
-- 大數據：大數據包含結構化(如Excel報表、Sensor回傳資料)、半結構化(有欄位、但不一致)和非結構化數據(如社群軟體貼文)。這些數據可以包括文字、圖片、影片、聲音等，因此處理大數據需要考慮多樣的資料格式。
+- 大數據：大數據包含圖[[fig:strucdata]]中的各種結構化(如Excel報表、Sensor回傳資料)、半結構化(有欄位、但不一致)和非結構化數據(如社群軟體貼文)。這些數據可以包括文字、圖片、影片、聲音等，因此處理大數據需要考慮多樣的資料格式。
 - 傳統資料：通常是結構化的資料，例如SQL資料庫中的表格，行列分明，資料屬性相對簡單。
 ** 資料處理與儲存：
-- 大數據的儲存：由於大數據的數量龐大，通常需要分佈式系統來存儲，例如Hadoop、分散式資料庫等。大數據的資料儲存涉及到不同的檔案格式，如Parquet、Avro等，這些格式有助於壓縮數據並高效存取。
+- 大數據的儲存：由於大數據的數量龐大，通常需要分散式系統來存儲，例如Hadoop、分散式資料庫等。大數據的資料儲存涉及到不同的檔案格式，如Parquet、Avro等，這些格式有助於壓縮數據並高效存取。
 - 傳統資料的儲存：多數情況下會採用關聯式數據庫來儲存，使用如MySQL、PostgreSQL等。
 ** 資料更新頻率：
-- 大數據：大數據來自不斷變化的即時數據來源，資料更新的頻率可能是每秒、每分鐘，甚至是即時的，因此需要考慮實時處理的需求。
+- 大數據：大數據來自不斷變化的即時數據來源，資料更新的頻率可能是每秒、每分鐘，甚至是即時的，因此需要考慮實時(realtime)處理的需求。
 - 傳統資料：傳統資料通常是靜態的，資料更新的頻率低，通常是批量更新，並且並不需要即時性。
 ** 資料處理特點：
 - 大數據處理：因應資料量和資料格式的多樣化，大數據處理更多地依賴於分布式處理技術，例如MapReduce、Spark。這些工具的設計旨在能夠平行處理大量的資料。
@@ -150,6 +150,15 @@ drive.mount('/content/gdrive')
 # 透過 gdrive/My Drive/... 來存取檔案
 test = pd.read_csv('gdrive/My Drive/CatDog.csv')
 test
+#+end_src
+**** 檔案在網路上
+可以利用pandas直接讀取網路上的資料檔
+#+begin_src python -r -n :results output :exports both
+import pandas as pd
+
+# 讀取網路上的csv
+df = pd.read_csv('https://raw.githubusercontent.com/letranger/AI/refs/heads/gh-pages/ABCD.csv')
+print(df)
 #+end_src
 ** 識別、刪除遺漏值
 現實世界中可能會因各種原因導致數據缺失或遺漏(如問卷被刻意留白)，這些部份通常會以「空白」、「NaN」或「NULL」來取代。
@@ -1708,7 +1717,7 @@ print(df[['總價', '單價']])
 - 底下的檔案可以透過以下方式下載(於終端機執行)
 - 要記得修改main.py裡的資料夾路徑
 #+begin_src shell -r -n :results output :exports both
-git clone git@github.com:letranger/DataAugmentationDemo.git
+git clone https://github.com/letranger/DataAugmentationDemo.git
 #+end_src
 ** 範例
 安裝opencv
@@ -1788,8 +1797,8 @@ def process_directory(input_dir, output_dir):
                 cv2.imwrite(output_path, augmented_image)
 
 # 輸入和輸出目錄
-input_directory = '/Users/letranger/Downloads/aug/images'
-output_directory = '/Users/letranger/Downloads/aug/augImages'
+input_directory = '/Users/letranger/Downloads/DataAugmentationDemo/images'
+output_directory = '/Users/letranger/Downloads/DataAugmentationDemo/augImages'
 
 # 處理圖像
 process_directory(input_directory, output_directory)

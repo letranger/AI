@@ -6,11 +6,11 @@
 
 # -*- org-export-babel-evaluate: nil -*-
 #+TAGS: AI
-#+OPTIONS: toc:3 ^:nil num:3
+#+OPTIONS: toc:2 ^:nil num:3
 #+OPTIONS: H:4
 #+PROPERTY: header-args :eval never-export
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/muse.css" />
-#+EXCLUDE_TAGS: noexport
+#+HTML_HEAD_EXTRA: <script src="../css/copy_code.js"></script>
 #+begin_export html
 <a href="https://letranger.github.io/AI/20221023101716-非監督式學習.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20221023101716-非監督式學習.html.svg"/></a>
 #+end_export
@@ -22,7 +22,7 @@
 - [[https://www.dexweng.com/ml-intro/][究竟什麼是機器學習?所有種類及演算法一次告訴你！]]
 - [[https://www.sciencehistory.org/stories/magazine/ronald-fisher-a-bad-cup-of-tea-and-the-birth-of-modern-statistics/][Distillations magazine- 紅茶與牛奶的故事]]
 - [[https://www.youtube.com/watch?v=cVMX-k0rW68&list=RDcVMX-k0rW68&index=1][Soundtrack]]
-- [[https://alankrantas.medium.com/kmeans-%E8%83%BD%E5%BE%9E%E8%B3%87%E6%96%99%E4%B8%AD%E6%89%BE%E5%87%BA-k-%E5%80%8B%E5%88%86%E9%A1%9E%E7%9A%84%E9%9D%9E%E7%9B%A3%E7%9D%A3%E5%BC%8F%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92%E6%BC%94%E7%AE%97%E6%B3%95-%E6%89%80%E4%BB%A5%E5%AE%83%E5%88%B0%E5%BA%95%E6%9C%89%E5%95%A5%E7%94%A8-%E4%BD%BF%E7%94%A8-scikit-learn-%E8%88%87-python-5dd8c0c8b167][KMeans：能從資料中找出 K 個分類的非監督式機器學習演算法 — — 所以它到底有啥用？（使用 scikit-learn 與 Python）]]
+- [[https://alankrantas.medium.com/kmeans-%E8%83%BD%E5%BE%9E%E8%B3%87%E6%96%99%E4%B8%AD%E6%89%BE%E5%87%BA-k-%E5%80%8B%E5%88%86%E9%A1%9E%E7%9A%84%E9%9D%9E%E7%9B%A3%E7%9D%A3%E5%BC%8F%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92%E6%BC%94%E7%AE%97%E6%B3%95-%E6%89%80%E4%BB%A5%E5%AE%83%E5%88%B0%E5%BA%95%E6%9C%89%E5%95%A5%E7%94%A8-%E4%BD%BF%E7%94%A8-scikit-learn-%E8%88%87-pythbon-5dd8c0c8b167][KMeans：能從資料中找出 K 個分類的非監督式機器學習演算法 — — 所以它到底有啥用？（使用 scikit-learn 與 Python）]]
 
 * 非監督式學習
 #+CAPTION: AI, Machine Learning與Deep Learning
@@ -53,50 +53,61 @@
   [[file:images/2022-04-30_11-35-44.jpg]]
 
 ** 非監督式學習的常見演算法
-為了讓相近的資料可以聚集在一起，通常還是會將資料的特徵值數值化，再透過計算資料間的「距離」進行分群，在此常以「歐幾里得距離」為計算方式。常見的分群演算法包括：
+為了讓相近的資料可以聚集在一起，通常還是會將資料的特徵值數值化，再透過計算資料間的「距離」進行分群，在此常以「歐幾里得距離」為計算方式。以下為幾個主要任務與對應演算法：
 *** 分群(clustering)
-聚類(集群)
-- K-Means
-- DBSCAN
-- 階層式分群分析(Hierarchical Cluster Analysis, HCA)
-*** 異常檢測與新穎檢測
-- One-class SVM
-- 孤立森林(Isolation Forest)
+為了讓相近的資料聚集在一起，通常需先將資料的特徵值數值化，再透過計算資料間的「距離」來進行分群。常使用歐幾里得距離（Euclidean distance）。常見演算法：
+- K-Means：以 K 個中心點將資料分為 K 群，並反覆調整以最小化群內誤差平方和（SSE）。
+- DBSCAN：基於密度的分群演算法，可辨識任意形狀的群組並標記離群點。
+- 階層式分群分析（Hierarchical Cluster Analysis, HCA）：逐步合併或拆分群組形成層級樹狀結構。
+*** 異常檢測與新穎檢測（Anomaly & Novelty Detection）
+從資料中找出偏離主要分布的樣本，常應用於欺詐偵測、工業監控等。常見方法：
+- One-class SVM：使用支持向量機學習正常資料的邊界，用以識別異常點。
+- 孤立森林（Isolation Forest）：利用隨機樹結構將異常點快速分離，效率高且適用高維資料。
 *** 降維
-降維有兩大分支：線性投影與流形學習[fn:1]。
-**** 線性投影
+將高維資料投影至低維空間，以利視覺化、運算效率提升或雜訊過濾。可分為兩大類：
+**** 線性投影（Linear Projection）
+將資料進行線性轉換，保留最大變異性或主成分。
 ***** 主成分分析(Principal component analysis, PCA)
-PCA有數種變形：mini-batch變形式PCA(incremental PCA)、非線性變形(kernel PCA)、稀疏變形(sparse PCA)
+將資料投影到保留最多變異量的方向（主成分）上。常見變形：
+- Mini-batch PCA / Incremental PCA：適合大量資料分批處理
+- Kernel PCA：加入核函數進行非線性降維
+- Sparse PCA：產生稀疏主成分以提升可解釋性
 ***** 奇異值分解(Singular value decomposition, SVD)
-降低原來特徵所組成的矩陣的秩（rank)，使得原來的矩陣可以使用擁有較小的秩的矩陣所組成的線性組合來表示。
+將原始矩陣分解為秩(rank)較小的矩陣乘積，用來壓縮或近似原矩陣，得原來的矩陣可以使用擁有較小的秩的矩陣所組成的線性組合來表示。常用於推薦系統、LDA、語意分析等領域。
 ***** 隨機投影(Random projection)
-由高維投影至低維空間，但同時保留點與點間的矩離，可以使用隨機高斯矩陣（random Gaussian matrix)或隨機稀疏矩陣(random sparse matrix)來實現。
-- principal component analysis
-- singular value decomposition
-- random projection.
-**** 流形學習(Manifold learning)
-***** Isomap
-透過估算點與粌近點的捷線(geodesic)或曲線距離(curved distance)，而非使用歐式距離(Euclidean distance)來學習資料流形的內蘊幾何。
-***** t-distributed stochastic neighbor embedding(t-SNE)
-將高維度空間的資料嵌入至二維或三維的空間
-***** multidimensional scaling (MDS)
-***** locally linear embedding (LLE)
-***** dictionary learning
-***** random trees embedding
-***** independent component analysis
+將高維資料以隨機矩陣映射到低維空間，且大致保留資料之間的距離關係。可以使用隨機高斯矩陣（random Gaussian matrix)或隨機稀疏矩陣(random sparse matrix)來實現。可使用：
+- 隨機高斯矩陣（random Gaussian matrix）
+- 隨機稀疏矩陣（random sparse matrix）
+- principal component analysis（主成分分析）
+- singular value decomposition（奇異值分解）
+- random projection（隨機投影）
+**** 非線性降維（Nonlinear Dimensionality Reduction）
+假設資料分布於低維流形（manifold）上，透過學習鄰近關係進行嵌入。分為幾個常見方法族群：
+***** 流形學習(Manifold learning)
+- Isomap: 透過**近鄰之間的捷徑距離（geodesic distance）**建立全局流形結構的低維表示。是 MDS（多維尺度轉換）的延伸。
+- t-SNE（t-distributed Stochastic Neighbor Embedding）: 將高維資料嵌入至 2D 或 3D 空間，強調保留鄰近點關係。非常適合視覺化高維資料，如詞向量、圖像特徵等。
+- 多維尺度轉換（Multidimensional Scaling, MDS）: 依據樣本間距離將資料配置於低維空間，使低維中的距離盡可能與高維中相似。
+- 局部線性嵌入（Locally Linear Embedding, LLE）: 假設每個點可由其鄰居線性重建，透過這些重建權重學習低維嵌入。
+- 詞典學習（Dictionary Learning）: 尋找一組稀疏基底來表示資料，可用於特徵提取與壓縮。
+- 隨機樹嵌入（Random Trees Embedding）: 使用隨機樹（例如隨機森林）建立非線性轉換，以獲得資料的新表徵。
+- 獨立成分分析（Independent Component Analysis, ICA）: 與 PCA 相對，將資料分解為統計上彼此獨立的成分，常用於信號分離。
+***** 核方法（Kernel-based Methods）
+將資料映射到高維特徵空間，再進行線性降維（如 PCA）：
+- Kernel PCA（核主成分分析）: 加入核技巧使 PCA 能捕捉非線性結構
+- Kernel LDA（核線性判別分析）: 非線性版本的線性判別分析
+***** 神經網路類降維（Neural network-based）
+透過神經網路結構學習低維表示：
+- Autoencoder（自編碼器）: 一種非監督式神經網路，將資料壓縮再還原，潛在層即為降維表示
+- Variational Autoencoder（VAE）: 在 autoencoder 架構中加入機率分佈與正規化
+- Parametric t-SNE：結合神經網路對 t-SNE 進行擬合，支援新資料投影
+***** 其他統計或圖論導向方法
+- UMAP（Uniform Manifold Approximation and Projection）：兼顧局部與全局結構，速度快，近年來熱門視覺化方法
+- Diffusion Maps、Spectral Embedding 等：使用鄰接圖和特徵值分解學習嵌入
 
-* 聚類(集群)
-- 任務: grouping objects together based on similarity.
-- 應用:
-  - 在信用卡詐欺偵測中，聚類可以將詐欺交易分組在一起，將其與正常交易分開​​。
-  - 如果我們的資料集中的觀測值只有幾個標籤，我們可以先使用聚類對觀測值進行分組（不使用標籤）。 然後，我們可以將少數標記觀測值的標籤轉移到同一組內的其餘觀測值。 這是遷移學習的一種形式，也是機器學習中一個快速發展的領域。
-
-** K-Means
-先來這裡([[https://user.ceng.metu.edu.tr/~akifakkus/courses/ceng574/k-means/][K-Means Clustering Demo]])試一下什麼是K-Means Cluestering。
-
-「群集」的概念簡單來說就是將相近的資料彼此分在同一群體。
-
-K-means演算法：將n個點劃分到K個聚落中，如此一來每個點都屬於離其最近的聚落中心所對應之聚落，以之作為分群的標準。
+* K-Means Clustering
+- 先來這裡([[https://user.ceng.metu.edu.tr/~akifakkus/courses/ceng574/k-means/][K-Means Clustering Demo]])試一下什麼是K-Means Cluestering。
+- 「分群」的概念簡單來說就是將相近的資料彼此分在同一群體。
+- K-means演算法：將n個點劃分到K個聚落中，如此一來每個點都屬於離其最近的聚落中心所對應之聚落，以之作為分群的標準。
 #+begin_src python -r -n :results output :exports none
 import matplotlib.pyplot as plt
 from sklearn.datasets import make_blobs
@@ -112,7 +123,7 @@ plt.savefig("images/blobsScatter.png", dpi=300)
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/blobsScatter.png]]
-*** K-Means原理
+** K-Means原理
 八張未標註動物名稱(標籤)的照片，每張照片有兩個特徵值
 #+CAPTION: 資料庫樣本
 #+LABEL:fig:Labl
@@ -170,9 +181,9 @@ plt.savefig('images/kms-1.png', dpi=300)
 [[file:images/kms-1.png]]
 
 K-means 演算法執行步驟如下:
-**** 決定K值
+*** 決定K值
 K 值指的是現有訓練資料(八張照片)要分成的群數，此處K值為2。
-**** 選定K個中心點
+*** 選定K個中心點
 任意選定 K 個(K=2)中心點，在實際的程式實作可以亂數隨機產生這K個資料點。如圖[[fig:kmeans-3]]所示，隨機指定的兩群資料點的中心點為(5，5)、(6，9)。
 #+begin_src python -r -n :results output :exports none
 import numpy as np
@@ -235,7 +246,7 @@ plt.savefig('images/kms-2.png', dpi=300)
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 file:images/kms-2.png
-**** 將資料點分群
+*** 將資料點分群
 接下來為所有資料點計算各自與中心點的「歐幾里德距離」，決定該資料點要被歸入哪一個資料群，計算過程及結果如圖[[fig:kmeans-4]]、[[fig:kmeans-5]]所示。
 #+begin_src python -r -n :results output :exports none
 import numpy as np
@@ -414,7 +425,7 @@ plt.savefig('images/km-4.png', dpi=300)
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/聚類(集群)/2024-02-11_15-59-29_2024-02-10_21-14-09.png]]
-**** 為 K 個群裡的資料點找出新中心點
+*** 為 K 個群裡的資料點找出新中心點
 依前一步驟的分類，此 8 張資料點已分為兩群，接下來我們再為這兩群資料點找出各自的新中心點，計算方式如下:
 - 新[[color:green][★X]]值: 2+3+4+6+7+9 =5.17
 - 新[[color:green][★Y]]值: 6+5+8+3+6+4 =5.33
@@ -492,12 +503,13 @@ plt.savefig('images/km5.png', dpi=300)
 [[file:images/km5.png]]
 
 這個結果看起來不太合理對吧，至少(4,8)這點應該要歸入[[color:orange][★]]這組才對。沒關係，因為還沒完成。
-**** 重覆步驟 (3)、(4) 進行下一輪的分群，直到分群結果不再變化
+*** 重覆步驟 (3)、(4) 進行下一輪的分群，直到分群結果不再變化
 接下來就繼續計算各點到新中心點[[color:green][★]](5.17, 5.33)、[[color:orange][★]](4.50, 8.50)的距離、依新的距離重新對資料點進行分群(即步驟3)，再求出新的中心點(即步驟4)，如此重覆不斷進行，直到分群結果不再變動即告完成。
-**** 如何訂K值
+*** 如何訂K值
 - 用K-means演算法需設定「K值」，但難免會面臨難以決定分群數量的狀況。同樣的資料如果要分成3群、4群、5群，就必須做三次不同的操作，而且分群的結果彼此之間不一定有其關聯性。
 - 利用「階層式分群法」透過階層架構的方式，以對特徵距離的分析，將資料層層反覆地進行分裂或聚合，彈性決定群數。
-*** K-Means實作:隨機數字 :sklearn:
+
+** K-Means實作:隨機數字 :sklearn:
 #+begin_src python -r -n :results output :exports none
 # 隨機生成100個(x, y)
 import pandas as pd
@@ -556,7 +568,8 @@ plt.savefig("images/kmeansScatter.png", dpi=300)
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/kmeansScatter.png]]
-*** K-Means應用: 壓縮影像
+
+** K-Means應用: 壓縮影像
 :PROPERTIES:
 :CUSTOM_ID: NS-KM-Image
 :END:
@@ -639,7 +652,8 @@ plt.imsave(r'images/compressTest.jpg', image_compressed)
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/compressTest.jpg]]
-*** [小組作業]K-Means分群實作 :TNFSH:
+
+** [小組作業]K-Means分群實作 :TNFSH:
 以K-Means對鳶尾花資料(特徵值)進行分群
 
 作業內容須包含:
@@ -648,14 +662,16 @@ plt.imsave(r'images/compressTest.jpg', image_compressed)
 - 以不同特徵值(\(C^4_3\))配對進行cluster，畫出3D scatter
 - 對於輸出之結果應輔以文字說明解釋。
 - 以pdf繳交報告，報告首頁需列出組員列表(姓名、教學網ID)
-*** [小組作業]以K-Means壓縮影像實作 :TNFSH:
+
+** [小組作業]以K-Means壓縮影像實作 :TNFSH:
 參考前述[K-Means應用: 壓縮影像]，自行找一張圖(jpg)進行以下測試
 - 以不同K值、batchSize進行影像壓縮，並探討在不同情況下的壓縮效果(包含影像大小及品質)
 - 以不同類型(顏色數量:全彩、256色、灰階)的圖片進行測試
 - 對於輸出之結果應輔以文字說明解釋。
 - 以pdf繳交報告，報告首頁需列出組員列表(姓名、教學網ID)
-*** sklearn Kmeans: MNist :noexport:
-**** 讀入資料
+
+** sklearn Kmeans: MNist :noexport:
+*** 讀入資料
 #+begin_src python -r  :async :results output :exports both :session KM-Mist
 '''Main'''
 import numpy as np
@@ -701,7 +717,7 @@ y_test = pd.Series(data=y_test,index=test_index)
 #+end_src
 
 #+RESULTS:
-**** Dimensionality Reduction
+*** Dimensionality Reduction
 #+begin_src python -r -n :async :results output :exports both :session KM-Mist
 # Principal Component Analysis
 from sklearn.decomposition import PCA
@@ -725,7 +741,7 @@ X_train_PCA.iloc[0:2000,0:3].to_csv(log_dir+'pca_data.tsv', sep = '\t', index=Fa
 #+end_src
 
 #+RESULTS:
-**** K-Means Inertia
+*** K-Means Inertia
 Inertia measures how well a dataset was clustered by K-Means. It is calculated by measuring the distance between each data point and its centroid, squaring this distance, and summing these squares across one cluster[fn:1].
 #+begin_src python -r -n :async :results output :exports both :session KM-Mist
 # K-means - Inertia as the number of clusters varies
@@ -762,7 +778,7 @@ plt.savefig('images/km-inertia.png', dpi=300)
 [[file:images/km-inertia.png]]
 
 如圖[[fig:inertia]]所示，隨著cluster數目的增加、inertia會隨之下降。也就是說，隨著cluster數目的增加，同一cluster內的樣本同質性也就越高。
-**** k-Means Accuracy
+*** k-Means Accuracy
 #+begin_src python -r -n :async :results output :exports both :session KM-Mist
 # K-means - Inertia as the number of clusters varies
 # Define analyze cluster function
@@ -836,7 +852,7 @@ plt.savefig('images/km-accuracy.png', dpi=300)
 
 如圖[[fig:km-accuracy]]，分類的精確程度隨著cluster數目的增加而提高，
 
-** Hierarchical clustering
+* Hierarchical clustering
 :PROPERTIES:
 :CUSTOM_ID: NS-Hie-cluster
 :END:
@@ -857,7 +873,7 @@ plt.savefig('images/km-accuracy.png', dpi=300)
   #+ATTR_ORG: :width 300
   #+ATTR_HTML: :width 500
   [[file:images/聚類(集群)/2024-02-11_21-30-15_2024-02-11_21-30-06.png]]
-*** 聚合式階層分群法(Agglomerative)
+** 聚合式階層分群法(Agglomerative)
 如果採用聚合的方式，階層式分群法可由樹狀結構的底部開始，將資料或群聚逐次合併。
 
 聚合式階層分群步驟：
@@ -865,7 +881,7 @@ plt.savefig('images/km-accuracy.png', dpi=300)
 2. 比較各個群之間的距離，找出距離最短的兩個群。
 3. 將其合併變成一個新群。
 4. 不斷重複直到群的數量符合所要求的數目。
-**** 聚合式階層分群: step by step
+*** 聚合式階層分群: step by step
 1. 假設現在有6筆資料，分別標記A、B、C、D、E及F，且每筆資料都是一個群。
    #+CAPTION: hierar-1
    #+LABEL:fig:Labl
@@ -898,8 +914,8 @@ plt.savefig('images/km-accuracy.png', dpi=300)
    #+ATTR_ORG: :width 300
    #+ATTR_HTML: :width 500
    [[file:images/聚類(集群)/2024-02-11_09-18-01_2024-02-11_09-07-48.png]]
-**** 如何定義兩個群聚之間的距離
-***** 單一連結聚合
+*** 如何定義兩個群聚之間的距離
+**** 單一連結聚合
 Single-linkage agglomerative algorithm, 群聚與群聚間的距離可以定義為不同群聚中最接近兩點間的距離。
 
 在分屬不同的兩群中，選擇最接近的兩點之距離，即代表兩群間的距離。因此在群與群間進行聚合時，依據此值最小者做為選取下一步結合之對象。
@@ -938,7 +954,7 @@ G1、G3與C之間如何聚合？
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/聚類(集群)/2024-02-11_10-17-37_2024-02-11_10-17-28.png]]
-***** 完整連結聚合
+**** 完整連結聚合
 Complete-linkage agglomerative algorithm, 群聚間的距離定義為不同群聚中最遠兩點間的距離，這樣可以保證這兩個集合合併後, 任何一對的距離不會大於 d。
 
 在分屬不同的兩群中，選擇最遠的兩點之距離，即代表兩群間的距離。因此在群與群間進行聚合時，依據此值最小者做為選取下一步結合之對象。
@@ -978,7 +994,7 @@ G1、G3與C之間如何聚合？
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/聚類(集群)/2024-02-11_10-21-08_2024-02-11_10-21-02.png]]
-***** 平均連結聚合
+**** 平均連結聚合
 Average-linkage agglomerative algorithm, 群聚間的距離定義為不同群聚間各點與各點間距離總和的平均。沃德法（Ward's method）：群聚間的距離定義為在將兩群合併後，各點到合併後的群中心的距離平方和。
 
 在分屬不同的兩群中，各點之距離的平均，即代表兩群間的距離。因此在群與群間進行聚合時，依據此值最小者做為選取下一步結合之對象。
@@ -997,7 +1013,7 @@ G1、G3與C之間如何聚合？
 - \( d(G1, C)=\frac{d(A,C)+d(B,C)}{2\times1}\)
 - \( d(G3, C)=\frac{d(D,C)+d(E,C)+d(F,C)}{3\times1}\)
 - \( d(G1, G3)=\frac{d(A,D)+d(A,E)+d(A,F)+d(B,D)+d(B,E)+d(B,F)}{2\times3}\)
-**** 決定群數
+*** 決定群數
 可以依照使用者的群數需求或相似度要求，來決定要在哪一層時停止聚合資料。若以完整連結的群間距離計算方式為例，圖上的虛線代表不同的群數，端看使用者需求來決定。
 #+CAPTION: 標題
 #+LABEL:fig:Labl
@@ -1006,9 +1022,9 @@ G1、G3與C之間如何聚合？
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/聚類(集群)/2024-02-11_10-47-21_2024-02-11_10-47-15.png]]
-**** 聚合式階層分群實作
-***** scikit-learn: Agglomerative Clustering
-****** 分兩群
+*** 聚合式階層分群實作
+**** scikit-learn: Agglomerative Clustering
+***** 分兩群
 #+begin_src python -r -n :async :results output :exports both :session aggclu
 from sklearn.cluster import AgglomerativeClustering
 import matplotlib.pyplot as plt
@@ -1049,7 +1065,7 @@ plt.savefig('images/aggclu-1.png', dpi=300)
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/aggclu-1.png]]
-****** 分三群
+***** 分三群
 #+begin_src python -r -n :async :results output :exports both :session aggclu
 clustering = AgglomerativeClustering(n_clusters = 3).fit(X)
 print('分三群:',clustering.labels_)
@@ -1085,7 +1101,7 @@ plt.savefig('images/aggclu-2.png', dpi=300)
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/aggclu-2.png]]
-****** 分四群
+***** 分四群
 #+begin_src python -r -n :async :results output :exports both :session aggclu
 clustering = AgglomerativeClustering(n_clusters = 4).fit(X)
 print('分四群:',clustering.labels_)
@@ -1121,7 +1137,7 @@ plt.savefig('images/aggclu-3.png', dpi=300)
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/aggclu-3.png]]
-***** SciPy: scipy.cluster.hierarchy[一次分完]
+**** SciPy: scipy.cluster.hierarchy[一次分完]
 #+begin_src python -r -n :async :results output :exports both :session hierarchy
 import numpy as np
 import matplotlib.pyplot as plt
@@ -1152,7 +1168,7 @@ plt.savefig("images/hierarCluster-1.png", dpi=300)
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/hierarCluster-1.png]]
-***** SciPy: scipy.cluster.hierarchy[逐步分群]
+**** SciPy: scipy.cluster.hierarchy[逐步分群]
 #+begin_src python -r -n :async :results output :exports both :session hierarchy
 import numpy as np
 import matplotlib.pyplot as plt
@@ -1193,7 +1209,7 @@ plt.savefig("images/hierarCluster-2.png", dpi=300)
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/hierarCluster-2.png]]
-***** 利用距離決定群數，或直接給定群數
+**** 利用距離決定群數，或直接給定群數
 建構好聚落樹狀圖後，我們可以依照距離的切割來進行分類，也可以直接給定想要分類的群數，讓系統自動切割到相對應的距離。
 - 距離切割
   所給出的樹狀圖，y軸代表距離，我們可以用特徵之間的距離進行分群的切割。
@@ -1236,11 +1252,11 @@ plt.savefig("images/clusterScatter-1.png", dpi=300)
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/clusterScatter-1.png]]
-**** 如何評估最佳分群數:K
+*** 如何評估最佳分群數:K
 - [[https://jimmy-huang.medium.com/kmeans%E5%88%86%E7%BE%A4%E6%BC%94%E7%AE%97%E6%B3%95-%E8%88%87-silhouette-%E8%BC%AA%E5%BB%93%E5%88%86%E6%9E%90-8be17e634589][Kmeans分群演算法 與 Silhouette 輪廓分析]]
 - [[https://www.geeksforgeeks.org/implementing-agglomerative-clustering-using-sklearn/][Implementing Agglomerative Clustering using Sklearn]]
-*** [課堂任務]聚合式階層分群 :TNFSH:
-**** 資料
+** [課堂任務]聚合式階層分群 :TNFSH:
+*** 資料
 在此給定資料並以數值化座標平面表示，其中包含A、B、C、D、E、F、G及H共8個點。假設B與C點合併為G1；G與H點合併為G2，而G2加入F點後形成G3。
 每個資料點有兩個特徵值(如圖[[fig:clusterTask1]])：
 - x = np.array([1,2,3,2,5,5,6,7])
@@ -1349,7 +1365,7 @@ plt.savefig("images/clusterTask1.png", dpi=300)
 #+ATTR_ORG: :width 200
 #+ATTR_HTML: :width 300
 [[file:images/聚類(集群)/2024-02-14_15-43-38_2024-02-14_15-43-04.png]]
-**** 任務1
+*** 任務1
 請利用「單一連結」的群間距離計算方式完成聚合式階層式分群。
 #+LABEL:fig:Labl
 #+name: fig:Name
@@ -1357,7 +1373,7 @@ plt.savefig("images/clusterTask1.png", dpi=300)
 #+ATTR_ORG: :width 200
 #+ATTR_HTML: :width 300
 [[file:images/聚類(集群)/2024-02-14_15-45-04_2024-02-14_15-44-51.png]]
-***** Step 1
+**** Step 1
 #+LABEL:fig:Labl
 #+name: fig:Name
 #+ATTR_LATEX: :width 200
@@ -1372,7 +1388,7 @@ plt.savefig("images/clusterTask1.png", dpi=300)
 | G1 |   |   |   |    |    |
 | G3 |   |   |   |    |    |
 註: A可與D或與G1合併，在此選擇將A與G1合併為G4。
-***** Step 2
+**** Step 2
 #+LABEL:fig:Labl
 #+name: fig:Name
 #+ATTR_LATEX: :width 200
@@ -1385,7 +1401,7 @@ plt.savefig("images/clusterTask1.png", dpi=300)
 | E  |   |   |    |    |
 | G3 |   |   |    |    |
 | G4 |   |   |    |    |
-***** Step 3
+**** Step 3
 #+LABEL:fig:Labl
 #+name: fig:Name
 #+ATTR_LATEX: :width 200
@@ -1397,7 +1413,7 @@ plt.savefig("images/clusterTask1.png", dpi=300)
 | E  |   |    |    |
 | G3 |   |    |    |
 | G5 |   |    |    |
-***** Step 4
+**** Step 4
 #+LABEL:fig:Labl
 #+name: fig:Name
 #+ATTR_LATEX: :width 200
@@ -1408,7 +1424,7 @@ plt.savefig("images/clusterTask1.png", dpi=300)
 |----+---+----|
 | E  |   |    |
 | G6 |   |    |
-**** 任務2
+*** 任務2
 請利用「完整連結」的群間距離計算方式完成聚合式階層式分群。
 #+LABEL:fig:Labl
 #+name: fig:Name
@@ -1416,7 +1432,7 @@ plt.savefig("images/clusterTask1.png", dpi=300)
 #+ATTR_ORG: :width 200
 #+ATTR_HTML: :width 300
 [[file:images/聚類(集群)/2024-02-14_15-45-04_2024-02-14_15-44-51.png]]
-***** Step 1
+**** Step 1
 #+LABEL:fig:Labl
 #+name: fig:Name
 #+ATTR_LATEX: :width 200
@@ -1430,7 +1446,7 @@ plt.savefig("images/clusterTask1.png", dpi=300)
 | E  |   |   |   |    |    |
 | G1 |   |   |   |    |    |
 | G3 |   |   |   |    |    |
-***** Step 2
+**** Step 2
 #+LABEL:fig:Labl
 #+name: fig:Name
 #+ATTR_LATEX: :width 200
@@ -1444,7 +1460,7 @@ plt.savefig("images/clusterTask1.png", dpi=300)
 | G3 |   |    |    |    |
 | G4 |   |    |    |    |
 註: G4可與E或與G1合併，在此選擇將G4與G1合併為G5。
-***** Step 3
+**** Step 3
 #+LABEL:fig:Labl
 #+name: fig:Name
 #+ATTR_LATEX: :width 200
@@ -1456,7 +1472,7 @@ plt.savefig("images/clusterTask1.png", dpi=300)
 | E  |   |    |    |
 | G3 |   |    |    |
 | G5 |   |    |    |
-***** Step 4
+**** Step 4
 #+LABEL:fig:Labl
 #+name: fig:Name
 #+ATTR_LATEX: :width 200
@@ -1467,7 +1483,7 @@ plt.savefig("images/clusterTask1.png", dpi=300)
 |----+---+----|
 | G3 |   |    |
 | G6 |   |    |
-**** 任務3
+*** 任務3
 請利用「平均連結」的群間距離計算方式完成聚合式階層式分群。
 #+LABEL:fig:Labl
 #+name: fig:Name
@@ -1475,7 +1491,7 @@ plt.savefig("images/clusterTask1.png", dpi=300)
 #+ATTR_ORG: :width 200
 #+ATTR_HTML: :width 300
 [[file:images/聚類(集群)/2024-02-14_15-45-04_2024-02-14_15-44-51.png]]
-***** Step 1
+**** Step 1
 #+LABEL:fig:Labl
 #+name: fig:Name
 #+ATTR_LATEX: :width 200
@@ -1490,7 +1506,7 @@ plt.savefig("images/clusterTask1.png", dpi=300)
 | E  |     |     |     |     |     |
 | G1 |     |     |     |     |     |
 | G3 |     |     |     |     |     |
-***** Step 2
+**** Step 2
 #+LABEL:fig:Labl
 #+name: fig:Name
 #+ATTR_LATEX: :width 200
@@ -1503,7 +1519,7 @@ plt.savefig("images/clusterTask1.png", dpi=300)
 | G1 |   |   |    |    |
 | G3 |   |   |    |    |
 | G4 |   |   |    |    |
-***** Step 3
+**** Step 3
 #+LABEL:fig:Labl
 #+name: fig:Name
 #+ATTR_LATEX: :width 200
@@ -1515,7 +1531,7 @@ plt.savefig("images/clusterTask1.png", dpi=300)
 | E  |   |    |    |
 | G3 |   |    |    |
 | G5 |   |    |    |
-***** Step 4
+**** Step 4
 #+LABEL:fig:Labl
 #+name: fig:Name
 #+ATTR_LATEX: :width 200
@@ -1526,7 +1542,7 @@ plt.savefig("images/clusterTask1.png", dpi=300)
 |----+----+----|
 | G3 |    |    |
 | G6 |    |    |
-**** 任務4
+*** 任務4
 請以「單一連結」完成之聚合式階層式分群結果，寫出各種不同分群數量時，各群所包含的資料內容。
 #+LABEL:fig:Labl
 #+name: fig:Name
@@ -1534,16 +1550,16 @@ plt.savefig("images/clusterTask1.png", dpi=300)
 #+ATTR_ORG: :width 200
 #+ATTR_HTML: :width 300
 [[file:images/聚類(集群)/2024-02-14_16-29-58_2024-02-14_16-29-33.png]]
-**** solution :noexport:
+*** solution :noexport:
 #+LABEL:fig:Labl
 #+name: fig:Name
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/聚類(集群)/2024-02-14_16-27-20_2024-02-14_16-27-08.png]]
-*** TNFSH作業: 聚合式分群作業 :TNFSH:
+** TNFSH作業: 聚合式分群作業 :TNFSH:
 電子商務網站黃色鬼屋近日收集了200位VIP客戶資料，想將這些客戶依其同質性進行分類。
-**** 資料
+*** 資料
 #+CAPTION: 黃色鬼屋VIP資料
 #+LABEL:fig:Labl
 #+name: fig:Name
@@ -1557,7 +1573,7 @@ plt.savefig("images/clusterTask1.png", dpi=300)
 - Age: 年齡
 - Income: 月收入(單位為萬元)
 - ShopSco: 這是黃色鬼屋自訂的敗家分數，範圍由0~100
-**** 任務
+*** 任務
 - 畫出200位VIP客戶的性別、年齡、月收入、敗家分數的分佈狀況，例如:
   #+ATTR_LATEX: :width 200
   #+ATTR_ORG: :width 200
@@ -1576,7 +1592,7 @@ plt.savefig("images/clusterTask1.png", dpi=300)
     : 第3群客戶ID: 124 126 128 130 ...
     : 第4群客戶ID: 2 4 6 8 10 12 14 ...
     : 第5群客戶ID: 1 3 5 7 9 11 13 ...
-**** solution :noexport:
+*** solution :noexport:
 #+begin_src python -r -n :results output :exports both
 import numpy as np
 import pandas as pd
@@ -1654,11 +1670,11 @@ for cluster_id in range(5):
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/hierarchTask4.png]]
-*** 分裂式階層分群法(Divisive Clustering)
+** 分裂式階層分群法(Divisive Clustering)
 如果採用分裂的方式，則由樹狀結構的頂端開始，將群聚逐次分裂。步驟：
 1. 將所有資料先視為同一群，再依據群內的相異，分裂成兩群。
 2. 接著，再從兩群中，找群內相異度最高的那群，再分裂一次，變成三群…，重複操作直到分出來的群數達到目標群數。
-**** 分裂式階層分群實作
+*** 分裂式階層分群實作
 #+begin_src python -r -n :results output :exports none
 # 隨機生成100個(x, y)
 import numpy as np
@@ -1695,13 +1711,15 @@ plt.savefig("images/topdown.png", dpi=300)
 #+ATTR_HTML: :width 600
 [[file:images/topdown.png]]
 
-** DBSCAN
-DBSCAN will group together closely packed points, where close together is defined as a minimum number of points that must exist within a certain distance. If the point is within a certain distance of multiple clusters, it will be grouped with the cluster to which it is most densely located. Any instance that is not within this certain distance of another cluster is labeled an outlier.
+* DBSCAN
+DBSCAN（密度式分群）會將「彼此靠得很近」的點群組在一起，其中「靠近」是指在某個指定距離範圍內，必須存在最少數量的點。如果一個點同時位於多個群的距離範圍內，則它會被歸類到其中密度最高的群。任何不在任何群的距離範圍內的點，則會被標記為離群值（outlier）。
 
-In k-means and hierarchical clustering, all points had to be clustered, and outliers were poorly dealt with. In DBSCAN, we can explicitly label points as outliers and avoid having to cluster them. This is powerful. Compared to the other clustering algorithms, DBSCAN is much less prone to the distortion typically caused by outliers in the data. Also, like hierarchical clustering—and unlike k-means—we do not need to prespecify the number of clusters.
+在 K-means 和階層式分群中，所有資料點都必須被分到某個群內，這使得離群值常被處理得很差。而 DBSCAN 則可以明確地標記離群值，避免必須強行將它們納入群中，這是一項很強大的特性。與其他分群演算法相比，DBSCAN 對資料中的離群值不容易受到扭曲影響。
 
-*** 實作
-**** 讀入資料
+此外，像階層式分群一樣 —— 不同於 K-means —— DBSCAN 不需要事先指定群的數量。
+
+** 實作
+*** 讀入資料
 #+begin_src python -r -n :async :results output :exports both :session KM-DBSCAN
 '''Main'''
 import numpy as np
@@ -1747,7 +1765,7 @@ y_test = pd.Series(data=y_test,index=test_index)
 #+end_src
 
 #+RESULTS:
-**** 降維
+*** 降維
 #+begin_src python -r -n :async :results output :exports both :session KM-DBSCAN
 # Principal Component Analysis
 from sklearn.decomposition import PCA
@@ -1772,7 +1790,7 @@ X_train_PCA.iloc[0:2000,0:3].to_csv(log_dir+'pca_data.tsv', sep = '\t', index=Fa
 #+end_src
 
 #+RESULTS:
-**** DBSCAN
+*** DBSCAN
 #+begin_src python -r -n :async :results output :exports both :session KM-DBSCAN
 # Perform DBSCAN
 def analyzeCluster(clusterDF, labelsDF):
@@ -1951,63 +1969,84 @@ PCA 投影完的資料為下圖，從下圖可知，PC1 的變異足以表示此
 1. 以遞減方式對特徵值進行排序，以便對特徵向量排名
 
 #+BEGIN_SRC python -r -n :results output :exports both
-  import pandas as pd
-  from sklearn.model_selection import train_test_split
-  from sklearn.preprocessing import StandardScaler
-  import numpy as np
-  import matplotlib.pyplot as plt
-  from sklearn.decomposition import PCA
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
 
-  # ## Extracting the principal components step-by-step
+# ## 步驟式提取主成分（Principal Components）
 
-  df_wine = pd.read_csv('https://archive.ics.uci.edu/ml/'
+# 讀取葡萄酒數據集，數據來自UCI機器學習庫
+# 這是一個多分類問題，目標是預測葡萄酒的種類（class label）
+df_wine = pd.read_csv('https://archive.ics.uci.edu/ml/'
                         'machine-learning-databases/wine/wine.data',
                         header=None)
 
-  df_wine.columns = ['Class label', 'Alcohol', 'Malic acid', 'Ash',
+# 設定資料欄位名稱
+# 第一欄是類別標籤，其餘欄位是葡萄酒的各種特徵值
+df_wine.columns = ['Class label', 'Alcohol', 'Malic acid', 'Ash',
                      'Alcalinity of ash', 'Magnesium', 'Total phenols',
                      'Flavanoids', 'Nonflavanoid phenols', 'Proanthocyanins',
                      'Color intensity', 'Hue',
                      'OD280/OD315 of diluted wines', 'Proline']
 
-  print(df_wine.head())
+# 查看數據集的前五行
+print(df_wine.head())
 
-  # Splitting the data into 70% training and 30% test subsets.
+# 將數據分為特徵矩陣 X 和目標向量 y
+# X 包含從第二列到最後一列的數據（特徵值）
+# y 包含第一列的數據（類別標籤）
+X, y = df_wine.iloc[:, 1:].values, df_wine.iloc[:, 0].values
 
-  X, y = df_wine.iloc[:, 1:].values, df_wine.iloc[:, 0].values
-
-  X_train, X_test, y_train, y_test = train_test_split(X, y,
+# 將數據分為訓練集（70%）和測試集（30%）
+# stratify=y 確保類別分佈在訓練集和測試集中大致相同
+X_train, X_test, y_train, y_test = train_test_split(X, y,
                                      test_size=0.3,
                                      stratify=y, random_state=0)
 
-  # 1. Standardizing the data.
-  sc = StandardScaler()
-  X_train_std = sc.fit_transform(X_train)
-  X_test_std = sc.transform(X_test)
+# 1. 對數據進行標準化處理
+# 標準化是 PCA 的必要步驟，確保所有特徵值的範圍一致，避免尺度差異影響結果
+sc = StandardScaler()
+X_train_std = sc.fit_transform(X_train)  # 使用訓練集計算均值與標準差，並標準化數據
+X_test_std = sc.transform(X_test)       # 使用訓練集的均值與標準差標準化測試集
 
-  # 2. Eigendecomposition of the covariance matrix.
-  cov_mat = np.cov(X_train_std.T)
-  eigen_vals, eigen_vecs = np.linalg.eig(cov_mat)
+# 2. 計算共變數矩陣並進行特徵值分解（Eigendecomposition）
+# 共變數矩陣用於衡量特徵之間的相關性
+cov_mat = np.cov(X_train_std.T)  # 計算轉置後數據的共變數矩陣
 
-  print('\nEigenvalues \n%s' % eigen_vals)
+# 計算特徵值（eigenvalues）和特徵向量（eigenvectors）
+# 特徵值表示對應主成分的變異數，特徵向量表示主成分的方向
+eigen_vals, eigen_vecs = np.linalg.eig(cov_mat)
 
-  # ## Total and explained variance
+# 輸出特徵值，觀察各主成分的變異數
+print('\nEigenvalues \n%s' % eigen_vals)
 
-  tot = sum(eigen_vals)
-  var_exp = [(i / tot) for i in sorted(eigen_vals, reverse=True)]
-  cum_var_exp = np.cumsum(var_exp)
+# ## 計算總變異數與解釋變異數
 
-  plt.bar(range(1, 14), var_exp, alpha=0.5, align='center',
-          label='individual explained variance')
-  plt.step(range(1, 14), cum_var_exp, where='mid',
-           label='cumulative explained variance')
-  plt.ylabel('Explained variance ratio')
-  plt.xlabel('Principal component index')
-  plt.legend(loc='best')
-  plt.tight_layout()
-  plt.savefig('05_02.png', dpi=300)
-  #plt.show()
+# 計算特徵值總和（即總變異數）
+tot = sum(eigen_vals)
 
+# 計算各主成分解釋的變異數比例，並按從大到小排序
+var_exp = [(i / tot) for i in sorted(eigen_vals, reverse=True)]
+
+# 計算累積解釋變異數比例
+cum_var_exp = np.cumsum(var_exp)
+
+# 繪製柱狀圖和階梯圖
+# 柱狀圖顯示各主成分單獨解釋的變異數比例
+# 階梯圖顯示累積解釋變異數比例
+plt.bar(range(1, 14), var_exp, alpha=0.5, align='center',
+        label='individual explained variance')
+plt.step(range(1, 14), cum_var_exp, where='mid',
+         label='cumulative explained variance')
+plt.ylabel('Explained variance ratio')  # y 軸標籤：解釋變異數比例
+plt.xlabel('Principal component index')  # x 軸標籤：主成分索引
+plt.legend(loc='best')  # 顯示圖例
+plt.tight_layout()  # 自動調整布局
+plt.savefig('05_02.png', dpi=300)  # 保存圖片為高解析度 PNG
+# plt.show()  # 如果需要即時顯示圖表，可解除這行註解
 #+END_SRC
 
 #+RESULTS:
@@ -3756,7 +3795,7 @@ X_train_fastICA.loc[sample_indices,:].to_csv('independent_component_analysis_dat
 ** 結論
 普通PCA與ICA能捕捉到超過80%的已知詐欺，並有80%的精確率，較之監督式學習能捕捉到90%，已十分難得。
 
-* 信用卡詐欺偵測 :noexport:
+* 信用卡詐欺偵測
 - 資料來源: Hands-On Unsupervised Learning Using Python: How to Build Applied Machine Learning Solutions from Ulabled Data
 - Code: https://github.com/aapatel09/handson-unsupervised-learning/blob/master/02_end_to_end_machine_learning_project.ipynb
 ** 資料取得

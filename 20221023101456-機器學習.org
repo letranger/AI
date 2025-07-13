@@ -10,6 +10,7 @@
 #+OPTIONS: H:4
 #+PROPERTY: header-args :eval never-export
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/muse.css" />
+#+HTML_HEAD_EXTRA: <script src="../css/copy_code.js"></script>
 #+EXCLUDE_TAGS: noexport
 #+begin_export html
 <a href="https://letranger.github.io/AI/20221023101456-機器學習.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20221023101456-機器學習.html.svg"/></a>
@@ -18,17 +19,13 @@
 * 機器學習
 ** 簡介
 - 機器學習是[[id:20221023T101138.945879][人工智慧]]的一個分支，在[[id:20221023T101138.945879][人工智慧]]的研究歷史有著一條從以「推理」為重點，到以「知識」為重點，再到以 「學習」為重點的自然、清晰的脈絡。
-- 機器學習是實現[[file:AI-Introduction.org][人工智慧]]的一個途徑，即以機器學習為手段解決[[file:AI-Introduction.org][人工智慧]]中的問題。
-- 機器學習理論主要是設計和分析一些讓電腦可以自動「學習」 的演算法。機器學習演算法是一類從資料中自動分析獲得規 律，並利用規律對未知資料進行預測的演算法。
+- 機器學習是實現[[file:AI-Introduction.org][人工智慧]]的方法之一，機器學習理論主要是設計和分析一些讓電腦可以自動「學習」 的演算法。機器學習演算法是一類從資料中自動分析獲得規律，並利用規律對未知資料進行預測的演算法。
 - 機器學習已廣泛應用於資料探勘、電腦視覺、自然語言處理、
 - 生物特徵辨識、搜尋引擎、醫學診斷、檢測信用卡欺詐、證券市場分析、DNA 序列測序、語音和手寫辨識、戰略遊戲和機器人等領域
-- 機器學習是一門[[file:AI-Introduction.org][人工智慧]]的科學，該領域的主要研究物件是[[file:AI-Introduction.org][人工智慧]]，特別是如何=在經驗學習中=改善具體演算法的效能。
-- 機器學習是對能通過經驗=自動改進=的電腦演算法研究
-- 機器學習是用資料或以往的經驗，以此最佳化電 腦程式的效能標準。
+- 機器學習就是從一組function中找出一個最合適的function的過程[李宏毅]。
 
-** 何謂機器學習
-- 機器學習的定義之一：一個可以與其環境做互動的系統。具有[[id:20221023T103538.640537][感知器]](sensor)，可以讓機器了解它們所處的環境，以及它們也具有相關的工具可以讓機器做出回應[fn:1]。
-- 機器學習可以大致分為三類：[[id:20221023T101626.420918][監督式學習]]、[[id:20221023T101716.467694][非監督式學習]]、[[id:0a5c37c0-741a-4a1a-bec7-f98074830132][增強式學習]]，如圖[[fig:DifferentLearningTypes]][fn:1]。
+** 機器學習的類型
+機器學習可以大致分為三類：[[id:20221023T101626.420918][監督式學習]]、[[id:20221023T101716.467694][非監督式學習]]、[[id:0a5c37c0-741a-4a1a-bec7-f98074830132][增強式學習]]，如圖[[fig:DifferentLearningTypes]][fn:1]。
 
 #+BEGIN_SRC ditaa :file images/MLTypes.png  :cmdline -r -s 1
                                +-------------------------------+
@@ -56,14 +53,12 @@
 #+ATTR_HTML: :width 700
 #+RESULTS:
 [[file:images/MLTypes.png]]
-
-- 機器學習就是從一組function中找出一個最合適的function的過程[李宏毅]。
 #+latex:\newpage
 
-* 機器是如何學習的
-** 傳統程式設計
-假設有一個用來描述直線的函數(模型): $y=wx+b$，直線上的每個點都可以用 $x$ 值乘以$w$(權重值)再加上$b$(偏差值)，得到相應的 $y$ 值。
-現在假設直線上有兩個點，分別是 $x=2, y=3$ 和 $x=3, y=5$ (如圖[[fig:LinearQuestion]])，那麼，請問當 $x=10$ 時，$y$ 的值是多少呢？
+* 機器學習如何解決問題
+有一個用來描述直線的函數(模型): $y=wx+b$，直線上的每個點都可以用 $x$ 值乘以$w$(權重值)再加上$b$(偏差值)，得到相應的 $y$ 值。
+
+問題：假設直線上有兩個點，分別是 $x=2, y=3$ 和 $x=3, y=5$ (如圖[[fig:LinearQuestion]])，那麼，請問當 $x=10$ 時，$y$ 的值是多少呢？
 #+begin_src python -r -n :results output :exports none
 import matplotlib.pyplot as plt
 import numpy as np
@@ -71,18 +66,23 @@ import numpy as np
 x = [2, 3]
 y = [3, 5]
 plt.plot(x, y, '-*')
-plt.xlim(0, 5)
-plt.ylim(0, 7)
+plt.xlim(0, 12)
+plt.ylim(0, 20)
 plt.xlabel('$x$', fontsize=15)
 plt.ylabel('$y$', fontsize=15)
 
-plt.text(2.1, 3-0.1, '(2, 3)', fontsize=15)
-plt.text(3.1, 5-0.1, '(3, 5)', fontsize=15)
+# 畫紅點
+plt.plot(10, 19, 'ro', markersize=8)
+
+# 註解紅點
+plt.text(10.2, 19-0.3, '(10, ?)', color='red', fontsize=15)
+
+plt.text(2.5, 3-0.5, '(2, 3)', fontsize=15)
+plt.text(3.5, 5-0.5, '(3, 5)', fontsize=15)
 plt.savefig('images/TrandPlot.png', dpi=300)
 #+end_src
 
 #+RESULTS:
-
 #+CAPTION: 一個直線函數問題
 #+LABEL: fig:Labl
 #+name: fig:LinearQuestion
@@ -90,7 +90,7 @@ plt.savefig('images/TrandPlot.png', dpi=300)
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/TrandPlot.png]]
-
+** 傳統程式設計的解題模式
 以下是傳統的程式設計模式，受了十數年高深數學教育的你，第一反應大概是會想先求出連接這兩個點的直線所相應的 $w$ 值與 $b$ 值(也就是模型中的兩個參數)。
 *** 解法2: class版 :noexport:
 看不懂的可以看底下的tuple版
@@ -127,7 +127,6 @@ print(f'當x=10時，y={w}*10+{b}={w*10+b}')
 : Slope: 2.0
 : Bias: -1.0
 : 當x=10時，y=2.0*10+-1.0=19.0
-
 *** 解法
 #+begin_src python -r -n:results output :exports both
 def get_slope(p1, p2):
@@ -161,12 +160,10 @@ print(f'當x=10時，y={w}*10+{b}={w*10+b}')
 : Bias: -1.0
 : 當x=10時，y=2.0*10+-1.0=19.0
 
-*** 傳統的程式設計模式
-由以上的程式碼可以看出傳統的解題模式為：
+由以上的程式碼可以看出傳統的解題模式如圖[[fig:solution-1]]，其解題策略為：
 1. 給資料(兩個點)
 2. 給規則(公式)
-接下來就以程式來解出答案，那麼，面臨一樣的問題，機器學習的解題策略又是如何呢？
-
+接下來就以程式來解出答案。
 #+BEGIN_SRC ditaa :file images/TradProg.png  :cmdline -r -s 0.9
               +-----------------+
      Rules    |                 |
@@ -175,11 +172,53 @@ print(f'當x=10時，y={w}*10+{b}={w*10+b}')
    ---------->|      cBLK       |
               +-----------------+
 #+END_SRC
-#+RESULTS:
+#+CAPTION: 傳統程式設計的解題模式
+#+LABEL:fig:solution-1
+#+name: fig:solution-1
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
 [[file:images/TradProg.png]]
 
+那麼，面臨一樣的問題，機器學習的解題策略又是如何呢？
+
 ** 機器學習的策略
-機器學習把這個線性函數當成一個模型，而我們想求的 $w$ 和 $b$ 則為模型的兩個參數，如果要以機器學習的方式來解題，其策略大致如下：
+機器學習與傳統程式設計的解題策略有以下兩點不同：
+- 傳統的程式設計pattern是將資料及規則餵給程式，經由程式判斷(if-else)產生答案
+- Meachine learning是將資料(features)和答案(label)餵給model，然後由model學習出規則
+
+事實上，機器學習的解題策略是分成兩階段的：訓練階段(Training Phase)和推論階段(Inference Phase)，如圖[[fig:TPIP]]所示：
+- 訓練階段(Training Phase)：將資料(features)和答案(label)餵給模型(model)，讓模型學習出規則(也就是找出最佳的參數值)；
+- 推論階段(Inference Phase)：此時模型已訓練完成，我們只需要將資料(features)餵給模型(model)，就能得到預測結果(predictions)。
+#+BEGIN_SRC ditaa :file images/TPIP.png  :cmdline -r -s 0.8
+Training Phase
+-=------------
+              +-----------------+
+     Answers  |                 |
+   ---------->|     Machine     |   Rules
+     Data     |     Learning    +------------>
+   ---------->|      cGRE       |
+              +-----------------+
+
+Inference Phase
+-=-------------
+              +-----------------+
+              |                 |
+     Data     |                 | Predictions
+   ---------->|      Model      +------------>
+              |      c1AB       |
+              +-----------------+
+#+END_SRC
+
+#+CAPTION: Training and Inference Phase of ML
+#+name: fig: TPIP
+#+LABEL:fig:TPIP
+#+ATTR_HTML: :width 500
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+[[file:images/TPIP.png]]
+
+機器學習將這個線性函數當成一個模型，而我們想求的 $w$ 和 $b$ 則為模型的兩個參數。機器學習訓練模型的策略大致如下：
 1. 第一步：猜答案
    一開始我們並不知道正確答案是什麼，所以用猜的：以隨機亂數來做為 $w$ 和$b$ 值，例如：$y=10x+5$。
 2. 第二步：評估猜測答案的品質
@@ -187,7 +226,7 @@ print(f'當x=10時，y={w}*10+{b}={w*10+b}')
 3. 第三步：對所猜測的策略進行最佳化調整
    依據上一步驟猜測結果的品質(loss或error)做出更好的猜測，這個步驟稱為「最佳化」(optimization)。微積分可以用「梯度遞減」(gradient descent)的方式來進行。
 
-整個流程大致如下：
+整個訓練流程大致如下：
 #+BEGIN_SRC ditaa :file images/MLProg.png  :cmdline -r -s 0.9
    +-----------------+    +-----------------------------+    +-----------------+
    |                 |    |                             |    |                 |
@@ -198,10 +237,16 @@ print(f'當x=10時，y={w}*10+{b}={w*10+b}')
             |                                                          |
             +----------------------------------------------------------+
 #+END_SRC
-#+RESULTS:
+#+CAPTION: 機器學習訓練模型的流程
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
 [[file:images/MLProg.png]]
 
-** 實作1
+*** 實作1
+我們來實作一下這個機器學習的解題策略，首先，我們先用兩個點(2, 3)和(3, 5)來訓練一個模型，然後用這個模型來預測 $x=10$ 時的 $y$ 值(也就是 $\hat{y}$ )，整個模型的訓練過程如圖[[fig:solution-2]]所示，最終目的是希望這個模型在訓練完成後，輸入 $x$ 值到模型中就能得到一個非常接近正確答案19的結果。
 #+begin_src plantuml :file images/mldemo-1.png
 @startuml
  left to right direction
@@ -227,28 +272,32 @@ print(f'當x=10時，y={w}*10+{b}={w*10+b}')
 #+end_src
 
 #+RESULTS:
+#+CAPTION: 第一版機器學習模型訓練流程圖
+#+LABEL:fig:solution-2
+#+name: fig:solution-2
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 400
+#+ATTR_HTML: :width 500
 [[file:images/mldemo-1.png]]
 
-#+begin_src shell -r -n:results output :exports both
-pip3 install tensorflow
-#+end_src
-#+begin_src python -r -n:results output :exports both
+這是我們的第一版模型對應的程式，訓練資料只有兩個點(2, 3)和(3, 5)，我們希望這個模型能夠預測 $x=10$ 時的 $y$ 值，並且接近正確答案19。
+#+begin_src python -r -n :results output :exports both
 import tensorflow as tf
 import numpy as np
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dense
 
-l0 = Dense(units=1, input_shape=[1])
-model = Sequential([l0])
-model.compile(optimizer='sgd', loss='mean_squared_error')
+l0 = Dense(units=1, input_shape=[1])        (ref:neuron)
+model = Sequential([l0])                    (ref:model)
+model.compile(optimizer='sgd', loss='mean_squared_error') (ref:modelCompile)
 
 xs = np.array([2.0, 3.0], dtype=float)
 ys = np.array([3.0, 5.0], dtype=float)
 
-model.fit(xs, ys, epochs=500, verbose=0)
+model.fit(xs, ys, epochs=500, verbose=0)    (ref:modelFit)
 
-print(f'y的預測結果為: {model.predict([10.0])}')
-print("模型的兩個參數w,b: {}".format(l0.get_weights()))
+print(f'y的預測結果為: {model.predict([10.0])}')    (ref:modelPredict)
+print("模型的兩個參數w,b: {}".format(l0.get_weights()))  (ref:modelWeights)
 #+end_src
 
 #+RESULTS:
@@ -258,7 +307,15 @@ print("模型的兩個參數w,b: {}".format(l0.get_weights()))
 
 但是正確答案為19，預測的結果好像不太準....QQ
 
-** 實作2
+**** 程式解說
+1. 上述程式使用tensorflow這個模組為主要預測工具，建立了一個模型(第[[(model)]]行)，這個模型中只有一層、裡面有一個神經元(第[[(neuron)]]行)
+2. 定義好模型後，我們以SGD(隨機梯度下降法)為優化器、用它來找出最佳參數；以MSE(均方差)做為損失函數，計算模型訓練過程中生成的參數優劣判斷標準(第[[(modelCompile)]]行)，並編譯此模型
+3. 編譯好模型，我們就拿手僅有的5組資料來訓練模型，訓練500回(第[[(modelFit)]]行)
+4. 訓練好的模型就能拿來預測了，我們拿 $x=10$ 當成預測資料，要求模型給出預測的結果 $y$ (第[[(modelPredict)]]行)
+5. 偷偷看一下這個模型給出答案的關鍵、也就是模型的兩個參數(Weight)(第[[(modelWeights)]]行)
+#+latex:\newpage
+
+*** 實作2
 如果我們向上帝偷偷多要一個模型的參照點(4, 7)，以三點當成標準答案來進行預測，結果會不會好一點呢?
 #+begin_src plantuml :file images/mldemo-2.png
 @startuml
@@ -283,10 +340,15 @@ print("模型的兩個參數w,b: {}".format(l0.get_weights()))
  note top of 預測結果: 正確答案:19
 @endum
 #+end_src
-
-#+RESULTS:
+#+CAPTION: 第二版機器學習模型訓練流程圖
+#+LABEL:fig:solution-3
+#+name: fig:solution-3
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 400
+#+ATTR_HTML: :width 500
 [[file:images/mldemo-2.png]]
 
+這是我們的第二版模型對應的程式，訓練資料有三個點(2, 3)、(3, 5)和(4, 7)：
 #+begin_src python -r -n :results output :exports both
 import tensorflow as tf
 import numpy as np
@@ -310,19 +372,11 @@ print("模型的兩個參數w,b: {}".format(l0.get_weights()))
 : y的預測結果為: [[17.07221]]
 : 模型的兩個參數w,b: [array([[1.7164488]], dtype=float32), array([-0.09227743], dtype=float32)]
 
-預測結果y的值為17.072221，而正確答案為19，好像也不怎麼樣....-_-
-兩個參數的值為(1.7164488, -0.9227743)，與正確答案(2, -1)相近。
+- 預測結果y的值為17.072221，而正確答案為19，是比第一版好一點了....-_-
+- 兩個參數的值為(1.7164488, -0.9227743)，與正確答案(2, -1)相近。
 
-** 程式解說
-1. 上述程式使用tensorflow這個模組為主要預測工具，建立了一個模型(第[[(model)]]行)，這個模型中只有一層、裡面有一個神經元(第[[(neuron)]]行)
-2. 定義好模型後，我們以SGD(隨機梯度下降法)為優化器、用它來找出最佳參數；以MSE(均方差)做為損失函數，計算模型訓練過程中生成的參數優劣判斷標準(第[[(modelCompile)]]行)，並編譯此模型
-3. 編譯好模型，我們就拿手僅有的5組資料來訓練模型，訓練500回(第[[(modelFit)]]行)
-4. 訓練好的模型就能拿來預測了，我們拿 $x=10$ 當成預測資料，要求模型給出預測的結果 $y$ (第[[(modelPredict)]]行)
-5. 偷偷看一下這個模型給出答案的關鍵、也就是模型的兩個參數(Weight)(第[[(modelWeights)]]行)
-#+latex:\newpage
-
-** 實作3
-讓我們壯起膽子再跟上帝多要兩個線上的點:(-1, -3)、(0, -1)，以五點當成標準答案來進行預測，其實作的程式碼為：
+*** 實作3
+讓我們壯起膽子再跟上帝多要兩個線上的點:(-1, -3)、(0, -1)，以五點當成標準答案來進行預測(如圖[[fig:solution-4]])：
 #+begin_src plantuml :file images/mldemo-3.png
 @startuml
  left to right direction
@@ -346,27 +400,32 @@ print("模型的兩個參數w,b: {}".format(l0.get_weights()))
  note top of 預測結果: 正確答案:19
 @endum
 #+end_src
-
-#+RESULTS:
+#+CAPTION: 第三版機器學習模型訓練流程圖
+#+LABEL:fig:solution-4
+#+name: fig:solution-4
+#+ATTR_LATEX: :width 400
+#+ATTR_ORG: :width 400
+#+ATTR_HTML: :width 500
 [[file:images/mldemo-3.png]]
 
+第三版的實作程式碼如下：
 #+begin_src python -r -n :results output :exports both
 import tensorflow as tf
 import numpy as np
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dense
 
-l0 = Dense(units=1, input_shape=[1]) (ref:neuron)
-model = Sequential([l0]) (ref:model)
-model.compile(optimizer='sgd', loss='mean_squared_error') (ref:modelCompile)
+l0 = Dense(units=1, input_shape=[1])
+model = Sequential([l0])
+model.compile(optimizer='sgd', loss='mean_squared_error')
 
 xs = np.array([-1.0, 0.0, 1.0, 2.0, 3.0, 4.0], dtype=float)
 ys = np.array([-3.0, -1.0, 1.0, 3.0, 5.0, 7.0], dtype=float)
 
-model.fit(xs, ys, epochs=500, verbose=0) (ref:modelFit)
+model.fit(xs, ys, epochs=500, verbose=0)
 
-print(f'y的預測結果為: {model.predict([10.0])}') (ref:modelPredict)
-print("模型的兩個參數w,b: {}".format(l0.get_weights())) (ref:modelWeights)
+print(f'y的預測結果為: {model.predict([10.0])}')
+print("模型的兩個參數w,b: {}".format(l0.get_weights()))
 #+end_src
 
 #+RESULTS:
@@ -374,71 +433,6 @@ print("模型的兩個參數w,b: {}".format(l0.get_weights())) (ref:modelWeights
 : 模型的兩個參數w,b: [array([[1.9970131]], dtype=float32), array([-0.99074], dtype=float32)]
 
 模型對 $y$ 的預測結果為18.979391，與正確答案19已經十分相近。
-
-* 機器學習概念釐清 :noexport:
-** Machine Learning v.s. Statistics
-- 統計: 目的在由樣本(sample)找出真相(universe)，如，由台灣 2350 萬人口中，只選出 1000 人，得知全台生活型態、政治傾向。
-- Machine learning: 目的在讓電腦由歷史資料中學習處理新的資料以解決問題。如，由醫生判讀 X 光片的資料學習判讀新的 X 光片；由一個人的刷卡及繳費行為預測他的信貸是否能準時還款？
-- Machine learning 不在意真實資料的分佈，而在於根據已知推測未知。
-
-** Machine Learning v.s. Traditional Programming
-- 傳統的程式設計pattern是將資料及規則餵給程式，經由程式判斷(if-else)產生答案
-- Meachine learning是將資料(features)和答案(label)餵給model，然後由model學習出規則
-#+BEGIN_SRC ditaa :file images/MLTP.png  :cmdline -r -s 0.8
-              +-----------------+
-     Rules    |                 |
-   ---------->|   Traditional   |   Answers
-     Data     |   Programming   +------------>
-   ---------->|      cBLK       |
-              +-----------------+
-
-              +-----------------+
-     Answers  |                 |
-   ---------->|     Machine     |   Rules
-     Data     |     Learning    +------------>
-   ---------->|      cGRE       |
-              +-----------------+
-#+END_SRC
-#+RESULTS:
-#+CAPTION: Traditional Programming v.s. Machine Learning
-#+name: fig:NLTP
-#+ATTR_HTML: :width 500
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-[[file:images/MLTP.png]]
-
-** Training Phase v.s. Inference Phase
-#+BEGIN_SRC ditaa :file images/TPIP.png  :cmdline -r -s 0.8
-
-Training Phase
--=------------
-              +-----------------+
-     Answers  |                 |
-   ---------->|     Machine     |   Rules
-     Data     |     Learning    +------------>
-   ---------->|      cGRE       |
-              +-----------------+
-
-Inference Phase
--=-------------
-              +-----------------+
-              |                 |
-     Data     |                 | Predictions
-   ---------->|      Model      +------------>
-              |      c1AB       |
-              +-----------------+
-
-#+END_SRC
-#+CAPTION: Training and Inference Phase of ML
-#+name: fig: TPIP
-#+ATTR_HTML: :width 500
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+RESULTS:
-[[file:images/TPIP.png]]
-#+latex:\newpage
-
-*
 
 * 機器學習的類型
 :PROPERTIES:
@@ -632,35 +626,47 @@ Semi-Supervised Learning如圖[[fig:semi-1]]所示，只有部分的data有label
 #+RESULTS:
 [[file:images/ReinforceLearningGame.jpg]]
 
-** 依據AI模型是否能由即時資料流進行增量學習來區分[fn:7]
-*** Offline (Batch) learning:
-In /batch learning/, the system is incapable of learning incrementally; it must be trained using all the available data.
-*** Online learning:
-- In /online learning/, you train the system incrementally by feeding it data instances sequentially, either individually or in small groups called /mini-batches/.
-- Online learning is great for systems that receive data as a continuous flow (e.g., stock prices) and need to adapt to change rapidly or autonomously.
-- Online learning algorithms can also be used to train systems on huge datasets that cannot fit in one machine's main memory (this is called /out-of-core/ learning).
+** 依據AI模型是否能由即時資料流進行 **增量學習** 來區分[fn:7]
+*** 離線（批次）學習 / Offline (Batch) learning:
+在批次學習中，系統無法進行增量學習(learning incrementally)；它使用所有可用的資料一次性進行訓練。
+*** 線上學習 / Online learning:
+- 在線上學習中，你可以逐步餵入資料實例進行訓練，這些資料可以是一筆一筆（個別）或以小批次（mini-batches）形式進行。
+- 線上學習特別適合那些資料持續流入（如股價）的系統，並且需要快速或自動地適應變化。
+- 線上學習演算法也常用於資料量龐大、無法一次載入單台機器主記憶體的情況，這類情境也被稱為 **超核心學習(out-of-core learning)** 。
 
 * 機器學習的程序與資料呈現方式
-** 機器學習如何解決問題
-- 數據收集(Data Collection): 在監督式學習下還要蒐集正確的標記
-- 數據處理(Data Processing): 包含「數據清理」，例如：刪除「冗餘」或「高度相關的特徵」，或補滿「遺漏值」。
-- 建立測試案例(Creation of the test case): 通常包括：「訓練數據集」(training dataset)用來訓練演算法、「測試數據集」(test dataset)用來測試訓練完成的演算法、以及「驗證數據集」(validation dataset)用來進行最終測試(在不斷的訓練-測試之後)。
-- 建立模型
-- 訓練模型
-- 評估、 修正模型
+** 機器學習解決問題的標準流程
+1. *數據收集（Data Collection）*
+  首先，我們需要蒐集與要解決問題相關的資料。如果是監督式學習，還必須確保每一筆資料都有正確的標記（label）。
+2. *數據處理（Data Processing）*
+  蒐集到的資料往往不夠乾淨，這時要進行數據清理。例如：刪除不必要或重複的特徵、補齊遺漏值，或對資料進行標準化處理。這些步驟可以提升模型學習的效果。
+3. *資料集的建立（Dataset Preparation）*
+  接下來，要把整理好的資料分成三個部分：
+  - 訓練集（training dataset）：用來讓模型學習。
+  - 驗證集（validation dataset）：用來調整模型參數，選出表現最佳的模型。
+  - 測試集（test dataset）：用來評估最終模型的表現。
+4. *建立模型（Model Building）*
+  根據手上的資料和問題特性，選擇合適的機器學習模型，並搭建模型結構。
+5. *模型訓練（Model Training）*
+  使用訓練集的資料來訓練模型，讓模型能從數據中學習規律。
+6. *模型評估與修正（Model Evaluation & Tuning）*
+  訓練完成後，使用驗證集和測試集評估模型的準確度。如果模型表現不理想，可以重新調整參數、選擇其他特徵，甚至更換不同的模型來優化預測效果。
+
 ** 機器學習的資料呈現方式
-How can we represent data (images, text, user preferences, etc.) in a way that computers can understand? -> Organize information into a vector[fn:8].
-- A vector is a 1-dimensional array of numbers. It has both a magnitude(length) and a direction.
-- A feature vector is a vector whose entries represent the "features" of some object.
-  #+CAPTION: Feature Vector
-  #+LABEL:fig:feature-vector
-  #+name: fig:feature-vector
-  #+ATTR_LATEX: :width 300
-  #+ATTR_ORG: :width 300
-  #+ATTR_HTML: :width 500
-  [[file:images/feature-vector.jpg]]
-** Images
-In black and white images, *black and white pixels* correspond to 0s and 1s. Grayscale pixels are numbers between 0 and 255. Both assemble into a 1-dimensional array of numbers.
+要如何以電腦能理解的方式來表示資料（如圖片、文字、使用者偏好等）？因為電腦只認識數字，所以我們需要將資訊組織成「向量」[fn:8]。
+- 向量是一維的數字陣列，具有大小（長度）與方向。
+- 特徵向量（feature vector）是指其每個元素代表某個物件的「特徵」的向量。
+#+CAPTION: Feature Vector
+#+LABEL:fig:feature-vector
+#+name: fig:feature-vector
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/feature-vector.jpg]]
+
+圖[[fig:feature-vector]]中的特徵向量表示一某個人的特徵，包含了他的身高、體重、年齡等資訊。這些特徵可以用來描述這個人，並與其他人進行比較。
+*** Images
+在黑白圖片(如圖[[fig:Image-data-representation]])中，每個像素(pixel)可以用一個數字來表示，這個數字代表該像素的顏色強度。對於黑白圖片，像素值通常是 0 或 1，分別代表黑色和白色；對於灰階圖片，像素值則是從 0 到 255 的整數，表示不同的灰階級別。這些像素值可以組成一個一維的數字陣列。
 #+CAPTION: Image data representations
 #+LABEL:fig:Image-data-representation
 #+name: fig:Image-data-representation
@@ -668,19 +674,19 @@ In black and white images, *black and white pixels* correspond to 0s and 1s. Gra
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/image-data-rep.jpg]]
-** Words and Documents
-Given a collection of documents (e.g. Wikipedia articles), assign to every word a vector whose $i^{th}$ entry is the number of times the word appears in the $i^{th}$ document.
+*** Words and Documents
+文字和文件同樣也可以用向量來表示。每個單字或詞彙可以被視為一個特徵，並且可以用一個數字來表示它在文件中的出現頻率或重要性。圖[[fig:word-representation]]展示了如何將單字轉換為向量表示法，其中第 $i$ 個元素表示這個單字在第 $i$ 份文件中出現的次數，這種表示法又稱為「詞袋模型」（Bag-of-Words model）。這種方法可以將文本資料轉換為數字形式，便於機器學習模型進行處理。
 #+CAPTION: Words and documents representations
 #+LABEL:fig:word-representation
 #+name: fig:word-representation
 #+ATTR_LATEX: :width 200
 #+ATTR_ORG: :width 200
-#+ATTR_HTML: :width 400
+#+ATTR_HTML: :width 300
 [[file:images/word-rep.jpg]]
 
-These vectors can assemble into a large matrix, useful for *latent semantic analysis*.
-** Yes/No or Ratings
-Given users and items (e.g. movies), vectors can indicate if a user has interacted with the item (1=yes, 0=no) or the user's ratings, say a number between 0 and 5.
+這些向量能組成一個大型矩陣，可用於*潛在語意分析*（latent semantic analysis）等方法。
+*** Yes/No or Ratings
+以使用者和項目（如電影）為例，向量可用來表示使用者是否看過某項目（1=是，0=否），或以 0~5 的數字表示使用者對該項目的評分(如圖[[fig:YN-rep]])。
 #+CAPTION: Y/N or Ratings
 #+LABEL:fig:YN-rep
 #+name: fig:YN-rep
@@ -688,8 +694,8 @@ Given users and items (e.g. movies), vectors can indicate if a user has interact
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/yn-rep.jpg]]
-** One-Hot Encodings
-Assign to each word a vector with one 1 and 0s elsewhere. This is called a one-hot encoding (or a "standard basis vector"). For example, suppose our language only has four words:
+*** One-Hot Encodings
+給每個單字分配一個只有一個 1、其餘都是 0 的向量，這就叫做 one-hot 編碼（或稱「標準基底向量」）。圖[[fig:woh]]展示了這種編碼方式，其中每個單字都被表示為一個向量，該向量在對應的單字位置上為 1，其餘位置為 0。
 #+CAPTION: words one-hot encoding
 #+LABEL:fig:woh
 #+name: fig:woh
@@ -697,46 +703,48 @@ Assign to each word a vector with one 1 and 0s elsewhere. This is called a one-h
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/word-one-hot.jpg]]
-*** drawbacks to consider:
-**** These vectors can be very sparse
-- A "sparse" vector is one with lots of zeros
-- 500,000 users and 1,000,000 movies
-**** Possible lack of *meaningful relationships between* vectors
-- One-hot encodings are never "similar."
-- Similarity is measured by the *dot product.*
+**** 需要注意的缺點：
+One-Hot Encoding在自然語言處理中很常見，但也有一些缺點需要考慮。
+***** 這些向量可能非常稀疏（sparse）
+- 「稀疏」指的是向量中有大量的零
+- 例如有 50 萬位使用者和 100 萬部電影時
+***** 向量之間*可能缺乏有意義的關聯*
+- one-hot 編碼之間永遠不會「相似」
+- 向量間的相似性通常用 *點積(dot product)* 來衡量
+- 例如，對於兩個向量 $a$ 和 $b$，其點積為 $a \cdot b = a_1 b_1 + a_2 b_2 + ... + a_n b_n$，如果兩個向量的點積為 0，則表示它們是正交的（orthogonal），即沒有任何相似性。
 
 * 機器學習的主要挑戰[fn:7]
-** Insufficient quantity of training data
-Even for very simple problems you typically need thousands of examples, and for complex problems such as image or speech recognition you may need millions of examples. The idea that data matters more than algorithms for complex problems was further popularized by Peter norvig et al. in a paper titled "The Unreasonable Effectiveness of Data", published in 2009.
+** 訓練資料數量不足（Insufficient quantity of training data）
+訓練機器學習模型時，即使是非常簡單的問題，通常也需要數千筆範例；若是複雜的問題（如影像或語音辨識），可能需要數百萬筆範例。Peter Norvig 等人在 2009 年發表的論文〈The Unreasonable Effectiveness of Data〉就強調：對於複雜問題來說，資料量比演算法本身更重要。
 
-** Nonrepresentative training data
-- In order to generalize well, it is crucial that your training data be representative of the new cases you want to generalize to.
-- Perhaps the most famous example of sampling bias happened during the US presidential election in 1936, which pitted Landon against Roosevelt: the /Literary Digest/ conducted a very large poll, sending mail to about 10 million people. The flaw was in the /Literary Digest's/ sampling method:
-  1. First, to obtain the addresses to send the polls to, the /Literary Digest/ use telephone directories, lists of magazine subscribers, club membership lists, and the like.
-  2. Second, less than 25% of the people who were polled answered.
-#+CAPTION: 加入更多資料會使 modle 更具代表性
+** 訓練資料不具代表性（Nonrepresentative training data）
+- 為了讓模型能夠有效泛化，訓練資料必須能夠代表未來將遇到的新案例。
+- 最著名的抽樣偏差（sampling bias）案例發生在 1936 年美國總統大選，當時 /Literary Digest/ 進行了一次大規模調查，寄送問卷給約一千萬人。問題出在他們的抽樣方式：
+  1. 首先，/Literary Digest/ 取得郵寄地址的方法，是使用電話簿、雜誌訂戶名單、俱樂部成員名單等。
+  2. 再者，最終回覆問卷的人不到 25%。
+#+CAPTION: 加入更多資料會使模型更具代表性
 #+name: fig:GDP1
 #+ATTR_LATEX: :width 500
 #+ATTR_ORG: :width 500
 #+ATTR_HTML: :width 500
 [[file:images/GDP2.jpg]]
 
-** Poor-quality data
-Obviously, if your training data is full of errors, outliers, and noise (e.g., due to poor-quality measurements), it will make it harder for the system to detect the underlying patterns, so your system is less likely to perform well.
+** 資料品質不佳（Poor-quality data）
+很明顯，如果訓練資料充滿錯誤、異常值與雜訊（例如因為測量不良所致），系統就難以找出真正的規律，因此模型表現也不佳。
 
-** Irrelevant features
-As the saying goes: garbage in, garbage out. Your system will only be capable of learning if the training data contains enough relevant features and not too many irrelevant ones.
+** 特徵不相關（Irrelevant features）
+俗話說：「垃圾進、垃圾出。(garbage in, garbage out)」只有當訓練資料包含足夠多相關特徵，且無太多無關特徵時，系統才有可能學習到有效的規律。
 
-** Overfitting the training data
-- Overfitting happens when the model is too complex relative to the amount and noisiness of the training data. Here are possible solutions:
-  1. Simplify the model by selecting one with fewer parameters.
-  2. Gather more training data.
-  3. Reduce the noise in the training data (e.g., fix data errors and remove outliers).
-- Constraining a model to make it simpler and reduce the risk of overfitting is called /regularization/.
-- The amount of regularization to apply during learning can be controlled by a /hyperparameter/. A hyperparameter is a parameter of a learning algorithm (not of the model).
+** 訓練資料過度擬合（Overfitting the training data）
+- 過度擬合發生在模型相對於資料量和雜訊程度來說過於複雜時。常見的解決方法有：
+  1. 選擇參數較少的簡單模型。
+  2. 收集更多訓練資料。
+  3. 減少資料中的雜訊（例如修正資料錯誤、移除異常值）。
+- 對模型加以限制、讓它變得更簡單，以降低過度擬合風險，這稱為/正則化/（regularization）。
+- 在訓練過程中，正則化的強度可以由 **超參數（hyperparameter）** 來控制。超參數是學習演算法本身的參數，而不是模型的參數。
 
-** Underfitting the training data
-Underfitting occurs when your model is too simple to learn the underlying structure of the data.
+** 訓練資料擬合不足（Underfitting the training data）
+當模型太過簡單，無法學到資料中的結構時，就會發生擬合不足（underfitting）。
 
 * 典型的機器學習MODEL Training[實作]
 以"rock, paper, and scissors"辨識為例[fn:8]:
@@ -754,8 +762,11 @@ model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
 
 model.fit(...., epochs=100)
 #+end_src
+
 ** Process of learning
-可先將512個神經元視為512個function，每個function裡有許多變數，這些變數的初始值為random assign，接下來每個function陸續讀取image的所有feature(即圖的每個pixel，這裡可以將之視為傳入該function的parameters)，然後根據function中的變數值，開始學習要如何調整function裡的變數值才能輸出這個image的正確答案(label)，每個神經元同時進行學習與變數值調校。
+1. 可先將512個神經元視為512個function，每個function裡有許多變數，這些變數的初始值為random assign，
+2. 接下來每個function陸續讀取image的所有feature(即圖的每個pixel，這裡可以將之視為傳入該function的parameters)，
+3. 然後根據function中的變數值，開始學習要如何調整function裡的變數值才能輸出這個image的正確答案(label)，每個神經元 **同時** 進行學習與變數值調校。
 *** function 示意圖
 #+BEGIN_SRC ditaa :file images/function-dg.png  :cmdline -r
 Function

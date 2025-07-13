@@ -19,6 +19,12 @@
 #+end_export
 
 * 為此 org 啟用 venv :noexport:
+#+begin_src shell -r -n :results output :exports both
+source ./venv/bin/activate
+#+end_src
+
+#+RESULTS:
+
 #+begin_src shell -r -n :results output :exports no
 python3 -m venv ./venv
 source ./venv/bin/activate
@@ -33,7 +39,7 @@ python3 -m pip install -U statsmodels
 
 #+RESULTS:
 #+begin_example
-/Users/letranger/Dropbox/notes/roam/venv
+/Users/letranger/Library/CloudStorage/Dropbox/notes/roam/venv
 bin
 include
 lib
@@ -41,6 +47,8 @@ list
 pyvenv.cfg
 share
 Requirement already satisfied: matplotlib in ./venv/lib/python3.12/site-packages (3.10.0)
+Collecting matplotlib
+  Downloading matplotlib-3.10.1-cp312-cp312-macosx_11_0_arm64.whl.metadata (11 kB)
 Requirement already satisfied: contourpy>=1.0.1 in ./venv/lib/python3.12/site-packages (from matplotlib) (1.3.1)
 Requirement already satisfied: cycler>=0.10 in ./venv/lib/python3.12/site-packages (from matplotlib) (0.12.1)
 Requirement already satisfied: fonttools>=4.22.0 in ./venv/lib/python3.12/site-packages (from matplotlib) (4.55.0)
@@ -51,11 +59,19 @@ Requirement already satisfied: pillow>=8 in ./venv/lib/python3.12/site-packages 
 Requirement already satisfied: pyparsing>=2.3.1 in ./venv/lib/python3.12/site-packages (from matplotlib) (3.1.2)
 Requirement already satisfied: python-dateutil>=2.7 in ./venv/lib/python3.12/site-packages (from matplotlib) (2.9.0.post0)
 Requirement already satisfied: six>=1.5 in ./venv/lib/python3.12/site-packages (from python-dateutil>=2.7->matplotlib) (1.16.0)
+Downloading matplotlib-3.10.1-cp312-cp312-macosx_11_0_arm64.whl (8.0 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.0/8.0 MB 1.1 MB/s eta 0:00:00
+Installing collected packages: matplotlib
+  Attempting uninstall: matplotlib
+    Found existing installation: matplotlib 3.10.0
+    Uninstalling matplotlib-3.10.0:
+      Successfully uninstalled matplotlib-3.10.0
+Successfully installed matplotlib-3.10.1
 Requirement already satisfied: ace_tools in ./venv/lib/python3.12/site-packages (0.0)
 Requirement already satisfied: seaborn in ./venv/lib/python3.12/site-packages (0.13.2)
 Requirement already satisfied: numpy!=1.24.0,>=1.20 in ./venv/lib/python3.12/site-packages (from seaborn) (1.26.4)
 Requirement already satisfied: pandas>=1.2 in ./venv/lib/python3.12/site-packages (from seaborn) (2.2.3)
-Requirement already satisfied: matplotlib!=3.6.1,>=3.4 in ./venv/lib/python3.12/site-packages (from seaborn) (3.10.0)
+Requirement already satisfied: matplotlib!=3.6.1,>=3.4 in ./venv/lib/python3.12/site-packages (from seaborn) (3.10.1)
 Requirement already satisfied: contourpy>=1.0.1 in ./venv/lib/python3.12/site-packages (from matplotlib!=3.6.1,>=3.4->seaborn) (1.3.1)
 Requirement already satisfied: cycler>=0.10 in ./venv/lib/python3.12/site-packages (from matplotlib!=3.6.1,>=3.4->seaborn) (0.12.1)
 Requirement already satisfied: fonttools>=4.22.0 in ./venv/lib/python3.12/site-packages (from matplotlib!=3.6.1,>=3.4->seaborn) (4.55.0)
@@ -88,21 +104,27 @@ Requirement already satisfied: six>=1.5 in ./venv/lib/python3.12/site-packages (
 : ./venv/bin/python3
 
 * 關於迴歸
-即，根據一組預測特徵（predictor，如里程數、車齡、品牌）來預測目標數值（如二手車車價）[fn:1]、根據歷史股價來預測明天股價、根據路況來預測方向盤轉向及車速。
+當我們談到「迴歸」時，意思是根據一組預測特徵（feature），像是里程數、車齡、品牌等等，來預測一個連續的數值目標，例如二手車的售價。也可以是像根據歷史股價來預測明天的股價，或者根據即時路況來預測車子的轉向角度和速度。
 
-部份迴歸演算法也可以用來分類，例如Logistic，它可以輸出一個數值，以這個數值來表示對應到特定類別的機率，例如，某封email為垃圾郵件的機率為20%、某張圖片為狗的機率為70%。
+有些迴歸演算法其實也可以拿來做分類的工作。像是 Logistic Regression，它會輸出一個介於 0 到 1 之間的數值，這個數值可以解釋成「某件事情發生的機率」。舉例來說，我們可以用它來判斷一封 email 是不是垃圾郵件，比如說判斷結果是 0.2，那就代表這封信有 20% 的機率是垃圾信；又或者是判斷一張圖片裡是不是狗，結果是 0.7，那代表有 70% 的機率是狗。
 
 ** 迴歸類型
+在機器學習裡，迴歸問題指的是：根據一組「預測特徵」（如：車子的里程數、車齡、品牌）來預測一個連續數值（如：二手車車價）。又如：
+- 根據歷史股價預測明天股價
+- 根據即時路況預測車速或方向盤轉向角度
+
 迴歸問題可分為兩類：
-- Linear regression:
-- Logistic regression
+- Linear Regression（線性迴歸）
+- Logistic Regression（邏輯斯迴歸）
 *** Linear regression:
 - 假設輸入變量(x)與單一輸出變量(y)間存在線性關係，並以此建立模型。
 - 優點: 簡單、容易解釋
 - 缺點: 輸入與輸出變量關係為線性時會導致低度擬合
-- 例: 身高與體重間的關係
+- 例: 預測某人身高與體重的關係
+
 Linear regression可再細分為
 **** Simple Linear regression (簡單線性迴歸):
+只討論一個輸入變數與一個輸出變數的關係
 ***** 迴歸
 討論兩個變數間的關係(輸入變量(x)與單一輸出變量(y)間)的關係
 #+begin_src plantuml :file images/regvsml1.png
@@ -138,43 +160,48 @@ package "機器學習"{
 #+RESULTS:
 [[file:images/regvsml3.png]]
 **** Multiple Linear regression (多元線性迴歸)
-#+BEGIN_SRC dot :file ./images/regvsm3.png :cmdline -Kdot -Tpng
+當有多個輸入變數 $x_1, x_2, ..., x_n$ 一起影響輸出 $y$ 時，就用多元線性迴歸來建模：
+$$y=ax_1​+bx_2​+cx_3​+⋯+zx_n​+\epsilon$$
+
+其中：
+- $y$ ：輸出變量（應變數）
+- $x_1, x_2, \dots$ ：輸入變量（特徵值）
+- $a, b, c, \dots$ ：權重（係數）
+- $\epsilon$ ：誤差項（residual）
+
+多元迴歸是線性迴歸的一種延伸，其模型結構如圖[[fig:multilinear]]所示，輸入變量 $x_1, x_2, x_3$ 分別對應到權重 $a, b, c$，最終輸出變量 $y$。這種模型可以用來預測多個特徵值對應的輸出結果。
+#+BEGIN_SRC dot :file ./images/regvsm3.png :cmdline -Kdot -Tpng :results none
 digraph perceptron {
   rankdir=LR
-  x1 [label="x1"]
-  x2 [label="x2"]
-  x3 [label="x3"]
+  x1 [label=<x<SUB>1</SUB>>]
+  x2 [label=<x<SUB>2</SUB>>]
+  x3 [label=<x<SUB>3</SUB>>]
   output [label="輸出變量y" shape="record"]
   x1 -> output [label="a"]
   x2 -> output [label="b"]
   x3 -> output [label="c"]
 }
 #+END_SRC
-
-#+CAPTION: 多元線性迴歸
-#+LABEL:fig:Labl
-#+name: fig:Name
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
+#+CAPTION: 多元線性迴歸模型
+#+LABEL:fig:multilinear
+#+name: fig:multilinear
+#+ATTR_LATEX: :width 200
+#+ATTR_ORG: :width 200
 #+ATTR_HTML: :width 200
-[[file:./images/regvsm3.png]]
+[[file:images/regvsm3.png]]
 
-討論多個變數間的關係，Multiple Linear Regression 是線性迴歸的一種延伸，當輸出變量 $y$ 與多個輸入變量 $x_1,x_2,…,x_n$ 之間存在線性關係時，可使用多元線性迴歸來建模:
-$$y=ax_1+bx_2+cx_3+⋯+zx_n+ϵ$$
-其中
-- $y$: 輸出變量 (應變數)
-- $x_1,x_2,…,x_n$​: 輸入變量 (特徵值)
-- $a,b,c​,…,z$​: 係數 (權重)
-- $ϵ$: 誤差項 (Residual)
-
-*** Logistic regression
-  * 也是線性方法，但使用logist function轉換輸出的預測結果，其輸出結果為類別機率(class probabilities)
-  * 優點: 簡單、容易解釋
-  * 缺點: 輸入與輸出變量關係為線性時無法處理分類問題
+*** Logistic Regression（邏輯斯迴歸）
+是一種線性模型，但最終會通過 sigmoid 函數把預測結果轉為 0～1 的機率值，適合處理二元分類問題
+- 優點：簡單、可解釋性高
+- 缺點：
+  資料特徵與分類結果間若為非線性關係，表現會不佳Logistic regression
 *** 迴歸的目的
-建立迴歸的目的在於從現有資料中找出規則，然後依此規則來對後續的新進資料進行預測。如圖[[fig:reg-1]]中有一些資料分佈，x、y軸為資料的兩個特徵值。
+建立迴歸的目的在於從現有資料中找出規則，然後依此規則來對後續的新進資料進行預測。我們想做的事，是根據過去的資料找出某種規律，接著用這個規律來預測未來的新資料。
+
+圖[[fig:reg-1]]中有一些資料分佈，x、y軸為資料的兩個特徵值。這些資料點的分佈並不是隨機的，而是有某種規律可循。這些資料點可能代表了某個現象或事件的特徵，例如房價、股價、氣溫等等。
+
 #+CAPTION: 原始資料分佈
-#+LABEL:fig:Labl
+#+LABEL:fig:reg-1
 #+name: fig:reg-1
 #+ATTR_LATEX: :width 200
 #+ATTR_ORG: :width 200
@@ -192,36 +219,57 @@ $$y=ax_1+bx_2+cx_3+⋯+zx_n+ϵ$$
 #+ATTR_HTML: :width 400
 [[file:images/關於迴歸/2024-02-07_15-19-44_2024-02-07_15-18-27.png]]
 
-典型迴歸案例: Boston Housing Data
+迴歸就是想解決這些問題。它的目的是從一組資料中找出一條最能代表這些資料的直線（或曲線），然後用這條線來預測未來的新資料。常見應用案例：
+- 波士頓房價預測（Boston Housing Dataset）
+- 股票價格預測
+- 天氣數據分析
+- 車輛油耗預測
 
 * 迴歸原理
-練習投藍的時後，我們需要知道籃筐位置，誤差多少，1做出丟球的修正。
-做 Machine Learning 也是一樣道理，我們需要 :
-- 建立模型
-- 計算誤差: 在[[id:20221023T101456.955364][機器學習]]中，我們用loss function來計算
-- 做出修正: 在[[id:20221023T101456.955364][機器學習]]中，我們用optimizer來不斷對模型進行修正
+在學習投籃時，我們會不斷修正自己的手感與角度，觀察球飛出後落點和籃框的誤差，然後做出調整。其實機器學習的原理也很像──我們要讓電腦學會預測，步驟如下：
+1. 建立一個初步的模型（就像第一次隨便丟一球）
+1. 看它丟得準不準（計算誤差）
+1. 再根據誤差做調整（優化模型）
 
-** Step 1: Model, Data
-1. Model: $y = w*x+b$
-2. Data: 找一堆現成的資料
-** Step 2: Goodness of Function
-1. Training Data
-2. Loss function L: 越小越好
-   input: a function / output: how bad it is
-3. Pick the *Best Function* :
-   $f* = \arg\min L(f)$
-   上述可以微分來求最佳解，即求 function L 的最小值
-4. 數值最佳解: Gradient Descent(找拋物線/面最低點)
+** Step 1：模型與資料
+*** 模型 Model：
+我們先假設一個最簡單的模型，例如：$$f(x)=y=w⋅x+b$$
+
+這就像是說：「我先用這種方法來丟看看。」
+
+然而，像 $f(x)=y=w⋅x+b$ 這樣的模型有無限多種可能性，因為我們可以隨意調整參數 $w$ 和 $b$。所以我們需要一個方法來評估這個模型的好壞。這就是我們接下來要做的事。
+
+** Step 2：看這個方法丟得好不好（評估函數）
+1. 訓練資料 Training Data：
+   我們把這些 $x$ 值輸入模型，看看預測的 $\hat{y}$ 值跟真實的 $y$ 差多少。
+2. 損失函數 Loss Function $L$ ：
+   用來衡量模型預測得有多爛。它的工作就像「計分員」一樣，分數越高表示錯越多，越低代表模型越準。所以我們希望 $L$ 越小越好。
+3. 挑選最好的模型 $f*$ ：
+   我們的目標是找到一個讓 Loss 最小的模型：
+   $$f∗=\arg⁡min⁡L(f)$$
+
+   意思是：「從所有可能的模型中，挑出那個讓損失函數值最小的。」
+4. 數值解法：梯度下降法 Gradient Descent
+    如果沒辦法直接算出最小值（因為函數太複雜），我們就用「試著一點一點往低處爬」的方式找答案。
+    想像我們在一個山谷裡，摸黑想找到最低點（最小誤差），每次往斜坡最陡的方向走一小步，這就是 **梯度下降法(Gradient Descent)** 的精神。
 
 * 線性迴歸: 學期成績預估
+接下來就以學期成績預估為例，來介紹迴歸的概念與實作。
 ** 函數: AI的本質
-人工智慧本質上就是在找出一個特定函數。例如，我們想利用人工智慧來預估自己這個學期的資訊科成績，其實相當於在找一個類似這樣的函數：
-$$f(期中考成績,期末考成績)→學期總成績$$
-有了這個函數，只要我們輸入這學期的兩次段成績，就能算出自己的學期總成績。但像這樣的函數f有無限多個，其中一種可能的計算方式如下：
-$$期末成績=0.4×期中考成績+0.6×期末考成績$$
-，此處的0.4, 0.6就稱為這個函數的參數（parameter）。
+前面提及我們希望找出一個函數$f(x)$，事實上，人工智慧本質上就是在找出一個特定函數。例如，我們想利用人工智慧來預估自己這個學期的資訊科成績，而根據歷屆學長的口耳相傳，某科教師給定學期總成績的方式似乎與「期中考、期末考平均」有直接的關係。
 
-為了找出這個函數，我們首先應蒐集歷屆學長姐的成績資料（包括兩次段考平均成績與學期總成績），這些資料稱之為訓練資料（training data）。在將訓練資料視覺化後，我們發現x與y的分佈如圖[[fig:scoReg-1]]所示（假設我們詢問了10位學長姐、收集了10筆訓練資料），初步猜測二者可能存在線性關係。接下來的任務就是畫出一條能儘量接近圖上所有資料點的線，也就是找出最佳的參數a（即這條迴歸線的斜率）。
+所以現在的問題就簡化為：找一個類似這樣的函數：
+$$f(兩次段考平均成績)→學期總成績$$
+
+有了這個函數，只要我們輸入這學期的兩次段平均成績，就能算出自己的學期總成績。但像這樣的函數f有無限多個，其中一種可能的計算方式如下：
+$$期末成績=0.4×兩次段考平均成績$$
+，此處的0.4就稱為這個函數的參數（parameter）。
+
+其實，我們的目的就是在找出一個函數 $f(x)=ax$，其中的 $x$ 為兩次段考平均成績，$a$ 為參數，這個函數能夠將兩次段考平均成績轉換為學期總成績。
+
+為了找出這個函數，我們首先應蒐集歷屆學長姐的成績資料（包括兩次段考平均成績與學期總成績），這些資料稱之為訓練資料（training data）。
+
+在將訓練資料視覺化後，我們發現x與y的分佈如圖[[fig:scoReg-1]]所示（假設我們詢問了10位學長姐、收集了10筆訓練資料），初步猜測二者可能存在線性關係。
 
 #+begin_src python -r -n :sync :session tmp :results output :exports none
 import numpy as np
@@ -260,19 +308,15 @@ plt.savefig('images/2scores.png', dpi=300)
 #+ATTR_HTML: :width 500
 [[file:images/2scores.png]]
 
+接下來的任務就是畫出一條能儘量接近圖上所有資料點的線，也就是找出最佳的參數a（即這條迴歸線的斜率）。
+
 ** 逐步找出最佳的a
-雖然在此例中最佳的a可以很快用數學公式求出，但此處我們打算介紹另一種逐步找出最佳a的方式，步驟詳列如下：
+雖然在此例中最佳的 $a$ 可以很快用數學公式求出，但此處我們打算介紹另一種逐步找出最佳 $a$ 的方式，步驟詳列如下：
 
-*** a=0.5
-#+begin_src python -r -n :results output :exports both
-import matplotlib
-print('cc')
-#+end_src
+*** $a=0.5$
+首先，面對未知的困難，我們要有嚴格的解題SOP，也就是要遵循「科學、理性、務實」的精神： **閉著眼睛隨便給個 $a$** 。
 
-#+RESULTS:
-: cc
-
-首先，面對未知的困難，我們要有嚴格的解題SOP，也就是要遵循「科學、理性、務實」的精神：閉著眼睛隨便給個 $a$。例如：a=0.5，畫出的迴歸線結果如圖[[fig:scoReg-2]]。
+假設這次我們瞎矇到的 $a$ 值為0.5，畫出的迴歸線結果如圖[[fig:scoReg-2]]。
 #+begin_src python -r -n  :results output :exports none
 import numpy as np
 import matplotlib.pyplot as plt
@@ -338,12 +382,27 @@ plt.savefig('images/2scores_with_regression.png', dpi=300)
 #+ATTR_HTML: :width 500
 [[file:images/2scores_with_regression.png]]
 
-有了這條線，我們就可以找出這10筆資料與這條線有多遠。理想狀況下我們希望每個點都離線越近越好，把所有點與迴歸線的距離（圖[[fig:scoReg-2]]中的橘色線段）加總起來，我們把它稱為誤差。此處以均方差（Mean Squared Error, MSE）來計算，誤差值為367.76。MSE公式如下：
-$$MSE=\frac{1}{n}\sum_{i=1}^{n}{(y_i-\widehat{y_i})}^2$$
-，這裡的MSE就是這個模型的損失函數（Loss Function） 。
+有了這條迴歸線（也就是我們的模型）之後，我們就可以來評估它的好壞了。
 
-*** a=0.4, a=0.6
-但是目前的a(0.5)是最好的嗎？我們可以試著調整a值，對它各加、減0.1，再來觀察誤差的變化，結果如圖[[fig:scoReg-12]]，可以發現a再大一些結果似乎會更好。
+做法很簡單：我們把每一筆資料的預測值，和實際值相比，看看點到這條線有多遠。理想情況下，我們當然希望每個點都離這條線越近越好，代表模型預測得很準。
+
+在圖 [[fig:scoReg-2]] 中，橘色的線段就是每一筆資料點到預測線的距離，我們把這些距離加總起來，就是這條線「預測得有多差」的總誤差。此處以均方差（Mean Squared Error, MSE）來計算，誤差值為367.76。MSE公式如下：
+$$MSE=\frac{1}{n}\sum_{i=1}^{n}{(y_i-\hat{y_i})}^2$$
+，這裡的MSE就是這個模型的損失函數（Loss Function），其中：
+- $y_i$​ 是第 $i$ 筆資料的真實值
+- $\hat{y_i}$​ ​是模型預測出來的值
+- $n$ 是總資料筆數
+
+這個 MSE 數值就是我們這個模型的損失函數（Loss Function）。數值越小，表示預測越準；數值越大，表示預測越差。
+
+例如：某次模型的 MSE 計算結果為 367.76，這就代表目前這條迴歸線預測得還有不少偏差，我們就需要進一步調整模型參數 $a$ 。
+
+*** $a=0.4, a=0.6$
+但是目前的 $a=0.5$ 就是我們能找到的最好迴歸線(模型)嗎? 沒有比較就沒有傷害，就像你以為以前選出的立委已經很爛了，最後才發現總是能選出更爛的。
+
+為了找出更好的迴歸線，我們可以試著調整 $a$ 的值，看看能不能找到更小的誤差。方法也很簡單，我們一樣用「科學、理性、務實」的精神，隨便這個 $a$ 各加、減0.1，再來觀察誤差的變化。至於為什麼是它各加、減0.1？都跟你說了這是「科學、理性、務實」、這是信仰，而信仰是不容質疑的，你接受就好。
+
+結果如圖[[fig:scoReg-12]]，可以發現a再大一些結果似乎會更好。
 #+begin_src python -r -n :results output :exports none
 import sys
 
@@ -440,8 +499,11 @@ plt.savefig('images/2scores_with_regression12.png', dpi=300)
 #+end_src
 
 #+RESULTS:
-: 0.4: 總平方誤差 (MSE): 535.29
-: 0.6: 總平方誤差 (MSE): 498.39
+: 執行檔案目錄是:
+: 0.4
+: 總平方誤差 (MSE): 535.29
+: 0.6
+: 總平方誤差 (MSE): 498.39
 
 #+CAPTION: a=0.4 v.s. a=0.6
 #+LABEL:fig:scoReg-12
@@ -451,70 +513,8 @@ plt.savefig('images/2scores_with_regression12.png', dpi=300)
 #+ATTR_HTML: :width 800
 [[file:images/2scores_with_regression12.png]]
 
-*** a=0.6 :noexport:
-#+begin_src python -r -n :results output :exports none
-import numpy as np
-import matplotlib.pyplot as plt
-
-# 設定 matplotlib 中文顯示（視系統情況調整字型）
-plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
-plt.rcParams['axes.unicode_minus'] = False
-
-# 模擬數據
-np.random.seed(403)  # 固定隨機種子以便重現
-x = np.random.uniform(10, 90, 10)  # 模擬期中和期末考平均，範圍為 50-100
-noise = np.random.normal(-10, 10, 10)  # 添加隨機誤差
-y = x * 0.9 +10 + noise  # 模擬學期總成績，假設公式 y = 0.8 * x + 20 + 誤差
-
-# 計算迴歸線參數
-#a = np.sum(x * y) / np.sum(x**2)  # 假設通過原點的回歸線 y = ax
-a = 0.6
-print(a)
-
-# 均方誤差
-errors = y - x*a
-mse = np.mean(errors**2)  # 平方誤差平均值
-print(f"總平方誤差 (MSE): {mse:.2f}")
-
-# 畫出散佈圖與迴歸線
-plt.figure(figsize=(8, 6))
-plt.scatter(x, y, color='blue', alpha=0.7, label="成績")
-plt.plot(x, x*a, color='red', linewidth=2, label=f"迴歸線: y = {a:.2f}x")
-
-# 添加標題與標籤
-plt.title(f"均方差：{mse:.2f}", fontsize=16)
-plt.xlim(0, 101)
-plt.ylim(0, 101)
-plt.xlabel("兩次段考平均(x)", fontsize=14)
-plt.ylabel("學期總成績(y)", fontsize=14)
-plt.grid(True, linestyle='--', alpha=0.5)
-plt.legend(fontsize=12)
-
-i = 0
-for x, y1, y2 in zip(x, y, x*a):
-    xs = [x, x]
-    ys = [y1, y2]
-    plt.plot(xs, ys, color='orange')
-    plt.text(x-0.4, y2-2, rf'$\hat y_{i}$', color='blue', fontsize=12)
-    i += 1
-
-# 保存圖片
-import os
-os.makedirs('images', exist_ok=True)  # 確保目錄存在
-plt.savefig('images/2scores_with_regression2.png', dpi=300)
-#+end_src
-
-#+CAPTION: a=0.6
-#+LABEL:fig:scoReg-4
-#+name: fig:scoReg-4
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
-[[file:images/2scores_with_regression2.png]]
-
-*** 全部的a
-當我們把全部合理的  a  值（如$0.3 \le a \le 1.4$）對應的損失函數逐一計算出來後，就可以將這些結果畫成一條如圖[[fig:scoReg-5]]的曲線，這就是這個模型的損失函數曲線（Loss Function Curve）。不難看出：只要將a逐步往損失函數較小的方向調整，這個模型的預測效果就會更好。另一種調整a值的方式是透過資料點在曲線上的切線（圖中綠色虛線）斜率來判斷該往左或右移動a值，直到找到切線斜率為0的點，這便是曲線的最低點，也是最佳a值。此函數如下，也是我們用來預估分數的模型：
-$$y=f\left(x\right)=0.84x$$
+*** 評估所有可能的 $a$
+當我們把全部合理的 $a$ 值（如$0.3 \le a \le 1.4$）對應的損失函數逐一計算出來後，就可以將這些結果畫成一條如圖[[fig:scoReg-5]]的曲線，這就是這個模型的損失函數曲線（Loss Function Curve）。
 
 #+begin_src python -r -n :results output :exports none
 import numpy as np
@@ -595,9 +595,7 @@ plt.xlabel(r'a')
 plt.ylabel(r'誤差(Loss)')
 plt.savefig("images/scoreLoss.png", dpi=300)
 #+end_src
-
 #+RESULTS:
-
 #+CAPTION: 合理a值畫出的誤差函數
 #+LABEL:fig:scoReg-5
 #+name: fig:scoReg-5
@@ -606,12 +604,23 @@ plt.savefig("images/scoreLoss.png", dpi=300)
 #+ATTR_HTML: :width 500
 [[file:images/scoreLoss.png]]
 
-** 兩項成績推估
-如果老師的計分是針對期中期末考給予不同權重呢？那我們新的目標函數就要改成如下式子，此時的任務在求出最佳的參數a, b。
-$$y=f\left(x\right)=ax_1+bx_2$$
-，其中 $x_1$ 為兩次段考平均成績, $x_2$ 為學期總成績。
+不難看出：只要將 $a$ 逐步往損失函數較小的方向調整，這個模型的預測效果就會更好。
 
-比照上述步驟的做法，我們可以求出所有合理的a, b值（0～1）及其所對應的損失函數，將結果畫成如圖 ‎2.2 5的曲面。實際求解時，一樣先隨機指定一組權重值a, b（圖[[fig:scoReg-6]]藍色點），依該點在曲面上的斜率（此處稱為梯度，Gradient） ，沿著梯度的反方向往下找，就能找到這個曲面的最低點（圖[[fig:scoReg-5]]紅色點），該點便是函數的最佳參數。此種做法也就是神經網路中找出模型最佳參數的核心思想：梯度下降法（Gradient Descent）。
+另一種調整 $a$ 值的方式是透過資料點在曲線上的切線（圖中綠色虛線）斜率來判斷該往左或右移動 $a$ 值，直到找到切線斜率為0的點，這便是曲線的最低點，也是最佳 $a$ 值。此函數如下，也是我們用來預估分數的模型：
+$$y=f\left(x\right)=0.84x$$
+
+** 兩個參數的模型
+前一個例子有點太簡單了，只有一個參數 $a$，實際上我們的模型通常會更複雜一些。
+
+假設這位老師忽然良心發現，覺得不應該用這麼草率的計分方式來決定學生是否能取得學分。於是他將學期成績的計分方式改為「分別對期中考、期末考成績進行加權」。此時我們的模型就變成了兩個參數 $a$ 和 $b$，函數如下：
+$$y=f\left(x\right)=ax_1+bx_2$$
+，其中
+- $x_1$ 為期中考成績
+- $x_2$ 為期末考成績
+- $y$ 為學期總成績
+而我們的任務在求出最佳的參數 $a, b$。
+
+比照上述步驟的做法，我們可以求出所有合理的 $a, b$ 值（0～1）及其所對應的損失函數，將結果畫成如圖[[fig:scoReg-6]]的曲面。
 
 #+begin_src python -r -n :results output :exports none
 import numpy as np
@@ -683,40 +692,12 @@ plt.savefig('images/3dScoreLoss.png', dpi=300)
 #+ATTR_HTML: :width 500
 [[file:images/3dScoreLoss.png]]
 
+實際求解時，一樣先隨機指定一組權重值 $a, b$（圖[[fig:scoReg-6]]藍色點），依該點在曲面上的斜率（此處稱為梯度，Gradient） ，沿著梯度的反方向往下找，就能找到這個曲面的最低點（圖[[fig:scoReg-5]]紅色點），該點便是函數的最佳參數。
+
+此種做法也就是神經網路中找出模型最佳參數的核心思想：梯度下降法（Gradient Descent）。
+
 ** 神經網路的視角
 從神經網路的角度來看，上述函數也可以視為如圖 ‎2.2 6的模型，模型中只有一層隱藏層，裡面只有一個神經元，輸出結果為期末成績，這便是一個能進行迴歸計算的神經網路。
-#+begin_src plantuml :file images/datapreprocessing.png
-@startuml
-skinparam linetype polyline
-left to right direction
-skinparam defaultTextAlignment center
-skinparam RectangleBorderThickness 0
-
-' 隱藏 rectangle 的邊框
-rectangle inputLayer  {
-    circle "x₁" as x1 #blue
-    circle "x₂" as x2 #blue
-}
-
-rectangle hiddenLayer  {
-    circle "f" as f #red
-}
-
-rectangle outputLayer {
-    circle "y" as y #seagreen
-}
-
-' 連線
-x1 --> f : "w₁"
-x2 --> f : "w₂"
-f --> y : "w₃"
-
-@enduml
-#+end_src
-
-#+RESULTS:
-[[file:images/datapreprocessing.png]]
-
 
 #+BEGIN_SRC dot :file images/scoreNN.png :cmdline -Kdot -Tpng
   digraph threeLayerNetwork{
@@ -2665,9 +2646,6 @@ print(f'期中考:{pred[2]}, 學期成績:{model.predict(pred)[[2]]}')
 #+end_src
 
 #+RESULTS:
-: 期中考:[38], 學期成績:[62.10283135]
-: 期中考:[87], 學期成績:[92.65879543]
-: 期中考:[92], 學期成績:[95.77675095]
 #+CAPTION: 迴歸作業1
 #+LABEL:fig:Labl
 #+name: fig:Name
@@ -2685,7 +2663,7 @@ import matplotlib.pyplot as plt
 plt.rcParams['font.sans-serif'] = ['Arial Unicode MS'] # 步驟一（替換系統中的字型，這裡用的是Ma
 plt.rcParams['axes.unicode_minus'] = False  # 步驟二（解決座標軸負數的負號顯示問題）
 
-df = pd.read_csv('/Users/letranger/Dropbox/TNFSH/[TNFSH]AI選修/113學年度/3yscores.csv')
+df = pd.read_csv('https://letranger.github.io/AI/Downloads/3yScTest.csv')
 print(df.columns)
 print(df.head())
 
@@ -2717,23 +2695,19 @@ df_selected.to_csv(output_file, index=False, encoding="utf-8-sig")
 
 #+RESULTS:
 #+begin_example
-Index(['Year', 'Class', '10ASub1', '10ASub2', '10ASub3', '10BSub1', '10BSub2',
-       '10BSub3', '11ASub1', '11ASub2', '11ASub3', '11BSub1', '11BSub2',
-       '11BSub3', '12ASub1', '12ASub2', '12ASub3', '12BSub1', '12BSub2',
-       '12BSub3', 'TestNG3', 'TestSG3', '第一次模擬考排名_自然組', '第二次模擬考排名_社會組',
-       '第二次模擬考排名_自然組', '第二次模擬考排名_社會組.1', '第三次模擬考排名_自然組', '第三次模擬考排名_社會組',
-       '第四次模擬考排名_醫農', '第四次模擬考排名_理工', '第四次模擬考排名_社會', '第五次模擬考排名_醫農',
-       '第五次模擬考排名_理工', '第五次模擬考排名_社會', '第六次模擬考排名_醫農', '第六次模擬考排名_理工',
-       '第六次模擬考排名_社會', '學校', '入學管道'],
+Index(['10ASub1', '10ASub2', '10ASub3', '10BSub1', '10BSub2', '10BSub3',
+       '11ASub1', '11ASub2', '11ASub3', '11BSub1', '11BSub2', '11BSub3',
+       '12ASub1', '12ASub2', '12ASub3', '12BSub1', '12BSub2', '12BSub3',
+       'TestNG3', 'TestSG3'],
       dtype='object')
-   Year Class  10ASub1  10ASub2  ...  第六次模擬考排名_理工  第六次模擬考排名_社會        學校  入學管道
-0  2019    A1       31       38  ...            -            0         -     -
-1  2019    A1       58       49  ...            -            0  國立臺灣師範大學  考試分發
-2  2019    A1       32       43  ...            -            -      銘傳大學  考試分發
-3  2019    A1       55       46  ...            -           36  國立臺灣師範大學  考試分發
-4  2019    A1       79       74  ...            -            -    國立成功大學  個人申請
+   10ASub1  10ASub2  10ASub3  10BSub1  ...  12BSub2  12BSub3  TestNG3  TestSG3
+0       31       38       61       34  ...      6.0      2.0       15       23
+1       58       49       63       50  ...      1.0      2.0       29       41
+2       32       43       68       29  ...     25.0     87.0       20       32
+3       55       46       74       56  ...     27.0     59.0       34       41
+4       79       74       82       75  ...     31.0     86.0       40       47
 
-[5 rows x 39 columns]
+[5 rows x 20 columns]
    10ASub1  10ASub2  10ASub3  10BSub1  ...  12BSub2  12BSub3  TestNG3  TestSG3
 0       31       38       61       34  ...      6.0      2.0       15       23
 1       58       49       63       50  ...      1.0      2.0       29       41
@@ -2883,7 +2857,6 @@ coefficient:: [4.04353501e-16 1.11022302e-15 1.00000000e+00]
 #+end_example
 
 * 新的資料集 :noexport:
-#+begin_src python -r -n :async :results output :exports both :session boston
 #+begin_src python -r -n :async :results output :exports both :session boston
 import numpy as np
 import matplotlib.pyplot as plt

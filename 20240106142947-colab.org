@@ -17,6 +17,8 @@
 
 Google Colaboratory 是一個基於雲端的Python開發環境，由Google提供開發者虛擬機，提供免費的GPU和TPU資源，並支援Python程式及機器學習TensorFlow演算法。Google Colab具有強大的協作功能，可以與他人共享和編輯程式碼，支援Jupyter筆記本，並提供預裝的Python套件，方便進行數據分析、機器學習等任務。
 
+總之，如果你是一個Python初學者或是剛要開始學習機器學習的學生，Google Colaboratory是你非常好的選擇，它提供了一個簡單易用的環境，讓你可以專注於學習Python和機器學習，而不需要擔心環境配置和資源限制。
+
 #+CAPTION: Google Colaboratory
 #+LABEL:fig:Labl
 #+name: fig:Name
@@ -43,7 +45,7 @@ Colab的虛擬機有CPU、記憶體、磁碟空間等資源(如圖[[fig:Colab-1]
 #+ATTR_HTML: :width 300
 [[file:images/Colab編寫環境/2024-01-13_13-44-45_2024-01-13_13-44-09.png]]
 
-預設的磁碟所在目錄位置為/content，裡面有一個資料夾sample_data
+預設的磁碟所在目錄位置為/content，裡面有一個資料夾sample_data。這裡的pwd是linux指令，顯示目前所在的目錄位置，而ls則是列出目前目錄下的檔案與資料夾。這些指令可以讓我們了解Colab虛擬機的檔案系統結構。
 #+begin_src python -r -n :results output :exports both
 !pwd
 !ls
@@ -51,7 +53,6 @@ Colab的虛擬機有CPU、記憶體、磁碟空間等資源(如圖[[fig:Colab-1]
 #+RESULTS:
 : /content
 : sample_data
-
 ** 上傳檔案到Colab中
 在Colab中執行AI相關的運算有時需要將你自己的檔案上傳到Colab的雲端磁碟中，這些檔案也許是你想要辨識的圖片、也許是你想進行預測結果的實驗數據。有兩種模式可以將你的檔案儲存到磁碟中：
 *** 有時效的Colab雲端硬碟
@@ -110,9 +111,10 @@ drive.mount('/content/drive')
 from google.colab import drive
 drive.mount('/content/gDrive')
 #+end_src
-
 ** Colab的notebook存在哪?
-我們在Colab所輸入的指令、程式執行的結果都儲存在一個副檔名為ipynb的筆記本中，這個檔案的預設檔名為UntitledX.ipynb(如圖[[fig:untitled]])，預設的儲存資料夾是在Google Drive裡的Colab Notebooks資料夾裡(如圖[[fig:notebook]])。請養成習慣把這些UntitledXX的檔名修改成符合筆記本內容的名稱，否則以後你會在Colab Notebooks裡看到Untitled0.ipynb、Untitled1.ipynb、Untitled2.ipynb、Untitled3.ipynb.....Untitled30.ipynb這樣的畫面Q八Q。
+我們在Colab所輸入的指令、程式執行的結果都儲存在一個副檔名為ipynb的筆記本中，這個檔案的預設檔名為UntitledX.ipynb(如圖[[fig:untitled]])，預設的儲存資料夾是在Google Drive裡的Colab Notebooks資料夾裡(如圖[[fig:notebook]])。
+
+請養成習慣把這些UntitledXX的檔名修改成符合筆記本內容的名稱，否則以後你會在Colab Notebooks裡看到Untitled0.ipynb、Untitled1.ipynb、Untitled2.ipynb、Untitled3.ipynb.....Untitled999.ipynb這樣的畫面Q_Q。
 
 #+CAPTION: Colab筆記本
 #+LABEL:fig:Labl
@@ -130,6 +132,122 @@ drive.mount('/content/gDrive')
 #+ATTR_HTML: :width 500
 [[file:images/Colab編寫環境/2024-01-13_15-58-00_2024-01-13_15-48-32.png]]
 
+* Text Cell和Code Cell
+在 Google Colaboratory 中， *儲存格(Cells)* 是編寫與執行筆記本的基本單元。主要分為兩種類型：Text Cell 和 Code Cell。
+** Text Cell
+Text Cell 用於輸入說明文字、標題、公式或其他非程式碼的內容，以便為程式碼提供註解或結構化說明。支持 Markdown 語法，可以使用簡單的標記進行格式化。
+用途
+- 撰寫筆記與說明。
+- 添加標題和子標題。
+- 插入數學公式（使用 LaTeX 語法）。
+- 美化筆記結構，讓內容更易於閱讀。
+*** 常見 Markdown 語法
+**** 標題： 使用 # 進行分級：
+#+begin_src markdown 
+# 標題 1
+## 標題 2
+### 標題 3
+#+end_src
+**** 加粗與斜體：
+#+begin_src markdown -r -n :results output :exports both
+加粗：**文字**
+斜體：*文字*
+#+end_src
+**** 清單：
+***** 無序清單：- 或 * 開頭。
+#+begin_src markdown -r -n :results output :exports both
+- 第一項
+- 第二項
+#+end_src
+***** 有序清單：數字加點號。
+#+begin_src markdown -r -n :results output :exports both
+1. 第一項
+2. 第二項
+#+end_src
+**** 數學公式： 使用 $...$ 或 \($$...$$\) 包裹 LaTeX 公式：
+#+begin_src markdown -r -n :results output :exports both
+行內公式：$a^2 + b^2 = c^2$
+區塊公式：$$$a^2 + b^2 = c^2$$
+#+end_src
+行內公式和區塊公式的差異是：前者可以顯示在行內，後者則會在下一行置中呈現，變成一個獨立的區塊公式。
+- 這是行內公式：$a^2 + b^2 = c^2$
+- 這是區塊公式：$$a^2 + b^2 = c^2$$
+** Code Cell
+Code Cell 用於編寫 Python 程式碼並執行。Colab 提供了即時執行環境，允許你在瀏覽器中直接運行程式碼。
+*** 用途
+- 實際編寫與執行程式碼。
+- 測試數據分析、機器學習模型。
+- 可即時顯示執行結果（如圖表或輸出文字）。
+*** 功能與特性
+- 輸入程式碼： 在儲存格中輸入 Python 程式碼，按下 Shift + Enter 即可執行。
+  #+begin_src python -r -n :results output :exports both
+print("Hello World.")
+  #+end_src
+
+  #+RESULTS:
+  : Hello World.
+
+- 輸出結果：
+  - 執行後，結果直接顯示在 Code Cell 下方。
+  - 支持文字、數據表、圖形等多種格式的輸出。
+- 導入套件與使用命令： Colab 支持直接執行 shell 指令（以 ! 開頭），如果你想在 Code Cell 中使用 Linux 命令，可以在指令前加上驚嘆號（!），如此一來它就不會被當成 Python 程式碼，而是直接執行 Linux 命令。例如，使用 !ls 可以列出目前目錄下的檔案與資料夾，或是使用 !pip install 安裝 Python 套件。
+  #+begin_src shell -r -n :results output :exports both
+!ls  # 查看目錄內容
+!pip install numpy  # 安裝 numpy 套件
+  #+end_src
+
+* 有用和沒用的功能
+** AI輔助
+Google Colaboratory 提供了許多內建功能，有些功能能顯著提高效率，而有些則可能讓用戶感到繁瑣或無聊。在這裡，我們介紹兩種功能：AI輔助功能 和 動畫特效，幫助使用者了解其實用性。
+*** AI 輔助功能
+Colab 的 AI 輔助功能致力於幫助使用者快速生成程式碼、修正錯誤，或者根據上下文提供建議。
+功能特點
+- 智慧提示：輸入程式碼時，自動提供函數補全或參數建議。
+- 錯誤修正：在程式執行錯誤時，會根據報錯提供修正建議，並推薦相關的資源或文件。
+- 程式生成：利用 Colab 提供的 AI 工具，快速生成範例程式碼，適合初學者或快速測試想法。
+*** 設定
+點選右上角設定、開啟AI輔助功能
+#+CAPTION: 設定ColabAI輔助功能
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+#+attr_org: :width 600px
+[[file:images/有用和沒用的功能/2024-12-11_19-51-03_screenshot.png]]
+
+*** 教學範例
+**** 使用智慧提示與補全
+#+begin_src python -r -n :results output :exports both
+# 輸入 plt.
+# Colab 自動提示 matplotlib.pyplot 的函數選項
+import matplotlib.pyplot as plt
+#+end_src
+**** 自動生成程式碼
+在 Colab 中輸入：
+#+begin_src python -r -n :results output :exports both
+#如何計算陣列的平均值？
+#+end_src
+AI 輔助會生成程式碼範例：
+#+begin_src python -r -n :results output :exports both
+#如何計算陣列的平均值？
+import numpy as np
+arr = [1, 2, 3, 4, 5]
+mean = np.mean(arr)
+print(f"陣列的平均值為：{mean}")
+#+end_src
+** 無聊動畫與打字特效
+Colab 內建一些無聊的特效，例如「動畫字體效果」或「輸出時的打字效果」，雖然有趣，但在大多數情況下並不實用。
+*** 設定
+點選右上角設定、開啟打字效果（效能等級）或其他廢廢的特效。
+#+CAPTION: 設定Colab動畫與打字特效
+#+LABEL:fig:Labl
+#+name: fig:Name
+#+ATTR_LATEX: :width 300
+#+ATTR_ORG: :width 300
+#+ATTR_HTML: :width 500
+[[file:images/有用和沒用的功能/2024-12-11_19-55-18_screenshot.png]]
+
 * GPU執行階段
 ** 如何確定有在跑 GPU:
 #+begin_src python -r -n :results output :exports both
@@ -139,7 +257,6 @@ if gpu_name != '/device:GPU:0':
   raise SystemError('無 GPU')
 print(f'有 GPU: {gpu_name}')
 #+end_src
-
 ** 在CoLab中使用GPU
 1. 執行階段/變更執行階段類型
 2. 硬體加速器
@@ -158,7 +275,6 @@ print(f'有 GPU: {gpu_name}')
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/GPU執行階段/2024-01-13_11-09-56_2024-01-13_11-04-26.png]]
-
 ** 查看使用的GPU類型
 *** Colab
 #+begin_src python -r -n :results output :exports both
@@ -191,7 +307,6 @@ nvidia-smi -L
 
 - %%timeit：算出你的程式碼區塊花多少時間執行，分析你的演算法效率時很好用
 - %run my_script.py：執行你的另一個 Python 程式，如果你的程式還需要呼叫另一個程式，就需要使用這個 Magic 指令
-
 ** Google 提供的 VM
 #+begin_src shell -r -n :results output :exports both
 !pwd
