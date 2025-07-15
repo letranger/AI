@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2025-07-11 Fri 13:25 -->
+<!-- 2025-07-15 Tue 15:26 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>感知器</title>
@@ -234,54 +234,63 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org55f8488">1. 感知器(Perception)</a>
+<li><a href="#org31ac944">1. 感知器(Perception)</a>
 <ul>
-<li><a href="#orgd945ca4">1.1. 何謂感知器</a></li>
-<li><a href="#org765e0c8">1.2. 感知器工作原理</a></li>
-<li><a href="#org3a7e6bc">1.3. 能做什麼</a></li>
+<li><a href="#org9661336">1.1. 何謂感知器</a></li>
+<li><a href="#org84c03a5">1.2. 感知器工作原理</a></li>
+<li><a href="#orgc814b99">1.3. 能做什麼</a></li>
 </ul>
 </li>
 <li><a href="#FromPerceptrionToMLP">2. Story of gate: From perceptron to MLP</a>
 <ul>
-<li><a href="#org2d1a2c0">2.1. OR gate實作</a></li>
-<li><a href="#orgcf3d4b4">2.2. [課堂作業]AND、NAND Gate實作&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></a></li>
+<li><a href="#org71a099a">2.1. OR gate實作</a></li>
+<li><a href="#orgae20dda">2.2. [課堂作業]AND、NAND Gate實作&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></a></li>
 </ul>
 </li>
-<li><a href="#orga7a03f8">3. 單層感知器的極限與多層感知器: XOR gate</a>
+<li><a href="#orgbb7a8e1">3. 單層感知器的極限與多層感知器: XOR gate</a>
 <ul>
-<li><a href="#org9647829">3.1. 想法</a></li>
-<li><a href="#org6d980d9">3.2. 多層感知器(MLP): XOR gate 實作</a></li>
+<li><a href="#org2f62888">3.1. 想法</a></li>
+<li><a href="#org22de12b">3.2. 多層感知器(MLP): XOR gate 實作</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 <a href="https://hits.sh/letranger.github.io/PythonCourse/20221023103538-感知器.html/"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/PythonCourse/20221023103538-感知器.html.svg?style=plastic"/></a>
-<div id="outline-container-org55f8488" class="outline-2">
-<h2 id="org55f8488"><span class="section-number-2">1.</span> 感知器(Perception)</h2>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4EJ3V5BG0Z"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-4EJ3V5BG0Z');
+</script>
+<div id="outline-container-org31ac944" class="outline-2">
+<h2 id="org31ac944"><span class="section-number-2">1.</span> 感知器(Perception)</h2>
 <div class="outline-text-2" id="text-1">
 </div>
-<div id="outline-container-orgd945ca4" class="outline-3">
-<h3 id="orgd945ca4"><span class="section-number-3">1.1.</span> 何謂感知器</h3>
+<div id="outline-container-org9661336" class="outline-3">
+<h3 id="org9661336"><span class="section-number-3">1.1.</span> 何謂感知器</h3>
 <div class="outline-text-3" id="text-1-1">
 <p class="verse">
 Perceptron is a single layer neural network and a multi-layer perceptron is called Neural Networks(<a href="20221025104603-神經網路.html#ID-d6daa102-05bb-475d-b619-db8b61e86030">神經網路</a>).<br />
 </p>
 <p>
-收到多個輸入訊號之後，再當作一個訊號輸出，如圖<a href="#orgb2cd2f1">1</a>所示，\(x_1, x_2\)為輸入訊號，\(y\)為輸出訊號，\(w_1, w_2\)代表權重(weight)，圖中的圓圈稱為「神經元」或稱作「節點」。神經元\(x_1, x_2\)的訊號是否會觸發神經元\(y\)使其輸出訊號則取決於\(w_1x_1+w_2x_2\)是否會超過某個臨界值\(\theta\)。
+收到多個輸入訊號之後，再當作一個訊號輸出，如圖<a href="#org38273d6">1</a>所示，\(x_1, x_2\)為輸入訊號，\(y\)為輸出訊號，\(w_1, w_2\)代表權重(weight)，圖中的圓圈稱為「神經元」或稱作「節點」。神經元\(x_1, x_2\)的訊號是否會觸發神經元\(y\)使其輸出訊號則取決於\(w_1x_1+w_2x_2\)是否會超過某個臨界值\(\theta\)。
 </p>
 
-<div id="orgb2cd2f1" class="figure">
+<div id="org38273d6" class="figure">
 <p><img src="images/sensor1.png" alt="sensor1.png" width="200" />
 </p>
 <p><span class="figure-number">Figure 1: </span>收到兩組輸入訊號的感知器</p>
 </div>
 
 <p>
-若以算式表示此一觸發條件則如公式\eqref{org3e162d6}所示。
+若以算式表示此一觸發條件則如公式\eqref{org104a2ff}所示。
 </p>
 \begin{equation}
-\label{org3e162d6}
+\label{org104a2ff}
 y =
 \begin{cases}
 0, & \text w_1x_1+w_2x_2 \leq 0 \\
@@ -290,18 +299,18 @@ y =
 \end{equation}
 </div>
 </div>
-<div id="outline-container-org765e0c8" class="outline-3">
-<h3 id="org765e0c8"><span class="section-number-3">1.2.</span> 感知器工作原理</h3>
+<div id="outline-container-org84c03a5" class="outline-3">
+<h3 id="org84c03a5"><span class="section-number-3">1.2.</span> 感知器工作原理</h3>
 <div class="outline-text-3" id="text-1-2">
 </div>
-<div id="outline-container-org5c10990" class="outline-4">
-<h4 id="org5c10990"><span class="section-number-4">1.2.1.</span> Version #1: 使用weight</h4>
+<div id="outline-container-org184e9a5" class="outline-4">
+<h4 id="org184e9a5"><span class="section-number-4">1.2.1.</span> Version #1: 使用weight</h4>
 <div class="outline-text-4" id="text-1-2-1">
 <p>
 感知器(perceptron)是人造神經元(artificial neuron)的一種，也是最基本的一種。它接受一些輸入，產生一個輸出。
 </p>
 
-<div id="orgb073149" class="figure">
+<div id="orgcef8993" class="figure">
 <p><img src="./images/perceptron-1.png" alt="perceptron-1.png" width="400" />
 </p>
 <p><span class="figure-number">Figure 2: </span>Perceptron version 1</p>
@@ -312,29 +321,29 @@ y =
 <li>無法解決 <b>線性不可分</b> 的問題</li>
 </ul>
 </div>
-<div id="outline-container-org2630fe9" class="outline-5">
-<h5 id="org2630fe9">線性可分 v.s. 線性不可分</h5>
-<div class="outline-text-5" id="text-org2630fe9">
+<div id="outline-container-orga83d0ae" class="outline-5">
+<h5 id="orga83d0ae">線性可分 v.s. 線性不可分</h5>
+<div class="outline-text-5" id="text-orga83d0ae">
 
-<div id="org1fc40c2" class="figure">
+<div id="org2ef20be" class="figure">
 <p><img src="images/2021-05-23_14-10-30.jpg" alt="2021-05-23_14-10-30.jpg" width="400" />
 </p>
 <p><span class="figure-number">Figure 3: </span>線性和非線性分類</p>
 </div>
 
 <p>
-在圖<a href="#org1fc40c2">3</a>中，A為線性分類問題，可以用線性分類器將之成功分類；B則為非線性分類問題，必須使用使用非線性的核函數和其他非線性的分類算法和技術才能成功分類<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。
+在圖<a href="#org2ef20be">3</a>中，A為線性分類問題，可以用線性分類器將之成功分類；B則為非線性分類問題，必須使用使用非線性的核函數和其他非線性的分類算法和技術才能成功分類<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。
 </p>
 </div>
 </div>
-<div id="outline-container-org52d5677" class="outline-5">
-<h5 id="org52d5677">低維映射至高維</h5>
-<div class="outline-text-5" id="text-org52d5677">
+<div id="outline-container-org8221976" class="outline-5">
+<h5 id="org8221976">低維映射至高維</h5>
+<div class="outline-text-5" id="text-org8221976">
 <p>
 可以透過一個非線性的映射將低維空間線性不可分的樣本轉換至高維空間，使其成為線性可分<sup><a id="fnr.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup>，例如:
 </p>
 
-<div id="org9156834" class="figure">
+<div id="orgdf7a878" class="figure">
 <p><img src="images/2021-05-23_14-14-31.jpg" alt="2021-05-23_14-14-31.jpg" width="500" />
 </p>
 <p><span class="figure-number">Figure 4: </span>Kernal function mapping</p>
@@ -342,11 +351,11 @@ y =
 </div>
 </div>
 </div>
-<div id="outline-container-orgbc7e2f5" class="outline-4">
-<h4 id="orgbc7e2f5"><span class="section-number-4">1.2.2.</span> Version #2: 加入bias</h4>
+<div id="outline-container-org8e1f65b" class="outline-4">
+<h4 id="org8e1f65b"><span class="section-number-4">1.2.2.</span> Version #2: 加入bias</h4>
 <div class="outline-text-4" id="text-1-2-2">
 
-<div id="orgbcdc6ef" class="figure">
+<div id="orgef2a27d" class="figure">
 <p><img src="./images/perceptron-2.png" alt="perceptron-2.png" width="400" />
 </p>
 <p><span class="figure-number">Figure 5: </span>Perceptron version 2</p>
@@ -360,14 +369,14 @@ y =
 </ul>
 </div>
 </div>
-<div id="outline-container-org0ea8aa6" class="outline-4">
-<h4 id="org0ea8aa6"><span class="section-number-4">1.2.3.</span> Version #3: 加入activation function</h4>
+<div id="outline-container-org8740f52" class="outline-4">
+<h4 id="org8740f52"><span class="section-number-4">1.2.3.</span> Version #3: 加入activation function</h4>
 <div class="outline-text-4" id="text-1-2-3">
 <p>
 加入activation function，至為什麼要加這個，請直接看下一節的Story of gate。
 </p>
 
-<div id="orgdcba44e" class="figure">
+<div id="org693a4de" class="figure">
 <p><img src="./images/perceptron-3.png" alt="perceptron-3.png" width="500" />
 </p>
 <p><span class="figure-number">Figure 6: </span>Perceptron version 3</p>
@@ -375,8 +384,8 @@ y =
 </div>
 </div>
 </div>
-<div id="outline-container-org3a7e6bc" class="outline-3">
-<h3 id="org3a7e6bc"><span class="section-number-3">1.3.</span> 能做什麼</h3>
+<div id="outline-container-orgc814b99" class="outline-3">
+<h3 id="orgc814b99"><span class="section-number-3">1.3.</span> 能做什麼</h3>
 <div class="outline-text-3" id="text-1-3">
 <p>
 目前為止，感知器看起來就是個函數，有輸入、有處理、有輸出，這和AI有什麼關係呢？感知器能解決什麼問題？
@@ -388,27 +397,27 @@ y =
 <h2 id="FromPerceptrionToMLP"><span class="section-number-2">2.</span> Story of gate: From perceptron to MLP</h2>
 <div class="outline-text-2" id="text-FromPerceptrionToMLP">
 </div>
-<div id="outline-container-org2d1a2c0" class="outline-3">
-<h3 id="org2d1a2c0"><span class="section-number-3">2.1.</span> OR gate實作</h3>
+<div id="outline-container-org71a099a" class="outline-3">
+<h3 id="org71a099a"><span class="section-number-3">2.1.</span> OR gate實作</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
-圖<a href="#orgefbbd6d">7</a>中有四筆資料，有三個A、一個B，如何進行分類?
+圖<a href="#orgc11fda2">7</a>中有四筆資料，有三個A、一個B，如何進行分類?
 </p>
 
-<div id="orgefbbd6d" class="figure">
+<div id="orgc11fda2" class="figure">
 <p><img src="images/2021-05-24_00-48-56.jpg" alt="2021-05-24_00-48-56.jpg" width="300" />
 </p>
 <p><span class="figure-number">Figure 7: </span>分類任務:問題</p>
 </div>
 </div>
-<div id="outline-container-org546cae2" class="outline-4">
-<h4 id="org546cae2"><span class="section-number-4">2.1.1.</span> 想法</h4>
+<div id="outline-container-orgc6ede7c" class="outline-4">
+<h4 id="orgc6ede7c"><span class="section-number-4">2.1.1.</span> 想法</h4>
 <div class="outline-text-4" id="text-2-1-1">
 <p>
 最簡單的分類方式是在A和B中間直接找條直線(\(w_1x_1+w_2x_2+b=0\))就可以將A和B完整切出兩個區塊，然後再搭配階梯函數(step function)將&gt;0與&lt;=0分別設為1與0，用來代表類別0與1。該直線方程式如下：
 </p>
 \begin{equation}
-\label{org057d012}
+\label{orgefa16f6}
 y = \begin{cases}
 1, & w_1x_1 + w_2x_2-b>0 \\
 0, & w_1x_1 + w_2x_2-b\leq0 \\
@@ -416,14 +425,14 @@ y = \begin{cases}
 \end{equation}
 </div>
 </div>
-<div id="outline-container-orgfe81c8e" class="outline-4">
-<h4 id="orgfe81c8e"><span class="section-number-4">2.1.2.</span> Solution</h4>
+<div id="outline-container-org9837408" class="outline-4">
+<h4 id="org9837408"><span class="section-number-4">2.1.2.</span> Solution</h4>
 <div class="outline-text-4" id="text-2-1-2">
 <p>
 經過無數的嚐試錯誤，也許我們可以矇到一個如下的方程式
 </p>
 
-<div id="org18e0cf9" class="figure">
+<div id="org37979fe" class="figure">
 <p><img src="images/2021-05-24_00-50-07.jpg" alt="2021-05-24_00-50-07.jpg" width="300" />
 </p>
 <p><span class="figure-number">Figure 8: </span>分類任務:Solution</p>
@@ -433,14 +442,14 @@ y = \begin{cases}
 如果畫成Perceptron(version 3)的圖:
 </p>
 
-<div id="org430d2f2" class="figure">
+<div id="org03c625c" class="figure">
 <p><img src="./images/orGatePerceptron.png" alt="orGatePerceptron.png" width="400" />
 </p>
 <p><span class="figure-number">Figure 9: </span>Perceptron presentation</p>
 </div>
 
 <p>
-如果將圖<a href="#org18e0cf9">8</a>的四點點代入y(方程式\eqref{org057d012}):
+如果將圖<a href="#org37979fe">8</a>的四點點代入y(方程式\eqref{orgefa16f6}):
 </p>
 \begin{align*}
 A(0,1) \rightarrow y &= f(0,1) = f(1\times0+1\times1-0.5) = f(0.5) = 1 \\
@@ -450,14 +459,14 @@ B(0,0) \rightarrow y &= f(0,0) = f(1\times0+1\times0–0.5) = f(-0.5) = 0\\
 \end{align*}
 </div>
 </div>
-<div id="outline-container-org715ad6b" class="outline-4">
-<h4 id="org715ad6b"><span class="section-number-4">2.1.3.</span> OR gate</h4>
+<div id="outline-container-org50edbff" class="outline-4">
+<h4 id="org50edbff"><span class="section-number-4">2.1.3.</span> OR gate</h4>
 <div class="outline-text-4" id="text-2-1-3">
 <p>
-有點計概基礎的同學，應該可以發現圖<a href="#orgefbbd6d">7</a>與OR邏輯閘一致，
+有點計概基礎的同學，應該可以發現圖<a href="#orgc11fda2">7</a>與OR邏輯閘一致，
 </p>
 
-<div id="org8c6bac1" class="figure">
+<div id="org18986c0" class="figure">
 <p><img src="images/Story_of_gate:_From_perceptron_to_MLP/2024-03-15_19-39-31_2024-03-15_19-38-17.png" alt="2024-03-15_19-39-31_2024-03-15_19-38-17.png" width="200" />
 </p>
 <p><span class="figure-number">Figure 10: </span>OR邏輯閘</p>
@@ -511,8 +520,8 @@ B(0,0) \rightarrow y &= f(0,0) = f(1\times0+1\times0–0.5) = f(-0.5) = 0\\
 </table>
 </div>
 </div>
-<div id="outline-container-orgb2ec1db" class="outline-4">
-<h4 id="orgb2ec1db"><span class="section-number-4">2.1.4.</span> Python實作</h4>
+<div id="outline-container-org4af6137" class="outline-4">
+<h4 id="org4af6137"><span class="section-number-4">2.1.4.</span> Python實作</h4>
 <div class="outline-text-4" id="text-2-1-4">
 <p>
 上述 OR gate的python實作如下
@@ -547,15 +556,15 @@ B(0,0) \rightarrow y &= f(0,0) = f(1\times0+1\times0–0.5) = f(-0.5) = 0\\
 </div>
 </div>
 </div>
-<div id="outline-container-orgcf3d4b4" class="outline-3">
-<h3 id="orgcf3d4b4"><span class="section-number-3">2.2.</span> [課堂作業]AND、NAND Gate實作&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></h3>
+<div id="outline-container-orgae20dda" class="outline-3">
+<h3 id="orgae20dda"><span class="section-number-3">2.2.</span> [課堂作業]AND、NAND Gate實作&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></h3>
 <div class="outline-text-3" id="text-2-2">
 <p>
 上述範例中，我們以瞎貓精神找出了一組solution解決了OR gate的分類問題，請比照辦理，以Python實作出以下兩個gate: AND, NAND。
 </p>
 </div>
-<div id="outline-container-org938f0fd" class="outline-4">
-<h4 id="org938f0fd"><span class="section-number-4">2.2.1.</span> AND</h4>
+<div id="outline-container-orge3e417f" class="outline-4">
+<h4 id="orge3e417f"><span class="section-number-4">2.2.1.</span> AND</h4>
 <div class="outline-text-4" id="text-2-2-1">
 <p>
 已知AND gate真值表如下
@@ -605,8 +614,8 @@ B(0,0) \rightarrow y &= f(0,0) = f(1\times0+1\times0–0.5) = f(-0.5) = 0\\
 </table>
 </div>
 </div>
-<div id="outline-container-org8de926a" class="outline-4">
-<h4 id="org8de926a"><span class="section-number-4">2.2.2.</span> NAND</h4>
+<div id="outline-container-orgd9001ab" class="outline-4">
+<h4 id="orgd9001ab"><span class="section-number-4">2.2.2.</span> NAND</h4>
 <div class="outline-text-4" id="text-2-2-2">
 <p>
 已知NAND gate真值表如下
@@ -658,8 +667,8 @@ B(0,0) \rightarrow y &= f(0,0) = f(1\times0+1\times0–0.5) = f(-0.5) = 0\\
 </div>
 </div>
 </div>
-<div id="outline-container-orga7a03f8" class="outline-2">
-<h2 id="orga7a03f8"><span class="section-number-2">3.</span> 單層感知器的極限與多層感知器: XOR gate</h2>
+<div id="outline-container-orgbb7a8e1" class="outline-2">
+<h2 id="orgbb7a8e1"><span class="section-number-2">3.</span> 單層感知器的極限與多層感知器: XOR gate</h2>
 <div class="outline-text-2" id="text-3">
 <p>
 XOR(互斥或)真值表如下:
@@ -711,7 +720,7 @@ XOR(互斥或)真值表如下:
 其輸入/輸出分佈圖為
 </p>
 
-<div id="org464ff83" class="figure">
+<div id="org966848b" class="figure">
 <p><img src="images/2021-05-24_14-15-53.jpg" alt="2021-05-24_14-15-53.jpg" width="300" />
 </p>
 <p><span class="figure-number">Figure 11: </span>XOR Gate</p>
@@ -721,14 +730,14 @@ XOR(互斥或)真值表如下:
 到目前為止，透過權重及偏權值可以設計 AND、NAND、OR, 但無法完成 XOR。顯然，若要再以感知器來模擬其運作原理，單層感知器已不敷使用。
 </p>
 </div>
-<div id="outline-container-org9647829" class="outline-3">
-<h3 id="org9647829"><span class="section-number-3">3.1.</span> 想法</h3>
+<div id="outline-container-org2f62888" class="outline-3">
+<h3 id="org2f62888"><span class="section-number-3">3.1.</span> 想法</h3>
 <div class="outline-text-3" id="text-3-1">
 <p>
 這個時候一般線性的分類就沒有辦法很完美分割(如下圖)，所以就需要一些變形的方法來達到目的。
 </p>
 
-<div id="org2662fc9" class="figure">
+<div id="org1dea066" class="figure">
 <p><img src="images/2021-05-24_14-18-51.jpg" alt="2021-05-24_14-18-51.jpg" width="400" />
 </p>
 <p><span class="figure-number">Figure 12: </span>XOR Gate Solution ideas</p>
@@ -738,7 +747,7 @@ XOR(互斥或)真值表如下:
 即便一個人再如何bumbler，仍有可能提出一些明智的話語：
 </p>
 
-<div id="org1a15a9c" class="figure">
+<div id="org20cceeb" class="figure">
 <p><img src="images/Story_of_gate:_From_perceptron_to_MLP/2024-02-14_19-20-16_2024-02-14_19-05-00.png" alt="2024-02-14_19-20-16_2024-02-14_19-05-00.png" width="400" />
 </p>
 <p><span class="figure-number">Figure 13: </span>一佪便當吃不夠可以吃兩個</p>
@@ -749,34 +758,34 @@ XOR(互斥或)真值表如下:
 </p>
 
 <p>
-由XOR的電路實作(如圖<a href="#orgf276ac4">14</a>)我們也可以發現同樣的原理。
+由XOR的電路實作(如圖<a href="#orgd14e5e2">14</a>)我們也可以發現同樣的原理。
 </p>
 
-<div id="orgf276ac4" class="figure">
+<div id="orgd14e5e2" class="figure">
 <p><img src="images/xor.jpg" alt="xor.jpg" width="400" />
 </p>
 <p><span class="figure-number">Figure 14: </span>XOR 還輯閘的組合</p>
 </div>
 </div>
 </div>
-<div id="outline-container-org6d980d9" class="outline-3">
-<h3 id="org6d980d9"><span class="section-number-3">3.2.</span> 多層感知器(MLP): XOR gate 實作</h3>
+<div id="outline-container-org22de12b" class="outline-3">
+<h3 id="org22de12b"><span class="section-number-3">3.2.</span> 多層感知器(MLP): XOR gate 實作</h3>
 <div class="outline-text-3" id="text-3-2">
 <p>
-參考圖<a href="#orgf276ac4">14</a>的架構，我們可以藉由增加感知器的層數來實現 XOR 的功能，其結構如圖<a href="#org79b5ff8">15</a>所示。
+參考圖<a href="#orgd14e5e2">14</a>的架構，我們可以藉由增加感知器的層數來實現 XOR 的功能，其結構如圖<a href="#org558e442">15</a>所示。
 </p>
 
-<div id="org79b5ff8" class="figure">
+<div id="org558e442" class="figure">
 <p><img src="images/2LayerSensor.png" alt="2LayerSensor.png" width="300" />
 </p>
 <p><span class="figure-number">Figure 15: </span>多層感知器模擬 XOR 還輯閘</p>
 </div>
 </div>
-<div id="outline-container-org7ed2ae3" class="outline-4">
-<h4 id="org7ed2ae3"><span class="section-number-4">3.2.1.</span> Solution</h4>
+<div id="outline-container-org7227453" class="outline-4">
+<h4 id="org7227453"><span class="section-number-4">3.2.1.</span> Solution</h4>
 <div class="outline-text-4" id="text-3-2-1">
 
-<div id="org637d827" class="figure">
+<div id="org7f0daa4" class="figure">
 <p><img src="images/2021-05-24_14-28-04.jpg" alt="2021-05-24_14-28-04.jpg" width="300" />
 </p>
 <p><span class="figure-number">Figure 16: </span>XOR Gate Solution: (1)</p>
@@ -790,14 +799,14 @@ XOR(互斥或)真值表如下:
 <li>\(h_2(x) = x_1 + x_2 - 1.5\)</li>
 </ul>
 
-<div id="org85a4604" class="figure">
+<div id="org5620861" class="figure">
 <p><img src="images/2021-05-24_14-36-07.jpg" alt="2021-05-24_14-36-07.jpg" width="400" />
 </p>
 <p><span class="figure-number">Figure 17: </span>XOR Gate Solution: (2)</p>
 </div>
 
 <p>
-將圖<a href="#org2662fc9">12</a>的4個點代入\(h_1\):
+將圖<a href="#org1dea066">12</a>的4個點代入\(h_1\):
 </p>
 \begin{align*}
 h_1(0,0) &= f(1\times0+1\times0–0.5) = f(-0.5) = 0\\
@@ -807,7 +816,7 @@ h_1(1,1) &= f(1\times1+1\times1–0.5) = f(1.5) = 1\\
 \end{align*}
 
 <p>
-將圖<a href="#org2662fc9">12</a>的4個點代入\(h_2\):
+將圖<a href="#org1dea066">12</a>的4個點代入\(h_2\):
 </p>
 \begin{align*}
 h_2(0,0) &= f(1\times0+1\times0–1.5) = f(-1.5) = 0\\
@@ -857,20 +866,20 @@ data(1,1) &= f(h_1,h_2) = (1,1) \\
 \end{align*}
 
 <p>
-這相當於透過兩個perceptron將原本的輸入做特徵空間轉換，如圖<a href="#orgb4f7064">18</a>:
+這相當於透過兩個perceptron將原本的輸入做特徵空間轉換，如圖<a href="#orgf68b524">18</a>:
 </p>
 
-<div id="orgb4f7064" class="figure">
+<div id="orgf68b524" class="figure">
 <p><img src="images/2021-05-24_16-12-36.jpg" alt="2021-05-24_16-12-36.jpg" width="500" />
 </p>
 <p><span class="figure-number">Figure 18: </span>XOR Gate Solution: (3)</p>
 </div>
 
 <p>
-這個時候只要設計一個線性分類器就可以完美分割兩類的資料了阿，如圖<a href="#orgf4ee7cd">19</a>:
+這個時候只要設計一個線性分類器就可以完美分割兩類的資料了阿，如圖<a href="#org21d54ac">19</a>:
 </p>
 
-<div id="orgf4ee7cd" class="figure">
+<div id="org21d54ac" class="figure">
 <p><img src="images/2021-05-24_16-13-44.jpg" alt="2021-05-24_16-13-44.jpg" width="400" />
 </p>
 <p><span class="figure-number">Figure 19: </span>XOR Gate Solution: (4)</p>
@@ -880,7 +889,7 @@ data(1,1) &= f(h_1,h_2) = (1,1) \\
 XOR問題的神經網路結構如下圖:
 </p>
 
-<div id="org12afcb1" class="figure">
+<div id="org80de264" class="figure">
 <p><img src="images/2021-05-24_16-15-02.jpg" alt="2021-05-24_16-15-02.jpg" width="500" />
 </p>
 <p><span class="figure-number">Figure 20: </span>XOR Gate Solution: (5)</p>
@@ -965,7 +974,7 @@ XOR(1,1):  0
 </div></div>
 <div id="postamble" class="status">
 <p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2025-07-11 Fri 13:25</p>
+<p class="date">Created: 2025-07-15 Tue 15:26</p>
 </div>
 </body>
 </html>
