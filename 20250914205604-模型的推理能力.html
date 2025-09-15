@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2025-09-15 Mon 11:50 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>模型的推理能力 / Why Can Models Reason?</title>
+<meta name="author" content="Yung-Chin Yen" />
+<meta name="generator" content="Org Mode" />
+<style type="text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<link rel="stylesheet" type="text/css" href="../css/muse.css" />
+<script src="../css/copy_code.js"></script>
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">模型的推理能力 / Why Can Models Reason?</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#orgac9ef07">1. 模型為何有推理能力？</a></li>
+<li><a href="#org39c4cea">2. 如何訓練出一個有推理能力的模型？</a></li>
+<li><a href="#orga63c755">3. 一般（非推理）的模型就沒有推理能力嗎？</a></li>
+<li><a href="#orgd6ab0a4">4. Chain-of-Thought Reasoning Without Prompting</a></li>
+<li><a href="#org54e0165">5. 生成的溫度</a></li>
+</ul>
+</div>
+</div>
+<a href="https://hits.sh/letranger.github.io/AI/20250914205604-模型的推理能力.html/"><img alt="Hits" align="right" src="https://hits.sh/letranger.github.io/AI/20250914205604-模型的推理能力.html.svg"/></a>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4EJ3V5BG0Z"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-4EJ3V5BG0Z');
+</script>
+<div id="outline-container-orgac9ef07" class="outline-2">
+<h2 id="orgac9ef07"><span class="section-number-2">1.</span> 模型為何有推理能力？</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+至此為止，我們應該有了一個基本的概念：AI模型的一切產出均是基於訓練資料的統計關係，也就是基於機率分佈來進行預測與生成的。我們似乎也能由數學的角度來理解這些模型的運作原理。<br />
+</p>
+
+<p>
+但OpenAI於2025年8月份推出了GPT-5以及GPT-5-thinking模型，這兩個模型聲稱具備「推理」能力，能夠解決一些需要邏輯推理的問題，例如數學題、邏輯謎題等。事實上，早在2023年9月份OpenAI推出的o1(OpenAI Reasoning Engine)就標榜了「能夠在答案背後進行推理、並生成中間思考步驟」，它和 GPT-4、GPT-3.5 最大的不同，在於設計上加入了「深度推理」的機制。<br />
+</p>
+
+<p>
+為什麼一個只是基於機率分佈的模型能夠進行推理？<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org39c4cea" class="outline-2">
+<h2 id="org39c4cea"><span class="section-number-2">2.</span> 如何訓練出一個有推理能力的模型？</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+首先，語言模型的確是「下一個 token 機率分佈」的取樣器，數學上並沒有「邏輯引擎」。但我們日常所說的話、所寫的文字其實都包含了大量的推理鏈 (reasoning chains) 與邏輯模式（這裡不包括一些言不及義的廢話）。模型就透過訓練，學會了「哪些上下文常常導出哪些結論」。例如數學題、程式碼、辯論文字這些資料中的*規律*其實就是推理步驟的樣本。<br />
+</p>
+
+<p>
+當模型內部層數夠深、參數夠多時，它就不只能「模仿字串」，而是能捕捉抽象規律並在生成時重組，模型所表玩出的外在行為就是「能推理」的表象。換句話說：推理不是模型「天生的演算法」，而是從大量資料中學會了模仿與壓縮推理模式。<br />
+</p>
+
+<p>
+所以，真正讓模型具備推理能力的關鍵在於<br />
+</p>
+<ol class="org-ol">
+<li>架構調整：像 OpenAI 的 o1 / o3 / GPT-5-thinking，會讓模型在內部「思考多步」再輸出答案（類似 chain-of-thought）。<br /></li>
+<li>訓練方式：給模型更多「逐步解題」的數據，或使用 RLHF 讓它傾向於展現推理過程。<br /></li>
+<li>解碼策略：例如 Tree-of-Thought、Self-consistency sampling，都是在輸出階段加強推理品質的技巧。<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-orga63c755" class="outline-2">
+<h2 id="orga63c755"><span class="section-number-2">3.</span> 一般（非推理）的模型就沒有推理能力嗎？</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+在 GPT-3 剛出來的時候，研究者發現：<br />
+</p>
+<ul class="org-ul">
+<li>如果直接問它數學題或邏輯題 → 答得很差。<br /></li>
+<li>但是，如果在 prompt 裡先示範「逐步推理」的範例，它就能照著模仿，表現大幅提升（這就是 few-shot CoT prompting）。<br /></li>
+</ul>
+
+<p>
+這裡的CoT指的是「Chain of Thought」，也就是「思考鏈」的意思。這種方法讓模型在生成答案前，先模擬人類的思考過程，逐步推導出結論。CoT 就是讓模型在給出最終答案之前，先生成一連串「中間推理步驟」。<br />
+</p>
+
+<p>
+在沒有CoT的狀況下，如果我們直接問模型一個問題，它可能會直接給出如下答案<br />
+</p>
+<blockquote>
+<p>
+Q: 我有 3 顆蘋果，爸爸比我多 2 顆，我們共有幾顆？<br />
+A: 5<br />
+</p>
+</blockquote>
+
+<p>
+但如果我們使用 CoT，讓模型先思考過程，它可能會這樣回答：<br />
+</p>
+<blockquote>
+<p>
+Q: 我有 3 顆蘋果，爸爸比我多 2 顆，我們共有幾顆？<br />
+A: 我有 3 顆，爸爸有 3+2=5 顆，3+5=8 → 總共有 8 顆。<br />
+</p>
+</blockquote>
+
+<p>
+上面答案中「先算爸爸幾顆，再相加」的過程，就是 CoT。也就是說，如果我們在問模型問題時，在 prompt 裡告訴模型「請逐步思考」或給它範例，讓它自動展開思維鏈，模型就能模仿「逐步解題」的格式，進而提升提升答案的正確性。<br />
+</p>
+
+<p>
+如此看來，「模型本身沒有推理能力，只是會模仿文字模式。」這樣的描述是不是過於保守？如果模型沒有推理能力，那prompt再如何引導也沒有用吧？你怎麼能引導出不存在的能力？有沒有可能是「模型本身就具備了某種推理能力，但需要透過適當的提示來激發」？<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgd6ab0a4" class="outline-2">
+<h2 id="orgd6ab0a4"><span class="section-number-2">4.</span> Chain-of-Thought Reasoning Without Prompting</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+Xuezhi Wang與Danny Zhou在2024年提出了一篇有趣的論文《<a href="https://arxiv.org/abs/2402.10200">Chain-of-Thought Reasoning Without Prompting</a>》，在這篇論文中，作者挑戰了「CoT 只是模仿」的觀點，並提出了「模型本身就具備推理能力」的證據。<br />
+</p>
+
+<blockquote>
+<p>
+Our findings reveal that, intriguingly, CoT reasoning paths can be elicited from pre-trained LLMs by simply altering the decoding process.<br />
+</p>
+</blockquote>
+<p>
+這篇論文對於「推理」的定義為：模型在輸入（問題）和最終輸出（答案）之間生成的所有中間步驟。<br />
+</p>
+
+<div id="orge7fd0fa" class="figure">
+<p><img src="images/2025-09-14_20-04-21.png" alt="2025-09-14_20-04-21.png" width="500" /><br />
+</p>
+<p><span class="figure-number">Figure 1: </span>LLM的推理</p>
+</div>
+
+<p>
+為了驗證這個觀點，作者設計了一個實驗：<br />
+</p>
+
+
+<div id="org60861c2" class="figure">
+<p><img src="images/2025-09-14_20-15-21.png" alt="2025-09-14_20-15-21.png" width="500" /><br />
+</p>
+<p><span class="figure-number">Figure 2: </span>CoT-decoding：傳統LLM已具備推理能力</p>
+</div>
+
+<p>
+在這個實驗中，模型看到了「3 apples」、「2 more apples」、「in total」這些關鍵詞，然後就依據Greedy Decoding策略（輸出可能性最高的生成內容）生成了「5」為第一個輸出，再輸出 apples」結束。但如果我們分析模型在第一次生成時的機率分佈，會發現除了「5」，模型還有可能會出現「I」、「We」、「You」、「The」。當我們進一步將前五個可能的輸出依序生成答案，就會發現其實正確答案已經隱含在模型的其他生成可能中：<br />
+</p>
+<ul class="org-ul">
+<li>I have 3 apples, my dad has 2 more apples than me, so he has 5 apples. 3+5=8<br /></li>
+<li>We have 8 apples in total.<br /></li>
+<li>You have 3 apples, your dad has 2 more apples than you, so he has 5 apples. 3+5=8<br /></li>
+<li>The answer is 5.<br /></li>
+</ul>
+
+<p>
+由這個實驗看來，正確的答案其實是隱藏在模型中，只是他像省道旁的縣道，如果你只沿著省道走（Greedydecoding），自然看不到縣道盡頭的風景。而模型預設的貪婪解碼策略就像是沿著省道走，永遠選擇機率最高的路徑，這樣就錯過了其他可能的路徑。<br />
+</p>
+
+<p>
+除了Greedy decoding，模型其實還有其他解碼策略，例如<br />
+</p>
+<ul class="org-ul">
+<li>Temperature sampling: 透過調整溫度參數，讓模型在生成時更具多樣性，避免總是選擇機率最高的詞語。<br /></li>
+<li>Top-k sampling: 限制模型只能從機率最高的 k 個詞語中選擇，增加生成的多樣性，也許第二高、甚至第五高也可能出現。。<br /></li>
+<li>Nucleus (top-p) sampling: 根據累積機率選擇詞語，在累積機率到 p（例如 0.9）之內的候選集中抽樣確保生成內容的多樣性和合理性。<br /></li>
+<li>Beam search: 同時探索多條生成路徑，選擇最有可能的答案。<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org54e0165" class="outline-2">
+<h2 id="org54e0165"><span class="section-number-2">5.</span> 生成的溫度</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+將來大家在建立生成模型時，大概都會遇到這樣一個參數：Temperature（ <del>模型還有溫度？會發燒嗎</del> ）<br />
+</p>
+
+
+<div id="orga33f141" class="figure">
+<p><img src="images/2025-09-14_20-36-39.png" alt="2025-09-14_20-36-39.png" width="700" /><br />
+</p>
+<p><span class="figure-number">Figure 3: </span>Google AI Studio的溫度設定</p>
+</div>
+
+<p>
+Temperature 參數控制了模型生成內容的隨機性與多樣性。溫度越高，生成的內容越多樣化，但也可能越不合理；溫度越低，生成的內容越保守，但也可能越重複。具體來說：<br />
+</p>
+<ul class="org-ul">
+<li>低 temperature (≈0–0.3)：輸出更接近最高機率的 token，結果穩定但缺乏多樣性。<br /></li>
+<li>高 temperature (≈0.8–1.2)：更多隨機性，有創意但也更可能胡亂。<br /></li>
+</ul>
+
+<p>
+從推理的角度來看，溫度不會直接「賦予推理能力」，因為推理模式存在於模型的權重與訓練。但若 temperature 太低，則會偏向「最可能的套路」，雖然有時能提升數學/邏輯題的正確率，但是從這個例子來看，也有可能因為略過了中間步驟而導致錯誤答案。<br />
+</p>
+
+<p>
+Open AI 的ChatGPT預設溫度為1<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。<br />
+</p>
+
+<div id="org6568c2a" class="figure">
+<p><img src="images/2025-09-14_20-50-15.png" alt="2025-09-14_20-50-15.png" width="400" /><br />
+</p>
+<p><span class="figure-number">Figure 4: </span>Caption</p>
+</div>
+</div>
+</div>
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<a href="https://platform.openai.com/docs/api-reference/backward-compatibility">https://platform.openai.com</a><br />
+</p></div></div>
+
+
+</div>
+</div></div>
+<div id="postamble" class="status">
+<p class="author">Author: Yung-Chin Yen</p>
+<p class="date">Created: 2025-09-15 Mon 11:50</p>
+</div>
+</body>
+</html>
