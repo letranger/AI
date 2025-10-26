@@ -1,0 +1,678 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2025-10-26 Sun 13:45 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LSTM與GRU</title>
+<meta name="author" content="Yung-Chin Yen" />
+<meta name="generator" content="Org Mode" />
+<style type="text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<link rel="stylesheet" type="text/css" href="../css/muse.css" />
+<script src="../css/copy_code.js"></script>
+<script>
+  window.MathJax = {
+    tex: {
+      ams: {
+        multlineWidth: '85%'
+      },
+      tags: 'ams',
+      tagSide: 'right',
+      tagIndent: '.8em'
+    },
+    chtml: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    svg: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    output: {
+      font: 'mathjax-modern',
+      displayOverflow: 'overflow'
+    }
+  };
+</script>
+
+<script
+  id="MathJax-script"
+  async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">LSTM與GRU</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#orgd9b00e9">1. LSTM</a>
+<ul>
+<li><a href="#org4ac4b10">1.1. LSTM的運作原理</a></li>
+<li><a href="#orgbba517d">1.2. LSTM的程式運作示例</a></li>
+<li><a href="#org1e8cf3a">1.3. LSTM的程式模型架構</a></li>
+<li><a href="#org3dd7c7a">1.4. 實作: 以AI預測股價-隔日漲跌</a></li>
+</ul>
+</li>
+<li><a href="#org63934d8">2. LSTM學習資源</a></li>
+</ul>
+</div>
+</div>
+<a href="https://letranger.github.io/AI/20230108135329-循環神經網路.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20230108135329-循環神經網路.html.svg"/></a>
+<div id="outline-container-orgd9b00e9" class="outline-2">
+<h2 id="orgd9b00e9"><span class="section-number-2">1.</span> LSTM</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+RNN的一個主要問題是，當序列變得很長時，它們很難記住遠處的資訊。這是因為在 RNN 中，每個時間點的輸出都是由當前輸入和上一個時間點的輸出共同決定的。這意味著當序列變得很長時，RNN 會遺忘遠處的資訊，導致模型無法很好地理解整個序列。
+</p>
+
+<p>
+為了加強這種RNN的「記憶能力」，人們開發各種各樣的變形體，如非常著名的Long Short-term Memory(LSTM)，用於解決「長期及遠距離的依賴關係」。
+</p>
+</div>
+<div id="outline-container-org4ac4b10" class="outline-3">
+<h3 id="org4ac4b10"><span class="section-number-3">1.1.</span> LSTM的運作原理</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+想象你有一個書包（LSTM的內部結構），你可以決定在上課前放入什麼書籍、何時取出某本書，或者甚至決定更新裡面的某些書，你每天上學就利用書包裡的書來學習新的知識。LSTM也有類似的機制來處理信息，這些機制就是一個個的閘門(Gate)。
+</p>
+
+<p>
+LSTM利用一個新的機制：記憶狀態（Cell State ）來達到保留長期記憶，如圖<a href="#org6ca486b">1</a>所示，我們可以想像LSTM將RNN的隱藏狀態拆成兩部份：記憶狀態的變化較慢，能儘量保留先前的記憶、而隱藏狀態則隨輸入不同而有較多變化。
+</p>
+
+
+<div id="org6ca486b" class="figure">
+<p><img src="images/RNNLSTM.png" alt="RNNLSTM.png" width="500" />
+</p>
+<p><span class="figure-number">Figure 1: </span>RNN v.s. LSTM</p>
+</div>
+
+<p>
+除了記憶狀態，LSTM還多了三個閘門來管控資訊的保留與遺忘：遺忘閘（forget gate）、輸入閘（input gate）、輸出閘（output gate）。其相應功能大致如下(參考圖<a href="#org5dac456">2</a>)：
+</p>
+<ol class="org-ol">
+<li>遺忘閘（forget gate）：控制模型中有哪些資訊可以被遺忘。</li>
+<li>輸入閘（input gate）：控制當前的輸入資訊能對記憶狀態產生多大的影響。</li>
+<li>輸出閘（output gate）：控制記憶狀態中的哪些資訊可以被傳遞到隱藏狀態並往後傳遞。</li>
+</ol>
+
+
+<div id="org5dac456" class="figure">
+<p><img src="images/LSTM.png" alt="LSTM.png" width="500" />
+</p>
+<p><span class="figure-number">Figure 2: </span>LSTM</p>
+</div>
+
+
+<p>
+典型的LSTM架構如圖<a href="#org5dac456">2</a>所示，可以看出除了原本的資料輸入(input)，LSTM還多了三個輸入，分別是input(模型輸入），forget gate(遺忘閘)，input gate(輸入閘)，以及output gate(輸出閘)。因此相比普通的神經網路，LSTM的參數量是它們的4倍。這3個閘訊號都是處於0～1之間的實數，1代表完全打開，0代表關閉。
+</p>
+
+<ol class="org-ol">
+<li>遺忘閘（Forget Gate）：這就像是你決定從書包中拿掉不再需要的書。在LSTM中，遺忘閘會查看新的輸入信息和當前的記憶，然後決定保留哪些記憶（有用的）或者遺忘哪些（不再重要的）。</li>
+<li>輸入閘（Input Gate）：這是決定將哪些新書放入書包。LSTM會評估當前的輸入（例如新的單詞或資料點），並決定應該添加哪些信息到記憶中，這有助於更新記憶內容。</li>
+<li>輸出閘（Output Gate）：決定從書包中拿出哪本書來使用。根據需要的話題或任務，LSTM會決定哪些記憶是目前有用的，然後基於這些記憶提供輸出信息。</li>
+<li>記憶單元（Memory Cell）：這是LSTM的核心，它負責記錄和更新所有的記憶。記憶單元是一個長期的記憶存儲，可以通過遺忘閘和輸入閘來更新。LSTM 中的 Memory Cell（也就是記憶狀態，通常記為 Cₜ）的核心功能，就是要 跨時間步保持資訊的狀態，這也是它的關鍵設計。</li>
+</ol>
+
+<p>
+圖<a href="#org5dac456">2</a>為時間點t時資料在神經元中流動示意，進一步的處理流程如下所述：
+</p>
+<ul class="org-ul">
+<li>LSTM神經元於時間點t收到三項輸入資料：
+<ol class="org-ol">
+<li>x_t：代表當前時間點的輸入資料。</li>
+<li>h_(t-1)：上一時間點的隱藏狀態。</li>
+<li>c_(t-1)：上一時間點的記憶狀態。</li>
+</ol></li>
+<li>LSTM神經元於時間點t輸出兩項資料：
+<ol class="org-ol">
+<li>c_t：代表當前的記憶狀態，c_t的值來自以下兩部份：</li>
+<li>輸出閘：決定有多少來自c_t的資訊可以傳遞到h_t。</li>
+</ol></li>
+</ul>
+
+
+<div id="org34fbd1a" class="figure">
+<p><img src="lstm_model.png" alt="lstm_model.png" width="600" />
+</p>
+<p><span class="figure-number">Figure 3: </span>LSTM架構</p>
+</div>
+
+<p>
+進一步從時間序列的角度來看，LSTM運作過程中的資料流向如下：
+</p>
+<ul class="org-ul">
+<li>遺忘閘(Forget Gate)：該閘決定在特定時間點(timestamp, 例如圖<a href="#orga1d4f88">4</a>中的\(t\) )，前一個時間點(\(t-1\)) 的模型記憶(也就是狀態, state)是否會被記住保留參與這個時間點的運算，或是直接被遺忘。當遺忘閘打開時，前一刻的記憶會被保留，當遺忘閘關閉時，前一刻的記憶就會被清空。換句話說，就讓模型具備選擇性遺忘部份訊息的能力，這個機制可以由激活函數sigmoid來實作，其中0代表完全忘記，1代表完全記住。</li>
+<li>輸入閘(Input Gate): 決定目前這個時間點有哪些神經元的輸入(\(x\))中有哪些是足夠重要到可以保留下來加入「目前狀態」中，因為在序列輸入中，並不是每個時刻的輸入的資訊都是同等重要的，當輸入完全沒有用時，輸入閘關閉，也就是此時刻的輸入資訊被丟棄了。這個機制同樣也可以由sigmoid 激活函數來實作，sigmoid產生的值介於0到1之間，可以被看作是一個閘控信號，這個閘控信號​和tanh函數生成的候選隱藏狀態相乘，確定了從候選狀態中將多少資訊添加到當前的單元狀態​中。</li>
+<li>輸出閘(Output Gate): 決定目前神經元的狀態中有哪一部分可以輸出(流向下一個狀態)，同樣由激活函數來sigmoid來決定，這個輸出會通過tanh函數來調整，因為Tanh能夠將單元狀態的值正規化到-1到1之間，這有助於控制神經網路的激活範圍。再由Tanh來提供輸出權重。</li>
+<li>記憶單元(Memory Cell): 這是LSTM的核心，它負責記錄和更新所有的記憶。記憶單元是一個長期的記憶存儲，可以通過遺忘閘和輸入閘來更新。LSTM 中的 Memory Cell（也就是記憶狀態，通常記為 Cₜ）的核心功能，就是要 跨時間步保持資訊的狀態，這也是它的關鍵設計。在數學公式中，LSTM 的記憶更新如下：\(C_t=f_t \times C_{t−1}+i_t \times \tilde{C}_t\)，其中：
+<ol class="org-ol">
+<li>\(f_t\) ：忘記閘輸出（控制保留多少舊記憶）</li>
+<li>\(C_{t-1}\) ：上一個時間步的記憶狀態</li>
+<li>\(i_t\) ：輸入閘輸出（控制加入多少新資訊）</li>
+<li>\(\tilde{C}_t\) ：由當前輸入與前一隱藏狀態計算出的新候選記憶</li>
+</ol></li>
+</ul>
+
+
+<div id="orga1d4f88" class="figure">
+<p><img src="images/LSTM/2024-05-10_21-14-18_LSTM-arch-01.png" alt="2024-05-10_21-14-18_LSTM-arch-01.png" width="500" />
+</p>
+<p><span class="figure-number">Figure 4: </span>LSTM運作原理</p>
+</div>
+
+<p>
+因為這樣的機制，讓 LSTM 即使面對很長的序列資料也能有效處理，不遺忘以前的記憶。因為效果卓越，LSTM 非常廣泛地被使用。事實上，當有人跟你說他用 RNN 做了什麼 NLP 專案時，有 9 成機率他是使用 LSTM 或是 GRU（LSTM 的改良版，只使用 2 個閘閘） 來實作，而不是使用最簡單的 SimpleRNN。
+</p>
+</div>
+</div>
+<div id="outline-container-orgbba517d" class="outline-3">
+<h3 id="orgbba517d"><span class="section-number-3">1.2.</span> LSTM的程式運作示例</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+LSTM 的設計引入了三個「閘」（gate）：
+</p>
+<ul class="org-ul">
+<li>**遺忘閘 forget gate**：決定應該忘記多少過去的記憶</li>
+<li>**輸入閘 input gate**：決定應該加入多少新的資訊進入記憶</li>
+<li>**輸出閘 output gate**：決定應該輸出多少目前的記憶內容</li>
+</ul>
+
+<p>
+此外，LSTM 維持了兩種狀態：
+</p>
+<ul class="org-ul">
+<li>**cell state（長期記憶）C_t**：透過閘控機制被有選擇地保留或更新</li>
+<li>**hidden state（短期輸出）h_t**：實際傳給下一層網路的輸出</li>
+</ul>
+
+<p>
+其計算過程可以用以下簡化版 Python 表示：
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">lstm_step</span>(x_t, h_t_prev, c_t_prev):
+<span class="linenr"> 2: </span>    <span style="color: #dcaeea;">forget_gate</span> = sigmoid(W_f @ x_t + U_f @ h_t_prev + b_f)
+<span class="linenr"> 3: </span>    <span style="color: #dcaeea;">input_gate</span> = sigmoid(W_i @ x_t + U_i @ h_t_prev + b_i)
+<span class="linenr"> 4: </span>    <span style="color: #dcaeea;">output_gate</span> = sigmoid(W_o @ x_t + U_o @ h_t_prev + b_o)
+<span class="linenr"> 5: </span>    <span style="color: #dcaeea;">candidate</span> = tanh(W_c @ x_t + U_c @ h_t_prev + b_c)
+<span class="linenr"> 6: </span>
+<span class="linenr"> 7: </span>    <span style="color: #dcaeea;">c_t</span> = forget_gate * c_t_prev + input_gate * candidate
+<span class="linenr"> 8: </span>    <span style="color: #dcaeea;">h_t</span> = output_gate * tanh(c_t)
+<span class="linenr"> 9: </span>    <span style="color: #51afef;">return</span> h_t, c_t
+<span class="linenr">10: </span>
+<span class="linenr">11: </span><span style="color: #dcaeea;">h_t</span>, <span style="color: #dcaeea;">c_t</span> = <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21021;&#22987;&#21270;</span>
+<span class="linenr">12: </span><span style="color: #51afef;">for</span> x_t <span style="color: #51afef;">in</span> input_sequence:
+<span class="linenr">13: </span>    <span style="color: #dcaeea;">h_t</span>, <span style="color: #dcaeea;">c_t</span> = lstm_step(x_t, h_t, c_t)
+</pre>
+</div>
+
+<p>
+LSTM 解決了 RNN 無法長期保留資訊的問題，特別適用於像語言模型、機器翻譯、長時間序列預測等任務。
+</p>
+</div>
+</div>
+<div id="outline-container-org1e8cf3a" class="outline-3">
+<h3 id="org1e8cf3a"><span class="section-number-3">1.3.</span> LSTM的程式模型架構</h3>
+<div class="outline-text-3" id="text-1-3">
+<p>
+LSTM 是一種改良版的 RNN，可記住更長期的資訊。只需將 SimpleRNN 改為 LSTM 層即可。以下是一個 LSTM 模型的寫法：
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> tensorflow <span style="color: #51afef;">as</span> tf
+<span class="linenr"> 2: </span><span style="color: #51afef;">from</span> tensorflow.keras <span style="color: #51afef;">import</span> layers, models
+<span class="linenr"> 3: </span>
+<span class="linenr"> 4: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27169;&#22411;&#36664;&#20837;&#23652; (4&#20491;&#31680;&#40670;)</span>
+<span class="linenr"> 5: </span><span style="color: #dcaeea;">inputs</span> = layers.Input(shape=(<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">4</span>))
+<span class="linenr"> 6: </span>
+<span class="linenr"> 7: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38577;&#34255;&#23652; (LSTM&#23652;, 2&#20491;&#21934;&#20803;)</span>
+<span class="linenr"> 8: </span><span style="color: #dcaeea;">hidden</span> = layers.LSTM(units=<span style="color: #da8548; font-weight: bold;">2</span>, activation=<span style="color: #98be65;">'tanh'</span>, return_sequences=<span style="color: #a9a1e1;">False</span>)(inputs)
+<span class="linenr"> 9: </span>
+<span class="linenr">10: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27169;&#22411;&#36664;&#20986;&#23652; (2&#20491;&#31680;&#40670;)</span>
+<span class="linenr">11: </span><span style="color: #dcaeea;">outputs</span> = layers.Dense(units=<span style="color: #da8548; font-weight: bold;">2</span>, activation=<span style="color: #98be65;">'linear'</span>)(hidden)
+<span class="linenr">12: </span>
+<span class="linenr">13: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;&#31435;&#20006;&#32232;&#35695;&#27169;&#22411;</span>
+<span class="linenr">14: </span><span style="color: #dcaeea;">model</span> = models.Model(inputs=inputs, outputs=outputs)
+<span class="linenr">15: </span>model.<span style="color: #c678dd;">compile</span>(optimizer=<span style="color: #98be65;">'adam'</span>, loss=<span style="color: #98be65;">'mse'</span>)
+<span class="linenr">16: </span>
+<span class="linenr">17: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39023;&#31034;&#27169;&#22411;&#32080;&#27083;</span>
+<span class="linenr">18: </span>model.summary()
+</pre>
+</div>
+
+<pre class="example" id="orgc2a6552">
+Model: "functional"
+┏----------------━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓
+| Layer (type)                    | Output Shape           |       Param # |
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩
+│ input_layer (InputLayer)        │ (None, 1, 4)           │             0 │
++─────────────────────────────────┼────────────────────────┼───────────────┤
+│ lstm (LSTM)                     │ (None, 2)              │            56 │
++─────────────────────────────────┼────────────────────────┼───────────────┤
+│ dense (Dense)                   │ (None, 2)              │             6 │
+└─────────────────────────────────┴────────────────────────┴───────────────┘
+ Total params: 62 (248.00 B)
+ Trainable params: 62 (248.00 B)
+ Non-trainable params: 0 (0.00 B)
+</pre>
+</div>
+</div>
+<div id="outline-container-org3dd7c7a" class="outline-3">
+<h3 id="org3dd7c7a"><span class="section-number-3">1.4.</span> 實作: 以AI預測股價-隔日漲跌</h3>
+<div class="outline-text-3" id="text-1-4">
+<p>
+<a href="https://colab.research.google.com/drive/1IehBuskagMTm6RK6WB-dsf3NPZKTNVqs?usp=sharing">當AI遇上股票-LSTM.ipynb</a>
+</p>
+</div>
+<div id="outline-container-org6cc9005" class="outline-4">
+<h4 id="org6cc9005"><span class="section-number-4">1.4.1.</span> 安裝相關套件</h4>
+<div class="outline-text-4" id="text-1-4-1">
+<div class="org-src-container">
+<pre class="src src-shell"><span class="linenr">1: </span>pip install yfinance
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf749fd1" class="outline-4">
+<h4 id="orgf749fd1"><span class="section-number-4">1.4.2.</span> 下載股價資訊</h4>
+<div class="outline-text-4" id="text-1-4-2">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> yfinance <span style="color: #51afef;">as</span> yf
+<span class="linenr">2: </span>
+<span class="linenr">3: </span><span style="color: #dcaeea;">df</span> = yf.Ticker(<span style="color: #98be65;">'2330.TW'</span>).history(period=<span style="color: #98be65;">'10y'</span>)
+<span class="linenr">4: </span><span style="color: #c678dd;">print</span>(<span style="color: #c678dd;">type</span>(df))
+</pre>
+</div>
+</div>
+<div id="outline-container-orgc8913bd" class="outline-5">
+<h5 id="orgc8913bd">查看下載的資料集</h5>
+<div class="outline-text-5" id="text-orgc8913bd">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>df
+<span class="linenr">2: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">print(df[:5])</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgd8c54a2" class="outline-5">
+<h5 id="orgd8c54a2">取出需要的特徵值</h5>
+<div class="outline-text-5" id="text-orgd8c54a2">
+<p>
+此次將成交量納入考慮
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">data</span> = df.<span style="color: #c678dd;">filter</span>([<span style="color: #98be65;">'Close'</span>])
+<span class="linenr">2: </span>data
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc05fbd2" class="outline-4">
+<h4 id="orgc05fbd2"><span class="section-number-4">1.4.3.</span> 觀察原始資料/日K圖</h4>
+<div class="outline-text-4" id="text-1-4-3">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
+<span class="linenr">2: </span>plt.clf()
+<span class="linenr">3: </span>plt.plot(data.Close)
+<span class="linenr">4: </span>plt.show()
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb0f1ea6" class="outline-4">
+<h4 id="orgb0f1ea6"><span class="section-number-4">1.4.4.</span> 將資料標準化</h4>
+<div class="outline-text-4" id="text-1-4-4">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">from</span> sklearn.preprocessing <span style="color: #51afef;">import</span> MinMaxScaler
+<span class="linenr">2: </span><span style="color: #dcaeea;">scaler</span> = MinMaxScaler(feature_range=(<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">1</span>))
+<span class="linenr">3: </span><span style="color: #dcaeea;">sc_data</span> = scaler.fit_transform(data.values)
+<span class="linenr">4: </span>
+<span class="linenr">5: </span>sc_data <span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#35722;&#25104;numpy array</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org393d05e" class="outline-4">
+<h4 id="org393d05e"><span class="section-number-4">1.4.5.</span> 建立、分割資料</h4>
+<div class="outline-text-4" id="text-1-4-5">
+</div>
+<div id="outline-container-orge009b8d" class="outline-5">
+<h5 id="orge009b8d">建立資料集及標籤</h5>
+<div class="outline-text-5" id="text-orge009b8d">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 2: </span>
+<span class="linenr"> 3: </span><span style="color: #dcaeea;">featureDays</span> = <span style="color: #da8548; font-weight: bold;">10</span>
+<span class="linenr"> 4: </span><span style="color: #dcaeea;">x_data</span>, <span style="color: #dcaeea;">y_data</span> = [], []
+<span class="linenr"> 5: </span><span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #c678dd;">len</span>(sc_data) - featureDays):
+<span class="linenr"> 6: </span>  <span style="color: #dcaeea;">x</span> = sc_data[i:i+featureDays]
+<span class="linenr"> 7: </span>  <span style="color: #dcaeea;">y</span> = sc_data[i+featureDays]
+<span class="linenr"> 8: </span>  x_data.append(x)
+<span class="linenr"> 9: </span>  y_data.append(y)
+<span class="linenr">10: </span>
+<span class="linenr">11: </span><span style="color: #dcaeea;">x_data</span>, <span style="color: #dcaeea;">y_data</span> = np.array(x_data), np.array(y_data)
+<span class="linenr">12: </span>
+<span class="linenr">13: </span><span style="color: #c678dd;">print</span>(x_data.shape)
+<span class="linenr">14: </span><span style="color: #c678dd;">print</span>(y_data.shape)
+<span class="linenr">15: </span><span style="color: #c678dd;">print</span>(<span style="color: #c678dd;">len</span>(x_data)) <span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#20840;&#37096;&#36039;&#26009;&#31558;&#25976;</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org54c2ebb" class="outline-5">
+<h5 id="org54c2ebb">分割訓練集與測試集</h5>
+<div class="outline-text-5" id="text-org54c2ebb">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #dcaeea;">ratio</span> = <span style="color: #da8548; font-weight: bold;">0.8</span>
+<span class="linenr"> 2: </span><span style="color: #dcaeea;">train_size</span> = <span style="color: #c678dd;">round</span>(<span style="color: #c678dd;">len</span>(x_data) * ratio)
+<span class="linenr"> 3: </span><span style="color: #c678dd;">print</span>(train_size)
+<span class="linenr"> 4: </span><span style="color: #dcaeea;">x_train</span>, <span style="color: #dcaeea;">y_train</span> = x_data[:train_size], y_data[:train_size]
+<span class="linenr"> 5: </span><span style="color: #dcaeea;">x_test</span>, <span style="color: #dcaeea;">y_test</span> = x_data[train_size:], y_data[train_size:]
+<span class="linenr"> 6: </span>
+<span class="linenr"> 7: </span><span style="color: #c678dd;">print</span>(x_train.shape)
+<span class="linenr"> 8: </span><span style="color: #c678dd;">print</span>(y_train.shape)
+<span class="linenr"> 9: </span><span style="color: #c678dd;">print</span>(x_test.shape)
+<span class="linenr">10: </span><span style="color: #c678dd;">print</span>(y_test.shape)
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf32cae7" class="outline-4">
+<h4 id="orgf32cae7"><span class="section-number-4">1.4.6.</span> 建立、編譯、訓練模型</h4>
+<div class="outline-text-4" id="text-1-4-6">
+</div>
+<div id="outline-container-org22bb9be" class="outline-5">
+<h5 id="org22bb9be">建立模型</h5>
+<div class="outline-text-5" id="text-org22bb9be">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> tensorflow <span style="color: #51afef;">as</span> tf
+<span class="linenr">2: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#24314;&#27083;LSTM&#27169;&#22411;</span>
+<span class="linenr">3: </span><span style="color: #dcaeea;">model</span> = tf.keras.Sequential()
+<span class="linenr">4: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">LSTM&#23652;</span>
+<span class="linenr">5: </span>model.add(tf.keras.layers.LSTM(units=<span style="color: #da8548; font-weight: bold;">64</span>, unroll = <span style="color: #a9a1e1;">False</span>, input_shape=(featureDays,<span style="color: #da8548; font-weight: bold;">1</span>)))
+<span class="linenr">6: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">Dense&#23652;</span>
+<span class="linenr">7: </span>model.add(tf.keras.layers.Dense(units=<span style="color: #da8548; font-weight: bold;">1</span>))
+</pre>
+</div>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>model.summary()
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org6017951" class="outline-5">
+<h5 id="org6017951">編譯模型</h5>
+<div class="outline-text-5" id="text-org6017951">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>model.<span style="color: #c678dd;">compile</span>(loss=<span style="color: #98be65;">'mse'</span>, optimizer=<span style="color: #98be65;">'adam'</span>, metrics=[<span style="color: #98be65;">'accuracy'</span>])
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgd9ae20c" class="outline-5">
+<h5 id="orgd9ae20c">訓練模型</h5>
+<div class="outline-text-5" id="text-orgd9ae20c">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>model.fit(x_train, y_train,
+<span class="linenr">2: </span>          validation_split=<span style="color: #da8548; font-weight: bold;">0.2</span>,
+<span class="linenr">3: </span>          batch_size=<span style="color: #da8548; font-weight: bold;">200</span>, epochs=<span style="color: #da8548; font-weight: bold;">20</span>)
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org97b17ea" class="outline-4">
+<h4 id="org97b17ea"><span class="section-number-4">1.4.7.</span> 性能測試</h4>
+<div class="outline-text-4" id="text-1-4-7">
+</div>
+<div id="outline-container-org6a974c3" class="outline-5">
+<h5 id="org6a974c3">loss</h5>
+<div class="outline-text-5" id="text-org6a974c3">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">score</span> = model.evaluate(x_test, y_test)
+<span class="linenr">2: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'loss:'</span>, score[<span style="color: #da8548; font-weight: bold;">0</span>])
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgfbee9ca" class="outline-5">
+<h5 id="orgfbee9ca">predict</h5>
+<div class="outline-text-5" id="text-orgfbee9ca">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">predict</span> = model.predict(x_test)
+<span class="linenr">2: </span><span style="color: #dcaeea;">predict</span> = scaler.inverse_transform(predict)
+<span class="linenr">3: </span><span style="color: #dcaeea;">predict</span> = np.reshape(predict, (predict.size,))
+<span class="linenr">4: </span><span style="color: #dcaeea;">ans</span> = scaler.inverse_transform(y_test)
+<span class="linenr">5: </span><span style="color: #dcaeea;">ans</span> = np.reshape(ans, (ans.size,))
+<span class="linenr">6: </span><span style="color: #c678dd;">print</span>(predict[:<span style="color: #da8548; font-weight: bold;">3</span>])
+<span class="linenr">7: </span><span style="color: #c678dd;">print</span>(ans[:<span style="color: #da8548; font-weight: bold;">3</span>])
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org146f48b" class="outline-5">
+<h5 id="org146f48b">plot</h5>
+<div class="outline-text-5" id="text-org146f48b">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>plt.plot(predict)
+<span class="linenr">2: </span>plt.plot(ans)
+<span class="linenr">3: </span>plt.show()
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org63934d8" class="outline-2">
+<h2 id="org63934d8"><span class="section-number-2">2.</span> LSTM學習資源</h2>
+<div class="outline-text-2" id="text-2">
+<ul class="org-ul">
+<li><a href="https://www.youtube.com/watch?v=6AW80qmaAOk">10分鐘了解RNN的基本概念 </a></li>
+<li><a href="https://www.youtube.com/watch?v=zXLAeat_b7g">從頭寫出 RNN (PyTorch) 完整介紹 [手寫數字辨識</a>]</li>
+<li><a href="https://www.youtube.com/watch?v=AsNTP8Kwu80">解說的很清楚的RNN教學影片</a></li>
+<li><a href="https://www.youtube.com/watch?v=YCzL96nL7j0">解說旳很詳細的LSTM教學影片</a></li>
+<li><a href="https://www.youtube.com/watch?v=ubDtr6dh0c8">我的第一支快速利用TensorFlow 2.0利用RNN進行文本分類(第一部分) </a></li>
+<li><a href="https://www.youtube.com/watch?v=SyYIuVJ9BhQ">我的第一支快速利用TensorFlow 2.0利用RNN進行文本分類(第二部分)</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Yung-Chin Yen</p>
+<p class="date">Created: 2025-10-26 Sun 13:45</p>
+</div>
+</body>
+</html>
