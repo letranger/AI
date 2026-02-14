@@ -3,13 +3,13 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-02-18 Sun 14:08 -->
+<!-- 2026-02-14 Sat 21:43 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Loss Function</title>
 <meta name="author" content="Yung-Chin Yen" />
 <meta name="generator" content="Org Mode" />
-<style>
+<style type="text/css">
   #content { max-width: 60em; margin: auto; }
   .title  { text-align: center;
              margin-bottom: .2em; }
@@ -194,6 +194,7 @@
   .org-svg { }
 </style>
 <link rel="stylesheet" type="text/css" href="../css/muse.css" />
+<script src="../css/copy_code.js"></script>
 <script>
   window.MathJax = {
     tex: {
@@ -234,172 +235,835 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org693876b">1. 均方誤差</a></li>
-<li><a href="#orgf8ad127">2. 交叉熵誤差</a></li>
-<li><a href="#orge2ed72a">3. 批次學習</a></li>
-<li><a href="#orgf2f6217">4. 設定損失函數做為效能指標的原因</a></li>
-<li><a href="#orgcd8fe36">5. Keras 在 losses.py 定義常用的損失函數</a></li>
+<li><a href="#org68b73ad">1. 損失函數是什麼？</a></li>
+<li><a href="#org4a506d2">2. 均方誤差（MSE）</a>
+<ul>
+<li><a href="#org08dc032">2.1. MSE 計算範例</a></li>
+</ul>
+</li>
+<li><a href="#orgb98a1ce">3. 交叉熵誤差（Cross Entropy Error）</a>
+<ul>
+<li><a href="#orgc07e39a">3.1. 自然對數的特性</a></li>
+<li><a href="#orgde2a56e">3.2. 交叉熵計算範例</a></li>
+</ul>
+</li>
+<li><a href="#org24ad091">4. MSE vs 交叉熵：視覺化比較</a></li>
+<li><a href="#org5ade07a">5. 批次學習</a>
+<ul>
+<li><a href="#org675d674">5.1. 為什麼需要 Mini-Batch？</a></li>
+</ul>
+</li>
+<li><a href="#orgc1bbb70">6. 為什麼不用「辨識準確率」當指標？</a></li>
+<li><a href="#org91227f9">7. Keras 中的常用損失函數</a></li>
+<li><a href="#org1cc6b2f">8. 小結</a></li>
+<li><a href="#org767d630">9. 作業</a>
+<ul>
+<li><a href="#org9bebcac">9.1. 作業一：損失函數計算機</a></li>
+<li><a href="#orge08c254">9.2. 作業二：Batch Size 實驗室</a></li>
+<li><a href="#orgd3bf95d">9.3. 作業三：損失函數選擇指南</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
 <a href="https://letranger.github.io/AI/20240218134736-lossfunction.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20240218134736-lossfunction.html.svg"/></a>
-
-<p>
-至於神經網路模型的成效則可由損失函數（loss function）來判斷，常見的損失函數有均方誤差與交叉熵誤差兩種。
-</p>
-<div id="outline-container-org693876b" class="outline-2">
-<h2 id="org693876b"><span class="section-number-2">1.</span> 均方誤差</h2>
+<div id="outline-container-org68b73ad" class="outline-2">
+<h2 id="org68b73ad"><span class="section-number-2">1.</span> 損失函數是什麼？</h2>
 <div class="outline-text-2" id="text-1">
 <p>
-均方誤差（mean squared error）可以公式\eqref{org4bd4df9}表示：
+訓練神經網路的過程，就像是在調整一台「猜答案機器」的旋鈕。每次機器猜完答案，我們需要一個方法來告訴它：「你猜得有多離譜？」這個衡量「離譜程度」的工具，就是 <b>損失函數（Loss Function）</b> 。
 </p>
-\begin{equation}
-\label{org4bd4df9}
-E = \frac{1}{2} \sum_{k}(y_k-t_k)^2
-\end{equation}
-<p>
-公式\eqref{org4bd4df9}中的\(y_k\)為神經網路的輸出，\(t_k\)為訓練資料，\(k\)為資料的維度，其實際運算的資料內容與結果可由如下程式碼，當 y 的預測機率越接近正確答案時，均方誤差的值越小。
-</p>
-<div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
-<span class="linenr"> 2: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">mean_squared_error</span>(y, t):
-<span class="linenr"> 3: </span>      <span style="color: #51afef;">return</span> <span style="color: #da8548; font-weight: bold;">0.5</span> * np.<span style="color: #c678dd;">sum</span>((y-t)**<span style="color: #da8548; font-weight: bold;">2</span>)
-<span class="linenr"> 4: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">case 1: &#27491;&#30906;&#31572;&#26696;&#28858;2, y[2]&#30340;&#27231;&#29575;&#26368;&#39640;&#26178;</span>
-<span class="linenr"> 5: </span>  <span style="color: #dcaeea;">y</span> = np.array([<span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.05</span>, <span style="color: #da8548; font-weight: bold;">0.6</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.05</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>])
-<span class="linenr"> 6: </span>  <span style="color: #dcaeea;">t</span> = np.array([<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>])
-<span class="linenr"> 7: </span>  <span style="color: #c678dd;">print</span>(mean_squared_error(y,t))
-<span class="linenr"> 8: </span>
-<span class="linenr"> 9: </span>  <span style="color: #5B6268;">#</span><span style="color: #5B6268;">case 2: &#27491;&#30906;&#31572;&#26696;&#28858;2, y[7]&#30340;&#27231;&#29575;&#26368;&#39640;&#26178;</span>
-<span class="linenr">10: </span>  <span style="color: #dcaeea;">y</span> = np.array([<span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.05</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.05</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.6</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>])
-<span class="linenr">11: </span>  <span style="color: #c678dd;">print</span>(mean_squared_error(y,t))
-</pre>
-</div>
 
-<pre class="example">
-0.09750000000000003
-0.5975
-</pre>
+<p>
+損失函數的值越大，代表模型的預測越離譜；值越小，代表預測越接近正確答案。訓練的目標就是不斷調整模型的參數（權重和偏差），讓損失函數的值盡可能縮小。
+</p>
+
+<p>
+常見的損失函數有兩種：
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">損失函數</th>
+<th scope="col" class="org-left">適用場景</th>
+<th scope="col" class="org-left">直覺理解</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">均方誤差</td>
+<td class="org-left">迴歸問題（預測數值）</td>
+<td class="org-left">預測值和正確值的「距離」</td>
+</tr>
+
+<tr>
+<td class="org-left">交叉熵誤差</td>
+<td class="org-left">分類問題（預測類別）</td>
+<td class="org-left">模型對正確答案的「信心度」</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
-<div id="outline-container-orgf8ad127" class="outline-2">
-<h2 id="orgf8ad127"><span class="section-number-2">2.</span> 交叉熵誤差</h2>
+<div id="outline-container-org4a506d2" class="outline-2">
+<h2 id="org4a506d2"><span class="section-number-2">2.</span> 均方誤差（MSE）</h2>
 <div class="outline-text-2" id="text-2">
 <p>
-交叉熵誤差（cross entropy error）可以公式\eqref{orgd0a12ec}表示：
+均方誤差（Mean Squared Error）的公式如下：
 </p>
 \begin{equation}
-\label{orgd0a12ec}
-E = -\sum_{k}t_k\log y_k
+\label{orgc803ac2}
+E = \frac{1}{2} \sum_{k}(y_k-t_k)^2
 \end{equation}
-<p>
-公式\eqref{orgd0a12ec}中的\(y_k\)為神經網路的輸出，\(t_k\)為訓練資料（即正確答案標籤，為 one-hot 形式，只有正確案為 1，其餘為 0），\(log\)為以\(e\)為底的自然對數，其輸出圖形如圖<a href="#org4206808">1</a>所示。
-</p>
-<div class="org-src-container">
-<pre class="src src-python"><span class="linenr">1: </span>  <span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
-<span class="linenr">2: </span>  <span style="color: #51afef;">import</span> matplotlib.pylab <span style="color: #51afef;">as</span> plt
-<span class="linenr">3: </span>  <span style="color: #dcaeea;">x</span> = np.arange(-<span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">0.0001</span>)
-<span class="linenr">4: </span>  <span style="color: #dcaeea;">y</span> = np.log(x)
-<span class="linenr">5: </span>  plt.figure(figsize=(<span style="color: #da8548; font-weight: bold;">4</span>,<span style="color: #da8548; font-weight: bold;">3</span>))
-<span class="linenr">6: </span>  plt.plot(x, y)
-<span class="linenr">7: </span>  plt.ylim(-<span style="color: #da8548; font-weight: bold;">5.1</span>, <span style="color: #da8548; font-weight: bold;">1</span>)
-<span class="linenr">8: </span>  plt.savefig(<span style="color: #98be65;">"log.png"</span>)
-<span class="linenr">9: </span>  <span style="color: #51afef;">return</span> <span style="color: #98be65;">"log.png"</span>
-</pre>
-</div>
-
-<div id="org4206808" class="figure">
-<p><img src="images/log.png" alt="log.png" width="500" />
-</p>
-<p><span class="figure-number">Figure 1: </span>自然對數\(y=\log x\)曲線圖</p>
-</div>
 
 <p>
-以前述範例進行交叉熵的計算，其運算結果如下所示。進行\(log\)運算前先加上一極小值 delta 的原因在於避免因 log(0)產生無限大的-inf。執行結果與前例大致相同，越接近正確答案，誤差值越小。
+公式\eqref{orgc803ac2}中：
+</p>
+<ul class="org-ul">
+<li>\(y_k\)：神經網路的輸出（模型的預測）</li>
+<li>\(t_k\)：正確答案（訓練資料的標籤）</li>
+<li>\(k\)：資料的維度</li>
+</ul>
+
+<p>
+簡單來說，MSE 就是把每個預測值和正確值的差距算出來、平方、再加總。平方的用意是讓大的誤差被放大（猜差很多的要嚴重扣分），同時也避免正負誤差互相抵消。
+</p>
+</div>
+<div id="outline-container-org08dc032" class="outline-3">
+<h3 id="org08dc032"><span class="section-number-3">2.1.</span> MSE 計算範例</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+假設我們在做手寫數字辨識（0~9 共 10 類），正確答案是「2」。模型會輸出一組 10 個機率值，代表它認為這張圖片是 0、1、2、&#x2026;、9 的可能性。讓我們比較兩種情況：
 </p>
 
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span>  <span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
-<span class="linenr"> 2: </span>  <span style="color: #51afef;">def</span> <span style="color: #c678dd;">cross_entropy_error</span>(y, t):
-<span class="linenr"> 3: </span>      <span style="color: #dcaeea;">delta</span> = 1e-<span style="color: #da8548; font-weight: bold;">7</span>
-<span class="linenr"> 4: </span>      <span style="color: #51afef;">return</span> -np.<span style="color: #c678dd;">sum</span>(t * np.log(y + delta))
-<span class="linenr"> 5: </span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">case 1: &#27491;&#30906;&#31572;&#26696;&#28858;2, y[2]&#30340;&#27231;&#29575;&#26368;&#39640;&#26178;</span>
-<span class="linenr"> 6: </span>  <span style="color: #dcaeea;">y</span> = np.array([<span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.05</span>, <span style="color: #da8548; font-weight: bold;">0.6</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.05</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>])
-<span class="linenr"> 7: </span>  <span style="color: #dcaeea;">t</span> = np.array([<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>])
-<span class="linenr"> 8: </span>  <span style="color: #c678dd;">print</span>(cross_entropy_error(y,t))
-<span class="linenr"> 9: </span>
-<span class="linenr">10: </span>  <span style="color: #5B6268;">#</span><span style="color: #5B6268;">case 2: &#27491;&#30906;&#31572;&#26696;&#28858;2, y[7]&#30340;&#27231;&#29575;&#26368;&#39640;&#26178;</span>
-<span class="linenr">11: </span>  <span style="color: #dcaeea;">y</span> = np.array([<span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.05</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.05</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.6</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>])
-<span class="linenr">12: </span>  <span style="color: #c678dd;">print</span>(cross_entropy_error(y,t))
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 2: </span>
+<span class="linenr"> 3: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">mean_squared_error</span>(y, t):
+<span class="linenr"> 4: </span>    <span style="color: #51afef;">return</span> <span style="color: #da8548; font-weight: bold;">0.5</span> * np.<span style="color: #c678dd;">sum</span>((y - t) ** <span style="color: #da8548; font-weight: bold;">2</span>)
+<span class="linenr"> 5: </span>
+<span class="linenr"> 6: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27491;&#30906;&#31572;&#26696;&#26159;&#12300;2&#12301;&#65288;one-hot &#32232;&#30908;&#65289;</span>
+<span class="linenr"> 7: </span><span style="color: #dcaeea;">t</span> = np.array([<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>])
+<span class="linenr"> 8: </span>
+<span class="linenr"> 9: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">Case 1: &#27169;&#22411;&#29468;&#23565;&#20102;&#65281;y[2] &#30340;&#27231;&#29575;&#26368;&#39640;&#65288;0.6&#65289;</span>
+<span class="linenr">10: </span><span style="color: #dcaeea;">y1</span> = np.array([<span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.05</span>, <span style="color: #da8548; font-weight: bold;">0.6</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.05</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>])
+<span class="linenr">11: </span><span style="color: #dcaeea;">mse1</span> = mean_squared_error(y1, t)
+<span class="linenr">12: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"Case 1&#65288;&#29468;&#23565;&#65289;: MSE = </span>{mse1:.4f}<span style="color: #98be65;">"</span>)
+<span class="linenr">13: </span>
+<span class="linenr">14: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">Case 2: &#27169;&#22411;&#29468;&#37679;&#20102;&#65281;y[6] &#30340;&#27231;&#29575;&#26368;&#39640;&#65288;0.6&#65289;</span>
+<span class="linenr">15: </span><span style="color: #dcaeea;">y2</span> = np.array([<span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.05</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.05</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.6</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>])
+<span class="linenr">16: </span><span style="color: #dcaeea;">mse2</span> = mean_squared_error(y2, t)
+<span class="linenr">17: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"Case 2&#65288;&#29468;&#37679;&#65289;: MSE = </span>{mse2:.4f}<span style="color: #98be65;">"</span>)
+<span class="linenr">18: </span>
+<span class="linenr">19: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">&#29468;&#37679;&#26178;&#30340; MSE &#26159;&#29468;&#23565;&#26178;&#30340; </span>{mse2/mse1:.1f}<span style="color: #98be65;"> &#20493;"</span>)
 </pre>
 </div>
 
-<pre class="example">
-0.510825457099338
-2.302584092994546
-</pre>
+<p>
+可以看到：猜對時 MSE 很小（0.0975），猜錯時 MSE 大很多（0.5975）。這就是損失函數的功能——用數字告訴模型「你錯得有多離譜」。
+</p>
 </div>
 </div>
-<div id="outline-container-orge2ed72a" class="outline-2">
-<h2 id="orge2ed72a"><span class="section-number-2">3.</span> 批次學習</h2>
+</div>
+<div id="outline-container-orgb98a1ce" class="outline-2">
+<h2 id="orgb98a1ce"><span class="section-number-2">3.</span> 交叉熵誤差（Cross Entropy Error）</h2>
 <div class="outline-text-2" id="text-3">
 <p>
-機器學習的目的在於使用訓練資料找能能儘量縮小損失函數的參數，因此，計算損失函數自然不是逐一計算，而是以縮小所有訓練資料的損失函數總和為最終目標。
-因此，前節中的交叉熵誤差（公式\eqref{orgd0a12ec}）就要修改為以下算式（\eqref{org950547c}）：
+交叉熵誤差的公式如下：
 </p>
 \begin{equation}
-\label{org950547c}
-E = -\frac{1}{N}\sum_{n}\sum_{k}t_{nk}\log y_{nk}
+\label{org3c991e2}
+E = -\sum_{k}t_k\log y_k
 \end{equation}
+
 <p>
-公式\eqref{org950547c}的 N 為資料筆數，\(y_{nk}\)代表神經網路第 n 筆資料的第 k 個輸出、\(t){nk}\)則為第 n 筆訓練資料的第 k 個值，最後除以 N、進行正規化，所得即為這 N 筆資料的「平均損失函數」。然而，實際執行時並無法取出所有訓練資料來運算，以 MNIST 資料集為例，訓練資料就有 60000 筆，若是其他大數劇則資料筆數可能達數千萬，較務實的作法，是隨機自資料集中抽取 N 筆資料（稱之為 mini batch）來計算平均損失函數，以代表整體。
-那麼，這個隨機抽取的資料筆數要設定為多少才適合？可以從以下兩個觀點來看：
+公式\eqref{org3c991e2}中的 \(\log\) 是自然對數（以 \(e\) 為底）。因為 \(t_k\) 是 one-hot 編碼（只有正確答案那個位置是 1，其餘都是 0），所以整個加總其實只會留下 <code>正確答案那個位置</code> 的 \(-\log y_k\)。
+</p>
+
+<p>
+換句話說，交叉熵只看一件事：*模型對正確答案給了多少信心？*
+</p>
+</div>
+<div id="outline-container-orgc07e39a" class="outline-3">
+<h3 id="orgc07e39a"><span class="section-number-3">3.1.</span> 自然對數的特性</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+為什麼用 \(-\log\) 呢？看一下自然對數的圖形就知道了：
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
+<span class="linenr"> 2: </span>
+<span class="linenr"> 3: </span><span style="color: #dcaeea;">x</span> = np.arange(<span style="color: #da8548; font-weight: bold;">0.001</span>, <span style="color: #da8548; font-weight: bold;">1.01</span>, <span style="color: #da8548; font-weight: bold;">0.001</span>)
+<span class="linenr"> 4: </span><span style="color: #dcaeea;">y</span> = -np.log(x)
+<span class="linenr"> 5: </span>
+<span class="linenr"> 6: </span>plt.figure(figsize=(<span style="color: #da8548; font-weight: bold;">6</span>, <span style="color: #da8548; font-weight: bold;">4</span>))
+<span class="linenr"> 7: </span>plt.plot(x, y, <span style="color: #98be65;">'b-'</span>, linewidth=<span style="color: #da8548; font-weight: bold;">2</span>)
+<span class="linenr"> 8: </span>plt.xlabel(<span style="color: #98be65;">'Model confidence for correct answer ($y_k$)'</span>)
+<span class="linenr"> 9: </span>plt.ylabel(<span style="color: #98be65;">'Loss ($-</span><span style="color: #a9a1e1;">\\</span><span style="color: #98be65;">log y_k$)'</span>)
+<span class="linenr">10: </span>plt.title(<span style="color: #98be65;">'Cross Entropy: Why -log?'</span>)
+<span class="linenr">11: </span>plt.axvline(x=<span style="color: #da8548; font-weight: bold;">0.6</span>, color=<span style="color: #98be65;">'green'</span>, linestyle=<span style="color: #98be65;">'--'</span>, alpha=<span style="color: #da8548; font-weight: bold;">0.5</span>, label=<span style="color: #98be65;">'confidence=0.6 &#8594; loss=0.51'</span>)
+<span class="linenr">12: </span>plt.axvline(x=<span style="color: #da8548; font-weight: bold;">0.1</span>, color=<span style="color: #98be65;">'red'</span>, linestyle=<span style="color: #98be65;">'--'</span>, alpha=<span style="color: #da8548; font-weight: bold;">0.5</span>, label=<span style="color: #98be65;">'confidence=0.1 &#8594; loss=2.30'</span>)
+<span class="linenr">13: </span>plt.legend(fontsize=<span style="color: #da8548; font-weight: bold;">9</span>)
+<span class="linenr">14: </span>plt.grid(<span style="color: #a9a1e1;">True</span>, alpha=<span style="color: #da8548; font-weight: bold;">0.3</span>)
+<span class="linenr">15: </span>plt.tight_layout()
+<span class="linenr">16: </span>plt.savefig(<span style="color: #98be65;">"images/loss-log-function.png"</span>, dpi=<span style="color: #da8548; font-weight: bold;">150</span>)
+<span class="linenr">17: </span>plt.close()
+</pre>
+</div>
+
+
+<div id="org8e96a83" class="figure">
+<p><img src="images/loss-log-function.png" alt="loss-log-function.png" width="500" />
+</p>
+<p><span class="figure-number">Figure 1: </span>自然對數 \(y=-\log x\) 曲線圖</p>
+</div>
+
+<p>
+從圖<a href="#org8e96a83">1</a>可以看出：
 </p>
 <ul class="org-ul">
-<li>在合理範圍內，增大 Batch_Size 有何好處？
-<ul class="org-ul">
-<li>內存利用率提高了，大矩陣乘法的並行化效率提高。</li>
-<li>跑完一次 epoch（全數據集）所需的迭代次數減少，對於相同數據量的處理速度進一步加快。</li>
-<li>在一定範圍內，一般來說 Batch_Size 越大，其確定的下降方向越准，引起訓練震蕩越小。</li>
-</ul></li>
-<li>盲目增大 Batch_Size 有何壞處？
-<ul class="org-ul">
-<li>內存利用率提高了，但是內存容量可能撐不住了。</li>
-<li>跑完一次 epoch（全數據集）所需的迭代次數減少，要想達到相同的精度，其所花費的時間大大增加了，從而對參數的修正也就顯得更加緩慢。</li>
-<li>Batch_Size 增大到一定程度，其確定的下降方向已經基本不再變化。</li>
-</ul></li>
+<li>當模型對正確答案很有信心（\(y_k\) 接近 1）時，損失接近 0</li>
+<li>當模型對正確答案沒信心（\(y_k\) 接近 0）時，損失飆向無限大</li>
 </ul>
+
+<p>
+這正是我們要的效果：猜對且有信心 → 低損失；猜錯或沒信心 → 高損失，而且越沒信心罰越重。
+</p>
 </div>
 </div>
-<div id="outline-container-orgf2f6217" class="outline-2">
-<h2 id="orgf2f6217"><span class="section-number-2">4.</span> 設定損失函數做為效能指標的原因</h2>
+<div id="outline-container-orgde2a56e" class="outline-3">
+<h3 id="orgde2a56e"><span class="section-number-3">3.2.</span> 交叉熵計算範例</h3>
+<div class="outline-text-3" id="text-3-2">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">cross_entropy_error</span>(y, t):
+<span class="linenr"> 2: </span>    <span style="color: #dcaeea;">delta</span> = 1e-<span style="color: #da8548; font-weight: bold;">7</span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36991;&#20813; log(0) &#29986;&#29983; -inf</span>
+<span class="linenr"> 3: </span>    <span style="color: #51afef;">return</span> -np.<span style="color: #c678dd;">sum</span>(t * np.log(y + delta))
+<span class="linenr"> 4: </span>
+<span class="linenr"> 5: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21516;&#27171;&#30340;&#20841;&#20491; case</span>
+<span class="linenr"> 6: </span><span style="color: #dcaeea;">t</span> = np.array([<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>])
+<span class="linenr"> 7: </span>
+<span class="linenr"> 8: </span><span style="color: #dcaeea;">y1</span> = np.array([<span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.05</span>, <span style="color: #da8548; font-weight: bold;">0.6</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.05</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>])
+<span class="linenr"> 9: </span><span style="color: #dcaeea;">ce1</span> = cross_entropy_error(y1, t)
+<span class="linenr">10: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"Case 1&#65288;&#29468;&#23565;&#65292;&#20449;&#24515; 60%&#65289;: CE = </span>{ce1:.4f}<span style="color: #98be65;">"</span>)
+<span class="linenr">11: </span>
+<span class="linenr">12: </span><span style="color: #dcaeea;">y2</span> = np.array([<span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.05</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.05</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.6</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>, <span style="color: #da8548; font-weight: bold;">0.0</span>])
+<span class="linenr">13: </span><span style="color: #dcaeea;">ce2</span> = cross_entropy_error(y2, t)
+<span class="linenr">14: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"Case 2&#65288;&#29468;&#37679;&#65292;&#20449;&#24515;&#21482;&#26377; 10%&#65289;: CE = </span>{ce2:.4f}<span style="color: #98be65;">"</span>)
+<span class="linenr">15: </span>
+<span class="linenr">16: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">&#29468;&#37679;&#26178;&#30340; CE &#26159;&#29468;&#23565;&#26178;&#30340; </span>{ce2/ce1:.1f}<span style="color: #98be65;"> &#20493;"</span>)
+<span class="linenr">17: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">&#35299;&#35712;&#65306;"</span>)
+<span class="linenr">18: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"  Case 1: -log(0.6) = </span>{-np.log(0.6):.4f}<span style="color: #98be65;">&#65288;&#23565;&#27491;&#30906;&#31572;&#26696;&#30340;&#20449;&#24515; 60%&#65289;"</span>)
+<span class="linenr">19: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"  Case 2: -log(0.1) = </span>{-np.log(0.1):.4f}<span style="color: #98be65;">&#65288;&#23565;&#27491;&#30906;&#31572;&#26696;&#30340;&#20449;&#24515;&#21482;&#26377; 10%&#65289;"</span>)
+</pre>
+</div>
+
+<p>
+注意程式碼中加了一個極小值 <code>delta = 1e-7</code> ，這是為了避免 <code>log(0)</code> 產生無限大（-inf）。這是寫程式時的常見技巧。
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org24ad091" class="outline-2">
+<h2 id="org24ad091"><span class="section-number-2">4.</span> MSE vs 交叉熵：視覺化比較</h2>
 <div class="outline-text-2" id="text-4">
 <p>
-進行神經網路的學習，目的在於找出辨識準確度高的參數，那麼，為什麼不以「辨識準確率」做為指標，而是要導入損失函數？
-神經網路的學習過程在於尋找最佳參數（即偏移值與權重），藉以找出能盡量縮小損失函數的參數，為達此目的，我們要對某特定參數所得的損失函數進行微分（即找出其斜度），亦即，找出「如果稍微改變這些參數，損失函數將會有何種變化？」的答案，假如微分後損失函數的值變為負值，則我們就將參數往正向變化以減少損失函數；假如微分後損失函數的值變為正值，我們就讓參數往負值變化，以減少損失函數；直到損失函數微分後的值變為 0 為止。
-無法將辨識準確率作為指標的原因即在於，不論我們如何調整參數，辨識準確率的微分值都為 0。
-例如，有 100 張訓練資料，如果能成功辨識出 32 張影像，其準確率為 32%，如果調整參數後只得到極小的變化，辨識準確度也只能在 33%、34%這些不連續的變化，而不會有 32.0124%的連續性變化。然而，如果以損失函數為指標，則能顯示出 0.92345&#x2026;.的結果；而略為改變參數值，即能得到 0.24884 的連續變化。
-辨識準確率幾乎不會反應改變參數所帶來的微小變化，即使有反應也是不連續的變化，這個道理就好像把階梯函數拿來當成活化函數，對階梯函數的任何點（除 0 以外）做切線，其斜率均為 0。
+讓我們把兩種損失函數在不同「信心度」下的表現畫在一起比較：
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #dcaeea;">confidence</span> = np.arange(<span style="color: #da8548; font-weight: bold;">0.01</span>, <span style="color: #da8548; font-weight: bold;">1.0</span>, <span style="color: #da8548; font-weight: bold;">0.01</span>)
+<span class="linenr"> 2: </span>
+<span class="linenr"> 3: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27491;&#30906;&#31572;&#26696; one-hot = [1, 0, ...]&#65292;&#25152;&#20197; t_k=1 &#30340;&#37027;&#20491;&#20301;&#32622;&#65292;y_k=confidence</span>
+<span class="linenr"> 4: </span><span style="color: #dcaeea;">mse_values</span> = <span style="color: #da8548; font-weight: bold;">0.5</span> * (confidence - <span style="color: #da8548; font-weight: bold;">1</span>) ** <span style="color: #da8548; font-weight: bold;">2</span>
+<span class="linenr"> 5: </span><span style="color: #dcaeea;">ce_values</span> = -np.log(confidence)
+<span class="linenr"> 6: </span>
+<span class="linenr"> 7: </span>plt.figure(figsize=(<span style="color: #da8548; font-weight: bold;">8</span>, <span style="color: #da8548; font-weight: bold;">4</span>))
+<span class="linenr"> 8: </span>plt.plot(confidence, mse_values, <span style="color: #98be65;">'b-'</span>, linewidth=<span style="color: #da8548; font-weight: bold;">2</span>, label=<span style="color: #98be65;">'MSE'</span>)
+<span class="linenr"> 9: </span>plt.plot(confidence, ce_values, <span style="color: #98be65;">'r-'</span>, linewidth=<span style="color: #da8548; font-weight: bold;">2</span>, label=<span style="color: #98be65;">'Cross Entropy'</span>)
+<span class="linenr">10: </span>plt.xlabel(<span style="color: #98be65;">'Model confidence for correct answer'</span>)
+<span class="linenr">11: </span>plt.ylabel(<span style="color: #98be65;">'Loss'</span>)
+<span class="linenr">12: </span>plt.title(<span style="color: #98be65;">'MSE vs Cross Entropy'</span>)
+<span class="linenr">13: </span>plt.legend()
+<span class="linenr">14: </span>plt.grid(<span style="color: #a9a1e1;">True</span>, alpha=<span style="color: #da8548; font-weight: bold;">0.3</span>)
+<span class="linenr">15: </span>plt.tight_layout()
+<span class="linenr">16: </span>plt.savefig(<span style="color: #98be65;">"images/loss-mse-vs-ce.png"</span>, dpi=<span style="color: #da8548; font-weight: bold;">150</span>)
+<span class="linenr">17: </span>plt.close()
+<span class="linenr">18: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#22294;&#34920;&#24050;&#20786;&#23384;"</span>)
+</pre>
+</div>
+
+
+<div id="org9c6b1f3" class="figure">
+<p><img src="images/loss-mse-vs-ce.png" alt="loss-mse-vs-ce.png" width="500" />
+</p>
+<p><span class="figure-number">Figure 2: </span>MSE 與交叉熵的比較</p>
+</div>
+
+<p>
+從圖<a href="#org9c6b1f3">2</a>可以看出一個重要的差異：當模型對正確答案的信心很低（左邊）時，交叉熵的損失比 MSE 大很多。這代表交叉熵對「猜錯」的懲罰更嚴厲，這也是為什麼 <b>分類問題通常選用交叉熵</b> 作為損失函數。
 </p>
 </div>
 </div>
-<div id="outline-container-orgcd8fe36" class="outline-2">
-<h2 id="orgcd8fe36"><span class="section-number-2">5.</span> Keras 在 losses.py 定義常用的損失函數</h2>
+<div id="outline-container-org5ade07a" class="outline-2">
+<h2 id="org5ade07a"><span class="section-number-2">5.</span> 批次學習</h2>
 <div class="outline-text-2" id="text-5">
+<p>
+訓練神經網路時，我們的目標是讓所有訓練資料的損失函數總和越小越好。交叉熵誤差擴展到 N 筆資料的公式如下：
+</p>
+\begin{equation}
+\label{org08c54f2}
+E = -\frac{1}{N}\sum_{n}\sum_{k}t_{nk}\log y_{nk}
+\end{equation}
+
+<p>
+公式\eqref{org08c54f2}中：
+</p>
 <ul class="org-ul">
-<li><a href="https://github.com/keras-team/keras/blob/master/keras/losses.py">https://github.com/keras-team/keras/blob/master/keras/losses.py</a></li>
-<li>MSE: mean_squared_error</li>
-<li>MAE: mean_absolute_error</li>
-<li>mape = MAPE = mean_absolute_percentage_error</li>
-<li>msle = MSLE = mean_squared_logarithmic_error</li>
-<li>kld = KLD = kullback_leibler_divergence</li>
-<li>cosine = cosine_proximity</li>
+<li>\(N\)：資料筆數</li>
+<li>\(y_{nk}\)：第 n 筆資料的第 k 個輸出</li>
+<li>\(t_{nk}\)：第 n 筆訓練資料的第 k 個標籤值</li>
+<li>最後除以 \(N\) 做正規化，得到的是「平均損失」</li>
 </ul>
+</div>
+<div id="outline-container-org675d674" class="outline-3">
+<h3 id="org675d674"><span class="section-number-3">5.1.</span> 為什麼需要 Mini-Batch？</h3>
+<div class="outline-text-3" id="text-5-1">
+<p>
+然而，實際訓練時我們不可能每次都拿全部資料來算損失。以 MNIST 為例，訓練資料就有 60,000 筆，其他大型資料集可能達數千萬筆。如果每次都要算完全部才更新參數，那訓練速度會慢到讓人崩潰。
+</p>
+
+<p>
+所以實務上會從全部資料中 <b>隨機抽取一小批</b> 來計算，這小批資料叫做 *mini-batch*，一個 mini-batch 的大小叫做 *batch size*。
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Batch Size</th>
+<th scope="col" class="org-left">優點</th>
+<th scope="col" class="org-left">缺點</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">太小</td>
+<td class="org-left">更新頻繁、跳出局部最小值</td>
+<td class="org-left">訓練不穩定、GPU 利用率低</td>
+</tr>
+
+<tr>
+<td class="org-left">太大</td>
+<td class="org-left">梯度估計穩定、GPU 效率高</td>
+<td class="org-left">記憶體可能不夠、收斂變慢</td>
+</tr>
+
+<tr>
+<td class="org-left">常用範圍</td>
+<td class="org-left">32、64、128、256</td>
+<td class="org-left">依資料集和硬體而定</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc1bbb70" class="outline-2">
+<h2 id="orgc1bbb70"><span class="section-number-2">6.</span> 為什麼不用「辨識準確率」當指標？</h2>
+<div class="outline-text-2" id="text-6">
+<p>
+這是一個很好的問題：訓練的目標不就是要提高準確率嗎？那為什麼不直接用準確率當指標？
+</p>
+
+<p>
+答案是：*準確率是不連續的，沒辦法做微分。*
+</p>
+
+<p>
+神經網路的學習方式是「微分 → 調參數」。它需要知道：「如果我把這個參數稍微調大一點，損失會變多還是變少？」這就是微分的概念。
+</p>
+
+<p>
+但準確率的問題是：
+</p>
+<ul class="org-ul">
+<li>有 100 張圖片，辨識出 32 張 → 準確率 32%</li>
+<li>稍微調整參數後，辨識出 32 張 → 準確率還是 32%</li>
+<li>再調一調，突然辨識出 33 張 → 準確率跳到 33%</li>
+</ul>
+
+<p>
+準確率只會是 32%、33%、34% 這樣「跳著變」，不會出現 32.0124% 這種連續的變化。對微分來說，「跳著變」等於「斜率為 0」（因為在跳躍之間是一條水平線），模型就不知道該往哪個方向調整參數了。
+</p>
+
+<p>
+而損失函數可以產生連續的變化（例如從 0.92345 變成 0.92341），讓模型能夠順利地透過微分找到正確的調整方向。
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35222;&#35258;&#21270;&#65306;&#28310;&#30906;&#29575; vs &#25613;&#22833;&#20989;&#25976;&#30340;&#36899;&#32396;&#24615;&#24046;&#30064;</span>
+<span class="linenr"> 2: </span>fig, (<span style="color: #dcaeea;">ax1</span>, <span style="color: #dcaeea;">ax2</span>) = plt.subplots(<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">2</span>, figsize=(<span style="color: #da8548; font-weight: bold;">10</span>, <span style="color: #da8548; font-weight: bold;">4</span>))
+<span class="linenr"> 3: </span>
+<span class="linenr"> 4: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24038;&#22294;&#65306;&#28310;&#30906;&#29575;&#65288;&#19981;&#36899;&#32396;&#30340;&#38542;&#26799;&#65289;</span>
+<span class="linenr"> 5: </span><span style="color: #dcaeea;">epochs</span> = np.arange(<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">21</span>)
+<span class="linenr"> 6: </span>np.random.seed(<span style="color: #da8548; font-weight: bold;">42</span>)
+<span class="linenr"> 7: </span><span style="color: #dcaeea;">acc_values</span> = np.sort(np.random.choice([<span style="color: #da8548; font-weight: bold;">0.32</span>, <span style="color: #da8548; font-weight: bold;">0.33</span>, <span style="color: #da8548; font-weight: bold;">0.34</span>, <span style="color: #da8548; font-weight: bold;">0.35</span>, <span style="color: #da8548; font-weight: bold;">0.36</span>, <span style="color: #da8548; font-weight: bold;">0.37</span>], size=<span style="color: #da8548; font-weight: bold;">20</span>))
+<span class="linenr"> 8: </span>ax1.step(epochs, acc_values, <span style="color: #98be65;">'r-'</span>, linewidth=<span style="color: #da8548; font-weight: bold;">2</span>, where=<span style="color: #98be65;">'mid'</span>)
+<span class="linenr"> 9: </span>ax1.set_xlabel(<span style="color: #98be65;">'Training Steps'</span>)
+<span class="linenr">10: </span>ax1.set_ylabel(<span style="color: #98be65;">'Accuracy'</span>)
+<span class="linenr">11: </span>ax1.set_title(<span style="color: #98be65;">'Accuracy (Discrete)'</span>)
+<span class="linenr">12: </span>ax1.grid(<span style="color: #a9a1e1;">True</span>, alpha=<span style="color: #da8548; font-weight: bold;">0.3</span>)
+<span class="linenr">13: </span>
+<span class="linenr">14: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21491;&#22294;&#65306;&#25613;&#22833;&#20989;&#25976;&#65288;&#36899;&#32396;&#30340;&#26354;&#32218;&#65289;</span>
+<span class="linenr">15: </span><span style="color: #dcaeea;">loss_values</span> = <span style="color: #da8548; font-weight: bold;">2.5</span> * np.exp(-<span style="color: #da8548; font-weight: bold;">0.15</span> * epochs) + <span style="color: #da8548; font-weight: bold;">0.3</span> + np.random.randn(<span style="color: #da8548; font-weight: bold;">20</span>) * <span style="color: #da8548; font-weight: bold;">0.05</span>
+<span class="linenr">16: </span>ax2.plot(epochs, loss_values, <span style="color: #98be65;">'b-'</span>, linewidth=<span style="color: #da8548; font-weight: bold;">2</span>)
+<span class="linenr">17: </span>ax2.set_xlabel(<span style="color: #98be65;">'Training Steps'</span>)
+<span class="linenr">18: </span>ax2.set_ylabel(<span style="color: #98be65;">'Loss'</span>)
+<span class="linenr">19: </span>ax2.set_title(<span style="color: #98be65;">'Loss Function (Continuous)'</span>)
+<span class="linenr">20: </span>ax2.grid(<span style="color: #a9a1e1;">True</span>, alpha=<span style="color: #da8548; font-weight: bold;">0.3</span>)
+<span class="linenr">21: </span>
+<span class="linenr">22: </span>plt.tight_layout()
+<span class="linenr">23: </span>plt.savefig(<span style="color: #98be65;">"images/loss-acc-vs-loss.png"</span>, dpi=<span style="color: #da8548; font-weight: bold;">150</span>)
+<span class="linenr">24: </span>plt.close()
+<span class="linenr">25: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#22294;&#34920;&#24050;&#20786;&#23384;"</span>)
+</pre>
+</div>
+
+
+<div id="org764f14d" class="figure">
+<p><img src="images/loss-acc-vs-loss.png" alt="loss-acc-vs-loss.png" width="600" />
+</p>
+<p><span class="figure-number">Figure 3: </span>準確率（離散）vs 損失函數（連續）</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org91227f9" class="outline-2">
+<h2 id="org91227f9"><span class="section-number-2">7.</span> Keras 中的常用損失函數</h2>
+<div class="outline-text-2" id="text-7">
+<p>
+在 Keras 中，常用的損失函數整理如下：
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">損失函數名稱</th>
+<th scope="col" class="org-left">縮寫</th>
+<th scope="col" class="org-left">適用場景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left"><code>mean_squared_error</code></td>
+<td class="org-left">MSE</td>
+<td class="org-left">迴歸問題</td>
+</tr>
+
+<tr>
+<td class="org-left"><code>mean_absolute_error</code></td>
+<td class="org-left">MAE</td>
+<td class="org-left">迴歸問題（對異常值不敏感）</td>
+</tr>
+
+<tr>
+<td class="org-left"><code>binary_crossentropy</code></td>
+<td class="org-left">—</td>
+<td class="org-left">二元分類</td>
+</tr>
+
+<tr>
+<td class="org-left"><code>categorical_crossentropy</code></td>
+<td class="org-left">—</td>
+<td class="org-left">多元分類（one-hot 標籤）</td>
+</tr>
+
+<tr>
+<td class="org-left"><code>sparse_categorical_crossentropy</code></td>
+<td class="org-left">—</td>
+<td class="org-left">多元分類（整數標籤）</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+使用時只需在 <code>model.compile()</code> 中指定即可：
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36852;&#27512;&#21839;&#38988;</span>
+<span class="linenr">2: </span>model.<span style="color: #c678dd;">compile</span>(optimizer=<span style="color: #98be65;">'adam'</span>, loss=<span style="color: #98be65;">'mse'</span>)
+<span class="linenr">3: </span>
+<span class="linenr">4: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20108;&#20803;&#20998;&#39006;&#65288;&#20363;&#22914;&#65306;&#26159;&#35987; or &#19981;&#26159;&#35987;&#65289;</span>
+<span class="linenr">5: </span>model.<span style="color: #c678dd;">compile</span>(optimizer=<span style="color: #98be65;">'adam'</span>, loss=<span style="color: #98be65;">'binary_crossentropy'</span>, metrics=[<span style="color: #98be65;">'accuracy'</span>])
+<span class="linenr">6: </span>
+<span class="linenr">7: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#22810;&#20803;&#20998;&#39006;&#65288;&#20363;&#22914;&#65306;&#25163;&#23531;&#25976;&#23383; 0~9&#65289;</span>
+<span class="linenr">8: </span>model.<span style="color: #c678dd;">compile</span>(optimizer=<span style="color: #98be65;">'adam'</span>, loss=<span style="color: #98be65;">'sparse_categorical_crossentropy'</span>, metrics=[<span style="color: #98be65;">'accuracy'</span>])
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org1cc6b2f" class="outline-2">
+<h2 id="org1cc6b2f"><span class="section-number-2">8.</span> 小結</h2>
+<div class="outline-text-2" id="text-8">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">概念</th>
+<th scope="col" class="org-left">重點</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">損失函數</td>
+<td class="org-left">衡量模型預測和正確答案的差距</td>
+</tr>
+
+<tr>
+<td class="org-left">MSE</td>
+<td class="org-left">計算預測值和正確值的平方差，適用於迴歸問題</td>
+</tr>
+
+<tr>
+<td class="org-left">交叉熵</td>
+<td class="org-left">看模型對正確答案的信心度，適用於分類問題</td>
+</tr>
+
+<tr>
+<td class="org-left">Mini-Batch</td>
+<td class="org-left">隨機抽取小批資料計算損失，兼顧效率與準確度</td>
+</tr>
+
+<tr>
+<td class="org-left">為何不用準確率</td>
+<td class="org-left">準確率不連續，無法微分，模型不知道怎麼調整參數</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-org767d630" class="outline-2">
+<h2 id="org767d630"><span class="section-number-2">9.</span> 作業</h2>
+<div class="outline-text-2" id="text-9">
+</div>
+<div id="outline-container-org9bebcac" class="outline-3">
+<h3 id="org9bebcac"><span class="section-number-3">9.1.</span> 作業一：損失函數計算機</h3>
+<div class="outline-text-3" id="text-9-1">
+<p>
+以下程式定義了 MSE 和交叉熵兩種損失函數，並用一個簡單的例子示範計算結果：
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 2: </span>
+<span class="linenr"> 3: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">mean_squared_error</span>(y, t):
+<span class="linenr"> 4: </span>    <span style="color: #51afef;">return</span> <span style="color: #da8548; font-weight: bold;">0.5</span> * np.<span style="color: #c678dd;">sum</span>((y - t) ** <span style="color: #da8548; font-weight: bold;">2</span>)
+<span class="linenr"> 5: </span>
+<span class="linenr"> 6: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">cross_entropy_error</span>(y, t):
+<span class="linenr"> 7: </span>    <span style="color: #dcaeea;">delta</span> = 1e-<span style="color: #da8548; font-weight: bold;">7</span>
+<span class="linenr"> 8: </span>    <span style="color: #51afef;">return</span> -np.<span style="color: #c678dd;">sum</span>(t * np.log(y + delta))
+<span class="linenr"> 9: </span>
+<span class="linenr">10: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27491;&#30906;&#31572;&#26696;&#26159;&#12300;&#35987;&#12301;&#65288;&#39006;&#21029; 3&#65289;</span>
+<span class="linenr">11: </span><span style="color: #dcaeea;">t</span> = np.array([<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">0</span>])  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">[&#29399;, &#40165;, &#39770;, &#35987;, &#20820;]</span>
+<span class="linenr">12: </span>
+<span class="linenr">13: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27169;&#22411; A&#65306;&#29468;&#23565;&#20102;&#65292;&#23565;&#12300;&#35987;&#12301;&#26377; 70% &#30340;&#20449;&#24515;</span>
+<span class="linenr">14: </span><span style="color: #dcaeea;">y_a</span> = np.array([<span style="color: #da8548; font-weight: bold;">0.05</span>, <span style="color: #da8548; font-weight: bold;">0.05</span>, <span style="color: #da8548; font-weight: bold;">0.10</span>, <span style="color: #da8548; font-weight: bold;">0.70</span>, <span style="color: #da8548; font-weight: bold;">0.10</span>])
+<span class="linenr">15: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#27169;&#22411; A: MSE=</span>{mean_squared_error(y_a, t):.4f}<span style="color: #98be65;">, CE=</span>{cross_entropy_error(y_a, t):.4f}<span style="color: #98be65;">"</span>)
+<span class="linenr">16: </span>
+<span class="linenr">17: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27169;&#22411; B&#65306;&#29468;&#23565;&#20102;&#65292;&#20294;&#21482;&#26377; 40% &#30340;&#20449;&#24515;</span>
+<span class="linenr">18: </span><span style="color: #dcaeea;">y_b</span> = np.array([<span style="color: #da8548; font-weight: bold;">0.15</span>, <span style="color: #da8548; font-weight: bold;">0.10</span>, <span style="color: #da8548; font-weight: bold;">0.15</span>, <span style="color: #da8548; font-weight: bold;">0.40</span>, <span style="color: #da8548; font-weight: bold;">0.20</span>])
+<span class="linenr">19: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#27169;&#22411; B: MSE=</span>{mean_squared_error(y_b, t):.4f}<span style="color: #98be65;">, CE=</span>{cross_entropy_error(y_b, t):.4f}<span style="color: #98be65;">"</span>)
+<span class="linenr">20: </span>
+<span class="linenr">21: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27169;&#22411; C&#65306;&#29468;&#37679;&#20102;&#65292;&#35258;&#24471;&#26159;&#12300;&#29399;&#12301;</span>
+<span class="linenr">22: </span><span style="color: #dcaeea;">y_c</span> = np.array([<span style="color: #da8548; font-weight: bold;">0.60</span>, <span style="color: #da8548; font-weight: bold;">0.05</span>, <span style="color: #da8548; font-weight: bold;">0.10</span>, <span style="color: #da8548; font-weight: bold;">0.15</span>, <span style="color: #da8548; font-weight: bold;">0.10</span>])
+<span class="linenr">23: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#27169;&#22411; C: MSE=</span>{mean_squared_error(y_c, t):.4f}<span style="color: #98be65;">, CE=</span>{cross_entropy_error(y_c, t):.4f}<span style="color: #98be65;">"</span>)
+</pre>
+</div>
+</div>
+<div id="outline-container-org8eaa7c3" class="outline-5">
+<h5 id="org8eaa7c3"><span class="section-number-5">9.1.0.1.</span> 你的任務</h5>
+<div class="outline-text-5" id="text-9-1-0-1">
+<ol class="org-ol">
+<li>執行程式，觀察三個模型的 MSE 和 CE 值</li>
+<li>新增「模型 D」：一個超級有信心的模型，對「貓」有 99% 的信心（ <code>y_d = np.array([0.0025, 0.0025, 0.0025, 0.99, 0.0025])</code> ），計算它的 MSE 和 CE</li>
+<li>新增「模型 E」：一個完全搞不清楚狀況的模型，對每個類別都給 20% 的機率（ <code>y_e = np.array([0.2, 0.2, 0.2, 0.2, 0.2])</code> ），計算它的 MSE 和 CE</li>
+<li>把五個模型的結果填入下表，並回答：哪個損失函數對「猜錯」的懲罰更嚴厲？</li>
+</ol>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">模型</th>
+<th scope="col" class="org-left">預測</th>
+<th scope="col" class="org-left">MSE</th>
+<th scope="col" class="org-left">CE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">A</td>
+<td class="org-left">猜對，信心 70%</td>
+<td class="org-left">?</td>
+<td class="org-left">?</td>
+</tr>
+
+<tr>
+<td class="org-left">B</td>
+<td class="org-left">猜對，信心 40%</td>
+<td class="org-left">?</td>
+<td class="org-left">?</td>
+</tr>
+
+<tr>
+<td class="org-left">C</td>
+<td class="org-left">猜錯，猜成狗</td>
+<td class="org-left">?</td>
+<td class="org-left">?</td>
+</tr>
+
+<tr>
+<td class="org-left">D</td>
+<td class="org-left">猜對，信心 99%</td>
+<td class="org-left">?</td>
+<td class="org-left">?</td>
+</tr>
+
+<tr>
+<td class="org-left">E</td>
+<td class="org-left">亂猜，每個都 20%</td>
+<td class="org-left">?</td>
+<td class="org-left">?</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-org631dc30" class="outline-5">
+<h5 id="org631dc30"><span class="section-number-5">9.1.0.2.</span> 預期輸出格式</h5>
+<div class="outline-text-5" id="text-9-1-0-2">
+<pre class="example" id="org2c19317">
+模型 A: MSE=0.xxxx, CE=0.xxxx
+模型 B: MSE=0.xxxx, CE=0.xxxx
+模型 C: MSE=0.xxxx, CE=x.xxxx
+模型 D: MSE=0.xxxx, CE=0.xxxx
+模型 E: MSE=0.xxxx, CE=x.xxxx
+
+結論：交叉熵對猜錯的懲罰更嚴厲，因為...
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orge08c254" class="outline-3">
+<h3 id="orge08c254"><span class="section-number-3">9.2.</span> 作業二：Batch Size 實驗室</h3>
+<div class="outline-text-3" id="text-9-2">
+<p>
+Batch size 到底怎麼影響訓練？讓我們用一個簡單的模擬來感受一下。
+</p>
+
+<p>
+以下程式模擬了「從全班 100 個學生中抽樣來估計平均身高」的過程：
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 2: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
+<span class="linenr"> 3: </span>
+<span class="linenr"> 4: </span>np.random.seed(<span style="color: #da8548; font-weight: bold;">42</span>)
+<span class="linenr"> 5: </span>
+<span class="linenr"> 6: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20551;&#35373;&#20840;&#29677; 100 &#20154;&#30340;&#36523;&#39640;&#65288;&#24179;&#22343; 165&#65292;&#27161;&#28310;&#24046; 8&#65289;</span>
+<span class="linenr"> 7: </span><span style="color: #dcaeea;">all_heights</span> = np.random.normal(<span style="color: #da8548; font-weight: bold;">165</span>, <span style="color: #da8548; font-weight: bold;">8</span>, size=<span style="color: #da8548; font-weight: bold;">100</span>)
+<span class="linenr"> 8: </span><span style="color: #dcaeea;">true_mean</span> = np.mean(all_heights)
+<span class="linenr"> 9: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#20840;&#29677;&#30495;&#27491;&#30340;&#24179;&#22343;&#36523;&#39640;: </span>{true_mean:.1f}<span style="color: #98be65;"> cm"</span>)
+<span class="linenr">10: </span>
+<span class="linenr">11: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#29992;&#19981;&#21516;&#30340;&#12300;batch size&#12301;&#25277;&#27171; 20 &#27425;&#65292;&#35264;&#23519;&#20272;&#35336;&#20540;&#30340;&#31337;&#23450;&#24615;</span>
+<span class="linenr">12: </span><span style="color: #dcaeea;">batch_sizes</span> = [<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">5</span>, <span style="color: #da8548; font-weight: bold;">10</span>, <span style="color: #da8548; font-weight: bold;">20</span>, <span style="color: #da8548; font-weight: bold;">50</span>, <span style="color: #da8548; font-weight: bold;">100</span>]
+<span class="linenr">13: </span>
+<span class="linenr">14: </span><span style="color: #dcaeea;">fig</span>, <span style="color: #dcaeea;">axes</span> = plt.subplots(<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">3</span>, figsize=(<span style="color: #da8548; font-weight: bold;">12</span>, <span style="color: #da8548; font-weight: bold;">6</span>))
+<span class="linenr">15: </span><span style="color: #dcaeea;">axes</span> = axes.flatten()
+<span class="linenr">16: </span>
+<span class="linenr">17: </span><span style="color: #51afef;">for</span> idx, bs <span style="color: #51afef;">in</span> <span style="color: #c678dd;">enumerate</span>(batch_sizes):
+<span class="linenr">18: </span>    <span style="color: #dcaeea;">estimates</span> = []
+<span class="linenr">19: </span>    <span style="color: #51afef;">for</span> _ <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #da8548; font-weight: bold;">20</span>):
+<span class="linenr">20: </span>        <span style="color: #dcaeea;">sample</span> = np.random.choice(all_heights, size=bs, replace=<span style="color: #a9a1e1;">True</span>)
+<span class="linenr">21: </span>        estimates.append(np.mean(sample))
+<span class="linenr">22: </span>
+<span class="linenr">23: </span>    axes[idx].bar(<span style="color: #c678dd;">range</span>(<span style="color: #da8548; font-weight: bold;">20</span>), estimates, color=<span style="color: #98be65;">'steelblue'</span>, alpha=<span style="color: #da8548; font-weight: bold;">0.7</span>)
+<span class="linenr">24: </span>    axes[idx].axhline(y=true_mean, color=<span style="color: #98be65;">'red'</span>, linestyle=<span style="color: #98be65;">'--'</span>, label=f<span style="color: #98be65;">'True mean=</span>{true_mean:.1f}<span style="color: #98be65;">'</span>)
+<span class="linenr">25: </span>    axes[idx].set_title(f<span style="color: #98be65;">'Batch Size = </span>{bs}<span style="color: #98be65;">'</span>)
+<span class="linenr">26: </span>    axes[idx].set_ylim([<span style="color: #da8548; font-weight: bold;">150</span>, <span style="color: #da8548; font-weight: bold;">180</span>])
+<span class="linenr">27: </span>    axes[idx].set_xlabel(<span style="color: #98be65;">'Trial'</span>)
+<span class="linenr">28: </span>    axes[idx].set_ylabel(<span style="color: #98be65;">'Estimated Mean'</span>)
+<span class="linenr">29: </span>    <span style="color: #dcaeea;">std</span> = np.std(estimates)
+<span class="linenr">30: </span>    axes[idx].text(<span style="color: #da8548; font-weight: bold;">10</span>, <span style="color: #da8548; font-weight: bold;">177</span>, f<span style="color: #98be65;">'std=</span>{std:.2f}<span style="color: #98be65;">'</span>, ha=<span style="color: #98be65;">'center'</span>, fontsize=<span style="color: #da8548; font-weight: bold;">10</span>)
+<span class="linenr">31: </span>
+<span class="linenr">32: </span>plt.tight_layout()
+<span class="linenr">33: </span>plt.savefig(<span style="color: #98be65;">"images/loss-batch-size-sim.png"</span>, dpi=<span style="color: #da8548; font-weight: bold;">150</span>)
+<span class="linenr">34: </span>plt.close()
+<span class="linenr">35: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#22294;&#34920;&#24050;&#20786;&#23384;"</span>)
+</pre>
+</div>
+
+
+<div id="org3fd510c" class="figure">
+<p><img src="images/loss-batch-size-sim.png" alt="loss-batch-size-sim.png" width="700" />
+</p>
+<p><span class="figure-number">Figure 4: </span>不同 Batch Size 的估計穩定性</p>
+</div>
+</div>
+<div id="outline-container-orgd7c65f0" class="outline-5">
+<h5 id="orgd7c65f0"><span class="section-number-5">9.2.0.1.</span> 你的任務</h5>
+<div class="outline-text-5" id="text-9-2-0-1">
+<ol class="org-ol">
+<li>執行程式，觀察圖<a href="#org3fd510c">4</a>中不同 batch size 的估計結果</li>
+<li>回答以下問題：
+<ul class="org-ul">
+<li>Batch size = 1 時，每次估計的結果差異有多大？為什麼？</li>
+<li>Batch size = 100 時呢？</li>
+<li>這對神經網路訓練有什麼啟示？（提示：batch size 太小 → 梯度估計不穩定）</li>
+</ul></li>
+<li>挑戰題：修改程式，把全班人數改成 10000 人，然後測試 batch size = 32, 64, 128, 256, 512。觀察結果有什麼變化？</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-org67174f1" class="outline-5">
+<h5 id="org67174f1"><span class="section-number-5">9.2.0.2.</span> 預期輸出</h5>
+<div class="outline-text-5" id="text-9-2-0-2">
+<p>
+6 張子圖，清楚呈現 batch size 越大、估計值越穩定（標準差越小），以及你的文字分析。
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgd3bf95d" class="outline-3">
+<h3 id="orgd3bf95d"><span class="section-number-3">9.3.</span> 作業三：損失函數選擇指南</h3>
+<div class="outline-text-3" id="text-9-3">
+<p>
+在 Keras 中，選錯損失函數會導致模型訓練失敗。請根據以下情境，選出正確的損失函數，並說明原因：
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">編號</th>
+<th scope="col" class="org-left">情境</th>
+<th scope="col" class="org-left">你的選擇</th>
+<th scope="col" class="org-left">原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">1</td>
+<td class="org-left">預測明天的氣溫（單一數值）</td>
+<td class="org-left">?</td>
+<td class="org-left">?</td>
+</tr>
+
+<tr>
+<td class="org-right">2</td>
+<td class="org-left">辨識手寫數字 0~9（10 類，one-hot）</td>
+<td class="org-left">?</td>
+<td class="org-left">?</td>
+</tr>
+
+<tr>
+<td class="org-right">3</td>
+<td class="org-left">判斷一封郵件是不是垃圾郵件</td>
+<td class="org-left">?</td>
+<td class="org-left">?</td>
+</tr>
+
+<tr>
+<td class="org-right">4</td>
+<td class="org-left">預測房價</td>
+<td class="org-left">?</td>
+<td class="org-left">?</td>
+</tr>
+
+<tr>
+<td class="org-right">5</td>
+<td class="org-left">辨識 ImageNet 的 1000 種物體（整數標籤）</td>
+<td class="org-left">?</td>
+<td class="org-left">?</td>
+</tr>
+
+<tr>
+<td class="org-right">6</td>
+<td class="org-left">預測一張照片中每個像素的深度值</td>
+<td class="org-left">?</td>
+<td class="org-left">?</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+選項：
+</p>
+<ul class="org-ul">
+<li>A. <code>mean_squared_error</code></li>
+<li>B. <code>binary_crossentropy</code></li>
+<li>C. <code>categorical_crossentropy</code></li>
+<li>D. <code>sparse_categorical_crossentropy</code></li>
+</ul>
+</div>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2024-02-18 Sun 14:08</p>
+<p class="date">Created: 2026-02-14 Sat 21:43</p>
 </div>
 </body>
 </html>

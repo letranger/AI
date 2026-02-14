@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2025-07-16 Wed 17:38 -->
+<!-- 2026-02-14 Sat 15:40 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>監督式學習</title>
@@ -235,50 +235,57 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgfeb32c1">1. 簡介</a>
+<li><a href="#orgc2cfd5a">1. 簡介</a>
 <ul>
-<li><a href="#orgb8e65e6">1.1. 監督式學習的主要類型</a></li>
-<li><a href="#org3eda1ca">1.2. 範例</a></li>
-<li><a href="#org809ebbe">1.3. 監督式學習的延伸應用</a></li>
+<li><a href="#orgebfc7c7">1.1. 監督式學習的主要類型</a></li>
+<li><a href="#org6a0784f">1.2. 範例</a></li>
+<li><a href="#org4291a27">1.3. 監督式學習的延伸應用</a></li>
 </ul>
 </li>
-<li><a href="#orgf361444">2. 監督式學習流程與演算法</a>
+<li><a href="#org6c8c0de">2. 監督式學習流程與演算法</a>
 <ul>
-<li><a href="#orge92d788">2.1. 監督式學習流程</a></li>
-<li><a href="#orgdd49f7b">2.2. 監督式學習演算法</a></li>
+<li><a href="#org94e639a">2.1. 監督式學習流程</a></li>
+<li><a href="#org4615335">2.2. 監督式學習演算法</a></li>
 </ul>
 </li>
-<li><a href="#org2ba183c">3. 監督式學習實作</a></li>
+<li><a href="#org16369ba">3. 模型評估指標</a>
+<ul>
+<li><a href="#orgc352b44">3.1. 分類問題的評估指標</a></li>
+<li><a href="#org6306b89">3.2. 迴歸問題的評估指標</a></li>
+<li><a href="#org65e78b9">3.3. 交叉驗證（Cross-Validation）</a></li>
+</ul>
+</li>
+<li><a href="#org4d588e0">4. 監督式學習實作</a></li>
 </ul>
 </div>
 </div>
 <a href="https://letranger.github.io/AI/20221023101626-監督式學習.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20221023101626-監督式學習.html.svg"/></a>
-<div id="outline-container-orgfeb32c1" class="outline-2">
-<h2 id="orgfeb32c1"><span class="section-number-2">1.</span> 簡介</h2>
+<div id="outline-container-orgc2cfd5a" class="outline-2">
+<h2 id="orgc2cfd5a"><span class="section-number-2">1.</span> 簡介</h2>
 <div class="outline-text-2" id="text-1">
 <p>
-監督式學習獲得的結果可以是數值、也可以是類別，以結果分類，我們可以將監督式學分大致分為兩類：<a href="20221023154410-regression.html#ID-6ae7fb7a-0b38-4448-b19f-073d262513f2">迴歸</a>(結果為數值)與<a href="20231204210821-分類.html#ID-1592687a-cca7-4473-83a0-682a36394a28">分類</a>(結果為類別)。
+監督式學習獲得的結果可以是數值、也可以是類別，以結果分類，我們可以將監督式學習大致分為兩類：<a href="20221023154410-regression.html#ID-6ae7fb7a-0b38-4448-b19f-073d262513f2">迴歸</a>(結果為數值)與<a href="20231204210821-分類.html#ID-1592687a-cca7-4473-83a0-682a36394a28">分類</a>(結果為類別)。
 </p>
 
-<div id="orgcf7616e" class="figure">
+<div id="org1d50bdb" class="figure">
 <p><img src="images/AI,_Machine_Learning與Deep_Learning/2024-02-19_16-24-48_2024-02-19_16-23-09.png" alt="2024-02-19_16-24-48_2024-02-19_16-23-09.png" width="500" />
 </p>
 <p><span class="figure-number">Figure 1: </span>AI, Machine Learning與Deep Learning</p>
 </div>
 </div>
-<div id="outline-container-orgb8e65e6" class="outline-3">
-<h3 id="orgb8e65e6"><span class="section-number-3">1.1.</span> 監督式學習的主要類型</h3>
+<div id="outline-container-orgebfc7c7" class="outline-3">
+<h3 id="orgebfc7c7"><span class="section-number-3">1.1.</span> 監督式學習的主要類型</h3>
 <div class="outline-text-3" id="text-1-1">
 </div>
-<div id="outline-container-orgc2d309e" class="outline-4">
-<h4 id="orgc2d309e"><span class="section-number-4">1.1.1.</span> 分類(Cliasification)</h4>
+<div id="outline-container-org2130cd7" class="outline-4">
+<h4 id="org2130cd7"><span class="section-number-4">1.1.1.</span> 分類(Classification)</h4>
 <div class="outline-text-4" id="text-1-1-1">
 <p>
 分類問題也稱為離散(discrete)預測問題，因為每個分類都是一個離散群組。在監督式學習（supervised learning）中，提供給模型的訓練集（training set）包含了特徵（features）和標籤（labels）。特徵是用來描述資料的屬性，而標籤則是用來表示資料所屬的類別。模型透過學習這些特徵與標籤之間的關係，來預測新的資料點所屬的類別。
 </p>
 
 
-<div id="org01bf7eb" class="figure">
+<div id="org92f0f15" class="figure">
 <p><img src="images/2022-04-30_10-38-58.jpg" alt="2022-04-30_10-38-58.jpg" width="500" />
 </p>
 <p><span class="figure-number">Figure 2: </span>典型的監督式學習：垃圾郵件分類</p>
@@ -297,8 +304,8 @@
 </p>
 </div>
 </div>
-<div id="outline-container-org0f60ab7" class="outline-4">
-<h4 id="org0f60ab7"><span class="section-number-4">1.1.2.</span> 迴歸(Regression)</h4>
+<div id="outline-container-org44ab9d0" class="outline-4">
+<h4 id="org44ab9d0"><span class="section-number-4">1.1.2.</span> 迴歸(Regression)</h4>
 <div class="outline-text-4" id="text-1-1-2">
 <p>
 另一種監督式學習為<a href="20221023154410-regression.html#ID-6ae7fb7a-0b38-4448-b19f-073d262513f2">迴歸</a>（regression），即，根據一組預測特徵（predictor，如里程數、車齡、品牌）來預測目標數值（如二手車車價）<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>，這個目標數值也是label。
@@ -316,14 +323,14 @@
 <ul class="org-ul">
 <li>假設輸入變量(x)與單一輸出變量(y)間存在線性關係，並以此建立模型。</li>
 <li>優點: 簡單、容易解釋</li>
-<li>缺點: 輸入與輸出變量關係為線性時會導致低度擬合</li>
+<li>缺點: 當輸入與輸出變量間的關係為非線性時會導致低度擬合</li>
 <li>例: 身高與體重間的關係</li>
 </ul></li>
 <li>Logistic regression
 <ul class="org-ul">
-<li>也是線性方法，但使用logist function轉換輸出的預測結果，其輸出結果為類別機率(class probabilities)</li>
+<li>也是線性方法，但使用logistic function轉換輸出的預測結果，其輸出結果為類別機率(class probabilities)</li>
 <li>優點: 簡單、容易解釋</li>
-<li>缺點: 輸入與輸出變量關係為線性時無法處理分類問題</li>
+<li>缺點: 決策邊界為線性，當資料的分類邊界為非線性時表現較差</li>
 </ul></li>
 </ul>
 
@@ -333,12 +340,12 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org3eda1ca" class="outline-3">
-<h3 id="org3eda1ca"><span class="section-number-3">1.2.</span> 範例</h3>
+<div id="outline-container-org6a0784f" class="outline-3">
+<h3 id="org6a0784f"><span class="section-number-3">1.2.</span> 範例</h3>
 <div class="outline-text-3" id="text-1-2">
 </div>
-<div id="outline-container-orgaca0452" class="outline-4">
-<h4 id="orgaca0452"><span class="section-number-4">1.2.1.</span> 信用卡詐欺</h4>
+<div id="outline-container-org768e8b9" class="outline-4">
+<h4 id="org768e8b9"><span class="section-number-4">1.2.1.</span> 信用卡詐欺</h4>
 <div class="outline-text-4" id="text-1-2-1">
 <p>
 以信用卡公司來說，信用卡詐欺可以透過各種資料對照評分，預測出該事件的分數。例如
@@ -352,16 +359,16 @@
 </p>
 </div>
 </div>
-<div id="outline-container-org873d27e" class="outline-4">
-<h4 id="org873d27e"><span class="section-number-4">1.2.2.</span> 影像辨識</h4>
+<div id="outline-container-orgbfd9c73" class="outline-4">
+<h4 id="orgbfd9c73"><span class="section-number-4">1.2.2.</span> 影像辨識</h4>
 <div class="outline-text-4" id="text-1-2-2">
 <p>
 典型的例子：資料為手寫數字的影像，這些影像會加上註解(label)，以指示其所代表的數字。只要有足夠的標記資料，監督式學習系統最終會辨識出與每個手寫數字關聯的像素和形狀類別。機器學習在影像辨識上的精準度目前已可超過人類的水準。
 </p>
 </div>
 </div>
-<div id="outline-container-org62c66aa" class="outline-4">
-<h4 id="org62c66aa"><span class="section-number-4">1.2.3.</span> 學測成績</h4>
+<div id="outline-container-org65acea2" class="outline-4">
+<h4 id="org65acea2"><span class="section-number-4">1.2.3.</span> 學測成績</h4>
 <div class="outline-text-4" id="text-1-2-3">
 <p>
 如果目標是要「預測學生學測總級分」，那麼，我們得先了解有那些因素會影響學生的學測成績，初步估計也許包括以下因素：
@@ -377,10 +384,10 @@
 </ol>
 
 <p>
-此時，我們的預測模型就如圖<a href="#orgd580a42">3</a>所示
+此時，我們的預測模型就如圖<a href="#org585171d">3</a>所示
 </p>
 
-<div id="orgd580a42" class="figure">
+<div id="org585171d" class="figure">
 <p><img src="images/exam-network1.png" alt="exam-network1.png" width="500" />
 </p>
 <p><span class="figure-number">Figure 3: </span>學測成績預測模型#1</p>
@@ -472,14 +479,14 @@
 </table>
 
 <p>
-此時，我們的預測模型就如圖<a href="#orgf2541b9">4</a>所示，換言之，是在解下列方程式(也就是找出最好的、最適合的參數 \(w_1, w_2, w_3, ..., w_7\) )：\[f(x)=x_1*w_1+x_2*w_2+x_3*w_3+...+x_7*w_7\]，
+此時，我們的預測模型就如圖<a href="#org024a649">4</a>所示，換言之，是在解下列方程式(也就是找出最好的、最適合的參數 \(w_1, w_2, w_3, ..., w_7\) )：\[f(x)=x_1*w_1+x_2*w_2+x_3*w_3+...+x_7*w_7\]，
 </p>
 
 <p>
-我們可以先針對這些特徵值對學生進行問卷調查，並追踪學生的學測成績，最後將取得的大量feature(7個等徵值)與label(學測成績)輸入到我們的函數模型（圖<a href="#orgf2541b9">4</a>）中，觀察計算結果與實際資料的吻合程度，藉由不斷的調整參數（\(w_1, w_2, w_3, ..., w_7\) ，也稱為weight/權重）來控制函數，讓輸出的計算結果與實際答案完全吻合，以便求得最準確的函數。
+我們可以先針對這些特徵值對學生進行問卷調查，並追踪學生的學測成績，最後將取得的大量feature(7個特徵值)與label(學測成績)輸入到我們的函數模型（圖<a href="#org024a649">4</a>）中，觀察計算結果與實際資料的吻合程度，藉由不斷的調整參數（\(w_1, w_2, w_3, ..., w_7\) ，也稱為weight/權重）來控制函數，讓輸出的計算結果與實際答案完全吻合，以便求得最準確的函數。
 </p>
 
-<div id="orgf2541b9" class="figure">
+<div id="org024a649" class="figure">
 <p><img src="images/exam-network2.png" alt="exam-network2.png" width="500" />
 </p>
 <p><span class="figure-number">Figure 4: </span>學測成績預測模型#2</p>
@@ -498,7 +505,7 @@
 </p>
 
 <p>
-在非監督式學習的情境下，假設我們並不知道每位學生的學測總級分，而只有他們的各種特徵資料（如上課狀況、是否認真寫作業、歷次段考成績等）。這時，我們可以將每位學生在這些特徵上的表現看作是在一個多維空間中的一個點。接著，利用**分類（clustering）**等非監督式演算法來分析所有學生在這個空間中的分布情形。例如，我們可以利用 K-means 分群等方法，將特徵類似的學生自動歸為同一類。這樣做的目的可能是：
+在非監督式學習的情境下，假設我們並不知道每位學生的學測總級分，而只有他們的各種特徵資料（如上課狀況、是否認真寫作業、歷次段考成績等）。這時，我們可以將每位學生在這些特徵上的表現看作是在一個多維空間中的一個點。接著，利用*分群（clustering）*等非監督式演算法來分析所有學生在這個空間中的分布情形。例如，我們可以利用 K-means 分群等方法，將特徵類似的學生自動歸為同一類。這樣做的目的可能是：
 </p>
 <ul class="org-ul">
 <li>找出哪些學生屬於「高風險群」或「高表現群」</li>
@@ -552,15 +559,15 @@
 </div>
 </div>
 </div>
-<div id="outline-container-org809ebbe" class="outline-3">
-<h3 id="org809ebbe"><span class="section-number-3">1.3.</span> 監督式學習的延伸應用</h3>
+<div id="outline-container-org4291a27" class="outline-3">
+<h3 id="org4291a27"><span class="section-number-3">1.3.</span> 監督式學習的延伸應用</h3>
 <div class="outline-text-3" id="text-1-3">
 <p>
 <a href="20221023101626-監督式學習.html#ID-20221023T101626.420918">監督式學習</a>主要分為<a href="20231204210821-分類.html#ID-1592687a-cca7-4473-83a0-682a36394a28">分類</a>與<a href="20221023154410-regression.html#ID-6ae7fb7a-0b38-4448-b19f-073d262513f2">迴歸</a>兩大類型，但實務上也有許多延伸應用，常見例子如下：
 </p>
 <ol class="org-ol">
 <li>序列生成（Sequence Generation）
-例如，給定一張圖片，自動產生一個描述標題，或是根據一段連續資料預測下一步的內容。例如，給定一段文字，預測下一個字或詞)，這類任務通常需要模型理解上下文關係，並生成符合語意的輸出。</li>
+例如，給定一張圖片，自動產生一個描述標題，或是根據一段連續資料預測下一步的內容。例如，給定一段文字，預測下一個字或詞，這類任務通常需要模型理解上下文關係，並生成符合語意的輸出。</li>
 <li>語法樹預測（Syntax Tree Prediction）
 輸入一個句子，模型會根據語意結構將其分解成對應的語法樹。</li>
 <li>物體偵測（Object Detection）
@@ -590,12 +597,12 @@
 </div>
 </div>
 </div>
-<div id="outline-container-orgf361444" class="outline-2">
-<h2 id="orgf361444"><span class="section-number-2">2.</span> 監督式學習流程與演算法</h2>
+<div id="outline-container-org6c8c0de" class="outline-2">
+<h2 id="org6c8c0de"><span class="section-number-2">2.</span> 監督式學習流程與演算法</h2>
 <div class="outline-text-2" id="text-2">
 </div>
-<div id="outline-container-orge92d788" class="outline-3">
-<h3 id="orge92d788"><span class="section-number-3">2.1.</span> 監督式學習流程</h3>
+<div id="outline-container-org94e639a" class="outline-3">
+<h3 id="org94e639a"><span class="section-number-3">2.1.</span> 監督式學習流程</h3>
 <div class="outline-text-3" id="text-2-1">
 <ol class="org-ol">
 <li>準備學習對象的資料</li>
@@ -607,12 +614,12 @@
 </ol>
 </div>
 </div>
-<div id="outline-container-orgdd49f7b" class="outline-3">
-<h3 id="orgdd49f7b"><span class="section-number-3">2.2.</span> 監督式學習演算法</h3>
+<div id="outline-container-org4615335" class="outline-3">
+<h3 id="org4615335"><span class="section-number-3">2.2.</span> 監督式學習演算法</h3>
 <div class="outline-text-3" id="text-2-2">
 </div>
-<div id="outline-container-org647e56d" class="outline-4">
-<h4 id="org647e56d"><span class="section-number-4">2.2.1.</span> K-nearest neighbors (KNN)</h4>
+<div id="outline-container-org2b7da56" class="outline-4">
+<h4 id="org2b7da56"><span class="section-number-4">2.2.1.</span> K-nearest neighbors (KNN)</h4>
 <div class="outline-text-4" id="text-2-2-1">
 <p>
 KNN藉由找出與新資料點最相近的 <i>k</i> 個已具有label的資料點，讓這些資料點投票決定新資料點的label。
@@ -622,46 +629,562 @@ KNN藉由找出與新資料點最相近的 <i>k</i> 個已具有label的資料�
 <li>缺點: 隨著資料與features的數量增加，KNN的效果也會降低； <i>k</i> 值的選擇也會影響KNN的效果，太小的 <i>k</i> 值會導致過度擬合、太高的 <i>k</i> 值則會低度擬合。</li>
 <li>應用: 經常用於推薦系統</li>
 </ul>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">from</span> sklearn.datasets <span style="color: #51afef;">import</span> load_iris
+<span class="linenr"> 2: </span><span style="color: #51afef;">from</span> sklearn.model_selection <span style="color: #51afef;">import</span> train_test_split
+<span class="linenr"> 3: </span><span style="color: #51afef;">from</span> sklearn.neighbors <span style="color: #51afef;">import</span> KNeighborsClassifier
+<span class="linenr"> 4: </span><span style="color: #51afef;">from</span> sklearn.metrics <span style="color: #51afef;">import</span> accuracy_score
+<span class="linenr"> 5: </span>
+<span class="linenr"> 6: </span><span style="color: #dcaeea;">X</span>, <span style="color: #dcaeea;">y</span> = load_iris(return_X_y=<span style="color: #a9a1e1;">True</span>)
+<span class="linenr"> 7: </span><span style="color: #dcaeea;">X_train</span>, <span style="color: #dcaeea;">X_test</span>, <span style="color: #dcaeea;">y_train</span>, <span style="color: #dcaeea;">y_test</span> = train_test_split(X, y, test_size=<span style="color: #da8548; font-weight: bold;">0.3</span>, random_state=<span style="color: #da8548; font-weight: bold;">42</span>)
+<span class="linenr"> 8: </span>
+<span class="linenr"> 9: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;&#31435; KNN &#27169;&#22411;&#65288;k=5&#65289;</span>
+<span class="linenr">10: </span><span style="color: #dcaeea;">knn</span> = KNeighborsClassifier(n_neighbors=<span style="color: #da8548; font-weight: bold;">5</span>)
+<span class="linenr">11: </span>knn.fit(X_train, y_train)
+<span class="linenr">12: </span>
+<span class="linenr">13: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38928;&#28204;&#33287;&#35413;&#20272;</span>
+<span class="linenr">14: </span><span style="color: #dcaeea;">y_pred</span> = knn.predict(X_test)
+<span class="linenr">15: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"KNN (k=5) &#28310;&#30906;&#29575;: </span>{accuracy_score(y_test, y_pred):.4f}<span style="color: #98be65;">"</span>)
+<span class="linenr">16: </span>
+<span class="linenr">17: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35264;&#23519;&#19981;&#21516; k &#20540;&#23565;&#28310;&#30906;&#29575;&#30340;&#24433;&#38911;</span>
+<span class="linenr">18: </span><span style="color: #51afef;">for</span> k <span style="color: #51afef;">in</span> [<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">3</span>, <span style="color: #da8548; font-weight: bold;">5</span>, <span style="color: #da8548; font-weight: bold;">7</span>, <span style="color: #da8548; font-weight: bold;">9</span>]:
+<span class="linenr">19: </span>    <span style="color: #dcaeea;">knn</span> = KNeighborsClassifier(n_neighbors=k)
+<span class="linenr">20: </span>    knn.fit(X_train, y_train)
+<span class="linenr">21: </span>    <span style="color: #dcaeea;">score</span> = knn.score(X_test, y_test)
+<span class="linenr">22: </span>    <span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"  k=</span>{k}<span style="color: #98be65;">: </span>{score:.4f}<span style="color: #98be65;">"</span>)
+</pre>
 </div>
 </div>
-<div id="outline-container-org48ae41b" class="outline-4">
-<h4 id="org48ae41b"><span class="section-number-4">2.2.2.</span> Methods based on tree(Decision tree and Random Forest)</h4>
+</div>
+<div id="outline-container-orgccc6069" class="outline-4">
+<h4 id="orgccc6069"><span class="section-number-4">2.2.2.</span> 決策樹與隨機森林（Decision Tree and Random Forest）</h4>
 <div class="outline-text-4" id="text-2-2-2">
+</div>
+<ol class="org-ol">
+<li><a id="org0492479"></a>決策樹（Decision Tree）<br />
+<div class="outline-text-5" id="text-2-2-2-1">
+<p>
+決策樹透過一連串的「是/否」問題將資料逐步分割，最終達成分類或迴歸預測。其核心問題在於：每一步該選哪個特徵、用什麼條件來分割？這就需要「分裂準則」。
+</p>
+</div>
+<ol class="org-ol">
+<li><a id="org03dbbba"></a>分裂準則<br />
+<div class="outline-text-6" id="text-2-2-2-1-1">
 <ul class="org-ul">
-<li>Single decision tree: 遍歷所有訓練資枓來建立規則，但容易過度擬合</li>
-<li>Bagging: 將上述tree加入bootstrap aggregation(如bagging)，即，使用多次隨機實例採樣(multiple random samples of instances)，並為每次採樣建立一棵decision tree，並對每個資料實例進行預測，預測方式為透過平均每棵樹的預測結果，藉由這種方式可以解決decision tree容易過度擬合的問題。</li>
-<li>Random forest: 除了將資料實例進行採樣，也對每棵decision tree的分支條件中 <b>待預測label</b> 進行隨機採樣，而非使用所有的待預測label。透過這種方式，random forest可以建立出彼此相關性更低的decision，進而改善過度擬合與泛化誤差。</li>
+<li>*熵（Entropy）*：衡量資料的混亂程度（不確定性）。若一組資料全部屬於同一類別，熵為 0（最純）；若各類別各佔一半，熵最大。
+\[H(S) = -\sum_{i=1}^{c} p_i \log_2 p_i\]
+其中 \(p_i\) 為第 \(i\) 類別在資料集 \(S\) 中的比例，\(c\) 為類別數。</li>
+<li>*資訊增益（Information Gain）*：分割前後熵的減少量。決策樹會選擇資訊增益最大的特徵進行分割。
+\[IG(S, A) = H(S) - \sum_{v \in \text{values}(A)} \frac{|S_v|}{|S|} H(S_v)\]</li>
+<li>*吉尼不純度（Gini Impurity）*：另一種衡量混亂程度的指標，計算更快。scikit-learn 的決策樹預設使用 Gini。
+\[Gini(S) = 1 - \sum_{i=1}^{c} p_i^2\]</li>
 </ul>
+
+<p>
+決策樹的特點：
+</p>
+<ul class="org-ul">
+<li>優點：直觀易懂、結果可解釋（可視覺化為樹狀圖）、不需特徵縮放</li>
+<li>缺點：容易過度擬合（overfitting），尤其是樹的深度不加限制時</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">from</span> sklearn.datasets <span style="color: #51afef;">import</span> load_iris
+<span class="linenr"> 2: </span><span style="color: #51afef;">from</span> sklearn.model_selection <span style="color: #51afef;">import</span> train_test_split
+<span class="linenr"> 3: </span><span style="color: #51afef;">from</span> sklearn.tree <span style="color: #51afef;">import</span> DecisionTreeClassifier, export_text
+<span class="linenr"> 4: </span><span style="color: #51afef;">from</span> sklearn.metrics <span style="color: #51afef;">import</span> accuracy_score
+<span class="linenr"> 5: </span>
+<span class="linenr"> 6: </span><span style="color: #dcaeea;">X</span>, <span style="color: #dcaeea;">y</span> = load_iris(return_X_y=<span style="color: #a9a1e1;">True</span>)
+<span class="linenr"> 7: </span><span style="color: #dcaeea;">feature_names</span> = load_iris().feature_names
+<span class="linenr"> 8: </span><span style="color: #dcaeea;">X_train</span>, <span style="color: #dcaeea;">X_test</span>, <span style="color: #dcaeea;">y_train</span>, <span style="color: #dcaeea;">y_test</span> = train_test_split(X, y, test_size=<span style="color: #da8548; font-weight: bold;">0.3</span>, random_state=<span style="color: #da8548; font-weight: bold;">42</span>)
+<span class="linenr"> 9: </span>
+<span class="linenr">10: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;&#31435;&#27770;&#31574;&#27193;&#65288;&#38480;&#21046;&#28145;&#24230;&#28858; 3&#65292;&#36991;&#20813;&#36942;&#24230;&#25836;&#21512;&#65289;</span>
+<span class="linenr">11: </span><span style="color: #dcaeea;">dt</span> = DecisionTreeClassifier(max_depth=<span style="color: #da8548; font-weight: bold;">3</span>, random_state=<span style="color: #da8548; font-weight: bold;">42</span>)
+<span class="linenr">12: </span>dt.fit(X_train, y_train)
+<span class="linenr">13: </span>
+<span class="linenr">14: </span><span style="color: #dcaeea;">y_pred</span> = dt.predict(X_test)
+<span class="linenr">15: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"Decision Tree &#28310;&#30906;&#29575;: </span>{accuracy_score(y_test, y_pred):.4f}<span style="color: #98be65;">"</span>)
+<span class="linenr">16: </span>
+<span class="linenr">17: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21360;&#20986;&#27770;&#31574;&#27193;&#30340;&#35215;&#21063;&#65288;&#21487;&#35299;&#37323;&#24615;&#39640;&#65289;</span>
+<span class="linenr">18: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">&#27770;&#31574;&#27193;&#35215;&#21063;:"</span>)
+<span class="linenr">19: </span><span style="color: #c678dd;">print</span>(export_text(dt, feature_names=feature_names))
+</pre>
 </div>
 </div>
-<div id="outline-container-org40fb475" class="outline-4">
-<h4 id="org40fb475"><span class="section-number-4">2.2.3.</span> Boosting</h4>
+</li>
+</ol>
+</li>
+<li><a id="orge405854"></a>Bagging 與隨機森林<br />
+<div class="outline-text-5" id="text-2-2-2-2">
+<ul class="org-ul">
+<li>*Bagging*（Bootstrap Aggregation）：使用多次隨機抽樣（有放回抽樣）建立多棵 decision tree，再透過平均（迴歸）或多數決（分類）彙整預測結果，藉此降低過度擬合。</li>
+<li>*Random Forest*：在 Bagging 的基礎上，每棵樹的每次分裂只從隨機挑選的部分特徵中選擇最佳分裂條件（而非使用所有特徵）。這使得各棵樹之間相關性更低，進一步改善泛化能力。
+<ul class="org-ul">
+<li>優點：準確度高、不易過度擬合、能評估特徵重要性</li>
+<li>缺點：可解釋性較單棵決策樹低、訓練時間較長</li>
+</ul></li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">from</span> sklearn.datasets <span style="color: #51afef;">import</span> load_iris
+<span class="linenr"> 2: </span><span style="color: #51afef;">from</span> sklearn.model_selection <span style="color: #51afef;">import</span> train_test_split
+<span class="linenr"> 3: </span><span style="color: #51afef;">from</span> sklearn.ensemble <span style="color: #51afef;">import</span> RandomForestClassifier
+<span class="linenr"> 4: </span><span style="color: #51afef;">from</span> sklearn.metrics <span style="color: #51afef;">import</span> accuracy_score
+<span class="linenr"> 5: </span>
+<span class="linenr"> 6: </span><span style="color: #dcaeea;">X</span>, <span style="color: #dcaeea;">y</span> = load_iris(return_X_y=<span style="color: #a9a1e1;">True</span>)
+<span class="linenr"> 7: </span><span style="color: #dcaeea;">feature_names</span> = load_iris().feature_names
+<span class="linenr"> 8: </span><span style="color: #dcaeea;">X_train</span>, <span style="color: #dcaeea;">X_test</span>, <span style="color: #dcaeea;">y_train</span>, <span style="color: #dcaeea;">y_test</span> = train_test_split(X, y, test_size=<span style="color: #da8548; font-weight: bold;">0.3</span>, random_state=<span style="color: #da8548; font-weight: bold;">42</span>)
+<span class="linenr"> 9: </span>
+<span class="linenr">10: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;&#31435; Random Forest&#65288;100 &#26869;&#27193;&#65289;</span>
+<span class="linenr">11: </span><span style="color: #dcaeea;">rf</span> = RandomForestClassifier(n_estimators=<span style="color: #da8548; font-weight: bold;">100</span>, random_state=<span style="color: #da8548; font-weight: bold;">42</span>)
+<span class="linenr">12: </span>rf.fit(X_train, y_train)
+<span class="linenr">13: </span>
+<span class="linenr">14: </span><span style="color: #dcaeea;">y_pred</span> = rf.predict(X_test)
+<span class="linenr">15: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"Random Forest &#28310;&#30906;&#29575;: </span>{accuracy_score(y_test, y_pred):.4f}<span style="color: #98be65;">"</span>)
+<span class="linenr">16: </span>
+<span class="linenr">17: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39023;&#31034;&#21508;&#29305;&#24501;&#30340;&#37325;&#35201;&#24615;&#25490;&#21517;</span>
+<span class="linenr">18: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">&#29305;&#24501;&#37325;&#35201;&#24615;:"</span>)
+<span class="linenr">19: </span><span style="color: #51afef;">for</span> name, imp <span style="color: #51afef;">in</span> <span style="color: #c678dd;">sorted</span>(<span style="color: #c678dd;">zip</span>(feature_names, rf.feature_importances_),
+<span class="linenr">20: </span>                         key=<span style="color: #51afef;">lambda</span> x: x[<span style="color: #da8548; font-weight: bold;">1</span>], reverse=<span style="color: #a9a1e1;">True</span>):
+<span class="linenr">21: </span>    <span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"  </span>{name}<span style="color: #98be65;">: </span>{imp:.4f}<span style="color: #98be65;">"</span>)
+</pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+<div id="outline-container-org75d14f5" class="outline-4">
+<h4 id="org75d14f5"><span class="section-number-4">2.2.3.</span> Boosting</h4>
 <div class="outline-text-4" id="text-2-2-3">
 <p>
-同樣是建立許多樹，但是它 <b>依多建立每棵decision tree</b> , 利用前一棵decision所習得的資訊來改善下一棵decision tree的預測結果。是所有tree-based solution中表現最好的方式，也是許多machine learning比賽的常勝軍。
+Boosting 同樣是建立許多樹，但它 <b>依序建立每棵 decision tree</b> ，每一棵新樹專注於修正前一棵樹的預測錯誤，逐步提升整體模型的表現。是所有 tree-based solution 中表現最好的方式，也是許多 machine learning 比賽的常勝軍。
 </p>
+
+<p>
+常見的 Boosting 演算法：
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">演算法</th>
+<th scope="col" class="org-left">特點</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">AdaBoost</td>
+<td class="org-left">最早的 Boosting 方法，調高被前一輪分錯的樣本的權重</td>
+</tr>
+
+<tr>
+<td class="org-left">Gradient Boosting</td>
+<td class="org-left">每棵新樹擬合前一輪的殘差（residual），以梯度下降方式優化</td>
+</tr>
+
+<tr>
+<td class="org-left">XGBoost</td>
+<td class="org-left">Gradient Boosting 的高效實作，加入正則化防止過度擬合，速度快</td>
+</tr>
+
+<tr>
+<td class="org-left">LightGBM</td>
+<td class="org-left">微軟開發，使用 leaf-wise 生長策略，處理大規模資料效率極高</td>
+</tr>
+
+<tr>
+<td class="org-left">CatBoost</td>
+<td class="org-left">Yandex 開發，原生支援類別型特徵，不需額外編碼</td>
+</tr>
+</tbody>
+</table>
+
 <ul class="org-ul">
-<li>優點：performance佳，能處理資料缺失與特徵分類問題</li>
-<li>缺點：可解釋性低</li>
+<li>優點：預測準確度高，能處理資料缺失與類別型特徵</li>
+<li>缺點：可解釋性低、需要仔細調參、訓練時間較 Random Forest 長</li>
+</ul>
+
+<blockquote>
+<p>
+在實務應用與 Kaggle 等機器學習競賽中，XGBoost 和 LightGBM 是最常被使用的演算法，處理結構化（表格）資料時，表現通常優於深度學習。
+</p>
+</blockquote>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">from</span> sklearn.datasets <span style="color: #51afef;">import</span> load_iris
+<span class="linenr"> 2: </span><span style="color: #51afef;">from</span> sklearn.model_selection <span style="color: #51afef;">import</span> train_test_split
+<span class="linenr"> 3: </span><span style="color: #51afef;">from</span> sklearn.ensemble <span style="color: #51afef;">import</span> GradientBoostingClassifier
+<span class="linenr"> 4: </span><span style="color: #51afef;">from</span> sklearn.metrics <span style="color: #51afef;">import</span> accuracy_score
+<span class="linenr"> 5: </span>
+<span class="linenr"> 6: </span><span style="color: #dcaeea;">X</span>, <span style="color: #dcaeea;">y</span> = load_iris(return_X_y=<span style="color: #a9a1e1;">True</span>)
+<span class="linenr"> 7: </span><span style="color: #dcaeea;">X_train</span>, <span style="color: #dcaeea;">X_test</span>, <span style="color: #dcaeea;">y_train</span>, <span style="color: #dcaeea;">y_test</span> = train_test_split(X, y, test_size=<span style="color: #da8548; font-weight: bold;">0.3</span>, random_state=<span style="color: #da8548; font-weight: bold;">42</span>)
+<span class="linenr"> 8: </span>
+<span class="linenr"> 9: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;&#31435; Gradient Boosting &#27169;&#22411;</span>
+<span class="linenr">10: </span><span style="color: #dcaeea;">gb</span> = GradientBoostingClassifier(
+<span class="linenr">11: </span>    n_estimators=<span style="color: #da8548; font-weight: bold;">100</span>,    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27193;&#30340;&#25976;&#37327;</span>
+<span class="linenr">12: </span>    learning_rate=<span style="color: #da8548; font-weight: bold;">0.1</span>,   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23416;&#32722;&#29575;&#65288;&#27599;&#26869;&#27193;&#30340;&#36002;&#29563;&#24230;&#65289;</span>
+<span class="linenr">13: </span>    max_depth=<span style="color: #da8548; font-weight: bold;">3</span>,         <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27599;&#26869;&#27193;&#30340;&#26368;&#22823;&#28145;&#24230;</span>
+<span class="linenr">14: </span>    random_state=<span style="color: #da8548; font-weight: bold;">42</span>
+<span class="linenr">15: </span>)
+<span class="linenr">16: </span>gb.fit(X_train, y_train)
+<span class="linenr">17: </span>
+<span class="linenr">18: </span><span style="color: #dcaeea;">y_pred</span> = gb.predict(X_test)
+<span class="linenr">19: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"Gradient Boosting &#28310;&#30906;&#29575;: </span>{accuracy_score(y_test, y_pred):.4f}<span style="color: #98be65;">"</span>)
+<span class="linenr">20: </span>
+<span class="linenr">21: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35264;&#23519;&#38568;&#33879;&#27193;&#30340;&#25976;&#37327;&#22686;&#21152;&#65292;&#35347;&#32244;&#33287;&#28204;&#35430;&#28310;&#30906;&#29575;&#30340;&#35722;&#21270;</span>
+<span class="linenr">22: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr">23: </span><span style="color: #dcaeea;">train_scores</span> = []
+<span class="linenr">24: </span><span style="color: #dcaeea;">test_scores</span> = []
+<span class="linenr">25: </span><span style="color: #51afef;">for</span> i, y_pred_train <span style="color: #51afef;">in</span> <span style="color: #c678dd;">enumerate</span>(gb.staged_predict(X_train)):
+<span class="linenr">26: </span>    train_scores.append(accuracy_score(y_train, y_pred_train))
+<span class="linenr">27: </span><span style="color: #51afef;">for</span> i, y_pred_test <span style="color: #51afef;">in</span> <span style="color: #c678dd;">enumerate</span>(gb.staged_predict(X_test)):
+<span class="linenr">28: </span>    test_scores.append(accuracy_score(y_test, y_pred_test))
+<span class="linenr">29: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#31532; 10 &#26869;&#27193;&#26178;&#28204;&#35430;&#28310;&#30906;&#29575;: </span>{test_scores[9]:.4f}<span style="color: #98be65;">"</span>)
+<span class="linenr">30: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#31532; 50 &#26869;&#27193;&#26178;&#28204;&#35430;&#28310;&#30906;&#29575;: </span>{test_scores[49]:.4f}<span style="color: #98be65;">"</span>)
+<span class="linenr">31: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#31532; 100 &#26869;&#27193;&#26178;&#28204;&#35430;&#28310;&#30906;&#29575;: </span>{test_scores[99]:.4f}<span style="color: #98be65;">"</span>)
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org87abac4" class="outline-4">
+<h4 id="org87abac4"><span class="section-number-4">2.2.4.</span> SVM（Support Vector Machines）</h4>
+<div class="outline-text-4" id="text-2-2-4">
+<p>
+支援向量機的核心概念是在特徵空間中找到一個「超平面（hyperplane）」來分隔不同類別的資料，並使這個超平面離最近的資料點（即支援向量）的距離（margin）最大化。
+</p>
+</div>
+<ol class="org-ol">
+<li><a id="org835b9b9"></a>核心概念<br />
+<div class="outline-text-5" id="text-2-2-4-1">
+<ul class="org-ul">
+<li>*超平面（Hyperplane）*：在 n 維空間中，超平面是一個 n-1 維的分隔面。二維空間中就是一條線，三維空間中就是一個平面。</li>
+<li>*支援向量（Support Vectors）*：距離超平面最近的那些資料點，它們「支撐」住了超平面的位置。改變其他資料點不會影響超平面，但移動支援向量就會。</li>
+<li>*間距（Margin）*：超平面到最近支援向量的距離。SVM 的目標就是找到 margin 最大的超平面，因為 margin 越大，模型的泛化能力越好。</li>
+</ul>
+</div>
+</li>
+<li><a id="org8d0591f"></a>Kernel Trick<br />
+<div class="outline-text-5" id="text-2-2-4-2">
+<p>
+當資料在原始空間中無法被一個超平面線性分開時，SVM 可以透過 <b>核函數（Kernel Function）</b> 將資料映射到更高維的空間，使原本不可線性分割的資料變得可分割。常用的核函數包括：
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">核函數</th>
+<th scope="col" class="org-left">說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">線性核（Linear）</td>
+<td class="org-left">適用於線性可分的資料</td>
+</tr>
+
+<tr>
+<td class="org-left">多項式核（Polynomial）</td>
+<td class="org-left">適用於中等複雜度的非線性邊界</td>
+</tr>
+
+<tr>
+<td class="org-left">RBF（高斯核）</td>
+<td class="org-left">最常用，適用於大多數非線性問題</td>
+</tr>
+</tbody>
+</table>
+
+<ul class="org-ul">
+<li>優點：在高維空間表現良好、有堅實的數學理論基礎、不易過度擬合（尤其資料量不大時）</li>
+<li>缺點：資料量大時訓練速度慢、對特徵縮放敏感、結果較難解釋</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">from</span> sklearn.datasets <span style="color: #51afef;">import</span> load_iris
+<span class="linenr"> 2: </span><span style="color: #51afef;">from</span> sklearn.model_selection <span style="color: #51afef;">import</span> train_test_split
+<span class="linenr"> 3: </span><span style="color: #51afef;">from</span> sklearn.svm <span style="color: #51afef;">import</span> SVC
+<span class="linenr"> 4: </span><span style="color: #51afef;">from</span> sklearn.preprocessing <span style="color: #51afef;">import</span> StandardScaler
+<span class="linenr"> 5: </span><span style="color: #51afef;">from</span> sklearn.metrics <span style="color: #51afef;">import</span> accuracy_score
+<span class="linenr"> 6: </span>
+<span class="linenr"> 7: </span><span style="color: #dcaeea;">X</span>, <span style="color: #dcaeea;">y</span> = load_iris(return_X_y=<span style="color: #a9a1e1;">True</span>)
+<span class="linenr"> 8: </span><span style="color: #dcaeea;">X_train</span>, <span style="color: #dcaeea;">X_test</span>, <span style="color: #dcaeea;">y_train</span>, <span style="color: #dcaeea;">y_test</span> = train_test_split(X, y, test_size=<span style="color: #da8548; font-weight: bold;">0.3</span>, random_state=<span style="color: #da8548; font-weight: bold;">42</span>)
+<span class="linenr"> 9: </span>
+<span class="linenr">10: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">SVM &#23565;&#29305;&#24501;&#32302;&#25918;&#25935;&#24863;&#65292;&#20808;&#20570;&#27161;&#28310;&#21270;</span>
+<span class="linenr">11: </span><span style="color: #dcaeea;">scaler</span> = StandardScaler()
+<span class="linenr">12: </span><span style="color: #dcaeea;">X_train_scaled</span> = scaler.fit_transform(X_train)
+<span class="linenr">13: </span><span style="color: #dcaeea;">X_test_scaled</span> = scaler.transform(X_test)
+<span class="linenr">14: </span>
+<span class="linenr">15: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27604;&#36611;&#19981;&#21516;&#26680;&#20989;&#25976;&#30340;&#25928;&#26524;</span>
+<span class="linenr">16: </span><span style="color: #51afef;">for</span> kernel <span style="color: #51afef;">in</span> [<span style="color: #98be65;">'linear'</span>, <span style="color: #98be65;">'poly'</span>, <span style="color: #98be65;">'rbf'</span>]:
+<span class="linenr">17: </span>    <span style="color: #dcaeea;">svm</span> = SVC(kernel=kernel, random_state=<span style="color: #da8548; font-weight: bold;">42</span>)
+<span class="linenr">18: </span>    svm.fit(X_train_scaled, y_train)
+<span class="linenr">19: </span>    <span style="color: #dcaeea;">score</span> = svm.score(X_test_scaled, y_test)
+<span class="linenr">20: </span>    <span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"SVM (</span>{kernel:&gt;6}<span style="color: #98be65;"> kernel) &#28310;&#30906;&#29575;: </span>{score:.4f}<span style="color: #98be65;">"</span>)
+</pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+<div id="outline-container-orge1b0269" class="outline-4">
+<h4 id="orge1b0269"><span class="section-number-4">2.2.5.</span> 神經網路</h4>
+<div class="outline-text-4" id="text-2-2-5">
+<p>
+神經網路透過多層的神經元（節點）對輸入資料進行非線性轉換，自動學習特徵表示，是深度學習的基礎。與上述傳統機器學習演算法相比，神經網路在影像、語音、自然語言等非結構化資料上表現尤為突出，但需要較多的訓練資料與運算資源。
+</p>
+
+<p>
+以下使用 scikit-learn 的 <code>MLPClassifier</code> 示範最簡單的神經網路：
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">from</span> sklearn.datasets <span style="color: #51afef;">import</span> load_iris
+<span class="linenr"> 2: </span><span style="color: #51afef;">from</span> sklearn.model_selection <span style="color: #51afef;">import</span> train_test_split
+<span class="linenr"> 3: </span><span style="color: #51afef;">from</span> sklearn.neural_network <span style="color: #51afef;">import</span> MLPClassifier
+<span class="linenr"> 4: </span><span style="color: #51afef;">from</span> sklearn.preprocessing <span style="color: #51afef;">import</span> StandardScaler
+<span class="linenr"> 5: </span><span style="color: #51afef;">from</span> sklearn.metrics <span style="color: #51afef;">import</span> accuracy_score
+<span class="linenr"> 6: </span>
+<span class="linenr"> 7: </span><span style="color: #dcaeea;">X</span>, <span style="color: #dcaeea;">y</span> = load_iris(return_X_y=<span style="color: #a9a1e1;">True</span>)
+<span class="linenr"> 8: </span><span style="color: #dcaeea;">X_train</span>, <span style="color: #dcaeea;">X_test</span>, <span style="color: #dcaeea;">y_train</span>, <span style="color: #dcaeea;">y_test</span> = train_test_split(X, y, test_size=<span style="color: #da8548; font-weight: bold;">0.3</span>, random_state=<span style="color: #da8548; font-weight: bold;">42</span>)
+<span class="linenr"> 9: </span>
+<span class="linenr">10: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31070;&#32147;&#32178;&#36335;&#21516;&#27171;&#38656;&#35201;&#29305;&#24501;&#27161;&#28310;&#21270;</span>
+<span class="linenr">11: </span><span style="color: #dcaeea;">scaler</span> = StandardScaler()
+<span class="linenr">12: </span><span style="color: #dcaeea;">X_train_scaled</span> = scaler.fit_transform(X_train)
+<span class="linenr">13: </span><span style="color: #dcaeea;">X_test_scaled</span> = scaler.transform(X_test)
+<span class="linenr">14: </span>
+<span class="linenr">15: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;&#31435;&#20841;&#23652;&#38577;&#34255;&#23652;&#65288;&#21508; 10 &#20491;&#31070;&#32147;&#20803;&#65289;&#30340;&#31070;&#32147;&#32178;&#36335;</span>
+<span class="linenr">16: </span><span style="color: #dcaeea;">mlp</span> = MLPClassifier(hidden_layer_sizes=(<span style="color: #da8548; font-weight: bold;">10</span>, <span style="color: #da8548; font-weight: bold;">10</span>), max_iter=<span style="color: #da8548; font-weight: bold;">1000</span>, random_state=<span style="color: #da8548; font-weight: bold;">42</span>)
+<span class="linenr">17: </span>mlp.fit(X_train_scaled, y_train)
+<span class="linenr">18: </span>
+<span class="linenr">19: </span><span style="color: #dcaeea;">y_pred</span> = mlp.predict(X_test_scaled)
+<span class="linenr">20: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"Neural Network &#28310;&#30906;&#29575;: </span>{accuracy_score(y_test, y_pred):.4f}<span style="color: #98be65;">"</span>)
+<span class="linenr">21: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#32178;&#36335;&#32080;&#27083;: &#36664;&#20837;&#23652;(</span>{X_train.shape[1]}<span style="color: #98be65;">) &#8594; &#38577;&#34255;&#23652;(10) &#8594; &#38577;&#34255;&#23652;(10) &#8594; &#36664;&#20986;&#23652;(</span>{<span style="color: #c678dd;">len</span>(<span style="color: #c678dd;">set</span>(y))}<span style="color: #98be65;">)"</span>)
+<span class="linenr">22: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#35347;&#32244;&#36845;&#20195;&#27425;&#25976;: </span>{mlp.n_iter_}<span style="color: #98be65;">"</span>)
+</pre>
+</div>
+
+<p>
+詳細內容請參閱：<a href="20221025104603-神經網路.html#ID-d6daa102-05bb-475d-b619-db8b61e86030">神經網路</a>、<a href="20221023101228-深度學習.html#ID-20221023T101228.247381">深度學習</a>
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org16369ba" class="outline-2">
+<h2 id="org16369ba"><span class="section-number-2">3.</span> 模型評估指標</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+監督式學習訓練出模型後，最重要的問題就是：模型預測得好不好？以下介紹常用的評估指標。
+</p>
+</div>
+<div id="outline-container-orgc352b44" class="outline-3">
+<h3 id="orgc352b44"><span class="section-number-3">3.1.</span> 分類問題的評估指標</h3>
+<div class="outline-text-3" id="text-3-1">
+</div>
+<div id="outline-container-orgd0141ae" class="outline-4">
+<h4 id="orgd0141ae"><span class="section-number-4">3.1.1.</span> 混淆矩陣（Confusion Matrix）</h4>
+<div class="outline-text-4" id="text-3-1-1">
+<p>
+混淆矩陣是評估分類模型的基礎，以二元分類為例：
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">&#xa0;</th>
+<th scope="col" class="org-left">預測為正（Positive）</th>
+<th scope="col" class="org-left">預測為負（Negative）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">實際為正</td>
+<td class="org-left">TP（True Positive）</td>
+<td class="org-left">FN（False Negative）</td>
+</tr>
+
+<tr>
+<td class="org-left">實際為負</td>
+<td class="org-left">FP（False Positive）</td>
+<td class="org-left">TN（True Negative）</td>
+</tr>
+</tbody>
+</table>
+
+<ul class="org-ul">
+<li>*TP*：正確預測為正例（如正確判定為垃圾郵件）</li>
+<li>*FP*：錯誤預測為正例（如把正常郵件誤判為垃圾郵件），又稱 Type I Error</li>
+<li>*FN*：錯誤預測為負例（如把垃圾郵件漏判為正常），又稱 Type II Error</li>
+<li>*TN*：正確預測為負例</li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org1db7b9a" class="outline-4">
-<h4 id="org1db7b9a"><span class="section-number-4">2.2.4.</span> SVM(Support Vector Machines)</h4>
-<div class="outline-text-4" id="text-2-2-4">
+<div id="outline-container-orgf923f2b" class="outline-4">
+<h4 id="orgf923f2b"><span class="section-number-4">3.1.2.</span> 常用指標</h4>
+<div class="outline-text-4" id="text-3-1-2">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">指標</th>
+<th scope="col" class="org-left">公式</th>
+<th scope="col" class="org-left">意義</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">準確率（Accuracy）</td>
+<td class="org-left">\(\frac{TP + TN}{TP+TN+FP+FN}\)</td>
+<td class="org-left">整體預測正確的比例</td>
+</tr>
+
+<tr>
+<td class="org-left">精確率（Precision）</td>
+<td class="org-left">\(\frac{TP}{TP + FP}\)</td>
+<td class="org-left">預測為正例中，實際為正例的比例</td>
+</tr>
+
+<tr>
+<td class="org-left">召回率（Recall）</td>
+<td class="org-left">\(\frac{TP}{TP + FN}\)</td>
+<td class="org-left">實際正例中，被正確預測出來的比例</td>
+</tr>
+
+<tr>
+<td class="org-left">F1 Score</td>
+<td class="org-left">\(2 \times \frac{Precision \times Recall}{Precision + Recall}\)</td>
+<td class="org-left">Precision 與 Recall 的調和平均數</td>
+</tr>
+</tbody>
+</table>
+
+<blockquote>
 <p>
-使用演算法和已知的label在空間中建構超平面來分類資料
+<b>何時該看哪個指標？</b>
 </p>
+<ul class="org-ul">
+<li>當各類別的資料量均衡時，Accuracy 是直觀的指標</li>
+<li>當資料不平衡（如信用卡詐欺：99% 正常、1% 詐欺）時，Accuracy 會失真（全部猜正常就有 99% 準確率），此時應關注 Precision、Recall 和 F1 Score</li>
+<li>醫療診斷重視 Recall（不能漏掉病人）；垃圾郵件過濾重視 Precision（不能誤刪正常郵件）</li>
+</ul>
+</blockquote>
 </div>
 </div>
-<div id="outline-container-org25c2fd9" class="outline-4">
-<h4 id="org25c2fd9"><span class="section-number-4">2.2.5.</span> 神經網路</h4>
+<div id="outline-container-org04033fa" class="outline-4">
+<h4 id="org04033fa"><span class="section-number-4">3.1.3.</span> ROC 曲線與 AUC</h4>
+<div class="outline-text-4" id="text-3-1-3">
+<ul class="org-ul">
+<li>*ROC 曲線*（Receiver Operating Characteristic）：以 FPR（False Positive Rate）為 x 軸、TPR（True Positive Rate，即 Recall）為 y 軸繪製的曲線。曲線越靠近左上角，模型越好。</li>
+<li>*AUC*（Area Under the ROC Curve）：ROC 曲線下的面積，範圍 0~1。AUC = 0.5 表示與隨機猜測無異，AUC = 1 表示完美分類。</li>
+</ul>
 </div>
 </div>
 </div>
-<div id="outline-container-org2ba183c" class="outline-2">
-<h2 id="org2ba183c"><span class="section-number-2">3.</span> 監督式學習實作</h2>
-<div class="outline-text-2" id="text-3">
+<div id="outline-container-org6306b89" class="outline-3">
+<h3 id="org6306b89"><span class="section-number-3">3.2.</span> 迴歸問題的評估指標</h3>
+<div class="outline-text-3" id="text-3-2">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">指標</th>
+<th scope="col" class="org-left">公式</th>
+<th scope="col" class="org-left">說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">MAE</td>
+<td class="org-left">\(\frac{1}{n}\sum\vert y_i - \hat{y}_i \vert\)</td>
+<td class="org-left">平均絕對誤差，直觀易懂</td>
+</tr>
+
+<tr>
+<td class="org-left">MSE</td>
+<td class="org-left">\(\frac{1}{n}\sum(y_i - \hat{y}_i)^2\)</td>
+<td class="org-left">平均平方誤差，對大誤差懲罰更重</td>
+</tr>
+
+<tr>
+<td class="org-left">RMSE</td>
+<td class="org-left">\(\sqrt{MSE}\)</td>
+<td class="org-left">均方根誤差，與原始資料同單位</td>
+</tr>
+
+<tr>
+<td class="org-left">\(R^2\)</td>
+<td class="org-left">\(1 - \frac{\sum(y_i-\hat{y}_i)^2}{\sum(y_i-\bar{y})^2}\)</td>
+<td class="org-left">決定係數，1 為完美，0 為與平均值預測一樣</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-org65e78b9" class="outline-3">
+<h3 id="org65e78b9"><span class="section-number-3">3.3.</span> 交叉驗證（Cross-Validation）</h3>
+<div class="outline-text-3" id="text-3-3">
+<p>
+僅用一次 train/test split 評估模型可能因為資料切分方式不同而產生偏差。 <b>K-Fold 交叉驗證</b> 將資料分成 K 份，每次取其中 1 份當測試集、其餘 K-1 份當訓練集，重複 K 次後取平均，能更可靠地估計模型效能。
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">from</span> sklearn.model_selection <span style="color: #51afef;">import</span> cross_val_score
+<span class="linenr"> 2: </span><span style="color: #51afef;">from</span> sklearn.ensemble <span style="color: #51afef;">import</span> RandomForestClassifier
+<span class="linenr"> 3: </span><span style="color: #51afef;">from</span> sklearn.datasets <span style="color: #51afef;">import</span> load_iris
+<span class="linenr"> 4: </span>
+<span class="linenr"> 5: </span><span style="color: #dcaeea;">X</span>, <span style="color: #dcaeea;">y</span> = load_iris(return_X_y=<span style="color: #a9a1e1;">True</span>)
+<span class="linenr"> 6: </span><span style="color: #dcaeea;">clf</span> = RandomForestClassifier(n_estimators=<span style="color: #da8548; font-weight: bold;">100</span>, random_state=<span style="color: #da8548; font-weight: bold;">42</span>)
+<span class="linenr"> 7: </span>
+<span class="linenr"> 8: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">5-Fold &#20132;&#21449;&#39511;&#35657;</span>
+<span class="linenr"> 9: </span><span style="color: #dcaeea;">scores</span> = cross_val_score(clf, X, y, cv=<span style="color: #da8548; font-weight: bold;">5</span>, scoring=<span style="color: #98be65;">'accuracy'</span>)
+<span class="linenr">10: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#27599;&#25240;&#28310;&#30906;&#29575;: </span>{scores}<span style="color: #98be65;">"</span>)
+<span class="linenr">11: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#24179;&#22343;&#28310;&#30906;&#29575;: </span>{scores.mean():.4f}<span style="color: #98be65;"> &#177; </span>{scores.std():.4f}<span style="color: #98be65;">"</span>)
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org4d588e0" class="outline-2">
+<h2 id="org4d588e0"><span class="section-number-2">4.</span> 監督式學習實作</h2>
+<div class="outline-text-2" id="text-4">
 <ul class="org-ul">
 <li><a href="20221023154410-regression.html#ID-6ae7fb7a-0b38-4448-b19f-073d262513f2">迴歸</a></li>
 <li><a href="20231204210821-分類.html#ID-1592687a-cca7-4473-83a0-682a36394a28">分類</a></li>
@@ -681,7 +1204,7 @@ Hands-On Machine Learning with Scikit-Learn: Aurelien Geron
 </div></div>
 <div id="postamble" class="status">
 <p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2025-07-16 Wed 17:38</p>
+<p class="date">Created: 2026-02-14 Sat 15:40</p>
 </div>
 </body>
 </html>

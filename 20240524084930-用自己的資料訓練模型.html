@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2025-07-15 Tue 15:32 -->
+<!-- 2026-02-14 Sat 21:37 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>用自己的資料訓練模型</title>
@@ -194,6 +194,7 @@
   .org-svg { }
 </style>
 <link rel="stylesheet" type="text/css" href="../css/muse.css" />
+<script src="../css/copy_code.js"></script>
 </head>
 <body>
 <div id="content" class="content">
@@ -202,325 +203,840 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgdde0ee2">1. 資料</a>
+<li><a href="#org8296651">1. 前言：為什麼要用自己的資料？</a></li>
+<li><a href="#orged699c7">2. 步驟一：準備資料</a>
 <ul>
-<li><a href="#orgde6f874">1.1. 本地端電腦</a></li>
-<li><a href="#orgede1e04">1.2. for colab</a></li>
-<li><a href="#orgb6a8c21">1.3. 資料擴增/資料增強(Data Augmentation)</a></li>
+<li><a href="#org699063c">2.1. 資料夾結構</a></li>
+<li><a href="#org9f8967a">2.2. 讀取資料</a></li>
+<li><a href="#orga0e9862">2.3. 將圖片讀入並轉成 numpy 陣列</a></li>
+<li><a href="#org1625921">2.4. 預覽幾張圖片</a></li>
 </ul>
 </li>
-<li><a href="#orgef23715">2. 轉成numpy</a></li>
-<li><a href="#orge07b307">3. 分割訓練集與測試集</a></li>
-<li><a href="#orgc88af75">4. 建模型</a></li>
-<li><a href="#orgaa72bca">5. 訓練</a></li>
-<li><a href="#orge31a921">6. 評估</a>
+<li><a href="#org401290a">3. 步驟二：資料預處理</a>
 <ul>
-<li><a href="#org79001b7">6.1. loss</a></li>
-<li><a href="#orgccb4986">6.2. accuracy</a></li>
+<li><a href="#org2e1f73e">3.1. 轉成 numpy 陣列並正規化</a></li>
+<li><a href="#org60c8f97">3.2. 將標籤轉成 One-Hot Encoding</a></li>
+<li><a href="#orgcfec6a4">3.3. 分割訓練集與測試集</a></li>
+</ul>
+</li>
+<li><a href="#org2e69eaa">4. 步驟三：建立 CNN 模型</a></li>
+<li><a href="#org0c300e1">5. 步驟四：訓練</a></li>
+<li><a href="#orgdc836a5">6. 步驟五：評估</a>
+<ul>
+<li><a href="#org2321d7d">6.1. 測試集評估</a></li>
+<li><a href="#org7d07280">6.2. 繪製訓練曲線</a></li>
+<li><a href="#org5bc12f0">6.3. 實際預測幾張圖片</a></li>
+</ul>
+</li>
+<li><a href="#orgee66e8b">7. 進階：資料擴增（Data Augmentation）</a>
+<ul>
+<li><a href="#org9e7ed75">7.1. 使用 Keras 內建的資料擴增層</a></li>
+<li><a href="#org6a24b8a">7.2. 繪製增強版訓練曲線</a></li>
+</ul>
+</li>
+<li><a href="#orgf13191f">8. 完整流程回顧</a></li>
+<li><a href="#org526c83e">9. 作業</a>
+<ul>
+<li><a href="#org15f9b66">9.1. 作業一：我的 AI 分類器</a></li>
+<li><a href="#org609de6c">9.2. 作業二：模型調參大挑戰</a></li>
+<li><a href="#org302a23b">9.3. 作業三：資料擴增探險家</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 <a href="https://letranger.github.io/AI/20240524084930-用自己的資料訓練模型.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20240524084930-用自己的資料訓練模型.html.svg"/></a>
-
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-4EJ3V5BG0Z"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-4EJ3V5BG0Z');
-</script>
-<div id="outline-container-orgdde0ee2" class="outline-2">
-<h2 id="orgdde0ee2"><span class="section-number-2">1.</span> 資料</h2>
+<div id="outline-container-org8296651" class="outline-2">
+<h2 id="org8296651"><span class="section-number-2">1.</span> 前言：為什麼要用自己的資料？</h2>
 <div class="outline-text-2" id="text-1">
-<ul class="org-ul">
-<li>假設資料夾(cats_and_dogs)位罝在~/Downloads<br /></li>
-<li>裡面都有兩個資料夾(cats, dogs)<br /></li>
-<li>兩種動物各200張<br /></li>
-<li>你可以<a href="images/cats_and_dogs.zip">點這裡將兩種動物圖片下載到你的電腦中</a><br /></li>
-</ul>
-</div>
-<div id="outline-container-orgde6f874" class="outline-3">
-<h3 id="orgde6f874"><span class="section-number-3">1.1.</span> 本地端電腦</h3>
-<div class="outline-text-3" id="text-1-1">
-<div class="org-src-container">
-<pre class="src src-shell"><span class="linenr">1: </span>tree ~/Downloads/cats_and_dogs
-</pre>
-</div>
+<p>
+之前的課程中，我們都是用現成的資料集（MNIST 手寫數字、CIFAR-10 等）來訓練模型。這些資料集很方便，但在真實世界中，你遇到的問題往往沒有現成的資料集可用。<br />
+</p>
 
-<pre class="example" id="orgf41c65a">
-/Users/letranger/Downloads/cats_and_dogs
-├── cats
-│   ├── cat.0.jpg
-│   ├── cat.1.jpg
-│   ├── ...略...
-│   ├── cat.98.jpg
-│   └── cat.99.jpg
-└── dogs
+<p>
+例如：<br />
+</p>
+<ul class="org-ul">
+<li>你想訓練一個模型分辨學校裡的貓和狗<br /></li>
+<li>你想讓 AI 辨識不同品種的花<br /></li>
+<li>你想建一個系統分辨垃圾有沒有做好回收分類<br /></li>
+</ul>
+
+<p>
+這時候，你就需要 *自己準備資料、自己訓練模型*。<br />
+</p>
+
+<p>
+這堂課，我們會用「貓 vs 狗」的圖片分類任務，從頭走一遍完整的流程：<br />
+</p>
+
+<ol class="org-ol">
+<li>準備資料（蒐集圖片、整理資料夾）<br /></li>
+<li>讀取圖片並轉成模型能吃的格式<br /></li>
+<li>建立 CNN 模型<br /></li>
+<li>訓練與評估<br /></li>
+<li>資料擴增（Data Augmentation）提升效果<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-orged699c7" class="outline-2">
+<h2 id="orged699c7"><span class="section-number-2">2.</span> 步驟一：準備資料</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-org699063c" class="outline-3">
+<h3 id="org699063c"><span class="section-number-3">2.1.</span> 資料夾結構</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+我們需要把圖片整理成以下結構——每個類別放一個資料夾：<br />
+</p>
+
+<pre class="example" id="org376561b">
+cats_and_dogs/
+├── cats/
+│   ├── cat.0.jpg
+│   ├── cat.1.jpg
+│   ├── ...
+│   └── cat.99.jpg
+└── dogs/
     ├── dog.0.jpg
     ├── dog.1.jpg
-    ├── ...略...
-    ├── dog.98.jpg
+    ├── ...
     └── dog.99.jpg
 </pre>
-</div>
-<div id="outline-container-org4479b57" class="outline-4">
-<h4 id="org4479b57"><span class="section-number-4">1.1.1.</span> 試讀目錄</h4>
-<div class="outline-text-4" id="text-1-1-1">
-<div class="org-src-container">
-<pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> os
-<span class="linenr">2: </span><span style="color: #dcaeea;">img_dir</span> = <span style="color: #98be65;">'/Users/letranger/Downloads/cats_and_dogs'</span>
-<span class="linenr">3: </span><span style="color: #dcaeea;">cats_dir</span> = img_dir + <span style="color: #98be65;">'/cats'</span>
-<span class="linenr">4: </span><span style="color: #dcaeea;">dogs_dir</span> = img_dir + <span style="color: #98be65;">'/dogs'</span>
-<span class="linenr">5: </span>
-<span class="linenr">6: </span><span style="color: #dcaeea;">cat_fnames</span> = os.listdir(cats_dir)
-<span class="linenr">7: </span><span style="color: #dcaeea;">dog_fnames</span> = os.listdir(dogs_dir)
-<span class="linenr">8: </span><span style="color: #c678dd;">print</span>(<span style="color: #c678dd;">len</span>(cat_fnames))
-<span class="linenr">9: </span><span style="color: #c678dd;">print</span>(<span style="color: #c678dd;">len</span>(dog_fnames))
-</pre>
-</div>
-</div>
-</div>
-<div id="outline-container-orgaedb0db" class="outline-4">
-<h4 id="orgaedb0db"><span class="section-number-4">1.1.2.</span> 讀訓練集圖片並設定label</h4>
-<div class="outline-text-4" id="text-1-1-2">
-<div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> cv2
-<span class="linenr"> 2: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
-<span class="linenr"> 3: </span><span style="color: #51afef;">from</span> tensorflow.keras.preprocessing.image <span style="color: #51afef;">import</span> img_to_array
-<span class="linenr"> 4: </span>
-<span class="linenr"> 5: </span><span style="color: #dcaeea;">data</span> = []
-<span class="linenr"> 6: </span><span style="color: #dcaeea;">target</span> = []
-<span class="linenr"> 7: </span>
-<span class="linenr"> 8: </span><span style="color: #51afef;">for</span> cat <span style="color: #51afef;">in</span> cat_fnames:
-<span class="linenr"> 9: </span>    <span style="color: #dcaeea;">img</span> = cv2.imread(cats_dir + <span style="color: #98be65;">'/'</span> + cat)
-<span class="linenr">10: </span>    <span style="color: #51afef;">if</span> img <span style="color: #51afef;">is</span> <span style="color: #51afef;">not</span> <span style="color: #a9a1e1;">None</span>:
-<span class="linenr">11: </span>        <span style="color: #dcaeea;">img</span> = cv2.resize(img, (<span style="color: #da8548; font-weight: bold;">224</span>, <span style="color: #da8548; font-weight: bold;">224</span>))
-<span class="linenr">12: </span>        <span style="color: #dcaeea;">img</span> = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-<span class="linenr">13: </span>        data.append(img)
-<span class="linenr">14: </span>        target.append(<span style="color: #da8548; font-weight: bold;">0</span>)
-<span class="linenr">15: </span>    
-<span class="linenr">16: </span><span style="color: #51afef;">for</span> dog <span style="color: #51afef;">in</span> dog_fnames:
-<span class="linenr">17: </span>    <span style="color: #dcaeea;">img</span> = cv2.imread(dogs_dir + <span style="color: #98be65;">'/'</span> + dog)
-<span class="linenr">18: </span>    <span style="color: #51afef;">if</span> img <span style="color: #51afef;">is</span> <span style="color: #51afef;">not</span> <span style="color: #a9a1e1;">None</span>:
-<span class="linenr">19: </span>        <span style="color: #dcaeea;">img</span> = cv2.resize(img, (<span style="color: #da8548; font-weight: bold;">224</span>, <span style="color: #da8548; font-weight: bold;">224</span>))
-<span class="linenr">20: </span>        <span style="color: #dcaeea;">img</span> = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-<span class="linenr">21: </span>        data.append(img)
-<span class="linenr">22: </span>        target.append(<span style="color: #da8548; font-weight: bold;">1</span>)
-</pre>
-</div>
-</div>
-</div>
-</div>
-<div id="outline-container-orgede1e04" class="outline-3">
-<h3 id="orgede1e04"><span class="section-number-3">1.2.</span> for colab</h3>
-<div class="outline-text-3" id="text-1-2">
+
+<ul class="org-ul">
+<li>兩種動物各 100 張圖片（你可以準備更多，越多越好）<br /></li>
+<li>你可以<a href="images/cats_and_dogs.zip">點這裡下載範例圖片</a>，解壓縮到 <code>~/Downloads/</code> 資料夾<br /></li>
+</ul>
+
+<blockquote>
 <p>
-先將資料夾上傳到自己的google drive<br />
-</p>
-<div class="org-src-container">
-<pre class="src src-python"><span class="linenr">1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25499;&#36617;&#33258;&#24049;&#30340; Google Drive</span>
-<span class="linenr">2: </span><span style="color: #51afef;">import</span> cv2
-<span class="linenr">3: </span><span style="color: #51afef;">from</span> google.colab <span style="color: #51afef;">import</span> drive
-<span class="linenr">4: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23559;&#33258;&#24049;&#30340;&#38642;&#31471;&#30828;&#30879;&#25499;&#36617;&#19978;&#21435;</span>
-<span class="linenr">5: </span>drive.mount(<span style="color: #98be65;">'/content/gdrive'</span>)
-<span class="linenr">6: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36879;&#36942; gdrive/My Drive/... &#20358;&#23384;&#21462;&#27284;&#26696;</span>
-<span class="linenr">7: </span><span style="color: #dcaeea;">img</span> = cv2.imread(<span style="color: #98be65;">'gdrive/My Drive/cats_and_dogs/cats/cat.991.jpg'</span>)
-</pre>
-</div>
-</div>
-<div id="outline-container-org0e87eab" class="outline-4">
-<h4 id="org0e87eab"><span class="section-number-4">1.2.1.</span> 試讀目錄</h4>
-<div class="outline-text-4" id="text-1-2-1">
-<div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35712;&#21462;&#30446;&#37636;</span>
-<span class="linenr"> 2: </span>
-<span class="linenr"> 3: </span><span style="color: #51afef;">import</span> os
-<span class="linenr"> 4: </span><span style="color: #dcaeea;">img_dir</span> = <span style="color: #98be65;">'/content/gdrive/My Drive/cats_and_dogs'</span>
-<span class="linenr"> 5: </span><span style="color: #dcaeea;">cats_dir</span> = img_dir + <span style="color: #98be65;">'/cats'</span>
-<span class="linenr"> 6: </span><span style="color: #dcaeea;">dogs_dir</span> = img_dir + <span style="color: #98be65;">'/dogs'</span>
-<span class="linenr"> 7: </span>
-<span class="linenr"> 8: </span><span style="color: #dcaeea;">cat_fnames</span> = os.listdir(cats_dir)
-<span class="linenr"> 9: </span><span style="color: #dcaeea;">dog_fnames</span> = os.listdir(dogs_dir)
-<span class="linenr">10: </span><span style="color: #c678dd;">print</span>(cat_fnames)
-<span class="linenr">11: </span><span style="color: #c678dd;">print</span>(<span style="color: #c678dd;">len</span>(cat_fnames))
-<span class="linenr">12: </span><span style="color: #c678dd;">print</span>(<span style="color: #c678dd;">len</span>(dog_fnames))
-</pre>
-</div>
-</div>
-</div>
-<div id="outline-container-orga9f5c87" class="outline-4">
-<h4 id="orga9f5c87"><span class="section-number-4">1.2.2.</span> 讀訓練集圖片並設定label</h4>
-<div class="outline-text-4" id="text-1-2-2">
-<div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> cv2
-<span class="linenr"> 2: </span><span style="color: #51afef;">from</span> tensorflow.keras.preprocessing.image <span style="color: #51afef;">import</span> load_img, img_to_array
-<span class="linenr"> 3: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
-<span class="linenr"> 4: </span>
-<span class="linenr"> 5: </span><span style="color: #dcaeea;">data</span> = []
-<span class="linenr"> 6: </span><span style="color: #dcaeea;">target</span> = []
-<span class="linenr"> 7: </span>
-<span class="linenr"> 8: </span><span style="color: #51afef;">for</span> cat <span style="color: #51afef;">in</span> cat_fnames:
-<span class="linenr"> 9: </span>    <span style="color: #dcaeea;">img</span> = load_img(cats_dir + <span style="color: #98be65;">'/'</span> + cat, target_size = (<span style="color: #da8548; font-weight: bold;">224</span>,<span style="color: #da8548; font-weight: bold;">224</span>))
-<span class="linenr">10: </span>    <span style="color: #dcaeea;">x</span> = np.array(img)
-<span class="linenr">11: </span>    data.append(x)
-<span class="linenr">12: </span>    target.append(<span style="color: #da8548; font-weight: bold;">0</span>)
-<span class="linenr">13: </span><span style="color: #51afef;">for</span> dog <span style="color: #51afef;">in</span> dog_fnames:
-<span class="linenr">14: </span>    <span style="color: #dcaeea;">img</span> = load_img(dogs_dir + <span style="color: #98be65;">'/'</span> + dog, target_size = (<span style="color: #da8548; font-weight: bold;">224</span>,<span style="color: #da8548; font-weight: bold;">224</span>))
-<span class="linenr">15: </span>    <span style="color: #dcaeea;">x</span> = np.array(img)
-<span class="linenr">16: </span>    data.append(x)
-<span class="linenr">17: </span>    target.append(<span style="color: #da8548; font-weight: bold;">1</span>)
-</pre>
-</div>
-</div>
-</div>
-</div>
-<div id="outline-container-orgb6a8c21" class="outline-3">
-<h3 id="orgb6a8c21"><span class="section-number-3">1.3.</span> 資料擴增/資料增強(Data Augmentation)</h3>
-<div class="outline-text-3" id="text-1-3">
-<p>
-如果你的資料是自己準備的，你大概無法生成太多資料庫，這時就是善用資料擴增的好時機了，詳細的技巧請參考以下的連結或自行google。<br />
+<b>準備自己的資料集小提醒：</b><br />
 </p>
 <ul class="org-ul">
-<li><a href="https://cynthiachuang.github.io/Augmentor-Image-Augmentation-Library-in-Python/">Augmentor：影像資料增強工具庫</a><br /></li>
-<li><a href="https://chtseng.wordpress.com/2017/11/11/data-augmentation-%E8%B3%87%E6%96%99%E5%A2%9E%E5%BC%B7/">Data Augmentation 資料增強</a><br /></li>
+<li>每個類別至少要 50 張以上（越多越好）<br /></li>
+<li>圖片大小不用一樣，程式會自動調整<br /></li>
+<li>避免放入損壞的圖檔<br /></li>
+<li>不同類別的圖片數量盡量平衡<br /></li>
 </ul>
+</blockquote>
 </div>
 </div>
-</div>
-<div id="outline-container-orgef23715" class="outline-2">
-<h2 id="orgef23715"><span class="section-number-2">2.</span> 轉成numpy</h2>
-<div class="outline-text-2" id="text-2">
+<div id="outline-container-org9f8967a" class="outline-3">
+<h3 id="org9f8967a"><span class="section-number-3">2.2.</span> 讀取資料</h3>
+<div class="outline-text-3" id="text-2-2">
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #dcaeea;">data</span> = np.array(data)
-<span class="linenr"> 2: </span><span style="color: #dcaeea;">target</span> = np.array(target)
-<span class="linenr"> 3: </span><span style="color: #c678dd;">print</span>(data.shape)
-<span class="linenr"> 4: </span><span style="color: #c678dd;">print</span>(target.shape)
-<span class="linenr"> 5: </span>
-<span class="linenr"> 6: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23559;target&#36681;&#25563;&#25104;one-hot encoding</span>
-<span class="linenr"> 7: </span><span style="color: #51afef;">from</span> tensorflow.keras.utils <span style="color: #51afef;">import</span> to_categorical
-<span class="linenr"> 8: </span><span style="color: #c678dd;">print</span>(target[<span style="color: #da8548; font-weight: bold;">0</span>])
-<span class="linenr"> 9: </span><span style="color: #dcaeea;">target</span> = to_categorical(target, <span style="color: #da8548; font-weight: bold;">2</span>)
-<span class="linenr">10: </span><span style="color: #c678dd;">print</span>(target[<span style="color: #da8548; font-weight: bold;">0</span>])
-</pre>
-</div>
-</div>
-</div>
-<div id="outline-container-orge07b307" class="outline-2">
-<h2 id="orge07b307"><span class="section-number-2">3.</span> 分割訓練集與測試集</h2>
-<div class="outline-text-2" id="text-3">
-<div class="org-src-container">
-<pre class="src src-python"><span class="linenr">1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20999;&#35347;&#32244;&#21644;&#28204;&#35430;&#36039;&#26009;</span>
-<span class="linenr">2: </span>
-<span class="linenr">3: </span><span style="color: #51afef;">from</span> sklearn.model_selection <span style="color: #51afef;">import</span> train_test_split
-<span class="linenr">4: </span><span style="color: #dcaeea;">x_train</span>, <span style="color: #dcaeea;">x_test</span>, <span style="color: #dcaeea;">y_train</span>, <span style="color: #dcaeea;">y_test</span> = train_test_split(data, target,
-<span class="linenr">5: </span>                                                    test_size=<span style="color: #da8548; font-weight: bold;">0.2</span>,
-<span class="linenr">6: </span>                                                    random_state=<span style="color: #da8548; font-weight: bold;">0</span>)
-<span class="linenr">7: </span><span style="color: #c678dd;">print</span>(x_train.shape)
-<span class="linenr">8: </span><span style="color: #c678dd;">print</span>(y_train.shape)
-</pre>
-</div>
-</div>
-</div>
-<div id="outline-container-orgc88af75" class="outline-2">
-<h2 id="orgc88af75"><span class="section-number-2">4.</span> 建模型</h2>
-<div class="outline-text-2" id="text-4">
-<div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;model</span>
-<span class="linenr"> 2: </span><span style="color: #51afef;">from</span> keras <span style="color: #51afef;">import</span> layers
-<span class="linenr"> 3: </span><span style="color: #51afef;">from</span> keras <span style="color: #51afef;">import</span> models
-<span class="linenr"> 4: </span><span style="color: #dcaeea;">model</span> = models.Sequential()
-<span class="linenr"> 5: </span>model.add(layers.Conv2D(<span style="color: #da8548; font-weight: bold;">32</span>, (<span style="color: #da8548; font-weight: bold;">3</span>, <span style="color: #da8548; font-weight: bold;">3</span>), activation=<span style="color: #98be65;">'relu'</span>, input_shape=(<span style="color: #da8548; font-weight: bold;">224</span>, <span style="color: #da8548; font-weight: bold;">224</span>, <span style="color: #da8548; font-weight: bold;">3</span>)))
-<span class="linenr"> 6: </span>model.add(layers.MaxPooling2D((<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">2</span>)))
-<span class="linenr"> 7: </span>model.add(layers.Conv2D(<span style="color: #da8548; font-weight: bold;">64</span>, (<span style="color: #da8548; font-weight: bold;">3</span>, <span style="color: #da8548; font-weight: bold;">3</span>), activation=<span style="color: #98be65;">'relu'</span>))
-<span class="linenr"> 8: </span>model.add(layers.MaxPooling2D((<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">2</span>)))
-<span class="linenr"> 9: </span>model.add(layers.Flatten())
-<span class="linenr">10: </span>model.add(layers.Dense(<span style="color: #da8548; font-weight: bold;">2</span>, activation=<span style="color: #98be65;">'softmax'</span>))
-<span class="linenr">11: </span>model.summary()  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#26597;&#30475;&#27169;&#22411;&#25688;&#35201;</span>
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> os
+<span class="linenr"> 2: </span><span style="color: #51afef;">import</span> cv2
+<span class="linenr"> 3: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 4: </span>
+<span class="linenr"> 5: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35373;&#23450;&#22294;&#29255;&#36039;&#26009;&#22846;&#36335;&#24465;&#65288;&#35531;&#20381;&#20320;&#30340;&#23526;&#38555;&#36335;&#24465;&#20462;&#25913;&#65289;</span>
+<span class="linenr"> 6: </span><span style="color: #dcaeea;">img_dir</span> = os.path.expanduser(<span style="color: #98be65;">'~/Downloads/cats_and_dogs'</span>)
+<span class="linenr"> 7: </span><span style="color: #dcaeea;">cats_dir</span> = os.path.join(img_dir, <span style="color: #98be65;">'cats'</span>)
+<span class="linenr"> 8: </span><span style="color: #dcaeea;">dogs_dir</span> = os.path.join(img_dir, <span style="color: #98be65;">'dogs'</span>)
+<span class="linenr"> 9: </span>
+<span class="linenr">10: </span><span style="color: #dcaeea;">cat_fnames</span> = [f <span style="color: #51afef;">for</span> f <span style="color: #51afef;">in</span> os.listdir(cats_dir) <span style="color: #51afef;">if</span> f.endswith((<span style="color: #98be65;">'.jpg'</span>, <span style="color: #98be65;">'.png'</span>, <span style="color: #98be65;">'.jpeg'</span>))]
+<span class="linenr">11: </span><span style="color: #dcaeea;">dog_fnames</span> = [f <span style="color: #51afef;">for</span> f <span style="color: #51afef;">in</span> os.listdir(dogs_dir) <span style="color: #51afef;">if</span> f.endswith((<span style="color: #98be65;">'.jpg'</span>, <span style="color: #98be65;">'.png'</span>, <span style="color: #98be65;">'.jpeg'</span>))]
 <span class="linenr">12: </span>
-<span class="linenr">13: </span>model.<span style="color: #c678dd;">compile</span>(loss=<span style="color: #98be65;">'binary_crossentropy'</span>,
-<span class="linenr">14: </span>              optimizer=<span style="color: #98be65;">'adam'</span>, metrics=[<span style="color: #98be65;">'accuracy'</span>])
+<span class="linenr">13: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#35987;&#30340;&#22294;&#29255;&#25976;&#37327;&#65306;</span>{<span style="color: #c678dd;">len</span>(cat_fnames)}<span style="color: #98be65;">"</span>)
+<span class="linenr">14: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#29399;&#30340;&#22294;&#29255;&#25976;&#37327;&#65306;</span>{<span style="color: #c678dd;">len</span>(dog_fnames)}<span style="color: #98be65;">"</span>)
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-orgaa72bca" class="outline-2">
-<h2 id="orgaa72bca"><span class="section-number-2">5.</span> 訓練</h2>
-<div class="outline-text-2" id="text-5">
-<div class="org-src-container">
-<pre class="src src-python"><span class="linenr">1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35347;&#32244;</span>
-<span class="linenr">2: </span><span style="color: #dcaeea;">history</span> = model.fit(x_train, y_train, batch_size=<span style="color: #da8548; font-weight: bold;">50</span>,
-<span class="linenr">3: </span>                    epochs=<span style="color: #da8548; font-weight: bold;">5</span>, validation_split=<span style="color: #da8548; font-weight: bold;">0.2</span>)
-</pre>
-</div>
-</div>
-</div>
-<div id="outline-container-orge31a921" class="outline-2">
-<h2 id="orge31a921"><span class="section-number-2">6.</span> 評估</h2>
-<div class="outline-text-2" id="text-6">
-<div class="org-src-container">
-<pre class="src src-python"><span class="linenr">1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35413;&#20272;</span>
-<span class="linenr">2: </span><span style="color: #dcaeea;">loss</span>, <span style="color: #dcaeea;">acc</span> = model.evaluate(x_test, y_test)
-<span class="linenr">3: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#28204;&#35430;&#36039;&#26009;&#30340; loss &#28858;: </span>{loss:.4f}<span style="color: #98be65;">"</span>)
-<span class="linenr">4: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#28204;&#35430;&#36039;&#26009;&#30340;&#27491;&#30906;&#29575;&#28858;: </span>{acc*100:.2f}<span style="color: #98be65;">%"</span>)
-</pre>
-</div>
-<pre class="example">
-測試資料的 loss 為: 1.0741
-測試資料的正確率為: 53.75%
-</pre>
-</div>
-<div id="outline-container-org79001b7" class="outline-3">
-<h3 id="org79001b7"><span class="section-number-3">6.1.</span> loss</h3>
-<div class="outline-text-3" id="text-6-1">
-<div class="org-src-container">
-<pre class="src src-shell"><span class="linenr">1: </span>pip3 install matplotlib
-</pre>
-</div>
+<div id="outline-container-orga0e9862" class="outline-3">
+<h3 id="orga0e9862"><span class="section-number-3">2.3.</span> 將圖片讀入並轉成 numpy 陣列</h3>
+<div class="outline-text-3" id="text-2-3">
+<p>
+所有圖片大小不一，但模型需要統一大小的輸入。我們把每張圖片都縮放到 <b>128x128</b> 像素（比 224x224 小，訓練更快，對小資料集來說也夠用了）。<br />
+</p>
 
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #dcaeea;">IMG_SIZE</span> = <span style="color: #da8548; font-weight: bold;">128</span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#32113;&#19968;&#22294;&#29255;&#22823;&#23567;</span>
+<span class="linenr"> 2: </span>
+<span class="linenr"> 3: </span><span style="color: #dcaeea;">data</span> = []    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23384;&#25918;&#22294;&#29255;</span>
+<span class="linenr"> 4: </span><span style="color: #dcaeea;">target</span> = []  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23384;&#25918;&#27161;&#31844;&#65288;0=&#35987;, 1=&#29399;&#65289;</span>
+<span class="linenr"> 5: </span>
+<span class="linenr"> 6: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35712;&#21462;&#35987;&#30340;&#22294;&#29255;</span>
+<span class="linenr"> 7: </span><span style="color: #51afef;">for</span> fname <span style="color: #51afef;">in</span> cat_fnames:
+<span class="linenr"> 8: </span>    <span style="color: #dcaeea;">img</span> = cv2.imread(os.path.join(cats_dir, fname))
+<span class="linenr"> 9: </span>    <span style="color: #51afef;">if</span> img <span style="color: #51afef;">is</span> <span style="color: #51afef;">not</span> <span style="color: #a9a1e1;">None</span>:
+<span class="linenr">10: </span>        <span style="color: #dcaeea;">img</span> = cv2.resize(img, (IMG_SIZE, IMG_SIZE))  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#32302;&#25918;</span>
+<span class="linenr">11: </span>        <span style="color: #dcaeea;">img</span> = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">BGR &#8594; RGB</span>
+<span class="linenr">12: </span>        data.append(img)
+<span class="linenr">13: </span>        target.append(<span style="color: #da8548; font-weight: bold;">0</span>)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35987; = 0</span>
+<span class="linenr">14: </span>
+<span class="linenr">15: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35712;&#21462;&#29399;&#30340;&#22294;&#29255;</span>
+<span class="linenr">16: </span><span style="color: #51afef;">for</span> fname <span style="color: #51afef;">in</span> dog_fnames:
+<span class="linenr">17: </span>    <span style="color: #dcaeea;">img</span> = cv2.imread(os.path.join(dogs_dir, fname))
+<span class="linenr">18: </span>    <span style="color: #51afef;">if</span> img <span style="color: #51afef;">is</span> <span style="color: #51afef;">not</span> <span style="color: #a9a1e1;">None</span>:
+<span class="linenr">19: </span>        <span style="color: #dcaeea;">img</span> = cv2.resize(img, (IMG_SIZE, IMG_SIZE))
+<span class="linenr">20: </span>        <span style="color: #dcaeea;">img</span> = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+<span class="linenr">21: </span>        data.append(img)
+<span class="linenr">22: </span>        target.append(<span style="color: #da8548; font-weight: bold;">1</span>)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#29399; = 1</span>
+<span class="linenr">23: </span>
+<span class="linenr">24: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#25104;&#21151;&#35712;&#21462; </span>{<span style="color: #c678dd;">len</span>(data)}<span style="color: #98be65;"> &#24373;&#22294;&#29255;"</span>)
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org1625921" class="outline-3">
+<h3 id="org1625921"><span class="section-number-3">2.4.</span> 預覽幾張圖片</h3>
+<div class="outline-text-3" id="text-2-4">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
 <span class="linenr"> 2: </span>
-<span class="linenr"> 3: </span><span style="color: #dcaeea;">train_loss</span> = history.history[<span style="color: #98be65;">'loss'</span>]
-<span class="linenr"> 4: </span><span style="color: #dcaeea;">val_loss</span> = history.history[<span style="color: #98be65;">'val_loss'</span>]
-<span class="linenr"> 5: </span><span style="color: #dcaeea;">train_accuracy</span> = history.history[<span style="color: #98be65;">'accuracy'</span>]
-<span class="linenr"> 6: </span><span style="color: #dcaeea;">val_accuracy</span> = history.history[<span style="color: #98be65;">'val_accuracy'</span>]
-<span class="linenr"> 7: </span>
-<span class="linenr"> 8: </span>plt.cla()
-<span class="linenr"> 9: </span>plt.plot(train_loss, label=<span style="color: #98be65;">'Training Loss'</span>)
-<span class="linenr">10: </span>plt.plot(val_loss, label=<span style="color: #98be65;">'Validation Loss'</span>)
-<span class="linenr">11: </span>plt.title(<span style="color: #98be65;">'Training and Validation Loss'</span>)
-<span class="linenr">12: </span>plt.xlabel(<span style="color: #98be65;">'Epoch'</span>)
-<span class="linenr">13: </span>plt.ylabel(<span style="color: #98be65;">'Loss'</span>)
-<span class="linenr">14: </span>plt.legend()
-<span class="linenr">15: </span>plt.show()
+<span class="linenr"> 3: </span><span style="color: #dcaeea;">fig</span>, <span style="color: #dcaeea;">axes</span> = plt.subplots(<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">5</span>, figsize=(<span style="color: #da8548; font-weight: bold;">12</span>, <span style="color: #da8548; font-weight: bold;">5</span>))
+<span class="linenr"> 4: </span><span style="color: #dcaeea;">label_names</span> = [<span style="color: #98be65;">'Cat'</span>, <span style="color: #98be65;">'Dog'</span>]
+<span class="linenr"> 5: </span>
+<span class="linenr"> 6: </span><span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #da8548; font-weight: bold;">5</span>):
+<span class="linenr"> 7: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35987;</span>
+<span class="linenr"> 8: </span>    axes[<span style="color: #da8548; font-weight: bold;">0</span>, i].imshow(data[i])
+<span class="linenr"> 9: </span>    axes[<span style="color: #da8548; font-weight: bold;">0</span>, i].set_title(f<span style="color: #98be65;">'</span>{label_names[target[i]]}<span style="color: #98be65;">'</span>)
+<span class="linenr">10: </span>    axes[<span style="color: #da8548; font-weight: bold;">0</span>, i].axis(<span style="color: #98be65;">'off'</span>)
+<span class="linenr">11: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#29399;</span>
+<span class="linenr">12: </span>    <span style="color: #dcaeea;">dog_idx</span> = <span style="color: #c678dd;">len</span>(cat_fnames) + i
+<span class="linenr">13: </span>    axes[<span style="color: #da8548; font-weight: bold;">1</span>, i].imshow(data[dog_idx])
+<span class="linenr">14: </span>    axes[<span style="color: #da8548; font-weight: bold;">1</span>, i].set_title(f<span style="color: #98be65;">'</span>{label_names[target[dog_idx]]}<span style="color: #98be65;">'</span>)
+<span class="linenr">15: </span>    axes[<span style="color: #da8548; font-weight: bold;">1</span>, i].axis(<span style="color: #98be65;">'off'</span>)
+<span class="linenr">16: </span>
+<span class="linenr">17: </span>plt.suptitle(<span style="color: #98be65;">'Training Data Preview'</span>, fontsize=<span style="color: #da8548; font-weight: bold;">14</span>)
+<span class="linenr">18: </span>plt.tight_layout()
+<span class="linenr">19: </span>plt.savefig(<span style="color: #98be65;">"images/cats-dogs-preview.png"</span>, dpi=<span style="color: #da8548; font-weight: bold;">100</span>)
+<span class="linenr">20: </span>plt.close()
+<span class="linenr">21: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#22294;&#29255;&#38928;&#35261;&#24050;&#20786;&#23384;&#33267; images/cats-dogs-preview.png"</span>)
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-orgccb4986" class="outline-3">
-<h3 id="orgccb4986"><span class="section-number-3">6.2.</span> accuracy</h3>
+</div>
+<div id="outline-container-org401290a" class="outline-2">
+<h2 id="org401290a"><span class="section-number-2">3.</span> 步驟二：資料預處理</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-org2e1f73e" class="outline-3">
+<h3 id="org2e1f73e"><span class="section-number-3">3.1.</span> 轉成 numpy 陣列並正規化</h3>
+<div class="outline-text-3" id="text-3-1">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36681;&#25104; numpy &#38499;&#21015;</span>
+<span class="linenr"> 2: </span><span style="color: #dcaeea;">data</span> = np.array(data, dtype=np.float32)
+<span class="linenr"> 3: </span><span style="color: #dcaeea;">target</span> = np.array(target)
+<span class="linenr"> 4: </span>
+<span class="linenr"> 5: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#22294;&#29255;&#36039;&#26009;&#24418;&#29376;&#65306;</span>{data.shape}<span style="color: #98be65;">"</span>)     <span style="color: #5B6268;"># </span><span style="color: #5B6268;">(N, 128, 128, 3)</span>
+<span class="linenr"> 6: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#27161;&#31844;&#36039;&#26009;&#24418;&#29376;&#65306;</span>{target.shape}<span style="color: #98be65;">"</span>)    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">(N,)</span>
+<span class="linenr"> 7: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#20687;&#32032;&#20540;&#31684;&#22285;&#65306;</span>{data.<span style="color: #c678dd;">min</span>()}<span style="color: #98be65;"> ~ </span>{data.<span style="color: #c678dd;">max</span>()}<span style="color: #98be65;">"</span>)
+<span class="linenr"> 8: </span>
+<span class="linenr"> 9: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27491;&#35215;&#21270;&#65306;&#23559;&#20687;&#32032;&#20540;&#24478; 0~255 &#32302;&#25918;&#21040; 0~1</span>
+<span class="linenr">10: </span><span style="color: #dcaeea;">data</span> = data / <span style="color: #da8548; font-weight: bold;">255.0</span>
+<span class="linenr">11: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">&#27491;&#35215;&#21270;&#24460;&#20687;&#32032;&#20540;&#31684;&#22285;&#65306;</span>{data.<span style="color: #c678dd;">min</span>():.1f}<span style="color: #98be65;"> ~ </span>{data.<span style="color: #c678dd;">max</span>():.1f}<span style="color: #98be65;">"</span>)
+</pre>
+</div>
+
+<blockquote>
+<p>
+<b>為什麼要正規化？</b><br />
+</p>
+
+<p>
+圖片的像素值範圍是 0~255，如果直接丟進模型，這麼大的數值會讓梯度爆炸，訓練效果很差。除以 255 後，所有值都落在 0~1 之間，模型學習起來更穩定。<br />
+</p>
+
+<p>
+如果你之前的模型準確度只有 50% 左右（等於隨機猜），很可能就是忘了做正規化！<br />
+</p>
+</blockquote>
+</div>
+</div>
+<div id="outline-container-org60c8f97" class="outline-3">
+<h3 id="org60c8f97"><span class="section-number-3">3.2.</span> 將標籤轉成 One-Hot Encoding</h3>
+<div class="outline-text-3" id="text-3-2">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> keras
+<span class="linenr">2: </span>
+<span class="linenr">3: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">One-hot encoding</span>
+<span class="linenr">4: </span><span style="color: #dcaeea;">target_onehot</span> = keras.utils.to_categorical(target, num_classes=<span style="color: #da8548; font-weight: bold;">2</span>)
+<span class="linenr">5: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#21407;&#22987;&#27161;&#31844;&#65288;&#21069;5&#20491;&#65289;&#65306;</span>{target[:5]}<span style="color: #98be65;">"</span>)
+<span class="linenr">6: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"One-hot &#32232;&#30908;&#65306;"</span>)
+<span class="linenr">7: </span><span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #da8548; font-weight: bold;">5</span>):
+<span class="linenr">8: </span>    <span style="color: #dcaeea;">label_name</span> = <span style="color: #98be65;">"&#35987;"</span> <span style="color: #51afef;">if</span> target[i] == <span style="color: #da8548; font-weight: bold;">0</span> <span style="color: #51afef;">else</span> <span style="color: #98be65;">"&#29399;"</span>
+<span class="linenr">9: </span>    <span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"  </span>{label_name}<span style="color: #98be65;"> &#8594; </span>{target_onehot[i]}<span style="color: #98be65;">"</span>)
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgcfec6a4" class="outline-3">
+<h3 id="orgcfec6a4"><span class="section-number-3">3.3.</span> 分割訓練集與測試集</h3>
+<div class="outline-text-3" id="text-3-3">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">from</span> sklearn.model_selection <span style="color: #51afef;">import</span> train_test_split
+<span class="linenr"> 2: </span>
+<span class="linenr"> 3: </span><span style="color: #dcaeea;">x_train</span>, <span style="color: #dcaeea;">x_test</span>, <span style="color: #dcaeea;">y_train</span>, <span style="color: #dcaeea;">y_test</span> = train_test_split(
+<span class="linenr"> 4: </span>    data, target_onehot,
+<span class="linenr"> 5: </span>    test_size=<span style="color: #da8548; font-weight: bold;">0.2</span>,       <span style="color: #5B6268;"># </span><span style="color: #5B6268;">20% &#30070;&#28204;&#35430;&#36039;&#26009;</span>
+<span class="linenr"> 6: </span>    random_state=<span style="color: #da8548; font-weight: bold;">42</span>,
+<span class="linenr"> 7: </span>    stratify=target       <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#30906;&#20445;&#35347;&#32244;&#38598;&#21644;&#28204;&#35430;&#38598;&#30340;&#35987;&#29399;&#27604;&#20363;&#19968;&#33268;</span>
+<span class="linenr"> 8: </span>)
+<span class="linenr"> 9: </span>
+<span class="linenr">10: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#35347;&#32244;&#38598;&#65306;</span>{x_train.shape[0]}<span style="color: #98be65;"> &#24373;"</span>)
+<span class="linenr">11: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#28204;&#35430;&#38598;&#65306;</span>{x_test.shape[0]}<span style="color: #98be65;"> &#24373;"</span>)
+<span class="linenr">12: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">&#35347;&#32244;&#38598;&#20013;&#30340;&#35987;&#65306;</span>{<span style="color: #c678dd;">int</span>(y_train[:, 0].<span style="color: #c678dd;">sum</span>())}<span style="color: #98be65;"> &#24373;"</span>)
+<span class="linenr">13: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#35347;&#32244;&#38598;&#20013;&#30340;&#29399;&#65306;</span>{<span style="color: #c678dd;">int</span>(y_train[:, 1].<span style="color: #c678dd;">sum</span>())}<span style="color: #98be65;"> &#24373;"</span>)
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org2e69eaa" class="outline-2">
+<h2 id="org2e69eaa"><span class="section-number-2">4.</span> 步驟三：建立 CNN 模型</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+我們用一個簡單但有效的 CNN 架構。關鍵是：圖片越大，需要越多的卷積層來逐步提取特徵。<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">from</span> keras <span style="color: #51afef;">import</span> layers, models
+<span class="linenr"> 2: </span>
+<span class="linenr"> 3: </span><span style="color: #dcaeea;">model</span> = models.Sequential([
+<span class="linenr"> 4: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36664;&#20837;&#23652;</span>
+<span class="linenr"> 5: </span>    layers.Input(shape=(IMG_SIZE, IMG_SIZE, <span style="color: #da8548; font-weight: bold;">3</span>)),
+<span class="linenr"> 6: </span>
+<span class="linenr"> 7: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31532;&#19968;&#32068;&#21367;&#31309;&#65306;&#23416;&#32722;&#22522;&#30990;&#29305;&#24501;&#65288;&#37002;&#32227;&#12289;&#38991;&#33394;&#65289;</span>
+<span class="linenr"> 8: </span>    layers.Conv2D(<span style="color: #da8548; font-weight: bold;">32</span>, (<span style="color: #da8548; font-weight: bold;">3</span>, <span style="color: #da8548; font-weight: bold;">3</span>), activation=<span style="color: #98be65;">'relu'</span>),
+<span class="linenr"> 9: </span>    layers.MaxPooling2D((<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">2</span>)),
+<span class="linenr">10: </span>
+<span class="linenr">11: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31532;&#20108;&#32068;&#21367;&#31309;&#65306;&#23416;&#32722;&#36914;&#38542;&#29305;&#24501;&#65288;&#32011;&#29702;&#12289;&#24418;&#29376;&#65289;</span>
+<span class="linenr">12: </span>    layers.Conv2D(<span style="color: #da8548; font-weight: bold;">64</span>, (<span style="color: #da8548; font-weight: bold;">3</span>, <span style="color: #da8548; font-weight: bold;">3</span>), activation=<span style="color: #98be65;">'relu'</span>),
+<span class="linenr">13: </span>    layers.MaxPooling2D((<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">2</span>)),
+<span class="linenr">14: </span>
+<span class="linenr">15: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31532;&#19977;&#32068;&#21367;&#31309;&#65306;&#23416;&#32722;&#39640;&#38542;&#29305;&#24501;&#65288;&#32819;&#26421;&#12289;&#40763;&#23376;&#65289;</span>
+<span class="linenr">16: </span>    layers.Conv2D(<span style="color: #da8548; font-weight: bold;">128</span>, (<span style="color: #da8548; font-weight: bold;">3</span>, <span style="color: #da8548; font-weight: bold;">3</span>), activation=<span style="color: #98be65;">'relu'</span>),
+<span class="linenr">17: </span>    layers.MaxPooling2D((<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">2</span>)),
+<span class="linenr">18: </span>
+<span class="linenr">19: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25892;&#24179;&#20006;&#20998;&#39006;</span>
+<span class="linenr">20: </span>    layers.Flatten(),
+<span class="linenr">21: </span>    layers.Dropout(<span style="color: #da8548; font-weight: bold;">0.5</span>),              <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38568;&#27231;&#38364;&#38281; 50% &#31070;&#32147;&#20803;&#65292;&#38450;&#27490;&#36942;&#24230;&#37197;&#36969;</span>
+<span class="linenr">22: </span>    layers.Dense(<span style="color: #da8548; font-weight: bold;">128</span>, activation=<span style="color: #98be65;">'relu'</span>),
+<span class="linenr">23: </span>    layers.Dense(<span style="color: #da8548; font-weight: bold;">2</span>, activation=<span style="color: #98be65;">'softmax'</span>)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">2 &#20491;&#39006;&#21029;&#65306;&#35987;&#12289;&#29399;</span>
+<span class="linenr">24: </span>])
+<span class="linenr">25: </span>
+<span class="linenr">26: </span>model.summary()
+<span class="linenr">27: </span>
+<span class="linenr">28: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#32232;&#35695;&#27169;&#22411;</span>
+<span class="linenr">29: </span>model.<span style="color: #c678dd;">compile</span>(
+<span class="linenr">30: </span>    optimizer=<span style="color: #98be65;">'adam'</span>,
+<span class="linenr">31: </span>    loss=<span style="color: #98be65;">'categorical_crossentropy'</span>,  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25645;&#37197; one-hot &#27161;&#31844;</span>
+<span class="linenr">32: </span>    metrics=[<span style="color: #98be65;">'accuracy'</span>]
+<span class="linenr">33: </span>)
+</pre>
+</div>
+
+<blockquote>
+<p>
+<b>模型架構解讀：</b><br />
+</p>
+<ul class="org-ul">
+<li>三層 =Conv2D + MaxPooling2D=：像是一個漏斗，把 128x128 的大圖逐步壓縮，同時提取越來越抽象的特徵<br /></li>
+<li>=Dropout(0.5)=：訓練時隨機「關掉」一半的神經元，迫使模型不依賴任何單一特徵，減少過度配適<br /></li>
+<li>=Dense(2, softmax)=：輸出兩個機率值，代表「是貓的機率」和「是狗的機率」<br /></li>
+</ul>
+</blockquote>
+</div>
+</div>
+<div id="outline-container-org0c300e1" class="outline-2">
+<h2 id="org0c300e1"><span class="section-number-2">5.</span> 步驟四：訓練</h2>
+<div class="outline-text-2" id="text-5">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">history</span> = model.fit(
+<span class="linenr">2: </span>    x_train, y_train,
+<span class="linenr">3: </span>    batch_size=<span style="color: #da8548; font-weight: bold;">32</span>,
+<span class="linenr">4: </span>    epochs=<span style="color: #da8548; font-weight: bold;">20</span>,
+<span class="linenr">5: </span>    validation_split=<span style="color: #da8548; font-weight: bold;">0.2</span>,    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24478;&#35347;&#32244;&#38598;&#20013;&#20877;&#20999; 20% &#30070;&#39511;&#35657;&#38598;</span>
+<span class="linenr">6: </span>    verbose=<span style="color: #da8548; font-weight: bold;">1</span>
+<span class="linenr">7: </span>)
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgdc836a5" class="outline-2">
+<h2 id="orgdc836a5"><span class="section-number-2">6.</span> 步驟五：評估</h2>
+<div class="outline-text-2" id="text-6">
+</div>
+<div id="outline-container-org2321d7d" class="outline-3">
+<h3 id="org2321d7d"><span class="section-number-3">6.1.</span> 測試集評估</h3>
+<div class="outline-text-3" id="text-6-1">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">loss</span>, <span style="color: #dcaeea;">acc</span> = model.evaluate(x_test, y_test, verbose=<span style="color: #da8548; font-weight: bold;">0</span>)
+<span class="linenr">2: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#28204;&#35430;&#38598; Loss&#65306;</span>{loss:.4f}<span style="color: #98be65;">"</span>)
+<span class="linenr">3: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#28204;&#35430;&#38598;&#28310;&#30906;&#24230;&#65306;</span>{acc * 100:.2f}<span style="color: #98be65;">%"</span>)
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org7d07280" class="outline-3">
+<h3 id="org7d07280"><span class="section-number-3">6.2.</span> 繪製訓練曲線</h3>
 <div class="outline-text-3" id="text-6-2">
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr">1: </span>plt.cla()
-<span class="linenr">2: </span>plt.plot(train_accuracy, label=<span style="color: #98be65;">'Training Accuracy'</span>)
-<span class="linenr">3: </span>plt.plot(val_accuracy, label=<span style="color: #98be65;">'Validation Accuracy'</span>)
-<span class="linenr">4: </span>plt.title(<span style="color: #98be65;">'Training and Validation Accuracy'</span>)
-<span class="linenr">5: </span>plt.xlabel(<span style="color: #98be65;">'Epoch'</span>)
-<span class="linenr">6: </span>plt.ylabel(<span style="color: #98be65;">'Accuracy'</span>)
-<span class="linenr">7: </span>plt.legend()
-<span class="linenr">8: </span>plt.show()
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
+<span class="linenr"> 2: </span>
+<span class="linenr"> 3: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">plot_history</span>(hdict, train_key, val_key, ylabel, filename):
+<span class="linenr"> 4: </span>    plt.cla()
+<span class="linenr"> 5: </span>    <span style="color: #dcaeea;">epochs</span> = <span style="color: #c678dd;">range</span>(<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #c678dd;">len</span>(hdict[train_key]) + <span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr"> 6: </span>    plt.plot(epochs, hdict[train_key], <span style="color: #98be65;">'bo-'</span>, label=f<span style="color: #98be65;">'Training </span>{ylabel.lower()}<span style="color: #98be65;">'</span>, markersize=<span style="color: #da8548; font-weight: bold;">3</span>)
+<span class="linenr"> 7: </span>    plt.plot(epochs, hdict[val_key], <span style="color: #98be65;">'r-'</span>, label=f<span style="color: #98be65;">'Validation </span>{ylabel.lower()}<span style="color: #98be65;">'</span>)
+<span class="linenr"> 8: </span>    plt.title(f<span style="color: #98be65;">'Training and Validation </span>{ylabel}<span style="color: #98be65;">'</span>)
+<span class="linenr"> 9: </span>    plt.xlabel(<span style="color: #98be65;">'Epochs'</span>)
+<span class="linenr">10: </span>    plt.ylabel(ylabel)
+<span class="linenr">11: </span>    plt.legend()
+<span class="linenr">12: </span>    plt.savefig(f<span style="color: #98be65;">"images/</span>{filename}<span style="color: #98be65;">"</span>)
+<span class="linenr">13: </span>    plt.close()
+<span class="linenr">14: </span>
+<span class="linenr">15: </span>plot_history(history.history, <span style="color: #98be65;">'loss'</span>, <span style="color: #98be65;">'val_loss'</span>, <span style="color: #98be65;">'Loss'</span>, <span style="color: #98be65;">'mydata-loss.png'</span>)
+<span class="linenr">16: </span>plot_history(history.history, <span style="color: #98be65;">'accuracy'</span>, <span style="color: #98be65;">'val_accuracy'</span>, <span style="color: #98be65;">'Accuracy'</span>, <span style="color: #98be65;">'mydata-accuracy.png'</span>)
+<span class="linenr">17: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"Loss &#26354;&#32218;&#24050;&#20786;&#23384;&#33267; images/mydata-loss.png"</span>)
+<span class="linenr">18: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"Accuracy &#26354;&#32218;&#24050;&#20786;&#23384;&#33267; images/mydata-accuracy.png"</span>)
 </pre>
 </div>
 </div>
+</div>
+<div id="outline-container-org5bc12f0" class="outline-3">
+<h3 id="org5bc12f0"><span class="section-number-3">6.3.</span> 實際預測幾張圖片</h3>
+<div class="outline-text-3" id="text-6-3">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #dcaeea;">label_names</span> = [<span style="color: #98be65;">'Cat'</span>, <span style="color: #98be65;">'Dog'</span>]
+<span class="linenr"> 2: </span>
+<span class="linenr"> 3: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24478;&#28204;&#35430;&#38598;&#20013;&#25361;&#24190;&#24373;&#20358;&#30475;&#30475;</span>
+<span class="linenr"> 4: </span><span style="color: #dcaeea;">fig</span>, <span style="color: #dcaeea;">axes</span> = plt.subplots(<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">5</span>, figsize=(<span style="color: #da8548; font-weight: bold;">15</span>, <span style="color: #da8548; font-weight: bold;">6</span>))
+<span class="linenr"> 5: </span><span style="color: #dcaeea;">indices</span> = np.random.choice(<span style="color: #c678dd;">len</span>(x_test), <span style="color: #da8548; font-weight: bold;">10</span>, replace=<span style="color: #a9a1e1;">False</span>)
+<span class="linenr"> 6: </span>
+<span class="linenr"> 7: </span><span style="color: #51afef;">for</span> i, idx <span style="color: #51afef;">in</span> <span style="color: #c678dd;">enumerate</span>(indices):
+<span class="linenr"> 8: </span>    <span style="color: #dcaeea;">row</span>, <span style="color: #dcaeea;">col</span> = i // <span style="color: #da8548; font-weight: bold;">5</span>, i % <span style="color: #da8548; font-weight: bold;">5</span>
+<span class="linenr"> 9: </span>    axes[row, col].imshow(x_test[idx])
+<span class="linenr">10: </span>    axes[row, col].axis(<span style="color: #98be65;">'off'</span>)
+<span class="linenr">11: </span>
+<span class="linenr">12: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27169;&#22411;&#38928;&#28204;</span>
+<span class="linenr">13: </span>    <span style="color: #dcaeea;">pred</span> = model.predict(x_test[idx:idx+<span style="color: #da8548; font-weight: bold;">1</span>], verbose=<span style="color: #da8548; font-weight: bold;">0</span>)
+<span class="linenr">14: </span>    <span style="color: #dcaeea;">pred_label</span> = np.argmax(pred)
+<span class="linenr">15: </span>    <span style="color: #dcaeea;">true_label</span> = np.argmax(y_test[idx])
+<span class="linenr">16: </span>    <span style="color: #dcaeea;">confidence</span> = pred[<span style="color: #da8548; font-weight: bold;">0</span>][pred_label] * <span style="color: #da8548; font-weight: bold;">100</span>
+<span class="linenr">17: </span>
+<span class="linenr">18: </span>    <span style="color: #dcaeea;">color</span> = <span style="color: #98be65;">'green'</span> <span style="color: #51afef;">if</span> pred_label == true_label <span style="color: #51afef;">else</span> <span style="color: #98be65;">'red'</span>
+<span class="linenr">19: </span>    axes[row, col].set_title(
+<span class="linenr">20: </span>        f<span style="color: #98be65;">'Pred: </span>{label_names[pred_label]}<span style="color: #98be65;"> (</span>{confidence:.0f}<span style="color: #98be65;">%)</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">True: </span>{label_names[true_label]}<span style="color: #98be65;">'</span>,
+<span class="linenr">21: </span>        color=color, fontsize=<span style="color: #da8548; font-weight: bold;">9</span>
+<span class="linenr">22: </span>    )
+<span class="linenr">23: </span>
+<span class="linenr">24: </span>plt.suptitle(<span style="color: #98be65;">'Model Predictions (Green=Correct, Red=Wrong)'</span>, fontsize=<span style="color: #da8548; font-weight: bold;">13</span>)
+<span class="linenr">25: </span>plt.tight_layout()
+<span class="linenr">26: </span>plt.savefig(<span style="color: #98be65;">"images/mydata-predictions.png"</span>, dpi=<span style="color: #da8548; font-weight: bold;">100</span>)
+<span class="linenr">27: </span>plt.close()
+<span class="linenr">28: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#38928;&#28204;&#32080;&#26524;&#24050;&#20786;&#23384;&#33267; images/mydata-predictions.png"</span>)
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgee66e8b" class="outline-2">
+<h2 id="orgee66e8b"><span class="section-number-2">7.</span> 進階：資料擴增（Data Augmentation）</h2>
+<div class="outline-text-2" id="text-7">
+<p>
+當你的資料量很少（像我們只有 200 張），模型很容易過度配適——在訓練資料上表現很好，但碰到新圖片就不行了。<br />
+</p>
+
+<p>
+<b>資料擴增</b> 是解決這個問題的有效方法：對同一張圖片做旋轉、翻轉、縮放等變換，產生「新」的訓練資料。<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">from</span> keras.src.utils <span style="color: #51afef;">import</span> image_utils
+<span class="linenr"> 2: </span>
+<span class="linenr"> 3: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31034;&#31684;&#65306;&#23565;&#19968;&#24373;&#35987;&#30340;&#22294;&#29255;&#20570;&#21508;&#31278;&#35722;&#25563;</span>
+<span class="linenr"> 4: </span><span style="color: #dcaeea;">sample_img</span> = x_train[<span style="color: #da8548; font-weight: bold;">0</span>]
+<span class="linenr"> 5: </span>
+<span class="linenr"> 6: </span><span style="color: #dcaeea;">fig</span>, <span style="color: #dcaeea;">axes</span> = plt.subplots(<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">4</span>, figsize=(<span style="color: #da8548; font-weight: bold;">14</span>, <span style="color: #da8548; font-weight: bold;">7</span>))
+<span class="linenr"> 7: </span>axes[<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>].imshow(sample_img)
+<span class="linenr"> 8: </span>axes[<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0</span>].set_title(<span style="color: #98be65;">'Original'</span>)
+<span class="linenr"> 9: </span>
+<span class="linenr">10: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27700;&#24179;&#32763;&#36681;</span>
+<span class="linenr">11: </span>axes[<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">1</span>].imshow(np.fliplr(sample_img))
+<span class="linenr">12: </span>axes[<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">1</span>].set_title(<span style="color: #98be65;">'Horizontal Flip'</span>)
+<span class="linenr">13: </span>
+<span class="linenr">14: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#22402;&#30452;&#32763;&#36681;</span>
+<span class="linenr">15: </span>axes[<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">2</span>].imshow(np.flipud(sample_img))
+<span class="linenr">16: </span>axes[<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">2</span>].set_title(<span style="color: #98be65;">'Vertical Flip'</span>)
+<span class="linenr">17: </span>
+<span class="linenr">18: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#26059;&#36681; 90 &#24230;</span>
+<span class="linenr">19: </span>axes[<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">3</span>].imshow(np.rot90(sample_img))
+<span class="linenr">20: </span>axes[<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">3</span>].set_title(<span style="color: #98be65;">'Rotate 90'</span>)
+<span class="linenr">21: </span>
+<span class="linenr">22: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20142;&#24230;&#35519;&#25972;&#65288;&#35722;&#20142;&#65289;</span>
+<span class="linenr">23: </span><span style="color: #dcaeea;">bright</span> = np.clip(sample_img * <span style="color: #da8548; font-weight: bold;">1.5</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr">24: </span>axes[<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">0</span>].imshow(bright)
+<span class="linenr">25: </span>axes[<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">0</span>].set_title(<span style="color: #98be65;">'Brighter'</span>)
+<span class="linenr">26: </span>
+<span class="linenr">27: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20142;&#24230;&#35519;&#25972;&#65288;&#35722;&#26263;&#65289;</span>
+<span class="linenr">28: </span><span style="color: #dcaeea;">dark</span> = np.clip(sample_img * <span style="color: #da8548; font-weight: bold;">0.5</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr">29: </span>axes[<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">1</span>].imshow(dark)
+<span class="linenr">30: </span>axes[<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">1</span>].set_title(<span style="color: #98be65;">'Darker'</span>)
+<span class="linenr">31: </span>
+<span class="linenr">32: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21152;&#20837;&#38620;&#35338;</span>
+<span class="linenr">33: </span><span style="color: #dcaeea;">noisy</span> = np.clip(sample_img + np.random.normal(<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0.05</span>, sample_img.shape), <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr">34: </span>axes[<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">2</span>].imshow(noisy)
+<span class="linenr">35: </span>axes[<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">2</span>].set_title(<span style="color: #98be65;">'Add Noise'</span>)
+<span class="linenr">36: </span>
+<span class="linenr">37: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38568;&#27231;&#35009;&#20999;&#20877;&#32302;&#25918;</span>
+<span class="linenr">38: </span><span style="color: #dcaeea;">h</span>, <span style="color: #dcaeea;">w</span> = sample_img.shape[:<span style="color: #da8548; font-weight: bold;">2</span>]
+<span class="linenr">39: </span><span style="color: #dcaeea;">crop_size</span> = <span style="color: #c678dd;">int</span>(h * <span style="color: #da8548; font-weight: bold;">0.8</span>)
+<span class="linenr">40: </span><span style="color: #dcaeea;">start_h</span> = np.random.randint(<span style="color: #da8548; font-weight: bold;">0</span>, h - crop_size)
+<span class="linenr">41: </span><span style="color: #dcaeea;">start_w</span> = np.random.randint(<span style="color: #da8548; font-weight: bold;">0</span>, w - crop_size)
+<span class="linenr">42: </span><span style="color: #dcaeea;">cropped</span> = sample_img[start_h:start_h+crop_size, start_w:start_w+crop_size]
+<span class="linenr">43: </span>axes[<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">3</span>].imshow(cropped)
+<span class="linenr">44: </span>axes[<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">3</span>].set_title(<span style="color: #98be65;">'Random Crop'</span>)
+<span class="linenr">45: </span>
+<span class="linenr">46: </span><span style="color: #51afef;">for</span> ax <span style="color: #51afef;">in</span> axes.flat:
+<span class="linenr">47: </span>    ax.axis(<span style="color: #98be65;">'off'</span>)
+<span class="linenr">48: </span>
+<span class="linenr">49: </span>plt.suptitle(<span style="color: #98be65;">'Data Augmentation Examples'</span>, fontsize=<span style="color: #da8548; font-weight: bold;">14</span>)
+<span class="linenr">50: </span>plt.tight_layout()
+<span class="linenr">51: </span>plt.savefig(<span style="color: #98be65;">"images/mydata-augmentation.png"</span>, dpi=<span style="color: #da8548; font-weight: bold;">100</span>)
+<span class="linenr">52: </span>plt.close()
+<span class="linenr">53: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#36039;&#26009;&#25844;&#22686;&#31684;&#20363;&#24050;&#20786;&#23384;&#33267; images/mydata-augmentation.png"</span>)
+<span class="linenr">54: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">&#21516;&#19968;&#24373;&#22294;&#29255;&#32147;&#36942;&#19981;&#21516;&#30340;&#35722;&#25563;&#65292;&#23601;&#33021;&#29986;&#29983; 8 &#31278;&#19981;&#21516;&#30340;&#35347;&#32244;&#36039;&#26009;&#65281;"</span>)
+<span class="linenr">55: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#22914;&#26524;&#21407;&#26412;&#26377; 200 &#24373;&#22294;&#65292;&#27599;&#24373;&#20570; 8 &#31278;&#35722;&#25563;&#65292;&#23601;&#31561;&#26044;&#26377; 1600 &#24373;&#35347;&#32244;&#36039;&#26009;&#12290;"</span>)
+</pre>
+</div>
+</div>
+<div id="outline-container-org9e7ed75" class="outline-3">
+<h3 id="org9e7ed75"><span class="section-number-3">7.1.</span> 使用 Keras 內建的資料擴增層</h3>
+<div class="outline-text-3" id="text-7-1">
+<p>
+Keras 提供了方便的資料擴增層，可以直接加在模型中：<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;&#31435;&#24118;&#26377;&#36039;&#26009;&#25844;&#22686;&#30340;&#22686;&#24375;&#29256;&#27169;&#22411;</span>
+<span class="linenr"> 2: </span><span style="color: #dcaeea;">model_aug</span> = models.Sequential([
+<span class="linenr"> 3: </span>    layers.Input(shape=(IMG_SIZE, IMG_SIZE, <span style="color: #da8548; font-weight: bold;">3</span>)),
+<span class="linenr"> 4: </span>
+<span class="linenr"> 5: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36039;&#26009;&#25844;&#22686;&#23652;&#65288;&#21482;&#22312;&#35347;&#32244;&#26178;&#29983;&#25928;&#65292;&#25512;&#35542;&#26178;&#33258;&#21205;&#38364;&#38281;&#65289;</span>
+<span class="linenr"> 6: </span>    layers.RandomFlip(<span style="color: #98be65;">"horizontal"</span>),        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38568;&#27231;&#27700;&#24179;&#32763;&#36681;</span>
+<span class="linenr"> 7: </span>    layers.RandomRotation(<span style="color: #da8548; font-weight: bold;">0.1</span>),             <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38568;&#27231;&#26059;&#36681; &#177;10%</span>
+<span class="linenr"> 8: </span>    layers.RandomZoom(<span style="color: #da8548; font-weight: bold;">0.1</span>),                 <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38568;&#27231;&#32302;&#25918; &#177;10%</span>
+<span class="linenr"> 9: </span>
+<span class="linenr">10: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">CNN &#26550;&#27083;&#65288;&#21644;&#20043;&#21069;&#19968;&#27171;&#65289;</span>
+<span class="linenr">11: </span>    layers.Conv2D(<span style="color: #da8548; font-weight: bold;">32</span>, (<span style="color: #da8548; font-weight: bold;">3</span>, <span style="color: #da8548; font-weight: bold;">3</span>), activation=<span style="color: #98be65;">'relu'</span>),
+<span class="linenr">12: </span>    layers.MaxPooling2D((<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">2</span>)),
+<span class="linenr">13: </span>    layers.Conv2D(<span style="color: #da8548; font-weight: bold;">64</span>, (<span style="color: #da8548; font-weight: bold;">3</span>, <span style="color: #da8548; font-weight: bold;">3</span>), activation=<span style="color: #98be65;">'relu'</span>),
+<span class="linenr">14: </span>    layers.MaxPooling2D((<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">2</span>)),
+<span class="linenr">15: </span>    layers.Conv2D(<span style="color: #da8548; font-weight: bold;">128</span>, (<span style="color: #da8548; font-weight: bold;">3</span>, <span style="color: #da8548; font-weight: bold;">3</span>), activation=<span style="color: #98be65;">'relu'</span>),
+<span class="linenr">16: </span>    layers.MaxPooling2D((<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">2</span>)),
+<span class="linenr">17: </span>
+<span class="linenr">18: </span>    layers.Flatten(),
+<span class="linenr">19: </span>    layers.Dropout(<span style="color: #da8548; font-weight: bold;">0.5</span>),
+<span class="linenr">20: </span>    layers.Dense(<span style="color: #da8548; font-weight: bold;">128</span>, activation=<span style="color: #98be65;">'relu'</span>),
+<span class="linenr">21: </span>    layers.Dense(<span style="color: #da8548; font-weight: bold;">2</span>, activation=<span style="color: #98be65;">'softmax'</span>)
+<span class="linenr">22: </span>])
+<span class="linenr">23: </span>
+<span class="linenr">24: </span>model_aug.<span style="color: #c678dd;">compile</span>(
+<span class="linenr">25: </span>    optimizer=<span style="color: #98be65;">'adam'</span>,
+<span class="linenr">26: </span>    loss=<span style="color: #98be65;">'categorical_crossentropy'</span>,
+<span class="linenr">27: </span>    metrics=[<span style="color: #98be65;">'accuracy'</span>]
+<span class="linenr">28: </span>)
+<span class="linenr">29: </span>
+<span class="linenr">30: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#22686;&#24375;&#29256;&#27169;&#22411;&#65288;&#21547;&#36039;&#26009;&#25844;&#22686;&#23652;&#65289;&#65306;"</span>)
+<span class="linenr">31: </span>model_aug.summary()
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35347;&#32244;&#22686;&#24375;&#29256;&#27169;&#22411;</span>
+<span class="linenr"> 2: </span><span style="color: #dcaeea;">history_aug</span> = model_aug.fit(
+<span class="linenr"> 3: </span>    x_train, y_train,
+<span class="linenr"> 4: </span>    batch_size=<span style="color: #da8548; font-weight: bold;">32</span>,
+<span class="linenr"> 5: </span>    epochs=<span style="color: #da8548; font-weight: bold;">30</span>,           <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36039;&#26009;&#25844;&#22686;&#29256;&#21487;&#20197;&#35347;&#32244;&#26356;&#22810; epochs</span>
+<span class="linenr"> 6: </span>    validation_split=<span style="color: #da8548; font-weight: bold;">0.2</span>,
+<span class="linenr"> 7: </span>    verbose=<span style="color: #da8548; font-weight: bold;">1</span>
+<span class="linenr"> 8: </span>)
+<span class="linenr"> 9: </span>
+<span class="linenr">10: </span><span style="color: #dcaeea;">loss_aug</span>, <span style="color: #dcaeea;">acc_aug</span> = model_aug.evaluate(x_test, y_test, verbose=<span style="color: #da8548; font-weight: bold;">0</span>)
+<span class="linenr">11: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">=== &#27604;&#36611;&#32080;&#26524; ==="</span>)
+<span class="linenr">12: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#22522;&#30990;&#27169;&#22411;&#28204;&#35430;&#28310;&#30906;&#24230;&#65306;</span>{acc * 100:.2f}<span style="color: #98be65;">%"</span>)
+<span class="linenr">13: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#36039;&#26009;&#25844;&#22686;&#27169;&#22411;&#28204;&#35430;&#28310;&#30906;&#24230;&#65306;</span>{acc_aug * 100:.2f}<span style="color: #98be65;">%"</span>)
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org6a24b8a" class="outline-3">
+<h3 id="org6a24b8a"><span class="section-number-3">7.2.</span> 繪製增強版訓練曲線</h3>
+<div class="outline-text-3" id="text-7-2">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span>plot_history(history_aug.history, <span style="color: #98be65;">'loss'</span>, <span style="color: #98be65;">'val_loss'</span>, <span style="color: #98be65;">'Loss'</span>, <span style="color: #98be65;">'mydata-aug-loss.png'</span>)
+<span class="linenr">2: </span>plot_history(history_aug.history, <span style="color: #98be65;">'accuracy'</span>, <span style="color: #98be65;">'val_accuracy'</span>, <span style="color: #98be65;">'Accuracy'</span>, <span style="color: #98be65;">'mydata-aug-accuracy.png'</span>)
+<span class="linenr">3: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#22686;&#24375;&#29256; Loss &#26354;&#32218;&#24050;&#20786;&#23384;&#33267; images/mydata-aug-loss.png"</span>)
+<span class="linenr">4: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#22686;&#24375;&#29256; Accuracy &#26354;&#32218;&#24050;&#20786;&#23384;&#33267; images/mydata-aug-accuracy.png"</span>)
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf13191f" class="outline-2">
+<h2 id="orgf13191f"><span class="section-number-2">8.</span> 完整流程回顧</h2>
+<div class="outline-text-2" id="text-8">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">步驟</th>
+<th scope="col" class="org-left">做什麼</th>
+<th scope="col" class="org-left">為什麼</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">1. 準備資料</td>
+<td class="org-left">蒐集圖片、分類到資料夾</td>
+<td class="org-left">模型需要有標籤的資料來學習</td>
+</tr>
+
+<tr>
+<td class="org-left">2. 讀取圖片</td>
+<td class="org-left">用 cv2 讀取、統一大小</td>
+<td class="org-left">模型需要固定大小的輸入</td>
+</tr>
+
+<tr>
+<td class="org-left">3. 正規化</td>
+<td class="org-left">像素值除以 255</td>
+<td class="org-left">避免梯度爆炸，加速收斂</td>
+</tr>
+
+<tr>
+<td class="org-left">4. 分割資料</td>
+<td class="org-left">分訓練集和測試集</td>
+<td class="org-left">用測試集檢驗模型有沒有「真正學會」</td>
+</tr>
+
+<tr>
+<td class="org-left">5. 建模型</td>
+<td class="org-left">CNN（Conv2D + MaxPooling）</td>
+<td class="org-left">CNN 特別擅長處理圖片</td>
+</tr>
+
+<tr>
+<td class="org-left">6. 訓練</td>
+<td class="org-left">model.fit()</td>
+<td class="org-left">讓模型從資料中學習</td>
+</tr>
+
+<tr>
+<td class="org-left">7. 評估</td>
+<td class="org-left">model.evaluate() + 畫圖</td>
+<td class="org-left">確認模型的好壞</td>
+</tr>
+
+<tr>
+<td class="org-left">8. 資料擴增</td>
+<td class="org-left">旋轉、翻轉、縮放</td>
+<td class="org-left">用少量圖片也能訓練出好模型</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-org526c83e" class="outline-2">
+<h2 id="org526c83e"><span class="section-number-2">9.</span> 作業</h2>
+<div class="outline-text-2" id="text-9">
+</div>
+<div id="outline-container-org15f9b66" class="outline-3">
+<h3 id="org15f9b66"><span class="section-number-3">9.1.</span> 作業一：我的 AI 分類器</h3>
+<div class="outline-text-3" id="text-9-1">
+<p>
+用你自己拍的照片來訓練一個 CNN 分類器。<br />
+</p>
+</div>
+<ol class="org-ol">
+<li><a id="orga8af5f9"></a>任務說明<br />
+<div class="outline-text-4" id="text-9-1-1">
+<ol class="org-ol">
+<li>選擇 *兩個類別*（以下任選一組，或自訂）：<br />
+<ul class="org-ul">
+<li>手掌張開 vs 握拳<br /></li>
+<li>你的文具：鉛筆 vs 橡皮擦<br /></li>
+<li>兩種不同的零食包裝<br /></li>
+<li>晴天 vs 陰天（用手機拍窗外的天空）<br /></li>
+</ul></li>
+
+<li>每個類別拍 <b>至少 30 張</b> 照片（不同角度、不同背景）<br /></li>
+
+<li><p>
+整理成這樣的資料夾結構：<br />
+</p>
+<pre class="example" id="orga81214b">
+   my_dataset/
+   ├── class_a/
+   │   ├── img_001.jpg
+   │   ├── img_002.jpg
+   │   └── ...
+   └── class_b/
+       ├── img_001.jpg
+       ├── img_002.jpg
+       └── ...
+</pre></li>
+
+<li>修改本課的程式碼，把 <code>img_dir</code> 改成你的資料夾路徑，訓練模型<br /></li>
+</ol>
+</div>
+</li>
+<li><a id="org28400e7"></a>繳交內容<br />
+<div class="outline-text-4" id="text-9-1-2">
+<ol class="org-ol">
+<li>你選擇的兩個類別，以及各幾張圖片<br /></li>
+<li>訓練後的準確度<br /></li>
+<li>Loss 和 Accuracy 的訓練曲線圖<br /></li>
+<li>你覺得分類效果好不好？為什麼？（如果效果不好，想想可能的原因）<br /></li>
+</ol>
+</div>
+</li>
+<li><a id="org68ef719"></a>預期輸出格式<br />
+<div class="outline-text-4" id="text-9-1-3">
+<pre class="example" id="orgbdcd74e">
+=== 我的 AI 分類器 ===
+類別 A：手掌張開（35 張）
+類別 B：握拳（35 張）
+
+訓練集：56 張
+測試集：14 張
+
+基礎模型測試準確度：XX.XX%
+資料擴增模型測試準確度：XX.XX%
+
+分析：
+  效果好/不好，原因可能是...
+</pre>
+</div>
+</li>
+</ol>
+</div>
+<div id="outline-container-org609de6c" class="outline-3">
+<h3 id="org609de6c"><span class="section-number-3">9.2.</span> 作業二：模型調參大挑戰</h3>
+<div class="outline-text-3" id="text-9-2">
+<p>
+同樣的資料集，不同的模型設定會有不同的結果。請你嘗試修改以下參數，找出最佳組合：<br />
+</p>
+</div>
+<ol class="org-ol">
+<li><a id="org2669231"></a>任務說明<br />
+<div class="outline-text-4" id="text-9-2-1">
+<p>
+以貓狗資料集為基礎，分別嘗試以下三種修改（每次只改一項，其他保持不變），記錄測試準確度：<br />
+</p>
+
+<ol class="org-ol">
+<li>*圖片大小*：把 <code>IMG_SIZE</code> 從 128 改成 64，再改成 192，比較結果<br /></li>
+<li>*模型深度*：把 Conv2D 層數從 3 層改成 2 層（刪掉最後一組 Conv2D+MaxPooling），再改成 4 層（多加一組），比較結果<br /></li>
+<li>*Dropout 比例*：把 <code>Dropout(0.5)</code> 改成 =Dropout(0.2)=，再改成 =Dropout(0.8)=，比較結果<br /></li>
+</ol>
+</div>
+</li>
+<li><a id="org6d1bf5c"></a>預期輸出格式<br />
+<div class="outline-text-4" id="text-9-2-2">
+<pre class="example" id="org1825c00">
+=== 參數調整實驗 ===
+
+實驗 1：圖片大小
+  IMG_SIZE=64:  準確度 XX.XX%
+  IMG_SIZE=128: 準確度 XX.XX%  （基準）
+  IMG_SIZE=192: 準確度 XX.XX%
+  結論：圖片越大 → ___
+
+實驗 2：模型深度
+  2 層 Conv2D: 準確度 XX.XX%
+  3 層 Conv2D: 準確度 XX.XX%  （基準）
+  4 層 Conv2D: 準確度 XX.XX%
+  結論：層數越多 → ___
+
+實驗 3：Dropout 比例
+  Dropout=0.2: 準確度 XX.XX%
+  Dropout=0.5: 準確度 XX.XX%  （基準）
+  Dropout=0.8: 準確度 XX.XX%
+  結論：Dropout 越高 → ___
+</pre>
+</div>
+</li>
+<li><a id="org8e7da3e"></a>延伸思考<br />
+<div class="outline-text-4" id="text-9-2-3">
+<p>
+是不是參數越大/層數越多就越好？為什麼？（提示：想想「過度配適」的問題）<br />
+</p>
+</div>
+</li>
+</ol>
+</div>
+<div id="outline-container-org302a23b" class="outline-3">
+<h3 id="org302a23b"><span class="section-number-3">9.3.</span> 作業三：資料擴增探險家</h3>
+<div class="outline-text-3" id="text-9-3">
+<p>
+資料擴增有很多不同的方式，每種方式對不同的任務效果不同。<br />
+</p>
+</div>
+<ol class="org-ol">
+<li><a id="orgffb8aa0"></a>任務說明<br />
+<div class="outline-text-4" id="text-9-3-1">
+<p>
+在增強版模型中，我們只用了三種擴增方式（=RandomFlip=, <code>RandomRotation</code>, =RandomZoom=）。請你嘗試加入以下額外的擴增方式，觀察對準確度的影響：<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21487;&#20197;&#35430;&#35430;&#20197;&#19979; Keras &#20839;&#24314;&#30340;&#25844;&#22686;&#23652;</span>
+<span class="linenr">2: </span>layers.RandomContrast(<span style="color: #da8548; font-weight: bold;">0.2</span>),          <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38568;&#27231;&#23565;&#27604;&#24230;</span>
+<span class="linenr">3: </span>layers.RandomBrightness(<span style="color: #da8548; font-weight: bold;">0.2</span>),       <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38568;&#27231;&#20142;&#24230;</span>
+<span class="linenr">4: </span>layers.RandomTranslation(<span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>), <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38568;&#27231;&#24179;&#31227;</span>
+</pre>
+</div>
+
+<ol class="org-ol">
+<li>先只用 <code>RandomFlip</code> 一種，訓練並記錄準確度<br /></li>
+<li>加入 <code>RandomFlip</code> + =RandomRotation=，記錄準確度<br /></li>
+<li>全部都加（包括對比度、亮度、平移），記錄準確度<br /></li>
+</ol>
+</div>
+</li>
+<li><a id="orga75385a"></a>繳交內容<br />
+<div class="outline-text-4" id="text-9-3-2">
+<ol class="org-ol">
+<li>三種設定的測試準確度<br /></li>
+<li>訓練曲線圖（至少附上最佳版本的）<br /></li>
+<li>你覺得哪些擴增方式最有用？為什麼？<br /></li>
+</ol>
+</div>
+</li>
+<li><a id="org77c8918"></a>預期輸出格式<br />
+<div class="outline-text-4" id="text-9-3-3">
+<pre class="example" id="org457f2cc">
+=== 資料擴增實驗 ===
+只用 Flip:                       準確度 XX.XX%
+Flip + Rotation:                 準確度 XX.XX%
+Flip + Rotation + 全部:           準確度 XX.XX%
+
+最有用的擴增方式：XXXXX
+原因：因為貓狗圖片的 ______，所以 ______ 的效果最好
+</pre>
+</div>
+</li>
+</ol>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2025-07-15 Tue 15:32</p>
+<p class="date">Created: 2026-02-14 Sat 21:37</p>
 </div>
 </body>
 </html>

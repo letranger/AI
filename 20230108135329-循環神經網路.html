@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2025-10-29 Wed 20:01 -->
+<!-- 2026-02-14 Sat 17:49 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>時間序列的預言者：如何以RNN預測未來</title>
@@ -235,63 +235,70 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgc5300f8">1. CNN的限制</a></li>
-<li><a href="#org2df6310">2. RNN</a>
+<li><a href="#org180788a">1. CNN的限制</a></li>
+<li><a href="#orge7c449d">2. RNN</a>
 <ul>
-<li><a href="#orgb269c7a">2.1. RNN的基本概念</a></li>
-<li><a href="#orgf76b599">2.2. RNN神經元內部結構</a></li>
+<li><a href="#orge5733e5">2.1. RNN的基本概念</a></li>
+<li><a href="#org46c8f16">2.2. RNN神經元內部結構</a></li>
 </ul>
 </li>
-<li><a href="#orge69728e">3. 以RNN預測股價漲跌情況</a>
+<li><a href="#orga385b71">3. 以RNN預測股價漲跌情況</a>
 <ul>
-<li><a href="#org32ef000">3.1. 輸入昨天的股價漲跌情況（目前的時間點t=1代表的是昨天）</a></li>
-<li><a href="#org9340128">3.2. 輸入今天的股價漲跌情況（目前的時間點t=2代表的是今天）</a></li>
-<li><a href="#org8514565">3.3. 小結</a></li>
+<li><a href="#org96c6041">3.1. 輸入昨天的股價漲跌情況（目前的時間點t=1代表的是昨天）</a></li>
+<li><a href="#org131813d">3.2. 輸入今天的股價漲跌情況（目前的時間點t=2代表的是今天）</a></li>
+<li><a href="#orge5bb7da">3.3. 小結</a></li>
 </ul>
 </li>
-<li><a href="#org4fbd052">4. 其他類型的時間序列資料</a></li>
-<li><a href="#org4354077">5. 一個簡單的RNN程式架構範例</a>
+<li><a href="#org0c8ecca">4. 其他類型的時間序列資料</a></li>
+<li><a href="#org45a652d">5. 一個簡單的RNN程式架構範例</a>
 <ul>
-<li><a href="#org2c23050">5.1. RNN的程式運作示例</a></li>
-<li><a href="#org913f657">5.2. RNN的程式模型架構</a></li>
+<li><a href="#org4bf0a38">5.1. RNN的程式運作示例</a></li>
+<li><a href="#orgc904ea5">5.2. RNN的程式模型架構</a></li>
 </ul>
 </li>
-<li><a href="#orgd5a29f5">6. RNN模型的實作範例：從訓練到預測</a>
+<li><a href="#org299a34b">6. RNN模型的實作範例：從訓練到預測</a>
 <ul>
-<li><a href="#orgd8e7761">6.1. 匯入與資料產生</a></li>
-<li><a href="#orgc912623">6.2. 前處理與序列資料製作</a></li>
-<li><a href="#org26f4c83">6.3. 建立RNN模型</a></li>
-<li><a href="#org71f6ea0">6.4. 訓練模型</a></li>
-<li><a href="#org318a568">6.5. 評估預測效果並繪圖</a></li>
-<li><a href="#orgdd92668">6.6. 標準的評估結果呈現方式</a></li>
-<li><a href="#orgadd51ac">6.7. 好像有哪裡不對勁？</a></li>
-<li><a href="#orgb2b749d">6.8. RNN的運作流程</a></li>
+<li><a href="#org22d1b13">6.1. 匯入與資料產生</a></li>
+<li><a href="#org6ebf135">6.2. 前處理與序列資料製作</a></li>
+<li><a href="#orgc2c9328">6.3. 建立RNN模型</a></li>
+<li><a href="#org2be2076">6.4. 訓練模型</a></li>
+<li><a href="#orgad49d40">6.5. 評估預測效果並繪圖</a></li>
+<li><a href="#org28a95c8">6.6. 標準的評估結果呈現方式</a></li>
+<li><a href="#orgfd7f767">6.7. 好像有哪裡不對勁？</a></li>
+<li><a href="#org2ab3bd6">6.8. RNN的運作流程</a></li>
 </ul>
 </li>
-<li><a href="#orgf26787b">7. RNN學習資源</a></li>
+<li><a href="#org53f39a6">7. 作業：RNN 大挑戰</a>
+<ul>
+<li><a href="#org86f557c">7.1. 作業一：氣溫預測器 — 你比氣象局準嗎？</a></li>
+<li><a href="#orgc3cc137">7.2. 作業二：手算 RNN — 當人體 GPU</a></li>
+<li><a href="#org4b8a36d">7.3. 作業三：序列長度大對決 — 記憶力比拚</a></li>
+</ul>
+</li>
+<li><a href="#orgf191734">8. RNN學習資源</a></li>
 </ul>
 </div>
 </div>
 <a href="https://letranger.github.io/AI/20230108135329-循環神經網路.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20230108135329-循環神經網路.html.svg"/></a>
-<div id="outline-container-orgc5300f8" class="outline-2">
-<h2 id="orgc5300f8"><span class="section-number-2">1.</span> CNN的限制</h2>
+<div id="outline-container-org180788a" class="outline-2">
+<h2 id="org180788a"><span class="section-number-2">1.</span> CNN的限制</h2>
 <div class="outline-text-2" id="text-1">
 <p>
-在前面介紹<a href="20221023101414-卷積神經網路.html#ID-20221023T101414.457264">CNN</a>的章節中，我們提過<a href="20221023101414-卷積神經網路.html#ID-20221023T101414.457264">CNN</a>的想法源自於對人類大腦認知方式的模仿，當我們辨識一個圖像，會先注意到顏色鮮明的點、線、面，之後將它們構成一個個不同的形狀(眼睛、鼻子、嘴巴 &#x2026;)，這種抽象化的過程就是 CNN 演算法建立模型的方式。其過程如圖<a href="#org6b2d79c">1</a><sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。
+在前面介紹<a href="20221023101414-卷積神經網路.html#ID-20221023T101414.457264">CNN</a>的章節中，我們提過<a href="20221023101414-卷積神經網路.html#ID-20221023T101414.457264">CNN</a>的想法源自於對人類大腦認知方式的模仿，當我們辨識一個圖像，會先注意到顏色鮮明的點、線、面，之後將它們構成一個個不同的形狀(眼睛、鼻子、嘴巴 &#x2026;)，這種抽象化的過程就是 CNN 演算法建立模型的方式。其過程如圖<a href="#org7d1cbde">1</a><sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。
 </p>
 
 
-<div id="org6b2d79c" class="figure">
+<div id="org7d1cbde" class="figure">
 <p><img src="images/CNN-1.png" alt="CNN-1.png" width="500" />
 </p>
 <p><span class="figure-number">Figure 1: </span>CNN 概念</p>
 </div>
 
 <p>
-至於圖片中的每一個特徵則是利用卷積核來取得(如圖<a href="#org9868013">2</a>)，換言之，<a href="20221023101414-卷積神經網路.html#ID-20221023T101414.457264">CNN</a>其實是在模擬人類的眼睛。也就是說，<a href="20221023101414-卷積神經網路.html#ID-20221023T101414.457264">CNN</a>的設計是為了處理靜態的、空間上有結構的資料，例如圖像、影像等，它所關注的是資料間的空間關係，例如圖<a href="#org9868013">2</a>中卷積核(紅色矩陣)中各個pixel與隣近pixel間的關係。
+至於圖片中的每一個特徵則是利用卷積核來取得(如圖<a href="#org9fb6048">2</a>)，換言之，<a href="20221023101414-卷積神經網路.html#ID-20221023T101414.457264">CNN</a>其實是在模擬人類的眼睛。也就是說，<a href="20221023101414-卷積神經網路.html#ID-20221023T101414.457264">CNN</a>的設計是為了處理靜態的、空間上有結構的資料，例如圖像、影像等，它所關注的是資料間的空間關係，例如圖<a href="#org9fb6048">2</a>中卷積核(紅色矩陣)中各個pixel與鄰近pixel間的關係。
 </p>
 
-<div id="org9868013" class="figure">
+<div id="org9fb6048" class="figure">
 <p><img src="images/CNN_卷積神經網路/2024-04-17_09-18-53_2024-04-17_09-11-28.png" alt="2024-04-17_09-18-53_2024-04-17_09-11-28.png" width="500" />
 </p>
 <p><span class="figure-number">Figure 2: </span>CNN原理</p>
@@ -302,7 +309,7 @@
 </p>
 <ul class="org-ul">
 <li>一篇文章: 也許我們想生成這篇文章的摘要</li>
-<li>一段時間內蒐集一的某地PM 2.5數值: 也許我們想預測該地下週的PM 2.5</li>
+<li>一段時間內蒐集的某地PM 2.5數值: 也許我們想預測該地下週的PM 2.5</li>
 <li>一段演講錄音: 也許我們想生成逐字稿</li>
 </ul>
 <p>
@@ -314,60 +321,60 @@
 </p>
 </div>
 </div>
-<div id="outline-container-org2df6310" class="outline-2">
-<h2 id="org2df6310"><span class="section-number-2">2.</span> RNN</h2>
+<div id="outline-container-orge7c449d" class="outline-2">
+<h2 id="orge7c449d"><span class="section-number-2">2.</span> RNN</h2>
 <div class="outline-text-2" id="text-2">
 </div>
-<div id="outline-container-orgb269c7a" class="outline-3">
-<h3 id="orgb269c7a"><span class="section-number-3">2.1.</span> RNN的基本概念</h3>
+<div id="outline-container-orge5733e5" class="outline-3">
+<h3 id="orge5733e5"><span class="section-number-3">2.1.</span> RNN的基本概念</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
-回顧我們熟悉的<a href="20221023101414-卷積神經網路.html#ID-20221023T101414.457264">CNN</a>神經網路(如圖<a href="#orgae4a47e">3</a>)，資料一律由模型的左側layer往右側傳送；而圖<a href="#org2b02755">4</a>的RNN則有點不同，每一層的神經元在將資料往右傳遞的同時，還偷偷留了一份給 <b><b>自己</b></b> (參考圖中的紅色實線) ，這裡說的自己不是真正的自己，而是 <b><b>下一個回合的自己</b></b> )  。
+回顧我們熟悉的<a href="20221023101414-卷積神經網路.html#ID-20221023T101414.457264">CNN</a>神經網路(如圖<a href="#org2e3f25f">3</a>)，資料一律由模型的左側layer往右側傳送；而圖<a href="#org9fe56cd">4</a>的RNN則有點不同，每一層的神經元在將資料往右傳遞的同時，還偷偷留了一份給 <b><b>自己</b></b> (參考圖中的紅色實線) ，這裡說的自己不是真正的自己，而是 <b><b>下一個回合的自己</b></b> )  。
 </p>
 
 
-<div id="orgae4a47e" class="figure">
+<div id="org2e3f25f" class="figure">
 <p><img src="./images/SimpleCNN-1.png" alt="SimpleCNN-1.png" width="400" />
 </p>
 <p><span class="figure-number">Figure 3: </span>CNN模型架構</p>
 </div>
 
 
-<div id="org2b02755" class="figure">
+<div id="org9fe56cd" class="figure">
 <p><img src="./images/simple_RNN-0.png" alt="simple_RNN-0.png" width="300" />
 </p>
 <p><span class="figure-number">Figure 4: </span>一個簡單的RNN模型</p>
 </div>
 
 <p>
-事實上，比起圖<a href="#org2b02755">4</a>，我們平常更常看到的RNN模型是如圖<a href="#org528d428">5</a>所示的展開架構:
+事實上，比起圖<a href="#org9fe56cd">4</a>，我們平常更常看到的RNN模型是如圖<a href="#org65f612c">5</a>所示的展開架構:
 </p>
 
-<div id="org528d428" class="figure">
+<div id="org65f612c" class="figure">
 <p><img src="./images/SimpleRNN-2.png" alt="SimpleRNN-2.png" width="500" />
 </p>
 <p><span class="figure-number">Figure 5: </span>RNN模型的展開架構</p>
 </div>
 
 <p>
-要看懂圖<a href="#org528d428">5</a>，你只要搞清楚三件事:
+要看懂圖<a href="#org65f612c">5</a>，你只要搞清楚三件事:
 </p>
 <ol class="org-ol">
 <li>不像<a href="20221023101414-卷積神經網路.html#ID-20221023T101414.457264">CNN</a>那樣每次讀入一整張圖，RNN會 <b><b>逐步讀入</b></b> 一連串有時間順序的資料，如文字、每天的PM 2.5數值、每秒的股價變化等，而不是一次性將整串資料全部計算完。第1次(也就是第1個時間點(\(t_0\))讀入\(x_0\)、第2次(也就是第2個時間點(\(t_1\))讀入\(x_1\)&#x2026;</li>
-<li>原本常見的資料在模型中傳遞方向是由左而右，在圖<a href="#org528d428">5</a>中這我們用“自下而上”來代表每個時間點的輸入（下方），輸出（上方），這只是圖的表示方法，不影響實際運算。也就是說輸入資料是底下的\(x_t\)、輸出為上面的\(h_t\)。</li>
-<li>圖<a href="#org528d428">5</a>中右側「展開後」的三個神經元其實是 <b><b>同一個神經元</b></b> 在不同時間點的重複使用。這裡的重點是: <b><b>三個神經元分別代表不同時間點的神經元</b></b> ，而 \(x_{t-1}, x_{t}, x_{t+1}\) 則代表在不同時間點的輸入；\(y_{t-1}, y_{t}, y_{t+1}\) 則代表在不同時間點的輸出。至於 \(h_{t-1}, h_{t}, h_{t+1}\) 則較為複雜，我們稍後再說明。</li>
+<li>原本常見的資料在模型中傳遞方向是由左而右，在圖<a href="#org65f612c">5</a>中這我們用“自下而上”來代表每個時間點的輸入（下方），輸出（上方），這只是圖的表示方法，不影響實際運算。也就是說輸入資料是底下的\(x_t\)、輸出為上面的\(h_t\)。</li>
+<li>圖<a href="#org65f612c">5</a>中右側「展開後」的三個神經元其實是 <b><b>同一個神經元</b></b> 在不同時間點的重複使用。這裡的重點是: <b><b>三個神經元分別代表不同時間點的神經元</b></b> ，而 \(x_{t-1}, x_{t}, x_{t+1}\) 則代表在不同時間點的輸入；\(y_{t-1}, y_{t}, y_{t+1}\) 則代表在不同時間點的輸出。至於 \(h_{t-1}, h_{t}, h_{t+1}\) 則較為複雜，我們稍後再說明。</li>
 </ol>
 </div>
 </div>
-<div id="outline-container-orgf76b599" class="outline-3">
-<h3 id="orgf76b599"><span class="section-number-3">2.2.</span> RNN神經元內部結構</h3>
+<div id="outline-container-org46c8f16" class="outline-3">
+<h3 id="org46c8f16"><span class="section-number-3">2.2.</span> RNN神經元內部結構</h3>
 <div class="outline-text-3" id="text-2-2">
 <p>
-為了讓大家能更清楚地了解RNN的運作原理，我們將圖<a href="#org528d428">5</a>中的RNN神經元進一步展開，如圖<a href="#org3d5a141">6</a>所示:
+為了讓大家能更清楚地了解RNN的運作原理，我們將圖<a href="#org65f612c">5</a>中的RNN神經元進一步展開，如圖<a href="#org884b46b">6</a>所示:
 </p>
 
 
-<div id="org3d5a141" class="figure">
+<div id="org884b46b" class="figure">
 <p><img src="images/s-rnn-node-1.png" alt="s-rnn-node-1.png" width="500" />
 </p>
 <p><span class="figure-number">Figure 6: </span>RNN神經元的內部結構</p>
@@ -407,16 +414,16 @@
 </p>
 
 <p>
-接下來，我們就陸續將昨日與今日的股價漲趺狀況輸入這個模型中，並詳細解說RNN的運算過程。
+接下來，我們就陸續將昨日與今日的股價漲跌狀況輸入這個模型中，並詳細解說RNN的運算過程。
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-orge69728e" class="outline-2">
-<h2 id="orge69728e"><span class="section-number-2">3.</span> 以RNN預測股價漲跌情況</h2>
+<div id="outline-container-orga385b71" class="outline-2">
+<h2 id="orga385b71"><span class="section-number-2">3.</span> 以RNN預測股價漲跌情況</h2>
 <div class="outline-text-2" id="text-3">
 <p>
-我們以圖<a href="#org3d5a141">6</a>的RNN為基礎，來設計一個簡單的RNN模型，用以預測股價的漲跌情況。這裡我們用一個很簡單(<b><b>實際上會賠死</b></b>)的RNN模型來預測明天股價的漲跌情況，這個模型的重點在於示範RNN模型如何輸入一段連續資料，最後生成預測結果，至於預測結果我們先不要去嫌棄它Q_Q。
+我們以圖<a href="#org884b46b">6</a>的RNN為基礎，來設計一個簡單的RNN模型，用以預測股價的漲跌情況。這裡我們用一個很簡單(<b><b>實際上會賠死</b></b>)的RNN模型來預測明天股價的漲跌情況，這個模型的重點在於示範RNN模型如何輸入一段連續資料，最後生成預測結果，至於預測結果我們先不要去嫌棄它Q_Q。
 </p>
 
 <p>
@@ -429,15 +436,15 @@
 </ol>
 
 <p>
-然後，我們假設已知前兩天的股價變化情況，並希望RNN能夠根據這些資訊來預測明天的股價變化情況（此處的三個時間點請對照圖<a href="#org528d428">5</a>）:
+然後，我們假設已知前兩天的股價變化情況，並希望RNN能夠根據這些資訊來預測明天的股價變化情況（此處的三個時間點請對照圖<a href="#org65f612c">5</a>）:
 </p>
 <ol class="org-ol">
 <li>昨天：平盤 (0.5)</li>
 <li>今天：上漲 (1)</li>
 </ol>
 </div>
-<div id="outline-container-org32ef000" class="outline-3">
-<h3 id="org32ef000"><span class="section-number-3">3.1.</span> 輸入昨天的股價漲跌情況（目前的時間點t=1代表的是昨天）</h3>
+<div id="outline-container-org96c6041" class="outline-3">
+<h3 id="org96c6041"><span class="section-number-3">3.1.</span> 輸入昨天的股價漲跌情況（目前的時間點t=1代表的是昨天）</h3>
 <div class="outline-text-3" id="text-3-1">
 <p>
 首先，我們假定這個RNN是已經訓練好的模型，所以已經擁有以下的權重值:
@@ -456,11 +463,11 @@
 </p>
 
 <p>
-現在，圖<a href="#org3d5a141">6</a>中的RNN神經元大概如下所示:
+現在，圖<a href="#org884b46b">6</a>中的RNN神經元大概如下所示:
 </p>
 
 
-<div id="org765e084" class="figure">
+<div id="org766dfc4" class="figure">
 <p><img src="images/s-rnn-node-2.png" alt="s-rnn-node-2.png" width="500" />
 </p>
 <p><span class="figure-number">Figure 7: </span>輸入昨天的股價漲跌情況後的RNN神經元的內部結構</p>
@@ -490,19 +497,19 @@
 </ol>
 
 <p>
-現在，我們已經完成了將昨天的股價漲跌情況輸入RNN模型，並計算出隱藏狀態和預測輸出。對應的神經元內部結構如圖<a href="#org8119a9a">8</a>所示。
+現在，我們已經完成了將昨天的股價漲跌情況輸入RNN模型，並計算出隱藏狀態和預測輸出。對應的神經元內部結構如圖<a href="#orgb61dc2e">8</a>所示。
 </p>
 
 
-<div id="org8119a9a" class="figure">
+<div id="orgb61dc2e" class="figure">
 <p><img src="images/s-rnn-node-3.png" alt="s-rnn-node-3.png" width="500" />
 </p>
 <p><span class="figure-number">Figure 8: </span>計算完昨天的股價漲跌情況後的RNN神經元的內部結構</p>
 </div>
 </div>
 </div>
-<div id="outline-container-org9340128" class="outline-3">
-<h3 id="org9340128"><span class="section-number-3">3.2.</span> 輸入今天的股價漲跌情況（目前的時間點t=2代表的是今天）</h3>
+<div id="outline-container-org131813d" class="outline-3">
+<h3 id="org131813d"><span class="section-number-3">3.2.</span> 輸入今天的股價漲跌情況（目前的時間點t=2代表的是今天）</h3>
 <div class="outline-text-3" id="text-3-2">
 <p>
 在完成昨天的股價漲跌情況輸入後，接下來我們將今天的股價漲跌情況輸入RNN模型中。也就：
@@ -517,7 +524,7 @@
 </p>
 
 
-<div id="orgb52ad42" class="figure">
+<div id="orgac9fa2b" class="figure">
 <p><img src="images/s-rnn-node-4.png" alt="s-rnn-node-4.png" width="500" />
 </p>
 <p><span class="figure-number">Figure 9: </span>輸入今天的股價漲跌情況後的RNN神經元的內部結構</p>
@@ -547,11 +554,11 @@
 </ol>
 
 <p>
-現在，我們已經完成了將今天的股價漲跌情況輸入RNN模型，並計算出隱藏狀態和對明天股價的預測輸出。對應的神經元內部結構如圖<a href="#org2e0f4c5">10</a>所示。
+現在，我們已經完成了將今天的股價漲跌情況輸入RNN模型，並計算出隱藏狀態和對明天股價的預測輸出。對應的神經元內部結構如圖<a href="#org817abd2">10</a>所示。
 </p>
 
 
-<div id="org2e0f4c5" class="figure">
+<div id="org817abd2" class="figure">
 <p><img src="images/s-rnn-node-5.png" alt="s-rnn-node-5.png" width="500" />
 </p>
 <p><span class="figure-number">Figure 10: </span>計算完今天的股價漲跌情況後的RNN神經元的內部結構</p>
@@ -566,8 +573,8 @@ RNN模型對於明天股價的預測結果是1.485，再參考我們之前對於
 </p>
 </div>
 </div>
-<div id="outline-container-org8514565" class="outline-3">
-<h3 id="org8514565"><span class="section-number-3">3.3.</span> 小結</h3>
+<div id="outline-container-orge5bb7da" class="outline-3">
+<h3 id="orge5bb7da"><span class="section-number-3">3.3.</span> 小結</h3>
 <div class="outline-text-3" id="text-3-3">
 <p>
 本節我們用「預測股價漲跌」這個例子，說明了 RNN（遞迴神經網路）如何利用前一次的預測結果和新的實際資料，反覆計算並持續更新自己的隱藏狀態，讓模型能夠處理像時間序列這樣有「過去影響未來」特性的資料。就像追劇需要記住前情提要一樣，RNN 也能「記憶」過去的資訊，把昨天和今天的情況，合併用來推估明天的走勢。
@@ -579,8 +586,8 @@ RNN模型對於明天股價的預測結果是1.485，再參考我們之前對於
 </div>
 </div>
 </div>
-<div id="outline-container-org4fbd052" class="outline-2">
-<h2 id="org4fbd052"><span class="section-number-2">4.</span> 其他類型的時間序列資料</h2>
+<div id="outline-container-org0c8ecca" class="outline-2">
+<h2 id="org0c8ecca"><span class="section-number-2">4.</span> 其他類型的時間序列資料</h2>
 <div class="outline-text-2" id="text-4">
 <p>
 在上面的例子中，神經元每次輸入的資料\(x_t\)可以是很簡單的一個數值，例如一個股價的漲跌情況(例如上漲0.5、下跌0.3等)，而神經元會根據這些輸入資料以及過去的「隱藏狀態」\(h_{t-1}\)來計算出當前的「隱藏狀態」\(h_{t}\)和輸出結果\(y_{t}\)。這樣，RNN就能夠捕捉到股價變化的時間依賴性，從而更好地預測未來的股價走勢。
@@ -594,10 +601,9 @@ RNN模型對於明天股價的預測結果是1.485，再參考我們之前對於
 <p>
 雖然在上述例子中，我們假設RNN的輸入序列是股價漲跌情況，但實際上這個序列可以是任何有時間順序的資料，例如文字、音頻或其他類型的序列資料。RNN的設計使它能夠捕捉這些資料中的時間依賴性，從而更好地理解和預測未來的趨勢。用個具體一點的例子，假設我們假設剛剛的序列 X 實際上是一個內容如下的英文問句：
 </p>
-<div class="org-src-container">
-<pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">X</span> = [ What, time, <span style="color: #51afef;">is</span>, it, ? ]
+<pre class="example" id="org8c2e97a">
+X = [ What, time, is, it, ? ]
 </pre>
-</div>
 <p>
 而且 RNN 已經處理完前兩個元素 What 和 time 了。
 </p>
@@ -606,7 +612,7 @@ RNN模型對於明天股價的預測結果是1.485，再參考我們之前對於
 則接下來 RNN 會這樣處理剩下的句子：
 </p>
 
-<div id="orgaab4a6d" class="figure">
+<div id="org1f398e8" class="figure">
 <p><img src="images/rnn-animate.gif" alt="rnn-animate.gif" width="500" />
 </p>
 <p><span class="figure-number">Figure 11: </span>RNN如何處理自然語言</p>
@@ -625,15 +631,15 @@ RNN模型對於明天股價的預測結果是1.485，再參考我們之前對於
 </p>
 </div>
 </div>
-<div id="outline-container-org4354077" class="outline-2">
-<h2 id="org4354077"><span class="section-number-2">5.</span> 一個簡單的RNN程式架構範例</h2>
+<div id="outline-container-org45a652d" class="outline-2">
+<h2 id="org45a652d"><span class="section-number-2">5.</span> 一個簡單的RNN程式架構範例</h2>
 <div class="outline-text-2" id="text-5">
 <p>
 在上面的例子中，我們已經介紹了RNN的基本概念和運作方式。這樣的RNN要如何實作出來呢？或者說，我們如何將這些概念轉化為程式碼？在本節中，我們將使用Python實作出一個最簡單的RNN模型，並用它來預測股價漲跌。
 </p>
 </div>
-<div id="outline-container-org2c23050" class="outline-3">
-<h3 id="org2c23050"><span class="section-number-3">5.1.</span> RNN的程式運作示例</h3>
+<div id="outline-container-org4bf0a38" class="outline-3">
+<h3 id="org4bf0a38"><span class="section-number-3">5.1.</span> RNN的程式運作示例</h3>
 <div class="outline-text-3" id="text-5-1">
 <p>
 RNN的運作概念非常簡單，就是在每個時間點 \(t\)，RNN 會讀入一個新的序列資料 \(input_t\)，並利用這個資料以及自己的記憶狀態 \(state_t\) 來產生一個輸出 \(output_t\)。
@@ -685,12 +691,12 @@ RNN神經元在時間點t的輸出 \(h_t\) 由以下公式計算:
 </p>
 
 <p>
-在 SimpleRNN 的神經元中，這個函數 \(f\) 的實作很簡單，這也導致了其記憶狀態 s\(tate_t\) 沒辦法很好地「記住」前面處理過的序列元素，因而造成 RNN 在處理後來的元素時，就已經把前面重要的資訊給忘記了，也就是只有短期記憶，沒有長期記憶。長短期記憶（Long Short-Term Memory, 後簡稱 LSTM）就是被設計來解決 RNN 的這個問題。
+在 SimpleRNN 的神經元中，這個函數 \(f\) 的實作很簡單，這也導致了其記憶狀態 \(state_t\) 沒辦法很好地「記住」前面處理過的序列元素，因而造成 RNN 在處理後來的元素時，就已經把前面重要的資訊給忘記了，也就是只有短期記憶，沒有長期記憶。長短期記憶（Long Short-Term Memory, 後簡稱 LSTM）就是被設計來解決 RNN 的這個問題。
 </p>
 </div>
 </div>
-<div id="outline-container-org913f657" class="outline-3">
-<h3 id="org913f657"><span class="section-number-3">5.2.</span> RNN的程式模型架構</h3>
+<div id="outline-container-orgc904ea5" class="outline-3">
+<h3 id="orgc904ea5"><span class="section-number-3">5.2.</span> RNN的程式模型架構</h3>
 <div class="outline-text-3" id="text-5-2">
 <p>
 當然，實際應用RNN模型時我們不可能使用自己手刻的這種陽春版RNN，而是會使用像是 TensorFlow 或 PyTorch 這樣的深度學習框架來建立更複雜的模型。這些框架提供了許多現成的 RNN 模組，可以讓我們更輕鬆地建立和訓練 RNN 模型。
@@ -709,11 +715,11 @@ RNN神經元在時間點t的輸出 \(h_t\) 由以下公式計算:
 </p>
 
 <p>
-這個模型的架構如圖<a href="#org94b3b06">12</a>所示：
+這個模型的架構如圖<a href="#org4e3aeb1">12</a>所示：
 </p>
 
 
-<div id="org94b3b06" class="figure">
+<div id="org4e3aeb1" class="figure">
 <p><img src="images/rnnmodel.png" alt="rnnmodel.png" width="300" />
 </p>
 <p><span class="figure-number">Figure 12: </span>RNN模型架構</p>
@@ -723,7 +729,7 @@ RNN神經元在時間點t的輸出 \(h_t\) 由以下公式計算:
 上述模型架構的資料流向如下：
 </p>
 
-<div id="orga7b53e3" class="figure">
+<div id="orgd5f14bf" class="figure">
 <p><img src="rnn_model.png" alt="rnn_model.png" width="500" />
 </p>
 <p><span class="figure-number">Figure 13: </span>RNN架構</p>
@@ -733,10 +739,10 @@ RNN神經元在時間點t的輸出 \(h_t\) 由以下公式計算:
 或如下圖
 </p>
 
-<div id="orgf07de6f" class="figure">
+<div id="orgec7bcc6" class="figure">
 <p><img src="images/RNN-flow.png" alt="RNN-flow.png" width="500" />
 </p>
-<p><span class="figure-number">Figure 14: </span>Caption</p>
+<p><span class="figure-number">Figure 14: </span>RNN資料流向圖</p>
 </div>
 
 <p>
@@ -773,13 +779,13 @@ RNN神經元在時間點t的輸出 \(h_t\) 由以下公式計算:
 </p>
 
 
-<div id="org7816945" class="figure">
+<div id="org0b091b8" class="figure">
 <p><img src="./images/rnn-cell-4-3-1.png" alt="rnn-cell-4-3-1.png" />
 </p>
 </div>
 
 
-<div id="orgaa2bc0e" class="figure">
+<div id="org6f99ff3" class="figure">
 <p><img src="images/rnn-cell-4-3-1.png" alt="rnn-cell-4-3-1.png" width="500" />
 </p>
 <p><span class="figure-number">Figure 15: </span>RNN單元內部結構（4-3-1架構）</p>
@@ -787,8 +793,8 @@ RNN神經元在時間點t的輸出 \(h_t\) 由以下公式計算:
 </div>
 </div>
 </div>
-<div id="outline-container-orgd5a29f5" class="outline-2">
-<h2 id="orgd5a29f5"><span class="section-number-2">6.</span> RNN模型的實作範例：從訓練到預測</h2>
+<div id="outline-container-org299a34b" class="outline-2">
+<h2 id="org299a34b"><span class="section-number-2">6.</span> RNN模型的實作範例：從訓練到預測</h2>
 <div class="outline-text-2" id="text-6">
 <p>
 上述的程式架構只是展示了RNN模型的基本結構，實際應用中我們還需要進行資料準備、模型訓練以及預測等步驟。接下來，我們將實作一個簡單的RNN模型，使用Keras來預測時間序列資料。這個例子將展示如何生成一組帶有雜訊的sin(x) + cos(0.5x)時間序列資料，並使用RNN來預測未來的值。
@@ -799,18 +805,18 @@ RNN神經元在時間點t的輸出 \(h_t\) 由以下公式計算:
 </p>
 
 <p>
-程式預計的生成結果如圖<a href="#orgf67597f">16</a>，其中的藍色線條是實際的資料，而橘色線條則是模型預測的結果。為了更清楚地展示預測效果，我們將只放大最後300個點。
+程式預計的生成結果如圖<a href="#org93f09eb">16</a>，其中的藍色線條是實際的資料，而橘色線條則是模型預測的結果。為了更清楚地展示預測效果，我們將只放大最後300個點。
 </p>
 
 
-<div id="orgf67597f" class="figure">
+<div id="org93f09eb" class="figure">
 <p><img src="images/rnn_zoom.png" alt="rnn_zoom.png" width="600" />
 </p>
 <p><span class="figure-number">Figure 16: </span>RNN模型預測結果（局部放大）</p>
 </div>
 </div>
-<div id="outline-container-orgd8e7761" class="outline-3">
-<h3 id="orgd8e7761"><span class="section-number-3">6.1.</span> 匯入與資料產生</h3>
+<div id="outline-container-org22d1b13" class="outline-3">
+<h3 id="org22d1b13"><span class="section-number-3">6.1.</span> 匯入與資料產生</h3>
 <div class="outline-text-3" id="text-6-1">
 <p>
 首先以這段程式碼生成一個帶有雜訊的時間序列資料，這些是訓練模型所需的資料。這裡我們生成的時間序列資料是 \(sin(x) + cos(0.5x)\)，並加入高斯雜訊來模擬實際情況中的雜訊干擾，這樣的資料可以幫助模型學習如何從雜訊中提取有用的信號。
@@ -844,18 +850,18 @@ RNN神經元在時間點t的輸出 \(h_t\) 由以下公式計算:
 </pre>
 </div>
 <p>
-生成的時間序列資料如圖<a href="#orgf90eb28">17</a>所示，資料總數共 3000 個點，這些資料是我們用來訓練 RNN 模型的基礎。
+生成的時間序列資料如圖<a href="#orgc74895c">17</a>所示，資料總數共 3000 個點，這些資料是我們用來訓練 RNN 模型的基礎。
 </p>
 
-<div id="orgf90eb28" class="figure">
+<div id="orgc74895c" class="figure">
 <p><img src="images/rnn_data.png" alt="rnn_data.png" width="600" />
 </p>
 <p><span class="figure-number">Figure 17: </span>時間序列資料生成與展示</p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgc912623" class="outline-3">
-<h3 id="orgc912623"><span class="section-number-3">6.2.</span> 前處理與序列資料製作</h3>
+<div id="outline-container-org6ebf135" class="outline-3">
+<h3 id="org6ebf135"><span class="section-number-3">6.2.</span> 前處理與序列資料製作</h3>
 <div class="outline-text-3" id="text-6-2">
 <p>
 接下來我們對生成的時間序列資料進行標準化處理，把資料轉換為適合 RNN 模型訓練的序列格式。這裡我們使用 <b><b>MinMaxScaler</b></b> 來將資料縮放到 [0, 1] 範圍內，然後建立一個長度為 20 的序列資料集。進行標準化的目的在於提高模型的訓練效率和預測準確度，因為 RNN 模型對於輸入資料的尺度非常敏感，在將資料縮放到 [0, 1] 範圍內後，可以幫助模型更快地收斂。
@@ -900,7 +906,7 @@ RNN神經元在時間點t的輸出 \(h_t\) 由以下公式計算:
 以下是這個訓練資料(X_train, Y_train)的形狀和前兩筆資料的輸出結果：藉由這些資料，我們想告訴想告訴模型：如果你看到類似的這樣20筆資料，那麼，接下來的第21筆資料應該是什麼樣子。
 </p>
 
-<pre class="example" id="org5f72295">
+<pre class="example" id="orga13c2b0">
 X_train shape: (2384, 20, 1), y_train shape: (2384, 1)
 X_test shape: (596, 20, 1), y_test shape: (596, 1)
 X_train sample (first 2 sequences):
@@ -951,8 +957,8 @@ Y_train sample (first 2 values):
 </pre>
 </div>
 </div>
-<div id="outline-container-org26f4c83" class="outline-3">
-<h3 id="org26f4c83"><span class="section-number-3">6.3.</span> 建立RNN模型</h3>
+<div id="outline-container-orgc2c9328" class="outline-3">
+<h3 id="orgc2c9328"><span class="section-number-3">6.3.</span> 建立RNN模型</h3>
 <div class="outline-text-3" id="text-6-3">
 <p>
 許多框架都支援RNN模型，例如 TensorFlow、PyTorch 等。這裡我們使用 TensorFlow的 Keras API 來建立一個簡單的 RNN 模型。
@@ -964,10 +970,11 @@ Y_train sample (first 2 values):
 
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">model</span> = keras.models.Sequential([
-<span class="linenr">2: </span>    keras.layers.SimpleRNN(<span style="color: #da8548; font-weight: bold;">1</span>, input_shape=[<span style="color: #a9a1e1;">None</span>, <span style="color: #da8548; font-weight: bold;">1</span>])  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38928;&#35373; activation='tanh'</span>
-<span class="linenr">3: </span>])
-<span class="linenr">4: </span>model.<span style="color: #c678dd;">compile</span>(loss=<span style="color: #98be65;">'mse'</span>, optimizer=<span style="color: #98be65;">'adam'</span>)
-<span class="linenr">5: </span>model.summary()
+<span class="linenr">2: </span>    keras.layers.Input(shape=(<span style="color: #a9a1e1;">None</span>, <span style="color: #da8548; font-weight: bold;">1</span>)),
+<span class="linenr">3: </span>    keras.layers.SimpleRNN(<span style="color: #da8548; font-weight: bold;">1</span>)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38928;&#35373; activation='tanh'</span>
+<span class="linenr">4: </span>])
+<span class="linenr">5: </span>model.<span style="color: #c678dd;">compile</span>(loss=<span style="color: #98be65;">'mse'</span>, optimizer=<span style="color: #98be65;">'adam'</span>)
+<span class="linenr">6: </span>model.summary()
 </pre>
 </div>
 
@@ -1007,7 +1014,7 @@ Non-trainable params: 0 (0.00 B)
 </p>
 
 <p>
-在 Keras 中，input_shape=[None, 1] 的意思是：
+在 Keras 中，=Input(shape=(None, 1))= 的意思是：
 </p>
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
@@ -1044,17 +1051,15 @@ Non-trainable params: 0 (0.00 B)
 <p>
 在 Keras RNN 中，每筆資料會被視為一個 3 維陣列：
 </p>
-<div class="org-src-container">
-<pre class="src src-python"><span class="linenr">1: </span>[&#27171;&#26412;&#25976;, &#26178;&#38291;&#27493;&#38263; (<span style="color: #a9a1e1;">None</span>), &#29305;&#24501;&#25976;]
+<pre class="example" id="org84d82bf">
+[樣本數, 時間步長 (None), 特徵數]
 </pre>
-</div>
 <p>
 舉個例子：
 </p>
-<div class="org-src-container">
-<pre class="src src-python"><span class="linenr">1: </span>X.<span style="color: #dcaeea;">shape</span> = (<span style="color: #da8548; font-weight: bold;">1000</span>, <span style="color: #da8548; font-weight: bold;">20</span>, <span style="color: #da8548; font-weight: bold;">1</span>)
+<pre class="example" id="orgaad4ea9">
+X.shape = (1000, 20, 1)
 </pre>
-</div>
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -1101,8 +1106,8 @@ Non-trainable params: 0 (0.00 B)
 </p>
 </div>
 </div>
-<div id="outline-container-org71f6ea0" class="outline-3">
-<h3 id="org71f6ea0"><span class="section-number-3">6.4.</span> 訓練模型</h3>
+<div id="outline-container-org2be2076" class="outline-3">
+<h3 id="org2be2076"><span class="section-number-3">6.4.</span> 訓練模型</h3>
 <div class="outline-text-3" id="text-6-4">
 <p>
 接下來，我們將使用訓練資料來訓練這個 RNN 模型。這裡我們使用 `fit` 方法來進行訓練，並設定訓練的輪數（epochs）為 20 次。每次訓練都會更新模型的權重，以便模型能夠更好地預測未來的值。參數verbose=2表示在訓練過程中輸出詳細的訓練進度，你也可以將其設為 1 或 0 來調整輸出細節。
@@ -1112,7 +1117,7 @@ Non-trainable params: 0 (0.00 B)
 </pre>
 </div>
 
-<pre class="example" id="orgda8eda6">
+<pre class="example" id="org6070f17">
 Epoch 1/20
 75/75 - 0s - 5ms/step - loss: 0.0055
 Epoch 2/20
@@ -1156,8 +1161,8 @@ Epoch 20/20
 </pre>
 </div>
 </div>
-<div id="outline-container-org318a568" class="outline-3">
-<h3 id="org318a568"><span class="section-number-3">6.5.</span> 評估預測效果並繪圖</h3>
+<div id="outline-container-orgad49d40" class="outline-3">
+<h3 id="orgad49d40"><span class="section-number-3">6.5.</span> 評估預測效果並繪圖</h3>
 <div class="outline-text-3" id="text-6-5">
 <p>
 模型訓練完後總要評估一下預測效果，這裡我們使用測試資料來評估模型的預測能力。首先，我們使用 `predict` 方法來獲取模型對測試資料的預測結果，然後將預測結果還原回原始數值範圍。接著，我們將實際值和預測值繪製在同一張圖上，以便直觀地比較模型的預測效果。
@@ -1183,10 +1188,10 @@ Epoch 20/20
 </div>
 
 
-<div id="orgefbc4ce" class="figure">
+<div id="orgb3f9dc6" class="figure">
 <p><img src="images/rnn_prediction.png" alt="rnn_prediction.png" width="600" />
 </p>
-<p><span class="figure-number">Figure 18: </span>RNN模型預測結果（局部放大）</p>
+<p><span class="figure-number">Figure 18: </span>RNN模型預測結果</p>
 </div>
 
 <p>
@@ -1243,76 +1248,79 @@ R^2  : 0.926007
 這些評估結果足夠好了嗎？能不能再提升？當然可以！在實際應用中，我們通常會嘗試不同的模型架構和參數來進一步提升預測效果。例如:
 </p>
 </div>
-<div id="outline-container-orgc5baf43" class="outline-4">
-<h4 id="orgc5baf43"><span class="section-number-4">6.5.1.</span> 增加隱藏層神經元數量</h4>
+<div id="outline-container-orgb578288" class="outline-4">
+<h4 id="orgb578288"><span class="section-number-4">6.5.1.</span> 增加隱藏層神經元數量</h4>
 <div class="outline-text-4" id="text-6-5-1">
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr">1: </span>keras.layers.SimpleRNN(<span style="color: #da8548; font-weight: bold;">8</span>, input_shape=[<span style="color: #a9a1e1;">None</span>, <span style="color: #da8548; font-weight: bold;">1</span>])
+<pre class="src src-python"><span class="linenr">1: </span>keras.layers.SimpleRNN(<span style="color: #da8548; font-weight: bold;">8</span>)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25226;&#31070;&#32147;&#20803;&#24478; 1 &#20491;&#22686;&#21152;&#21040; 8 &#20491;</span>
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-org5b7bbc8" class="outline-4">
-<h4 id="org5b7bbc8"><span class="section-number-4">6.5.2.</span> 增加隱藏層數量</h4>
+<div id="outline-container-org1aadc00" class="outline-4">
+<h4 id="org1aadc00"><span class="section-number-4">6.5.2.</span> 增加隱藏層數量</h4>
 <div class="outline-text-4" id="text-6-5-2">
 <p>
 例如：SimpleRNN層、Dense層、Dropout層
 </p>
 </div>
-<div id="outline-container-orgfac2b2e" class="outline-5">
-<h5 id="orgfac2b2e">SimpleRNN層</h5>
-<div class="outline-text-5" id="text-orgfac2b2e">
+<div id="outline-container-orgdcd9543" class="outline-5">
+<h5 id="orgdcd9543">SimpleRNN層</h5>
+<div class="outline-text-5" id="text-orgdcd9543">
 <p>
 這個層是 RNN 的核心部分，負責處理序列資料。你可以增加這個層的神經元數量來提高模型的容量，讓模型能夠學習更複雜的模式。
 </p>
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">model</span> = keras.models.Sequential([
-<span class="linenr">2: </span>    keras.layers.SimpleRNN(<span style="color: #da8548; font-weight: bold;">4</span>, return_sequences=<span style="color: #a9a1e1;">True</span>, input_shape=[<span style="color: #a9a1e1;">None</span>, <span style="color: #da8548; font-weight: bold;">1</span>]),  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31532;&#19968;&#23652;&#35201;&#22238;&#20659;&#24207;&#21015;</span>
-<span class="linenr">3: </span>    keras.layers.SimpleRNN(<span style="color: #da8548; font-weight: bold;">4</span>),  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31532;&#20108;&#23652;&#30452;&#25509;&#25509;&#25910;&#25972;&#27573;&#24207;&#21015;&#36039;&#35338;</span>
-<span class="linenr">4: </span>    keras.layers.Dense(<span style="color: #da8548; font-weight: bold;">1</span>)
-<span class="linenr">5: </span>])
+<span class="linenr">2: </span>    keras.layers.Input(shape=(<span style="color: #a9a1e1;">None</span>, <span style="color: #da8548; font-weight: bold;">1</span>)),
+<span class="linenr">3: </span>    keras.layers.SimpleRNN(<span style="color: #da8548; font-weight: bold;">4</span>, return_sequences=<span style="color: #a9a1e1;">True</span>),  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31532;&#19968;&#23652;&#35201;&#22238;&#20659;&#24207;&#21015;</span>
+<span class="linenr">4: </span>    keras.layers.SimpleRNN(<span style="color: #da8548; font-weight: bold;">4</span>),  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31532;&#20108;&#23652;&#30452;&#25509;&#25509;&#25910;&#25972;&#27573;&#24207;&#21015;&#36039;&#35338;</span>
+<span class="linenr">5: </span>    keras.layers.Dense(<span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr">6: </span>])
 </pre>
 </div>
 <p>
-return_sequences=True：告訴第一層 RNN 回傳「每個時間步的輸出」，否則下一層 RNN 沒辦法處理。
+<code>return_sequences=True</code> ：告訴第一層 RNN 回傳「每個時間步的輸出」，否則下一層 RNN 沒辦法處理。
 </p>
 </div>
 </div>
-<div id="outline-container-org1e52371" class="outline-5">
-<h5 id="org1e52371">Dense層</h5>
-<div class="outline-text-5" id="text-org1e52371">
+<div id="outline-container-orgbcd5e9a" class="outline-5">
+<h5 id="orgbcd5e9a">Dense層</h5>
+<div class="outline-text-5" id="text-orgbcd5e9a">
 <p>
 這個層可以增加模型的容量，讓模型能夠學習更複雜的模式。Dense層會將上一層的輸出進行線性變換，並加上偏置項，然後通過激活函數（默認是ReLU）來產生輸出。
 </p>
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">model</span> = keras.models.Sequential([
-<span class="linenr">2: </span>    keras.layers.SimpleRNN(<span style="color: #da8548; font-weight: bold;">4</span>, input_shape=[<span style="color: #a9a1e1;">None</span>, <span style="color: #da8548; font-weight: bold;">1</span>]),  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#22686;&#21152;&#23481;&#37327;</span>
-<span class="linenr">3: </span>    keras.layers.Dense(<span style="color: #da8548; font-weight: bold;">1</span>)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21152;&#36664;&#20986;&#23652;</span>
-<span class="linenr">4: </span>])
+<span class="linenr">2: </span>    keras.layers.Input(shape=(<span style="color: #a9a1e1;">None</span>, <span style="color: #da8548; font-weight: bold;">1</span>)),
+<span class="linenr">3: </span>    keras.layers.SimpleRNN(<span style="color: #da8548; font-weight: bold;">4</span>),  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#22686;&#21152;&#23481;&#37327;</span>
+<span class="linenr">4: </span>    keras.layers.Dense(<span style="color: #da8548; font-weight: bold;">1</span>)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21152;&#36664;&#20986;&#23652;</span>
+<span class="linenr">5: </span>])
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-org870d43b" class="outline-5">
-<h5 id="org870d43b">Dropout層</h5>
-<div class="outline-text-5" id="text-org870d43b">
+<div id="outline-container-org0775724" class="outline-5">
+<h5 id="org0775724">Dropout層</h5>
+<div class="outline-text-5" id="text-org0775724">
 <p>
 這個層可以幫助減少過擬合，特別是在訓練資料較少的情況下。Dropout層會隨機丟棄一部分神經元的輸出，以防止模型過度依賴某些特定的神經元。
 </p>
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">model</span> = keras.models.Sequential([
-<span class="linenr">2: </span>    keras.layers.SimpleRNN(<span style="color: #da8548; font-weight: bold;">4</span>, return_sequences=<span style="color: #a9a1e1;">True</span>, input_shape=[<span style="color: #a9a1e1;">None</span>, <span style="color: #da8548; font-weight: bold;">1</span>]),
-<span class="linenr">3: </span>    keras.layers.SimpleRNN(<span style="color: #da8548; font-weight: bold;">4</span>),
-<span class="linenr">4: </span>    keras.layers.Dropout(<span style="color: #da8548; font-weight: bold;">0.2</span>),
-<span class="linenr">5: </span>    keras.layers.Dense(<span style="color: #da8548; font-weight: bold;">1</span>)
-<span class="linenr">6: </span>])
+<span class="linenr">2: </span>    keras.layers.Input(shape=(<span style="color: #a9a1e1;">None</span>, <span style="color: #da8548; font-weight: bold;">1</span>)),
+<span class="linenr">3: </span>    keras.layers.SimpleRNN(<span style="color: #da8548; font-weight: bold;">4</span>, return_sequences=<span style="color: #a9a1e1;">True</span>),
+<span class="linenr">4: </span>    keras.layers.SimpleRNN(<span style="color: #da8548; font-weight: bold;">4</span>),
+<span class="linenr">5: </span>    keras.layers.Dropout(<span style="color: #da8548; font-weight: bold;">0.2</span>),
+<span class="linenr">6: </span>    keras.layers.Dense(<span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr">7: </span>])
 </pre>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-org00b5d9f" class="outline-4">
-<h4 id="org00b5d9f"><span class="section-number-4">6.5.3.</span> 增加訓練次數</h4>
+<div id="outline-container-org65dde6d" class="outline-4">
+<h4 id="org65dde6d"><span class="section-number-4">6.5.3.</span> 增加訓練次數</h4>
 <div class="outline-text-4" id="text-6-5-3">
 <p>
 也就是增加 epochs 的數量，讓模型有更多機會學習資料中的模式。
@@ -1320,27 +1328,27 @@ return_sequences=True：告訴第一層 RNN 回傳「每個時間步的輸出」
 </div>
 </div>
 </div>
-<div id="outline-container-orgdd92668" class="outline-3">
-<h3 id="orgdd92668"><span class="section-number-3">6.6.</span> 標準的評估結果呈現方式</h3>
+<div id="outline-container-org28a95c8" class="outline-3">
+<h3 id="org28a95c8"><span class="section-number-3">6.6.</span> 標準的評估結果呈現方式</h3>
 <div class="outline-text-3" id="text-6-6">
 <p>
 在輸出模型預測結果時，通常會將實際值和預測值繪製在同一張圖上，以便直觀地比較模型的預測效果。這樣的圖表可以幫助我們更好地理解模型的預測能力和局限性。
 </p>
 
 
-<div id="orgc77a4f7" class="figure">
+<div id="orgedc9e45" class="figure">
 <p><img src="images/rnn_detail.png" alt="rnn_detail.png" width="800" />
 </p>
 <p><span class="figure-number">Figure 19: </span>RNN模型詳細預測結果</p>
 </div>
 
 <p>
-同學們可以把重點放在圖<a href="#orgc77a4f7">19</a>的第4張子圖上，這是模型的學習曲線（Learning Curve），它顯示了訓練過程中損失函數（Loss）的變化情況。從圖中可以看出，隨著訓練次數(Epoch)的增加，模型的損失逐漸減少，這表明模型在學習資料中的模式。
+同學們可以把重點放在圖<a href="#orgedc9e45">19</a>的第4張子圖上，這是模型的學習曲線（Learning Curve），它顯示了訓練過程中損失函數（Loss）的變化情況。從圖中可以看出，隨著訓練次數(Epoch)的增加，模型的損失逐漸減少，這表明模型在學習資料中的模式。
 </p>
 </div>
 </div>
-<div id="outline-container-orgadd51ac" class="outline-3">
-<h3 id="orgadd51ac"><span class="section-number-3">6.7.</span> 好像有哪裡不對勁？</h3>
+<div id="outline-container-orgfd7f767" class="outline-3">
+<h3 id="orgfd7f767"><span class="section-number-3">6.7.</span> 好像有哪裡不對勁？</h3>
 <div class="outline-text-3" id="text-6-7">
 <p>
 這麼一個簡單的模型就能達到這麼好的預測效果？真的嗎？
@@ -1359,11 +1367,11 @@ return_sequences=True：告訴第一層 RNN 回傳「每個時間步的輸出」
 </p>
 </div>
 </div>
-<div id="outline-container-orgb2b749d" class="outline-3">
-<h3 id="orgb2b749d"><span class="section-number-3">6.8.</span> RNN的運作流程</h3>
+<div id="outline-container-org2ab3bd6" class="outline-3">
+<h3 id="org2ab3bd6"><span class="section-number-3">6.8.</span> RNN的運作流程</h3>
 <div class="outline-text-3" id="text-6-8">
 <p>
-如果我們將圖<a href="#org528d428">5</a>左側的RNN神經元放大來看(如圖<a href="#orgb8778bc">20</a>)，會發現它其實包含了三組權重:
+如果我們將圖<a href="#org65f612c">5</a>左側的RNN神經元放大來看(如圖<a href="#org8002b83">20</a>)，會發現它其實包含了三組權重:
 </p>
 <ol class="org-ol">
 <li>來自外部輸入\(x_{t}\) 的權重 \(w_{x}\)</li>
@@ -1371,14 +1379,14 @@ return_sequences=True：告訴第一層 RNN 回傳「每個時間步的輸出」
 <li>輸出結果 \(h_{t}\) 的權重 \(w_{y}\)</li>
 </ol>
 
-<div id="orgb8778bc" class="figure">
+<div id="org8002b83" class="figure">
 <p><img src="images/2025-10-22_08-53-59.png" alt="2025-10-22_08-53-59.png" width="500" />
 </p>
 <p><span class="figure-number">Figure 20: </span>RNN神經元</p>
 </div>
 
 <p>
-圖<a href="#orgb8778bc">20</a>代表的是一個時間點\(t\)的RNN神經元狀態，在這個時間點下，他是如何讀入資料？又是如何處理資料並產生輸出的呢？我們可以透過以下步驟來理解:
+圖<a href="#org8002b83">20</a>代表的是一個時間點\(t\)的RNN神經元狀態，在這個時間點下，他是如何讀入資料？又是如何處理資料並產生輸出的呢？我們可以透過以下步驟來理解:
 </p>
 <ol class="org-ol">
 <li>首先，這個神經元在時間點\(t\)會收到兩項資訊:
@@ -1411,14 +1419,271 @@ return_sequences=True：告訴第一層 RNN 回傳「每個時間步的輸出」
 </div>
 </div>
 </div>
-<div id="outline-container-orgf26787b" class="outline-2">
-<h2 id="orgf26787b"><span class="section-number-2">7.</span> RNN學習資源</h2>
+<div id="outline-container-org53f39a6" class="outline-2">
+<h2 id="org53f39a6"><span class="section-number-2">7.</span> 作業：RNN 大挑戰</h2>
 <div class="outline-text-2" id="text-7">
+</div>
+<div id="outline-container-org86f557c" class="outline-3">
+<h3 id="org86f557c"><span class="section-number-3">7.1.</span> 作業一：氣溫預測器 — 你比氣象局準嗎？</h3>
+<div class="outline-text-3" id="text-7-1">
+<p>
+在教材中我們用 \(sin(x)+cos(0.5x)\) 來訓練 RNN，但那畢竟是假資料。現在請你用 RNN 來預測「真正的」時間序列 — 一整年的每日氣溫變化！
+</p>
+
+<p>
+以下範例程式會生成一年份的模擬氣溫資料（有季節變化 + 隨機天氣擾動），並用 SimpleRNN 來預測氣溫：
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 2: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
+<span class="linenr"> 3: </span><span style="color: #51afef;">from</span> sklearn.preprocessing <span style="color: #51afef;">import</span> MinMaxScaler
+<span class="linenr"> 4: </span><span style="color: #51afef;">import</span> tensorflow <span style="color: #51afef;">as</span> tf
+<span class="linenr"> 5: </span><span style="color: #51afef;">from</span> tensorflow <span style="color: #51afef;">import</span> keras
+<span class="linenr"> 6: </span>
+<span class="linenr"> 7: </span>np.random.seed(<span style="color: #da8548; font-weight: bold;">42</span>)
+<span class="linenr"> 8: </span>tf.random.set_seed(<span style="color: #da8548; font-weight: bold;">42</span>)
+<span class="linenr"> 9: </span>
+<span class="linenr">10: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#29983;&#25104;&#19968;&#24180;&#20221;&#27169;&#25836;&#27683;&#28331;&#65288;365&#22825;&#65289;</span>
+<span class="linenr">11: </span><span style="color: #dcaeea;">days</span> = np.arange(<span style="color: #da8548; font-weight: bold;">365</span>)
+<span class="linenr">12: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#22522;&#30990;&#28331;&#24230;&#65306;&#22799;&#22825;&#29105;&#12289;&#20908;&#22825;&#20919;&#65288;&#29992; cos &#27169;&#25836;&#23395;&#31680;&#65289;</span>
+<span class="linenr">13: </span><span style="color: #dcaeea;">base_temp</span> = <span style="color: #da8548; font-weight: bold;">25</span> - <span style="color: #da8548; font-weight: bold;">10</span> * np.cos(<span style="color: #da8548; font-weight: bold;">2</span> * np.pi * days / <span style="color: #da8548; font-weight: bold;">365</span>)
+<span class="linenr">14: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21152;&#20837;&#27599;&#26085;&#38568;&#27231;&#25854;&#21205;</span>
+<span class="linenr">15: </span><span style="color: #dcaeea;">noise</span> = np.random.normal(<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">2</span>, size=<span style="color: #da8548; font-weight: bold;">365</span>)
+<span class="linenr">16: </span><span style="color: #dcaeea;">temperature</span> = base_temp + noise
+<span class="linenr">17: </span>
+<span class="linenr">18: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27161;&#28310;&#21270;</span>
+<span class="linenr">19: </span><span style="color: #dcaeea;">scaler</span> = MinMaxScaler()
+<span class="linenr">20: </span><span style="color: #dcaeea;">temp_scaled</span> = scaler.fit_transform(temperature.reshape(-<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">1</span>))
+<span class="linenr">21: </span>
+<span class="linenr">22: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;&#31435;&#24207;&#21015;&#65288;&#29992;&#36942;&#21435; 14 &#22825;&#38928;&#28204;&#26126;&#22825;&#65289;</span>
+<span class="linenr">23: </span><span style="color: #dcaeea;">SEQ_LEN</span> = <span style="color: #da8548; font-weight: bold;">14</span>
+<span class="linenr">24: </span><span style="color: #dcaeea;">X</span>, <span style="color: #dcaeea;">y</span> = [], []
+<span class="linenr">25: </span><span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #c678dd;">len</span>(temp_scaled) - SEQ_LEN):
+<span class="linenr">26: </span>    X.append(temp_scaled[i:i+SEQ_LEN])
+<span class="linenr">27: </span>    y.append(temp_scaled[i+SEQ_LEN])
+<span class="linenr">28: </span><span style="color: #dcaeea;">X</span>, <span style="color: #dcaeea;">y</span> = np.array(X), np.array(y)
+<span class="linenr">29: </span>
+<span class="linenr">30: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20998;&#35347;&#32244;/&#28204;&#35430;&#38598;&#65288;&#21069; 80% &#35347;&#32244;&#65292;&#24460; 20% &#28204;&#35430;&#65289;</span>
+<span class="linenr">31: </span><span style="color: #dcaeea;">split</span> = <span style="color: #c678dd;">int</span>(<span style="color: #c678dd;">len</span>(X) * <span style="color: #da8548; font-weight: bold;">0.8</span>)
+<span class="linenr">32: </span><span style="color: #dcaeea;">X_train</span>, <span style="color: #dcaeea;">y_train</span> = X[:split], y[:split]
+<span class="linenr">33: </span><span style="color: #dcaeea;">X_test</span>, <span style="color: #dcaeea;">y_test</span> = X[split:], y[split:]
+<span class="linenr">34: </span>
+<span class="linenr">35: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;&#31435; SimpleRNN &#27169;&#22411;</span>
+<span class="linenr">36: </span><span style="color: #dcaeea;">model</span> = keras.models.Sequential([
+<span class="linenr">37: </span>    keras.layers.Input(shape=(SEQ_LEN, <span style="color: #da8548; font-weight: bold;">1</span>)),
+<span class="linenr">38: </span>    keras.layers.SimpleRNN(<span style="color: #da8548; font-weight: bold;">1</span>),
+<span class="linenr">39: </span>])
+<span class="linenr">40: </span>model.<span style="color: #c678dd;">compile</span>(loss=<span style="color: #98be65;">'mse'</span>, optimizer=<span style="color: #98be65;">'adam'</span>, metrics=[<span style="color: #98be65;">'mae'</span>])
+<span class="linenr">41: </span>model.fit(X_train, y_train, epochs=<span style="color: #da8548; font-weight: bold;">20</span>, verbose=<span style="color: #da8548; font-weight: bold;">0</span>)
+<span class="linenr">42: </span>
+<span class="linenr">43: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38928;&#28204;&#20006;&#36996;&#21407;</span>
+<span class="linenr">44: </span><span style="color: #dcaeea;">pred</span> = model.predict(X_test, verbose=<span style="color: #da8548; font-weight: bold;">0</span>)
+<span class="linenr">45: </span><span style="color: #dcaeea;">pred_inv</span> = scaler.inverse_transform(pred)
+<span class="linenr">46: </span><span style="color: #dcaeea;">actual_inv</span> = scaler.inverse_transform(y_test)
+<span class="linenr">47: </span>
+<span class="linenr">48: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#30059;&#22294;</span>
+<span class="linenr">49: </span>plt.figure(figsize=(<span style="color: #da8548; font-weight: bold;">10</span>, <span style="color: #da8548; font-weight: bold;">4</span>))
+<span class="linenr">50: </span>plt.plot(actual_inv, label=<span style="color: #98be65;">'Actual'</span>, alpha=<span style="color: #da8548; font-weight: bold;">0.7</span>)
+<span class="linenr">51: </span>plt.plot(pred_inv, label=<span style="color: #98be65;">'Predicted'</span>, alpha=<span style="color: #da8548; font-weight: bold;">0.9</span>)
+<span class="linenr">52: </span>plt.title(<span style="color: #98be65;">'Temperature Prediction (SimpleRNN, 1 neuron)'</span>)
+<span class="linenr">53: </span>plt.xlabel(<span style="color: #98be65;">'Day'</span>)
+<span class="linenr">54: </span>plt.ylabel(<span style="color: #98be65;">'Temperature (&#176;C)'</span>)
+<span class="linenr">55: </span>plt.legend()
+<span class="linenr">56: </span>plt.grid(<span style="color: #a9a1e1;">True</span>)
+<span class="linenr">57: </span>plt.tight_layout()
+<span class="linenr">58: </span>plt.savefig(<span style="color: #98be65;">'images/hw_rnn_temp.png'</span>, dpi=<span style="color: #da8548; font-weight: bold;">150</span>)
+<span class="linenr">59: </span>
+<span class="linenr">60: </span><span style="color: #51afef;">from</span> sklearn.metrics <span style="color: #51afef;">import</span> mean_absolute_error
+<span class="linenr">61: </span><span style="color: #dcaeea;">mae</span> = mean_absolute_error(actual_inv, pred_inv)
+<span class="linenr">62: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"MAE: </span>{mae:.2f}<span style="color: #98be65;"> &#176;C"</span>)
+</pre>
+</div>
+</div>
+<div id="outline-container-org6e7f592" class="outline-4">
+<h4 id="org6e7f592"><span class="section-number-4">7.1.1.</span> 你的任務</h4>
+<div class="outline-text-4" id="text-7-1-1">
+<p>
+上面的模型只用了 <b>1 個神經元</b> ，預測效果當然不太好。請修改模型架構，讓 MAE（平均絕對誤差）降到 <b>3.0°C 以下</b> 。
+</p>
+
+<p>
+提示：
+</p>
+<ul class="org-ul">
+<li>可以增加 SimpleRNN 的神經元數量</li>
+<li>可以堆疊多層 SimpleRNN（記得第一層要加 <code>return_sequences=True</code> ）</li>
+<li>可以加 Dense 層</li>
+<li>可以調整 epochs 數量</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org54de85e" class="outline-4">
+<h4 id="org54de85e"><span class="section-number-4">7.1.2.</span> 預期輸出</h4>
+<div class="outline-text-4" id="text-7-1-2">
+<pre class="example" id="org1cdcb1c">
+MAE: 2.xx °C （只要低於 3.0 就算過關）
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc3cc137" class="outline-3">
+<h3 id="orgc3cc137"><span class="section-number-3">7.2.</span> 作業二：手算 RNN — 當人體 GPU</h3>
+<div class="outline-text-3" id="text-7-2">
+<p>
+在教材中，我們用 \(w_x=1.8\), \(w_h=-0.5\), \(w_y=1.1\) 這組權重，從「昨天平盤(0.5)」和「今天上漲(1)」預測出明天的股價。
+</p>
+
+<p>
+現在換一組全新的設定：
+</p>
+<ul class="org-ul">
+<li>權重：\(w_x = 2.0\), \(w_h = 0.3\), \(w_y = 0.8\)</li>
+<li>激活函數：ReLU</li>
+<li>初始隱藏狀態：\(h_{t-1} = 0\)</li>
+<li>三天的股價變化序列：\(x_1 = 0.2\)（下跌）, \(x_2 = 0.6\)（平盤）, \(x_3 = 0.9\)（上漲）</li>
+</ul>
+</div>
+<div id="outline-container-org7b1e672" class="outline-4">
+<h4 id="org7b1e672"><span class="section-number-4">7.2.1.</span> 你的任務</h4>
+<div class="outline-text-4" id="text-7-2-1">
+<p>
+請用紙筆（或計算機）手算以下內容，寫出每一步的計算過程：
+</p>
+<ol class="org-ol">
+<li>依序輸入 \(x_1, x_2, x_3\)，計算每個時間點的隱藏狀態 \(h_t\) 和輸出 \(y_t\)</li>
+<li>根據最終的 \(y_3\) 值，判斷模型預測「後天」的股價是上漲、平盤還是下跌
+<ul class="org-ul">
+<li>上漲：\(y_t \geq 0.75\)</li>
+<li>平盤：\(0.25 < y_t < 0.75\)</li>
+<li>下跌：\(y_t \leq 0.25\)</li>
+</ul></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-orgd4d4ac1" class="outline-4">
+<h4 id="orgd4d4ac1"><span class="section-number-4">7.2.2.</span> 預期輸出</h4>
+<div class="outline-text-4" id="text-7-2-2">
+<pre class="example" id="org9f50137">
+=== 時間點 1 (x₁ = 0.2) ===
+z₁ = w_x × x₁ + w_h × h₀ = ???
+h₁ = ReLU(z₁) = ???
+y₁ = w_y × h₁ = ???
+
+=== 時間點 2 (x₂ = 0.6) ===
+z₂ = w_x × x₂ + w_h × h₁ = ???
+h₂ = ReLU(z₂) = ???
+y₂ = w_y × h₂ = ???
+
+=== 時間點 3 (x₃ = 0.9) ===
+z₃ = w_x × x₃ + w_h × h₂ = ???
+h₃ = ReLU(z₃) = ???
+y₃ = w_y × h₃ = ???
+
+預測結果：??? (上漲/平盤/下跌)
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org4b8a36d" class="outline-3">
+<h3 id="org4b8a36d"><span class="section-number-3">7.3.</span> 作業三：序列長度大對決 — 記憶力比拚</h3>
+<div class="outline-text-3" id="text-7-3">
+<p>
+RNN 號稱有「記憶力」，但記憶力到底有多強？讓我們來實驗看看：用不同的序列長度（也就是「看幾天前的資料來預測」）訓練模型，看看哪個長度的效果最好。
+</p>
+
+<p>
+以下範例用 <code>SEQ_LEN=5</code> 來訓練：
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 2: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
+<span class="linenr"> 3: </span><span style="color: #51afef;">from</span> sklearn.preprocessing <span style="color: #51afef;">import</span> MinMaxScaler
+<span class="linenr"> 4: </span><span style="color: #51afef;">from</span> sklearn.metrics <span style="color: #51afef;">import</span> mean_absolute_error
+<span class="linenr"> 5: </span><span style="color: #51afef;">import</span> tensorflow <span style="color: #51afef;">as</span> tf
+<span class="linenr"> 6: </span><span style="color: #51afef;">from</span> tensorflow <span style="color: #51afef;">import</span> keras
+<span class="linenr"> 7: </span>
+<span class="linenr"> 8: </span>np.random.seed(<span style="color: #da8548; font-weight: bold;">42</span>)
+<span class="linenr"> 9: </span>tf.random.set_seed(<span style="color: #da8548; font-weight: bold;">42</span>)
+<span class="linenr">10: </span>
+<span class="linenr">11: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#29983;&#25104;&#36039;&#26009;</span>
+<span class="linenr">12: </span><span style="color: #dcaeea;">x_vals</span> = np.linspace(<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">300</span>, <span style="color: #da8548; font-weight: bold;">3000</span>)
+<span class="linenr">13: </span><span style="color: #dcaeea;">data</span> = (np.sin(x_vals) + np.cos(x_vals * <span style="color: #da8548; font-weight: bold;">0.5</span>)).reshape(-<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr">14: </span><span style="color: #dcaeea;">noise</span> = np.random.normal(<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>, size=data.shape)
+<span class="linenr">15: </span><span style="color: #dcaeea;">data_noisy</span> = data + noise
+<span class="linenr">16: </span>
+<span class="linenr">17: </span><span style="color: #dcaeea;">scaler</span> = MinMaxScaler()
+<span class="linenr">18: </span><span style="color: #dcaeea;">scaled</span> = scaler.fit_transform(data_noisy)
+<span class="linenr">19: </span>
+<span class="linenr">20: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">train_and_evaluate</span>(seq_len):
+<span class="linenr">21: </span>    <span style="color: #83898d;">"""&#29992;&#25351;&#23450;&#30340;&#24207;&#21015;&#38263;&#24230;&#35347;&#32244; RNN &#20006;&#22238;&#20659; MAE"""</span>
+<span class="linenr">22: </span>    <span style="color: #dcaeea;">X</span>, <span style="color: #dcaeea;">y</span> = [], []
+<span class="linenr">23: </span>    <span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #c678dd;">len</span>(scaled) - seq_len):
+<span class="linenr">24: </span>        X.append(scaled[i:i+seq_len])
+<span class="linenr">25: </span>        y.append(scaled[i+seq_len])
+<span class="linenr">26: </span>    <span style="color: #dcaeea;">X</span>, <span style="color: #dcaeea;">y</span> = np.array(X), np.array(y)
+<span class="linenr">27: </span>
+<span class="linenr">28: </span>    <span style="color: #dcaeea;">split</span> = <span style="color: #c678dd;">int</span>(<span style="color: #c678dd;">len</span>(X) * <span style="color: #da8548; font-weight: bold;">0.8</span>)
+<span class="linenr">29: </span>    <span style="color: #dcaeea;">X_train</span>, <span style="color: #dcaeea;">y_train</span> = X[:split], y[:split]
+<span class="linenr">30: </span>    <span style="color: #dcaeea;">X_test</span>, <span style="color: #dcaeea;">y_test</span> = X[split:], y[split:]
+<span class="linenr">31: </span>
+<span class="linenr">32: </span>    <span style="color: #dcaeea;">model</span> = keras.models.Sequential([
+<span class="linenr">33: </span>        keras.layers.Input(shape=(seq_len, <span style="color: #da8548; font-weight: bold;">1</span>)),
+<span class="linenr">34: </span>        keras.layers.SimpleRNN(<span style="color: #da8548; font-weight: bold;">4</span>),
+<span class="linenr">35: </span>        keras.layers.Dense(<span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr">36: </span>    ])
+<span class="linenr">37: </span>    model.<span style="color: #c678dd;">compile</span>(loss=<span style="color: #98be65;">'mse'</span>, optimizer=<span style="color: #98be65;">'adam'</span>)
+<span class="linenr">38: </span>    model.fit(X_train, y_train, epochs=<span style="color: #da8548; font-weight: bold;">20</span>, verbose=<span style="color: #da8548; font-weight: bold;">0</span>)
+<span class="linenr">39: </span>
+<span class="linenr">40: </span>    <span style="color: #dcaeea;">pred</span> = scaler.inverse_transform(model.predict(X_test, verbose=<span style="color: #da8548; font-weight: bold;">0</span>))
+<span class="linenr">41: </span>    <span style="color: #dcaeea;">actual</span> = scaler.inverse_transform(y_test)
+<span class="linenr">42: </span>    <span style="color: #51afef;">return</span> mean_absolute_error(actual, pred)
+<span class="linenr">43: </span>
+<span class="linenr">44: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21482;&#28204;&#35430; SEQ_LEN = 5</span>
+<span class="linenr">45: </span><span style="color: #dcaeea;">mae</span> = train_and_evaluate(<span style="color: #da8548; font-weight: bold;">5</span>)
+<span class="linenr">46: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"SEQ_LEN=5, MAE=</span>{mae:.4f}<span style="color: #98be65;">"</span>)
+</pre>
+</div>
+</div>
+<div id="outline-container-orgc247aa3" class="outline-4">
+<h4 id="orgc247aa3"><span class="section-number-4">7.3.1.</span> 你的任務</h4>
+<div class="outline-text-4" id="text-7-3-1">
+<p>
+請修改上面的程式，測試以下四種序列長度：=SEQ_LEN = 5, 10, 20, 50= ，並比較它們的 MAE。
+</p>
+
+<p>
+提示：用迴圈跑四次 <code>train_and_evaluate()</code> 就好了。
+</p>
+</div>
+</div>
+<div id="outline-container-org58e21bd" class="outline-4">
+<h4 id="org58e21bd"><span class="section-number-4">7.3.2.</span> 預期輸出</h4>
+<div class="outline-text-4" id="text-7-3-2">
+<pre class="example" id="orgb200ff8">
+SEQ_LEN= 5, MAE=0.xxxx
+SEQ_LEN=10, MAE=0.xxxx
+SEQ_LEN=20, MAE=0.xxxx
+SEQ_LEN=50, MAE=0.xxxx
+
+最佳序列長度：xx
+</pre>
+<p>
+（通常 SEQ_LEN=20 左右效果最好，太短記不住、太長反而學不好）
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf191734" class="outline-2">
+<h2 id="orgf191734"><span class="section-number-2">8.</span> RNN學習資源</h2>
+<div class="outline-text-2" id="text-8">
 <ul class="org-ul">
 <li><a href="https://www.youtube.com/watch?v=6AW80qmaAOk">10分鐘了解RNN的基本概念 </a></li>
 <li><a href="https://www.youtube.com/watch?v=zXLAeat_b7g">從頭寫出 RNN (PyTorch) 完整介紹 [手寫數字辨識</a>]</li>
 <li><a href="https://www.youtube.com/watch?v=AsNTP8Kwu80">解說的很清楚的RNN教學影片</a></li>
-<li><a href="https://www.youtube.com/watch?v=YCzL96nL7j0">解說旳很詳細的LSTM教學影片</a></li>
+<li><a href="https://www.youtube.com/watch?v=YCzL96nL7j0">解說的很詳細的LSTM教學影片</a></li>
 <li><a href="https://www.youtube.com/watch?v=ubDtr6dh0c8">我的第一支快速利用TensorFlow 2.0利用RNN進行文本分類(第一部分) </a></li>
 <li><a href="https://www.youtube.com/watch?v=SyYIuVJ9BhQ">我的第一支快速利用TensorFlow 2.0利用RNN進行文本分類(第二部分)</a></li>
 </ul>
@@ -1437,7 +1702,7 @@ return_sequences=True：告訴第一層 RNN 回傳「每個時間步的輸出」
 </div></div>
 <div id="postamble" class="status">
 <p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2025-10-29 Wed 20:01</p>
+<p class="date">Created: 2026-02-14 Sat 17:49</p>
 </div>
 </body>
 </html>
