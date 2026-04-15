@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2026-04-15 Wed 18:27 -->
+<!-- 2026-04-15 Wed 19:43 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>感知器</title>
@@ -235,60 +235,60 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org8db476b">1. 感知器(Perceptron)</a>
+<li><a href="#org33d0cb8">1. 感知器(Perceptron)</a>
 <ul>
-<li><a href="#orga428565">1.1. 何謂感知器</a></li>
-<li><a href="#org32925e8">1.2. 感知器工作原理</a></li>
-<li><a href="#orgfd6411d">1.3. 能做什麼</a></li>
+<li><a href="#orgad423d7">1.1. 何謂感知器</a></li>
+<li><a href="#org07111cb">1.2. 感知器工作原理</a></li>
+<li><a href="#orga82f920">1.3. 能做什麼</a></li>
 </ul>
 </li>
 <li><a href="#FromPerceptronToMLP">2. Story of gate: From perceptron to MLP</a>
 <ul>
-<li><a href="#orgbffad93">2.1. OR gate實作</a></li>
-<li><a href="#org7accf0e">2.2. [課堂作業]AND、NAND Gate實作&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></a></li>
+<li><a href="#org47b6623">2.1. OR gate實作</a></li>
+<li><a href="#orgf752e1a">2.2. [課堂作業]AND、NAND Gate實作&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></a></li>
 </ul>
 </li>
-<li><a href="#org5bb756f">3. 單層感知器的極限與多層感知器: XOR Gate</a>
+<li><a href="#org559e76f">3. 單層感知器的極限與多層感知器: XOR Gate</a>
 <ul>
-<li><a href="#orgcf25048">3.1. 一場差點殺死 AI 的學術恩怨</a></li>
-<li><a href="#org0dfd9e8">3.2. XOR 問題</a></li>
+<li><a href="#orga0dd324">3.1. 一場差點殺死 AI 的學術恩怨</a></li>
+<li><a href="#org3a1e738">3.2. XOR 問題</a></li>
 </ul>
 </li>
-<li><a href="#orge88c23d">4. 課堂練習&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></a>
+<li><a href="#orgc005244">4. 課堂練習&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></a>
 <ul>
-<li><a href="#orga5a2021">4.1. 練習一：AI 預測你上課會不會睡著</a></li>
-<li><a href="#orgbbd284b">4.2. 練習二：感知器學習演算法</a></li>
+<li><a href="#org9aabae6">4.1. 練習一：AI 預測你上課會不會睡著</a></li>
+<li><a href="#org6d74cac">4.2. 練習二：感知器學習演算法</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 <a href="https://letranger.github.io/AI/20221023103538-感知器.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20221023103538-感知器.html.svg"/></a>
-<div id="outline-container-org8db476b" class="outline-2">
-<h2 id="org8db476b"><span class="section-number-2">1.</span> 感知器(Perceptron)</h2>
+<div id="outline-container-org33d0cb8" class="outline-2">
+<h2 id="org33d0cb8"><span class="section-number-2">1.</span> 感知器(Perceptron)</h2>
 <div class="outline-text-2" id="text-1">
 </div>
-<div id="outline-container-orga428565" class="outline-3">
-<h3 id="orga428565"><span class="section-number-3">1.1.</span> 何謂感知器</h3>
+<div id="outline-container-orgad423d7" class="outline-3">
+<h3 id="orgad423d7"><span class="section-number-3">1.1.</span> 何謂感知器</h3>
 <div class="outline-text-3" id="text-1-1">
 <p class="verse">
 Perceptron is a single layer neural network and a multi-layer perceptron is called Neural Networks(<a href="20221025104603-神經網路.html#ID-d6daa102-05bb-475d-b619-db8b61e86030">神經網路</a>).<br />
 </p>
 <p>
-收到多個輸入訊號之後，再當作一個訊號輸出，如圖<a href="#org0fa408c">1</a>所示，\(x_1, x_2\)為輸入訊號，\(y\)為輸出訊號，\(w_1, w_2\)代表權重(weight)，圖中的圓圈稱為「神經元」或稱作「節點」。神經元\(x_1, x_2\)的訊號是否會觸發神經元\(y\)使其輸出訊號則取決於\(w_1x_1+w_2x_2\)是否會超過某個臨界值\(\theta\)。
+收到多個輸入訊號之後，再當作一個訊號輸出，如圖<a href="#org47b8d75">1</a>所示，\(x_1, x_2\)為輸入訊號，\(y\)為輸出訊號，\(w_1, w_2\)代表權重(weight)，圖中的圓圈稱為「神經元」或稱作「節點」。神經元\(x_1, x_2\)的訊號是否會觸發神經元\(y\)使其輸出訊號則取決於\(w_1x_1+w_2x_2\)是否會超過某個臨界值\(\theta\)。
 </p>
 
-<div id="org0fa408c" class="figure">
+<div id="org47b8d75" class="figure">
 <p><img src="images/sensor1.png" alt="sensor1.png" width="200" />
 </p>
 <p><span class="figure-number">Figure 1: </span>收到兩組輸入訊號的感知器</p>
 </div>
 
 <p>
-若以算式表示此一觸發條件則如公式\eqref{org34f9c59}所示。
+若以算式表示此一觸發條件則如公式\eqref{org6540b90}所示。
 </p>
 \begin{equation}
-\label{org34f9c59}
+\label{org6540b90}
 y =
 \begin{cases}
 0, & w_1x_1+w_2x_2 \leq 0 \\
@@ -297,12 +297,12 @@ y =
 \end{equation}
 </div>
 </div>
-<div id="outline-container-org32925e8" class="outline-3">
-<h3 id="org32925e8"><span class="section-number-3">1.2.</span> 感知器工作原理</h3>
+<div id="outline-container-org07111cb" class="outline-3">
+<h3 id="org07111cb"><span class="section-number-3">1.2.</span> 感知器工作原理</h3>
 <div class="outline-text-3" id="text-1-2">
 </div>
-<div id="outline-container-orgbf19fa8" class="outline-4">
-<h4 id="orgbf19fa8"><span class="section-number-4">1.2.1.</span> Version #1: 使用weight</h4>
+<div id="outline-container-org0061348" class="outline-4">
+<h4 id="org0061348"><span class="section-number-4">1.2.1.</span> Version #1: 使用weight</h4>
 <div class="outline-text-4" id="text-1-2-1">
 <p>
 感知器(perceptron)是人造神經元(artificial neuron)的一種，也是最基本的一種。它接受一些輸入，產生一個輸出。
@@ -317,29 +317,29 @@ y =
 <li>因此無法解決 <b>線性不可分</b> 的問題（也就是無法處理一條直線分不開的資料）</li>
 </ul>
 </div>
-<div id="outline-container-org7f0b885" class="outline-5">
-<h5 id="org7f0b885">線性可分 v.s. 線性不可分</h5>
-<div class="outline-text-5" id="text-org7f0b885">
+<div id="outline-container-orgb15e779" class="outline-5">
+<h5 id="orgb15e779">線性可分 v.s. 線性不可分</h5>
+<div class="outline-text-5" id="text-orgb15e779">
 
-<div id="org6544926" class="figure">
+<div id="orga3a41b4" class="figure">
 <p><img src="images/2021-05-23_14-10-30.jpg" alt="2021-05-23_14-10-30.jpg" width="400" />
 </p>
 <p><span class="figure-number">Figure 2: </span>線性和非線性分類</p>
 </div>
 
 <p>
-在圖<a href="#org6544926">2</a>中，A為線性分類問題——就像一條馬路把兩區住戶分開，我們可以找到一條直線將兩類資料完美切開。B則為非線性分類問題——就像兩群人混雜在一起住，不管你怎麼畫，都找不到任何一條直線能把他們完全分開。對於B這類問題，必須使用非線性的核函數和其他非線性的分類算法和技術才能成功分類<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。
+在圖<a href="#orga3a41b4">2</a>中，A為線性分類問題——就像一條馬路把兩區住戶分開，我們可以找到一條直線將兩類資料完美切開。B則為非線性分類問題——就像兩群人混雜在一起住，不管你怎麼畫，都找不到任何一條直線能把他們完全分開。對於B這類問題，必須使用非線性的核函數和其他非線性的分類算法和技術才能成功分類<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。
 </p>
 </div>
 </div>
-<div id="outline-container-org175fe50" class="outline-5">
-<h5 id="org175fe50">低維映射至高維</h5>
-<div class="outline-text-5" id="text-org175fe50">
+<div id="outline-container-org2866599" class="outline-5">
+<h5 id="org2866599">低維映射至高維</h5>
+<div class="outline-text-5" id="text-org2866599">
 <p>
 可以透過一個非線性的映射將低維空間線性不可分的樣本轉換至高維空間，使其成為線性可分<sup><a id="fnr.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup>，例如:
 </p>
 
-<div id="orgc3dc635" class="figure">
+<div id="orgec06ae4" class="figure">
 <p><img src="images/2021-05-23_14-14-31.jpg" alt="2021-05-23_14-14-31.jpg" width="500" />
 </p>
 <p><span class="figure-number">Figure 3: </span>Kernel function mapping</p>
@@ -347,11 +347,11 @@ y =
 </div>
 </div>
 </div>
-<div id="outline-container-org835c304" class="outline-4">
-<h4 id="org835c304"><span class="section-number-4">1.2.2.</span> Version #2: 加入bias</h4>
+<div id="outline-container-orgf12486d" class="outline-4">
+<h4 id="orgf12486d"><span class="section-number-4">1.2.2.</span> Version #2: 加入bias</h4>
 <div class="outline-text-4" id="text-1-2-2">
 
-<div id="orgcc48a73" class="figure">
+<div id="org5c4eabf" class="figure">
 <p><img src="./images/perceptron-2.png" alt="perceptron-2.png" width="400" />
 </p>
 <p><span class="figure-number">Figure 4: </span>Perceptron version 2</p>
@@ -365,14 +365,14 @@ y =
 </ul>
 </div>
 </div>
-<div id="outline-container-orgac4051a" class="outline-4">
-<h4 id="orgac4051a"><span class="section-number-4">1.2.3.</span> Version #3: 加入activation function</h4>
+<div id="outline-container-org0b49b74" class="outline-4">
+<h4 id="org0b49b74"><span class="section-number-4">1.2.3.</span> Version #3: 加入activation function</h4>
 <div class="outline-text-4" id="text-1-2-3">
 <p>
 加入activation function，至於為什麼要加這個，請直接看下一節的Story of gate。
 </p>
 
-<div id="orgd426b23" class="figure">
+<div id="orgb03eb29" class="figure">
 <p><img src="./images/perceptron-3.png" alt="perceptron-3.png" width="500" />
 </p>
 <p><span class="figure-number">Figure 5: </span>Perceptron version 3</p>
@@ -380,8 +380,8 @@ y =
 </div>
 </div>
 </div>
-<div id="outline-container-orgfd6411d" class="outline-3">
-<h3 id="orgfd6411d"><span class="section-number-3">1.3.</span> 能做什麼</h3>
+<div id="outline-container-orga82f920" class="outline-3">
+<h3 id="orga82f920"><span class="section-number-3">1.3.</span> 能做什麼</h3>
 <div class="outline-text-3" id="text-1-3">
 <p>
 目前為止，感知器看起來就是個函數，有輸入、有處理、有輸出，這和AI有什麼關係呢？感知器能解決什麼問題？
@@ -400,27 +400,27 @@ y =
 接下來我們用最簡單的邏輯閘來示範感知器的實際運作——邏輯閘的輸入只有 0 和 1，非常適合驗證感知器是否能正確分類。
 </p>
 </div>
-<div id="outline-container-orgbffad93" class="outline-3">
-<h3 id="orgbffad93"><span class="section-number-3">2.1.</span> OR gate實作</h3>
+<div id="outline-container-org47b6623" class="outline-3">
+<h3 id="org47b6623"><span class="section-number-3">2.1.</span> OR gate實作</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
-圖<a href="#orgfac4a12">6</a>中有四筆資料，有三個A、一個B，如何進行分類?
+圖<a href="#org4eb928e">6</a>中有四筆資料，有三個A、一個B，如何進行分類?
 </p>
 
-<div id="orgfac4a12" class="figure">
+<div id="org4eb928e" class="figure">
 <p><img src="images/2021-05-24_00-48-56.jpg" alt="2021-05-24_00-48-56.jpg" width="300" />
 </p>
 <p><span class="figure-number">Figure 6: </span>分類任務:問題</p>
 </div>
 </div>
-<div id="outline-container-orgf15afcd" class="outline-4">
-<h4 id="orgf15afcd"><span class="section-number-4">2.1.1.</span> 想法</h4>
+<div id="outline-container-orgde48171" class="outline-4">
+<h4 id="orgde48171"><span class="section-number-4">2.1.1.</span> 想法</h4>
 <div class="outline-text-4" id="text-2-1-1">
 <p>
 最簡單的分類方式是在A和B中間直接找條直線(\(w_1x_1+w_2x_2+b=0\))就可以將A和B完整切出兩個區塊，然後再搭配階梯函數(step function)將&gt;0與&lt;=0分別設為1與0，用來代表類別0與1。該直線方程式如下：
 </p>
 \begin{equation}
-\label{org46441e5}
+\label{org4e63280}
 y = \begin{cases}
 1, & w_1x_1 + w_2x_2-b>0 \\
 0, & w_1x_1 + w_2x_2-b\leq0 \\
@@ -428,14 +428,14 @@ y = \begin{cases}
 \end{equation}
 </div>
 </div>
-<div id="outline-container-org77e46f0" class="outline-4">
-<h4 id="org77e46f0"><span class="section-number-4">2.1.2.</span> Solution</h4>
+<div id="outline-container-org60e5a41" class="outline-4">
+<h4 id="org60e5a41"><span class="section-number-4">2.1.2.</span> Solution</h4>
 <div class="outline-text-4" id="text-2-1-2">
 <p>
 經過無數的嚐試錯誤，也許我們可以矇到一個如下的方程式
 </p>
 
-<div id="orgbda9774" class="figure">
+<div id="org8db0a5c" class="figure">
 <p><img src="images/2021-05-24_00-50-07.jpg" alt="2021-05-24_00-50-07.jpg" width="300" />
 </p>
 <p><span class="figure-number">Figure 7: </span>分類任務:Solution</p>
@@ -445,14 +445,14 @@ y = \begin{cases}
 如果畫成Perceptron(version 3)的圖:
 </p>
 
-<div id="orgd95fa57" class="figure">
+<div id="org3de2c03" class="figure">
 <p><img src="./images/orGatePerceptron.png" alt="orGatePerceptron.png" width="400" />
 </p>
 <p><span class="figure-number">Figure 8: </span>Perceptron presentation</p>
 </div>
 
 <p>
-如果將圖<a href="#orgbda9774">7</a>的四個點代入y(方程式\eqref{org46441e5}):
+如果將圖<a href="#org8db0a5c">7</a>的四個點代入y(方程式\eqref{org4e63280}):
 </p>
 \begin{align*}
 A(0,1) \rightarrow y &= f(0,1) = f(1\times0+1\times1-0.5) = f(0.5) = 1 \\
@@ -462,14 +462,14 @@ B(0,0) \rightarrow y &= f(0,0) = f(1\times0+1\times0-0.5) = f(-0.5) = 0\\
 \end{align*}
 </div>
 </div>
-<div id="outline-container-org26a7aed" class="outline-4">
-<h4 id="org26a7aed"><span class="section-number-4">2.1.3.</span> OR gate</h4>
+<div id="outline-container-org3371d0b" class="outline-4">
+<h4 id="org3371d0b"><span class="section-number-4">2.1.3.</span> OR gate</h4>
 <div class="outline-text-4" id="text-2-1-3">
 <p>
-有點計概基礎的同學，應該可以發現圖<a href="#orgfac4a12">6</a>與OR邏輯閘一致，
+有點計概基礎的同學，應該可以發現圖<a href="#org4eb928e">6</a>與OR邏輯閘一致，
 </p>
 
-<div id="org17fcf83" class="figure">
+<div id="org561f681" class="figure">
 <p><img src="images/Story_of_gate:_From_perceptron_to_MLP/2024-03-15_19-39-31_2024-03-15_19-38-17.png" alt="2024-03-15_19-39-31_2024-03-15_19-38-17.png" width="200" />
 </p>
 <p><span class="figure-number">Figure 9: </span>OR邏輯閘</p>
@@ -523,29 +523,34 @@ B(0,0) \rightarrow y &= f(0,0) = f(1\times0+1\times0-0.5) = f(-0.5) = 0\\
 </table>
 </div>
 </div>
-<div id="outline-container-org90d4433" class="outline-4">
-<h4 id="org90d4433"><span class="section-number-4">2.1.4.</span> Python實作</h4>
+<div id="outline-container-org0e8aee6" class="outline-4">
+<h4 id="org0e8aee6"><span class="section-number-4">2.1.4.</span> Python實作</h4>
 <div class="outline-text-4" id="text-2-1-4">
 <p>
 上述 OR gate的python實作如下
 </p>
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
-<span class="linenr"> 2: </span>
-<span class="linenr"> 3: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">step_function</span>(x):
-<span class="linenr"> 4: </span>    <span style="color: #51afef;">return</span> np.array(x <span style="color: #51afef;">&gt;=</span> 0, dtype<span style="color: #51afef;">=</span><span style="color: #c678dd;">int</span>)
-<span class="linenr"> 5: </span>
-<span class="linenr"> 6: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">OR</span>(x1, x2):
-<span class="linenr"> 7: </span>    <span style="color: #dcaeea;">x</span> <span style="color: #51afef;">=</span> np.array([x1, x2])
-<span class="linenr"> 8: </span>    <span style="color: #dcaeea;">w</span> <span style="color: #51afef;">=</span> np.array([1, 1])
-<span class="linenr"> 9: </span>    <span style="color: #dcaeea;">b</span> <span style="color: #51afef;">=</span> <span style="color: #51afef;">-</span>0.5
-<span class="linenr">10: </span>    <span style="color: #dcaeea;">y</span> <span style="color: #51afef;">=</span> np.<span style="color: #c678dd;">sum</span>(w<span style="color: #51afef;">*</span>x) <span style="color: #51afef;">+</span> b
-<span class="linenr">11: </span>    <span style="color: #51afef;">return</span> step_function(y)
-<span class="linenr">12: </span>
-<span class="linenr">13: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"0 OR 0 -&gt; "</span>, OR(0,0))
-<span class="linenr">14: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"0 OR 1 -&gt; "</span>, OR(0,1))
-<span class="linenr">15: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"1 OR 0 -&gt; "</span>, OR(1,0))
-<span class="linenr">16: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"1 OR 1 -&gt; "</span>, OR(1,1))
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21295;&#20837; numpy&#65292;&#23427;&#26159; Python &#30340;&#25976;&#23416;&#31070;&#22120;&#65292;&#34389;&#29702;&#38499;&#21015;&#36939;&#31639;&#36229;&#26041;&#20415;
+<span class="linenr"> 2: </span></span>
+<span class="linenr"> 3: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38542;&#26799;&#20989;&#25976;&#65288;step function&#65289;&#65306;&#36664;&#20837; &gt;= 0 &#23601;&#22238;&#20659; 1&#65292;&#21542;&#21063;&#22238;&#20659; 0
+<span class="linenr"> 4: </span></span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23601;&#20687;&#19968;&#20491;&#36229;&#22196;&#26684;&#30340;&#38272;&#34907;&#65306;&#22816;&#26684;&#23601;&#25918;&#34892;(1)&#65292;&#19981;&#22816;&#26684;&#23601;&#28414;(0)
+<span class="linenr"> 5: </span></span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">step_function</span>(x):
+<span class="linenr"> 6: </span>    <span style="color: #51afef;">return</span> np.array(x <span style="color: #51afef;">&gt;=</span> 0, dtype<span style="color: #51afef;">=</span><span style="color: #c678dd;">int</span>)
+<span class="linenr"> 7: </span>
+<span class="linenr"> 8: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">OR &#24863;&#30693;&#22120;&#65306;&#27169;&#25836; OR &#37007;&#36655;&#38296;
+<span class="linenr"> 9: </span></span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21482;&#35201;&#26377;&#19968;&#20491;&#36664;&#20837;&#26159; 1&#65292;&#23601;&#36664;&#20986; 1&#65288;&#20687;&#12300;&#26377;&#27794;&#26377;&#24118;&#37666;&#25110;&#24118;&#21345;&#65311;&#26377;&#19968;&#20491;&#23601;&#33021;&#36023;&#39154;&#26009;&#12301;&#65289;
+<span class="linenr">10: </span></span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">OR</span>(x1, x2):
+<span class="linenr">11: </span>    <span style="color: #dcaeea;">x</span> <span style="color: #51afef;">=</span> np.array([x1, x2])    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25226;&#20841;&#20491;&#36664;&#20837;&#21253;&#25104;&#19968;&#20491;&#38499;&#21015;
+<span class="linenr">12: </span></span>    <span style="color: #dcaeea;">w</span> <span style="color: #51afef;">=</span> np.array([1, 1])       <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27402;&#37325;&#65306;&#20841;&#20491;&#36664;&#20837;&#21516;&#31561;&#37325;&#35201;&#65292;&#21508;&#32102; 1
+<span class="linenr">13: </span></span>    <span style="color: #dcaeea;">b</span> <span style="color: #51afef;">=</span> <span style="color: #51afef;">-</span>0.5                   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20559;&#31227;&#20540;&#65288;&#38272;&#27323;&#65289;&#65306;&#21152;&#27402;&#32317;&#21644;&#35201;&#36229;&#36942; 0.5 &#25165;&#31639;&#12300;&#36942;&#38364;&#12301;
+<span class="linenr">14: </span></span>    <span style="color: #dcaeea;">y</span> <span style="color: #51afef;">=</span> np.<span style="color: #c678dd;">sum</span>(w<span style="color: #51afef;">*</span>x) <span style="color: #51afef;">+</span> b        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35336;&#31639;&#21152;&#27402;&#32317;&#21644;&#65306;w1*x1 + w2*x2 + b
+<span class="linenr">15: </span></span>    <span style="color: #51afef;">return</span> step_function(y)    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#19999;&#32102;&#38542;&#26799;&#20989;&#25976;&#65292;&#27770;&#23450;&#26368;&#32066;&#36664;&#20986; 0 &#25110; 1
+<span class="linenr">16: </span></span>
+<span class="linenr">17: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#28204;&#35430;&#25152;&#26377;&#21487;&#33021;&#30340;&#36664;&#20837;&#32068;&#21512;&#65292;&#39511;&#35657;&#26159;&#21542;&#31526;&#21512; OR &#30495;&#20540;&#34920;
+<span class="linenr">18: </span></span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"0 OR 0 -&gt; "</span>, OR(0,0))  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">0+0-0.5 = -0.5 &lt; 0 &#8594; &#36664;&#20986; 0 &#10003;
+<span class="linenr">19: </span></span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"0 OR 1 -&gt; "</span>, OR(0,1))  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">0+1-0.5 =  0.5 &gt; 0 &#8594; &#36664;&#20986; 1 &#10003;
+<span class="linenr">20: </span></span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"1 OR 0 -&gt; "</span>, OR(1,0))  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">1+0-0.5 =  0.5 &gt; 0 &#8594; &#36664;&#20986; 1 &#10003;
+<span class="linenr">21: </span></span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"1 OR 1 -&gt; "</span>, OR(1,1))  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">1+1-0.5 =  1.5 &gt; 0 &#8594; &#36664;&#20986; 1 &#10003;</span>
 </pre>
 </div>
 
@@ -558,15 +563,15 @@ B(0,0) \rightarrow y &= f(0,0) = f(1\times0+1\times0-0.5) = f(-0.5) = 0\\
 </div>
 </div>
 </div>
-<div id="outline-container-org7accf0e" class="outline-3">
-<h3 id="org7accf0e"><span class="section-number-3">2.2.</span> [課堂作業]AND、NAND Gate實作&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></h3>
+<div id="outline-container-orgf752e1a" class="outline-3">
+<h3 id="orgf752e1a"><span class="section-number-3">2.2.</span> [課堂作業]AND、NAND Gate實作&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></h3>
 <div class="outline-text-3" id="text-2-2">
 <p>
 上述範例中，我們以瞎貓精神找出了一組solution解決了OR gate的分類問題，請比照辦理，以Python實作出以下兩個gate: AND, NAND。
 </p>
 </div>
-<div id="outline-container-orgda19739" class="outline-4">
-<h4 id="orgda19739"><span class="section-number-4">2.2.1.</span> AND</h4>
+<div id="outline-container-orgd0e3f8c" class="outline-4">
+<h4 id="orgd0e3f8c"><span class="section-number-4">2.2.1.</span> AND</h4>
 <div class="outline-text-4" id="text-2-2-1">
 <p>
 已知AND gate真值表如下
@@ -624,29 +629,32 @@ B(0,0) \rightarrow y &= f(0,0) = f(1\times0+1\times0-0.5) = f(-0.5) = 0\\
 </p>
 
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
-<span class="linenr"> 2: </span>
-<span class="linenr"> 3: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">step_function</span>(x):
-<span class="linenr"> 4: </span>    <span style="color: #51afef;">return</span> np.array(x <span style="color: #51afef;">&gt;=</span> 0, dtype<span style="color: #51afef;">=</span><span style="color: #c678dd;">int</span>)
-<span class="linenr"> 5: </span>
-<span class="linenr"> 6: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">AND</span>(x1, x2):
-<span class="linenr"> 7: </span>    <span style="color: #dcaeea;">x</span> <span style="color: #51afef;">=</span> np.array([x1, x2])
-<span class="linenr"> 8: </span>    <span style="color: #dcaeea;">w</span> <span style="color: #51afef;">=</span> np.array([___, ___])  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35531;&#22635;&#20837;&#27402;&#37325;
-<span class="linenr"> 9: </span></span>    <span style="color: #dcaeea;">b</span> <span style="color: #51afef;">=</span> ___                     <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35531;&#22635;&#20837;&#20559;&#31227;&#20540;
-<span class="linenr">10: </span></span>    <span style="color: #dcaeea;">y</span> <span style="color: #51afef;">=</span> np.<span style="color: #c678dd;">sum</span>(w<span style="color: #51afef;">*</span>x) <span style="color: #51afef;">+</span> b
-<span class="linenr">11: </span>    <span style="color: #51afef;">return</span> step_function(y)
-<span class="linenr">12: </span>
-<span class="linenr">13: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"0 AND 0 -&gt; "</span>, AND(0,0))
-<span class="linenr">14: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"0 AND 1 -&gt; "</span>, AND(0,1))
-<span class="linenr">15: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"1 AND 0 -&gt; "</span>, AND(1,0))
-<span class="linenr">16: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"1 AND 1 -&gt; "</span>, AND(1,1))
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21295;&#20837; numpy
+<span class="linenr"> 2: </span></span>
+<span class="linenr"> 3: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38542;&#26799;&#20989;&#25976;&#65306;&#32769;&#26379;&#21451;&#20102;&#65292;&gt;= 0 &#23601;&#36664;&#20986; 1&#65292;&#21542;&#21063; 0
+<span class="linenr"> 4: </span></span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">step_function</span>(x):
+<span class="linenr"> 5: </span>    <span style="color: #51afef;">return</span> np.array(x <span style="color: #51afef;">&gt;=</span> 0, dtype<span style="color: #51afef;">=</span><span style="color: #c678dd;">int</span>)
+<span class="linenr"> 6: </span>
+<span class="linenr"> 7: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">AND &#24863;&#30693;&#22120;&#65306;&#20841;&#20491;&#36664;&#20837;&#37117;&#26159; 1 &#25165;&#36664;&#20986; 1&#65288;&#20687;&#12300;&#35201;&#24118;&#37666;&#32780;&#19988;&#24118;&#21345;&#25165;&#33021;&#21047;&#12301;&#65289;
+<span class="linenr"> 8: </span></span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">AND</span>(x1, x2):
+<span class="linenr"> 9: </span>    <span style="color: #dcaeea;">x</span> <span style="color: #51afef;">=</span> np.array([x1, x2])        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25226;&#20841;&#20491;&#36664;&#20837;&#21253;&#25104;&#38499;&#21015;
+<span class="linenr">10: </span></span>    <span style="color: #dcaeea;">w</span> <span style="color: #51afef;">=</span> np.array([___, ___])       <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35531;&#22635;&#20837;&#27402;&#37325;&#65288;&#25552;&#31034;&#65306;&#36319; OR &#19968;&#27171;&#21508; 0.5 &#23601;&#34892;&#65289;
+<span class="linenr">11: </span></span>    <span style="color: #dcaeea;">b</span> <span style="color: #51afef;">=</span> ___                        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35531;&#22635;&#20837;&#20559;&#31227;&#20540;&#65288;&#25552;&#31034;&#65306;&#38272;&#27323;&#35201;&#27604; OR &#39640;&#65292;&#24819;&#24819;&#28858;&#20160;&#40636;&#65289;
+<span class="linenr">12: </span></span>    <span style="color: #dcaeea;">y</span> <span style="color: #51afef;">=</span> np.<span style="color: #c678dd;">sum</span>(w<span style="color: #51afef;">*</span>x) <span style="color: #51afef;">+</span> b            <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21152;&#27402;&#32317;&#21644; = w1*x1 + w2*x2 + b
+<span class="linenr">13: </span></span>    <span style="color: #51afef;">return</span> step_function(y)        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36942;&#38272;&#27323;&#23601;&#36664;&#20986; 1&#65292;&#27794;&#36942;&#23601; 0
+<span class="linenr">14: </span></span>
+<span class="linenr">15: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#28204;&#35430;&#22235;&#31278;&#36664;&#20837;&#32068;&#21512;&#65292;&#23565;&#29031; AND &#30495;&#20540;&#34920;&#27298;&#26597;
+<span class="linenr">16: </span></span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"0 AND 0 -&gt; "</span>, AND(0,0))  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38928;&#26399; 0
+<span class="linenr">17: </span></span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"0 AND 1 -&gt; "</span>, AND(0,1))  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38928;&#26399; 0
+<span class="linenr">18: </span></span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"1 AND 0 -&gt; "</span>, AND(1,0))  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38928;&#26399; 0
+<span class="linenr">19: </span></span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"1 AND 1 -&gt; "</span>, AND(1,1))  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38928;&#26399; 1&#65288;&#21807;&#19968;&#36664;&#20986; 1 &#30340;&#24773;&#27841;&#65289;</span>
 </pre>
 </div>
 
 <p>
 <b>正確答案（用來驗證）：</b>
 </p>
-<pre class="example" id="orgc28d68b">
+<pre class="example" id="org7d0928f">
 0 AND 0 -&gt;  0
 0 AND 1 -&gt;  0
 1 AND 0 -&gt;  0
@@ -656,8 +664,8 @@ B(0,0) \rightarrow y &= f(0,0) = f(1\times0+1\times0-0.5) = f(-0.5) = 0\\
 </pre>
 </div>
 </div>
-<div id="outline-container-orgc006387" class="outline-4">
-<h4 id="orgc006387"><span class="section-number-4">2.2.2.</span> NAND</h4>
+<div id="outline-container-org6acdac7" class="outline-4">
+<h4 id="org6acdac7"><span class="section-number-4">2.2.2.</span> NAND</h4>
 <div class="outline-text-4" id="text-2-2-2">
 <p>
 已知NAND gate真值表如下
@@ -711,29 +719,33 @@ B(0,0) \rightarrow y &= f(0,0) = f(1\times0+1\times0-0.5) = f(-0.5) = 0\\
 </p>
 
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
-<span class="linenr"> 2: </span>
-<span class="linenr"> 3: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">step_function</span>(x):
-<span class="linenr"> 4: </span>    <span style="color: #51afef;">return</span> np.array(x <span style="color: #51afef;">&gt;=</span> 0, dtype<span style="color: #51afef;">=</span><span style="color: #c678dd;">int</span>)
-<span class="linenr"> 5: </span>
-<span class="linenr"> 6: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">NAND</span>(x1, x2):
-<span class="linenr"> 7: </span>    <span style="color: #dcaeea;">x</span> <span style="color: #51afef;">=</span> np.array([x1, x2])
-<span class="linenr"> 8: </span>    <span style="color: #dcaeea;">w</span> <span style="color: #51afef;">=</span> np.array([___, ___])  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35531;&#22635;&#20837;&#27402;&#37325;
-<span class="linenr"> 9: </span></span>    <span style="color: #dcaeea;">b</span> <span style="color: #51afef;">=</span> ___
-<span class="linenr">10: </span>    <span style="color: #dcaeea;">y</span> <span style="color: #51afef;">=</span> np.<span style="color: #c678dd;">sum</span>(w<span style="color: #51afef;">*</span>x) <span style="color: #51afef;">+</span> b
-<span class="linenr">11: </span>    <span style="color: #51afef;">return</span> step_function(y)
-<span class="linenr">12: </span>
-<span class="linenr">13: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"0 NAND 0 -&gt; "</span>, NAND(0,0))
-<span class="linenr">14: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"0 NAND 1 -&gt; "</span>, NAND(0,1))
-<span class="linenr">15: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"1 NAND 0 -&gt; "</span>, NAND(1,0))
-<span class="linenr">16: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"1 NAND 1 -&gt; "</span>, NAND(1,1))
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21295;&#20837; numpy
+<span class="linenr"> 2: </span></span>
+<span class="linenr"> 3: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38542;&#26799;&#20989;&#25976;&#65306;&#21448;&#26159;&#20320;&#65292;&gt;= 0 &#8594; 1&#65292;&lt; 0 &#8594; 0
+<span class="linenr"> 4: </span></span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">step_function</span>(x):
+<span class="linenr"> 5: </span>    <span style="color: #51afef;">return</span> np.array(x <span style="color: #51afef;">&gt;=</span> 0, dtype<span style="color: #51afef;">=</span><span style="color: #c678dd;">int</span>)
+<span class="linenr"> 6: </span>
+<span class="linenr"> 7: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">NAND &#24863;&#30693;&#22120;&#65306;AND &#30340;&#30456;&#21453;&#65281;&#20841;&#20491;&#37117;&#26159; 1 &#25165;&#36664;&#20986; 0&#65292;&#20854;&#39192;&#37117;&#26159; 1
+<span class="linenr"> 8: </span></span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#65288;&#20687;&#12300;&#20841;&#20491;&#20154;&#37117;&#36978;&#21040;&#25165;&#25187;&#20998;&#65292;&#21482;&#35201;&#26377;&#19968;&#20491;&#28310;&#26178;&#23601;&#27794;&#20107;&#12301;&#65289;
+<span class="linenr"> 9: </span></span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">NAND</span>(x1, x2):
+<span class="linenr">10: </span>    <span style="color: #dcaeea;">x</span> <span style="color: #51afef;">=</span> np.array([x1, x2])        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25226;&#20841;&#20491;&#36664;&#20837;&#21253;&#25104;&#38499;&#21015;
+<span class="linenr">11: </span></span>    <span style="color: #dcaeea;">w</span> <span style="color: #51afef;">=</span> np.array([___, ___])       <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35531;&#22635;&#20837;&#27402;&#37325;&#65288;&#25552;&#31034;&#65306;&#25226; AND &#30340;&#27402;&#37325;&#12300;&#21453;&#36942;&#20358;&#12301;&#65289;
+<span class="linenr">12: </span></span>    <span style="color: #dcaeea;">b</span> <span style="color: #51afef;">=</span> ___                        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20559;&#31227;&#20540;&#20063;&#21453;&#36942;&#20358;
+<span class="linenr">13: </span></span>    <span style="color: #dcaeea;">y</span> <span style="color: #51afef;">=</span> np.<span style="color: #c678dd;">sum</span>(w<span style="color: #51afef;">*</span>x) <span style="color: #51afef;">+</span> b            <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21152;&#27402;&#32317;&#21644;
+<span class="linenr">14: </span></span>    <span style="color: #51afef;">return</span> step_function(y)        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38542;&#26799;&#20989;&#25976;&#21028;&#23450;&#36664;&#20986;
+<span class="linenr">15: </span></span>
+<span class="linenr">16: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#28204;&#35430;&#22235;&#31278;&#36664;&#20837;&#32068;&#21512;&#65292;&#23565;&#29031; NAND &#30495;&#20540;&#34920;
+<span class="linenr">17: </span></span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"0 NAND 0 -&gt; "</span>, NAND(0,0))  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38928;&#26399; 1
+<span class="linenr">18: </span></span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"0 NAND 1 -&gt; "</span>, NAND(0,1))  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38928;&#26399; 1
+<span class="linenr">19: </span></span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"1 NAND 0 -&gt; "</span>, NAND(1,0))  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38928;&#26399; 1
+<span class="linenr">20: </span></span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"1 NAND 1 -&gt; "</span>, NAND(1,1))  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38928;&#26399; 0&#65288;&#21807;&#19968;&#36664;&#20986; 0 &#30340;&#24773;&#27841;&#65289;</span>
 </pre>
 </div>
 
 <p>
 <b>正確答案（用來驗證）：</b>
 </p>
-<pre class="example" id="org3976e12">
+<pre class="example" id="org049844f">
 0 NAND 0 -&gt;  1
 0 NAND 1 -&gt;  1
 1 NAND 0 -&gt;  1
@@ -745,19 +757,19 @@ B(0,0) \rightarrow y &= f(0,0) = f(1\times0+1\times0-0.5) = f(-0.5) = 0\\
 </div>
 </div>
 </div>
-<div id="outline-container-org5bb756f" class="outline-2">
-<h2 id="org5bb756f"><span class="section-number-2">3.</span> 單層感知器的極限與多層感知器: XOR Gate</h2>
+<div id="outline-container-org559e76f" class="outline-2">
+<h2 id="org559e76f"><span class="section-number-2">3.</span> 單層感知器的極限與多層感知器: XOR Gate</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-orgcf25048" class="outline-3">
-<h3 id="orgcf25048"><span class="section-number-3">3.1.</span> 一場差點殺死 AI 的學術恩怨</h3>
+<div id="outline-container-orga0dd324" class="outline-3">
+<h3 id="orga0dd324"><span class="section-number-3">3.1.</span> 一場差點殺死 AI 的學術恩怨</h3>
 <div class="outline-text-3" id="text-3-1">
 <p>
 在講 XOR 之前，先來聽一個八點檔等級的 AI 歷史故事——因為 XOR 這個看起來人畜無害的小問題，曾經直接把整個 AI 領域打入冷宮長達十幾年。
 </p>
 </div>
-<div id="outline-container-org13aedf9" class="outline-4">
-<h4 id="org13aedf9"><span class="section-number-4">3.1.1.</span> 第一幕：天才登場（1957）</h4>
+<div id="outline-container-org7bb445f" class="outline-4">
+<h4 id="org7bb445f"><span class="section-number-4">3.1.1.</span> 第一幕：天才登場（1957）</h4>
 <div class="outline-text-4" id="text-3-1-1">
 <p>
 1957 年，美國心理學家 Frank Rosenblatt 在康乃爾大學發明了感知器，並用硬體實作出一台叫做 <b>Mark I Perceptron</b> 的機器（想看實機照片和內部線路？去<a href="20221023101139-人工智慧.html#MarkIPerceptron">人工智慧：Mark I Perceptron</a>瞧瞧）——它可以「學會」辨識簡單的圖形。這在當時簡直是科幻小說成真，媒體瘋狂報導，《紐約時報》甚至寫出了這樣的標題：
@@ -774,8 +786,8 @@ Rosenblatt 本人也相當樂觀，預言感知器未來能「走路、說話、
 </p>
 </div>
 </div>
-<div id="outline-container-orgb2f6dd3" class="outline-4">
-<h4 id="orgb2f6dd3"><span class="section-number-4">3.1.2.</span> 第二幕：殺手登場（1969）</h4>
+<div id="outline-container-org7e43047" class="outline-4">
+<h4 id="org7e43047"><span class="section-number-4">3.1.2.</span> 第二幕：殺手登場（1969）</h4>
 <div class="outline-text-4" id="text-3-1-2">
 <p>
 好景不長。1969 年，MIT 的兩位大佬——Marvin Minsky 和 Seymour Papert——出版了一本叫做《Perceptrons》的書。這本書用嚴謹的數學證明了一件事：
@@ -796,8 +808,8 @@ Rosenblatt 本人也相當樂觀，預言感知器未來能「走路、說話、
 </p>
 </div>
 </div>
-<div id="outline-container-org74c23a1" class="outline-4">
-<h4 id="org74c23a1"><span class="section-number-4">3.1.3.</span> 第三幕：復仇者歸來（1986）</h4>
+<div id="outline-container-org594c614" class="outline-4">
+<h4 id="org594c614"><span class="section-number-4">3.1.3.</span> 第三幕：復仇者歸來（1986）</h4>
 <div class="outline-text-4" id="text-3-1-3">
 <p>
 其實 Minsky 和 Papert 的書裡有一個關鍵的「但是」被大家忽略了——他們證明的是 <b>單層</b> 感知器的極限，並沒有說 <b>多層</b> 感知器不行。
@@ -808,8 +820,8 @@ Rosenblatt 本人也相當樂觀，預言感知器未來能「走路、說話、
 </p>
 </div>
 </div>
-<div id="outline-container-org42b708e" class="outline-4">
-<h4 id="org42b708e"><span class="section-number-4">3.1.4.</span> 這個故事告訴我們什麼？</h4>
+<div id="outline-container-org02cd500" class="outline-4">
+<h4 id="org02cd500"><span class="section-number-4">3.1.4.</span> 這個故事告訴我們什麼？</h4>
 <div class="outline-text-4" id="text-3-1-4">
 <ol class="org-ol">
 <li>一個「太簡單」的問題（XOR）可以改變整個領域的命運</li>
@@ -823,8 +835,8 @@ Rosenblatt 本人也相當樂觀，預言感知器未來能「走路、說話、
 </div>
 </div>
 </div>
-<div id="outline-container-org0dfd9e8" class="outline-3">
-<h3 id="org0dfd9e8"><span class="section-number-3">3.2.</span> XOR 問題</h3>
+<div id="outline-container-org3a1e738" class="outline-3">
+<h3 id="org3a1e738"><span class="section-number-3">3.2.</span> XOR 問題</h3>
 <div class="outline-text-3" id="text-3-2">
 <p>
 XOR（互斥或，Exclusive OR）是電腦科學中的一種基本邏輯運算：當兩個輸入「不同」時輸出 1，「相同」時輸出 0。看起來很簡單，但它有一個致命的特性——XOR 的四個資料點無法被任何一條直線分開。這正是單層感知器的致命弱點，也是推動多層感知器（MLP）發展的關鍵問題。
@@ -880,7 +892,7 @@ XOR真值表如下:
 其輸入/輸出分佈圖為
 </p>
 
-<div id="orgb5e1c40" class="figure">
+<div id="org6b23535" class="figure">
 <p><img src="images/2021-05-24_14-15-53.jpg" alt="2021-05-24_14-15-53.jpg" width="300" />
 </p>
 <p><span class="figure-number">Figure 10: </span>XOR Gate</p>
@@ -890,14 +902,14 @@ XOR真值表如下:
 到目前為止，透過權重及偏權值可以設計 AND、NAND、OR, 但無法完成 XOR。顯然，若要再以感知器來模擬其運作原理，單層感知器已不敷使用。
 </p>
 </div>
-<div id="outline-container-org10d4af4" class="outline-4">
-<h4 id="org10d4af4"><span class="section-number-4">3.2.1.</span> 想法</h4>
+<div id="outline-container-orgb6b7e81" class="outline-4">
+<h4 id="orgb6b7e81"><span class="section-number-4">3.2.1.</span> 想法</h4>
 <div class="outline-text-4" id="text-3-2-1">
 <p>
 這個時候一般線性的分類就沒有辦法很完美分割(如下圖)，所以就需要一些變形的方法來達到目的。
 </p>
 
-<div id="org2fc2082" class="figure">
+<div id="orgfe7ec54" class="figure">
 <p><img src="images/2021-05-24_14-18-51.jpg" alt="2021-05-24_14-18-51.jpg" width="400" />
 </p>
 <p><span class="figure-number">Figure 11: </span>XOR Gate Solution ideas</p>
@@ -908,34 +920,34 @@ XOR真值表如下:
 </p>
 
 <p>
-由XOR的電路實作(如圖<a href="#org193c58e">12</a>)我們也可以發現同樣的原理。
+由XOR的電路實作(如圖<a href="#orgbe0c198">12</a>)我們也可以發現同樣的原理。
 </p>
 
-<div id="org193c58e" class="figure">
+<div id="orgbe0c198" class="figure">
 <p><img src="images/xor.jpg" alt="xor.jpg" width="400" />
 </p>
 <p><span class="figure-number">Figure 12: </span>XOR 邏輯閘的組合</p>
 </div>
 </div>
 </div>
-<div id="outline-container-org50a3216" class="outline-4">
-<h4 id="org50a3216"><span class="section-number-4">3.2.2.</span> 多層感知器(MLP): XOR gate 實作</h4>
+<div id="outline-container-org1aed986" class="outline-4">
+<h4 id="org1aed986"><span class="section-number-4">3.2.2.</span> 多層感知器(MLP): XOR gate 實作</h4>
 <div class="outline-text-4" id="text-3-2-2">
 <p>
-參考圖<a href="#org193c58e">12</a>的架構，我們可以藉由增加感知器的層數來實現 XOR 的功能，其結構如圖<a href="#orgac4ae7b">13</a>所示。
+參考圖<a href="#orgbe0c198">12</a>的架構，我們可以藉由增加感知器的層數來實現 XOR 的功能，其結構如圖<a href="#orgf12455a">13</a>所示。
 </p>
 
-<div id="orgac4ae7b" class="figure">
+<div id="orgf12455a" class="figure">
 <p><img src="images/2LayerSensor.png" alt="2LayerSensor.png" width="300" />
 </p>
 <p><span class="figure-number">Figure 13: </span>多層感知器模擬 XOR 邏輯閘</p>
 </div>
 </div>
-<div id="outline-container-org41af0d6" class="outline-5">
-<h5 id="org41af0d6">Solution</h5>
-<div class="outline-text-5" id="text-org41af0d6">
+<div id="outline-container-orge6c6d91" class="outline-5">
+<h5 id="orge6c6d91">Solution</h5>
+<div class="outline-text-5" id="text-orge6c6d91">
 
-<div id="org9862769" class="figure">
+<div id="org15eb0a1" class="figure">
 <p><img src="images/2021-05-24_14-28-04.jpg" alt="2021-05-24_14-28-04.jpg" width="300" />
 </p>
 <p><span class="figure-number">Figure 14: </span>XOR Gate Solution: (1)</p>
@@ -949,14 +961,14 @@ XOR真值表如下:
 <li>\(h_2(x) = x_1 + x_2 - 1.5\)</li>
 </ul>
 
-<div id="orgfbcb6f1" class="figure">
+<div id="org583126d" class="figure">
 <p><img src="images/2021-05-24_14-36-07.jpg" alt="2021-05-24_14-36-07.jpg" width="400" />
 </p>
 <p><span class="figure-number">Figure 15: </span>XOR Gate Solution: (2)</p>
 </div>
 
 <p>
-將圖<a href="#org2fc2082">11</a>的4個點代入\(h_1\):
+將圖<a href="#orgfe7ec54">11</a>的4個點代入\(h_1\):
 </p>
 \begin{align*}
 h_1(0,0) &= f(1\times0+1\times0-0.5) = f(-0.5) = 0\\
@@ -966,7 +978,7 @@ h_1(1,1) &= f(1\times1+1\times1-0.5) = f(1.5) = 1\\
 \end{align*}
 
 <p>
-將圖<a href="#org2fc2082">11</a>的4個點代入\(h_2\):
+將圖<a href="#orgfe7ec54">11</a>的4個點代入\(h_2\):
 </p>
 \begin{align*}
 h_2(0,0) &= f(1\times0+1\times0-1.5) = f(-1.5) = 0\\
@@ -1020,20 +1032,20 @@ data(1,1) &= f(h_1,h_2) = (1,1) \\
 </p>
 
 <p>
-這相當於透過兩個perceptron將原本的輸入做特徵空間轉換，如圖<a href="#org8fe7c8b">16</a>:
+這相當於透過兩個perceptron將原本的輸入做特徵空間轉換，如圖<a href="#org8bdb618">16</a>:
 </p>
 
-<div id="org8fe7c8b" class="figure">
+<div id="org8bdb618" class="figure">
 <p><img src="images/2021-05-24_16-12-36.jpg" alt="2021-05-24_16-12-36.jpg" width="500" />
 </p>
 <p><span class="figure-number">Figure 16: </span>XOR Gate Solution: (3)</p>
 </div>
 
 <p>
-這個時候只要設計一個線性分類器就可以完美分割兩類的資料了阿，如圖<a href="#orgfac3758">17</a>:
+這個時候只要設計一個線性分類器就可以完美分割兩類的資料了阿，如圖<a href="#org1b92216">17</a>:
 </p>
 
-<div id="orgfac3758" class="figure">
+<div id="org1b92216" class="figure">
 <p><img src="images/2021-05-24_16-13-44.jpg" alt="2021-05-24_16-13-44.jpg" width="400" />
 </p>
 <p><span class="figure-number">Figure 17: </span>XOR Gate Solution: (4)</p>
@@ -1043,7 +1055,7 @@ data(1,1) &= f(h_1,h_2) = (1,1) \\
 XOR問題的神經網路結構如下圖:
 </p>
 
-<div id="org2060d58" class="figure">
+<div id="orgcbcab80" class="figure">
 <p><img src="images/2021-05-24_16-15-02.jpg" alt="2021-05-24_16-15-02.jpg" width="500" />
 </p>
 <p><span class="figure-number">Figure 18: </span>XOR Gate Solution: (5)</p>
@@ -1053,40 +1065,48 @@ XOR問題的神經網路結構如下圖:
 至於其實作程式碼則如下。
 </p>
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">python code for XOR gate simulation
-<span class="linenr"> 2: </span></span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
-<span class="linenr"> 3: </span>
-<span class="linenr"> 4: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">step_function</span>(x):
-<span class="linenr"> 5: </span>    <span style="color: #51afef;">return</span> np.array(x <span style="color: #51afef;">&gt;=</span> 0, dtype<span style="color: #51afef;">=</span><span style="color: #c678dd;">int</span>)
-<span class="linenr"> 6: </span>
-<span class="linenr"> 7: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">AND</span>(x1, x2):
-<span class="linenr"> 8: </span>    <span style="color: #dcaeea;">x</span> <span style="color: #51afef;">=</span> np.array([x1, x2])
-<span class="linenr"> 9: </span>    <span style="color: #dcaeea;">w</span> <span style="color: #51afef;">=</span> np.array([0.5, 0.5])
-<span class="linenr">10: </span>    <span style="color: #dcaeea;">b</span> <span style="color: #51afef;">=</span> <span style="color: #51afef;">-</span>0.7
-<span class="linenr">11: </span>    <span style="color: #51afef;">return</span> step_function(np.<span style="color: #c678dd;">sum</span>(w<span style="color: #51afef;">*</span>x) <span style="color: #51afef;">+</span> b)
-<span class="linenr">12: </span>
-<span class="linenr">13: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">OR</span>(x1, x2):
-<span class="linenr">14: </span>    <span style="color: #dcaeea;">x</span> <span style="color: #51afef;">=</span> np.array([x1, x2])
-<span class="linenr">15: </span>    <span style="color: #dcaeea;">w</span> <span style="color: #51afef;">=</span> np.array([0.5, 0.5])
-<span class="linenr">16: </span>    <span style="color: #dcaeea;">b</span> <span style="color: #51afef;">=</span> <span style="color: #51afef;">-</span>0.2
-<span class="linenr">17: </span>    <span style="color: #51afef;">return</span> step_function(np.<span style="color: #c678dd;">sum</span>(w<span style="color: #51afef;">*</span>x) <span style="color: #51afef;">+</span> b)
-<span class="linenr">18: </span>
-<span class="linenr">19: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">NAND</span>(x1, x2):
-<span class="linenr">20: </span>    <span style="color: #dcaeea;">x</span> <span style="color: #51afef;">=</span> np.array([x1, x2])
-<span class="linenr">21: </span>    <span style="color: #dcaeea;">w</span> <span style="color: #51afef;">=</span> np.array([<span style="color: #51afef;">-</span>0.5, <span style="color: #51afef;">-</span>0.5])
-<span class="linenr">22: </span>    <span style="color: #dcaeea;">b</span> <span style="color: #51afef;">=</span> 0.7
-<span class="linenr">23: </span>    <span style="color: #51afef;">return</span> step_function(np.<span style="color: #c678dd;">sum</span>(w<span style="color: #51afef;">*</span>x) <span style="color: #51afef;">+</span> b)
-<span class="linenr">24: </span>
-<span class="linenr">25: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">XOR</span>(x1, x2):
-<span class="linenr">26: </span>    <span style="color: #dcaeea;">s1</span> <span style="color: #51afef;">=</span> NAND(x1, x2)
-<span class="linenr">27: </span>    <span style="color: #dcaeea;">s2</span> <span style="color: #51afef;">=</span> OR(x1, x2)
-<span class="linenr">28: </span>    <span style="color: #dcaeea;">y</span> <span style="color: #51afef;">=</span> AND(s1, s2)
-<span class="linenr">29: </span>    <span style="color: #51afef;">return</span> y
-<span class="linenr">30: </span>
-<span class="linenr">31: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"XOR(0,0): "</span>, XOR(0,0))
-<span class="linenr">32: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"XOR(0,1): "</span>, XOR(0,1))
-<span class="linenr">33: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"XOR(1,0): "</span>, XOR(1,0))
-<span class="linenr">34: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"XOR(1,1): "</span>, XOR(1,1))
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">XOR &#37007;&#36655;&#38296;&#27169;&#25836;&#8212;&#8212;&#29992;&#22810;&#23652;&#24863;&#30693;&#22120;&#65288;MLP&#65289;&#32068;&#21512; NAND&#12289;OR&#12289;AND &#20358;&#23526;&#29694;
+<span class="linenr"> 2: </span></span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36889;&#23601;&#26159;&#12300;&#19968;&#26781;&#32218;&#20998;&#19981;&#38283;&#65292;&#37027;&#23601;&#29992;&#20841;&#26781;&#32218;&#12301;&#30340;&#20855;&#39636;&#23526;&#36368;&#65281;
+<span class="linenr"> 3: </span></span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 4: </span>
+<span class="linenr"> 5: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#32769;&#26379;&#21451;&#38542;&#26799;&#20989;&#25976;&#65306;&gt;= 0 &#36664;&#20986; 1&#65292;&#21542;&#21063; 0
+<span class="linenr"> 6: </span></span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">step_function</span>(x):
+<span class="linenr"> 7: </span>    <span style="color: #51afef;">return</span> np.array(x <span style="color: #51afef;">&gt;=</span> 0, dtype<span style="color: #51afef;">=</span><span style="color: #c678dd;">int</span>)
+<span class="linenr"> 8: </span>
+<span class="linenr"> 9: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">AND &#24863;&#30693;&#22120;&#65306;&#20841;&#20491;&#37117;&#26159; 1 &#25165;&#36664;&#20986; 1
+<span class="linenr">10: </span></span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">AND</span>(x1, x2):
+<span class="linenr">11: </span>    <span style="color: #dcaeea;">x</span> <span style="color: #51afef;">=</span> np.array([x1, x2])
+<span class="linenr">12: </span>    <span style="color: #dcaeea;">w</span> <span style="color: #51afef;">=</span> np.array([0.5, 0.5])  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27402;&#37325;&#21508; 0.5
+<span class="linenr">13: </span></span>    <span style="color: #dcaeea;">b</span> <span style="color: #51afef;">=</span> <span style="color: #51afef;">-</span>0.7                   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38272;&#27323; 0.7&#65292;&#25152;&#20197; 0.5+0.5=1.0 &#25165;&#36942;&#38364;
+<span class="linenr">14: </span></span>    <span style="color: #51afef;">return</span> step_function(np.<span style="color: #c678dd;">sum</span>(w<span style="color: #51afef;">*</span>x) <span style="color: #51afef;">+</span> b)
+<span class="linenr">15: </span>
+<span class="linenr">16: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">OR &#24863;&#30693;&#22120;&#65306;&#26377;&#19968;&#20491;&#26159; 1 &#23601;&#36664;&#20986; 1
+<span class="linenr">17: </span></span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">OR</span>(x1, x2):
+<span class="linenr">18: </span>    <span style="color: #dcaeea;">x</span> <span style="color: #51afef;">=</span> np.array([x1, x2])
+<span class="linenr">19: </span>    <span style="color: #dcaeea;">w</span> <span style="color: #51afef;">=</span> np.array([0.5, 0.5])  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27402;&#37325;&#21508; 0.5
+<span class="linenr">20: </span></span>    <span style="color: #dcaeea;">b</span> <span style="color: #51afef;">=</span> <span style="color: #51afef;">-</span>0.2                   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38272;&#27323;&#21482;&#26377; 0.2&#65292;&#19968;&#20491; 0.5 &#23601;&#33021;&#36942;
+<span class="linenr">21: </span></span>    <span style="color: #51afef;">return</span> step_function(np.<span style="color: #c678dd;">sum</span>(w<span style="color: #51afef;">*</span>x) <span style="color: #51afef;">+</span> b)
+<span class="linenr">22: </span>
+<span class="linenr">23: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">NAND &#24863;&#30693;&#22120;&#65306;AND &#30340;&#30456;&#21453;&#29256;&#65288;&#27402;&#37325;&#21644;&#20559;&#31227;&#20540;&#20840;&#37096;&#21453;&#36681;&#65289;
+<span class="linenr">24: </span></span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">NAND</span>(x1, x2):
+<span class="linenr">25: </span>    <span style="color: #dcaeea;">x</span> <span style="color: #51afef;">=</span> np.array([x1, x2])
+<span class="linenr">26: </span>    <span style="color: #dcaeea;">w</span> <span style="color: #51afef;">=</span> np.array([<span style="color: #51afef;">-</span>0.5, <span style="color: #51afef;">-</span>0.5])  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36000;&#27402;&#37325;&#65306;&#36664;&#20837;&#36234;&#22823;&#65292;&#20998;&#25976;&#21453;&#32780;&#36234;&#20302;
+<span class="linenr">27: </span></span>    <span style="color: #dcaeea;">b</span> <span style="color: #51afef;">=</span> 0.7                      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27491;&#20559;&#31227;&#65306;&#38928;&#35373;&#23601;&#20559;&#21521;&#36664;&#20986; 1
+<span class="linenr">28: </span></span>    <span style="color: #51afef;">return</span> step_function(np.<span style="color: #c678dd;">sum</span>(w<span style="color: #51afef;">*</span>x) <span style="color: #51afef;">+</span> b)
+<span class="linenr">29: </span>
+<span class="linenr">30: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">XOR &#24863;&#30693;&#22120;&#65306;&#37325;&#38957;&#25138;&#20358;&#20102;&#65281;&#32068;&#21512;&#19977;&#20491;&#38296;&#20358;&#23436;&#25104;&#21934;&#23652;&#20570;&#19981;&#21040;&#30340;&#20107;
+<span class="linenr">31: </span></span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#32080;&#27083;&#65306;x1, x2 &#8594; [NAND, OR]&#65288;&#31532;&#19968;&#23652;&#65289;&#8594; AND&#65288;&#31532;&#20108;&#23652;&#65289;&#8594; &#36664;&#20986;
+<span class="linenr">32: </span></span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">XOR</span>(x1, x2):
+<span class="linenr">33: </span>    <span style="color: #dcaeea;">s1</span> <span style="color: #51afef;">=</span> NAND(x1, x2)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31532;&#19968;&#23652;&#31532; 1 &#20491;&#31070;&#32147;&#20803;&#65306;&#38500;&#20102; (1,1) &#20197;&#22806;&#37117;&#36664;&#20986; 1
+<span class="linenr">34: </span></span>    <span style="color: #dcaeea;">s2</span> <span style="color: #51afef;">=</span> OR(x1, x2)    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31532;&#19968;&#23652;&#31532; 2 &#20491;&#31070;&#32147;&#20803;&#65306;&#38500;&#20102; (0,0) &#20197;&#22806;&#37117;&#36664;&#20986; 1
+<span class="linenr">35: </span></span>    <span style="color: #dcaeea;">y</span> <span style="color: #51afef;">=</span> AND(s1, s2)     <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31532;&#20108;&#23652;&#65306;&#21482;&#26377; s1 &#21644; s2 &#37117;&#26159; 1 &#25165;&#36664;&#20986; 1
+<span class="linenr">36: </span></span>    <span style="color: #51afef;">return</span> y            <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#26368;&#32066;&#25928;&#26524;&#65306;&#12300;&#19981;&#21516;&#12301;&#25165;&#36664;&#20986; 1&#65292;&#36319; XOR &#19968;&#27169;&#19968;&#27171;&#65281;
+<span class="linenr">37: </span></span>
+<span class="linenr">38: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39511;&#35657;&#25152;&#26377;&#32068;&#21512;
+<span class="linenr">39: </span></span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"XOR(0,0): "</span>, XOR(0,0))  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">NAND=1, OR=0 &#8594; AND(1,0)=0 &#10003;
+<span class="linenr">40: </span></span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"XOR(0,1): "</span>, XOR(0,1))  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">NAND=1, OR=1 &#8594; AND(1,1)=1 &#10003;
+<span class="linenr">41: </span></span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"XOR(1,0): "</span>, XOR(1,0))  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">NAND=1, OR=1 &#8594; AND(1,1)=1 &#10003;
+<span class="linenr">42: </span></span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"XOR(1,1): "</span>, XOR(1,1))  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">NAND=0, OR=1 &#8594; AND(0,1)=0 &#10003;</span>
 </pre>
 </div>
 
@@ -1101,12 +1121,12 @@ XOR(1,1):  0
 </div>
 </div>
 </div>
-<div id="outline-container-orge88c23d" class="outline-2">
-<h2 id="orge88c23d"><span class="section-number-2">4.</span> 課堂練習&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></h2>
+<div id="outline-container-orgc005244" class="outline-2">
+<h2 id="orgc005244"><span class="section-number-2">4.</span> 課堂練習&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TNFSH">TNFSH</span></span></h2>
 <div class="outline-text-2" id="text-4">
 </div>
-<div id="outline-container-orga5a2021" class="outline-3">
-<h3 id="orga5a2021"><span class="section-number-3">4.1.</span> 練習一：AI 預測你上課會不會睡著</h3>
+<div id="outline-container-org9aabae6" class="outline-3">
+<h3 id="org9aabae6"><span class="section-number-3">4.1.</span> 練習一：AI 預測你上課會不會睡著</h3>
 <div class="outline-text-3" id="text-4-1">
 <p>
 老師受夠了在台上講課看到一片屍體的景象。他決定在每堂課前用感知器預測誰會睡著，然後把那些人叫到第一排坐（或者直接潑水，看老師心情）。
@@ -1195,36 +1215,41 @@ XOR(1,1):  0
 </tbody>
 </table>
 </div>
-<div id="outline-container-org8df51c3" class="outline-4">
-<h4 id="org8df51c3"><span class="section-number-4">4.1.1.</span> 範例：先用最簡單的方法試試</h4>
+<div id="outline-container-orge13a845" class="outline-4">
+<h4 id="orge13a845"><span class="section-number-4">4.1.1.</span> 範例：先用最簡單的方法試試</h4>
 <div class="outline-text-4" id="text-4-1-1">
 <p>
 最直覺的做法：只看睡眠時數，忽略咖啡。如果睡超過 5.5 小時就算清醒。
 </p>
 
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
-<span class="linenr"> 2: </span>
-<span class="linenr"> 3: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">step_function</span>(x):
-<span class="linenr"> 4: </span>    <span style="color: #51afef;">return</span> np.array(x <span style="color: #51afef;">&gt;=</span> 0, dtype<span style="color: #51afef;">=</span><span style="color: #c678dd;">int</span>)
-<span class="linenr"> 5: </span>
-<span class="linenr"> 6: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21516;&#23416;&#36039;&#26009; [&#26152;&#26202;&#30561;&#24190;&#23567;&#26178;, &#20170;&#22825;&#21654;&#21857;&#24190;&#26479;]
-<span class="linenr"> 7: </span></span><span style="color: #dcaeea;">X</span> <span style="color: #51afef;">=</span> np.array([[8,2], [4,0], [7,1], [3,1],
-<span class="linenr"> 8: </span>              [6,2], [5,0], [4,2], [3,0]])
-<span class="linenr"> 9: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27161;&#31844;: &#28165;&#37266;=1, &#30561;&#33879;=0
-<span class="linenr">10: </span></span><span style="color: #dcaeea;">y</span> <span style="color: #51afef;">=</span> np.array([1, 0, 1, 0, 1, 0, 1, 0])
-<span class="linenr">11: </span><span style="color: #dcaeea;">names</span> <span style="color: #51afef;">=</span> [<span style="color: #98be65;">'&#38463;&#26126;'</span>,<span style="color: #98be65;">'&#23567;&#32654;'</span>,<span style="color: #98be65;">'&#22823;&#38596;'</span>,<span style="color: #98be65;">'&#32982;&#34382;'</span>,<span style="color: #98be65;">'&#38748;&#39321;'</span>,<span style="color: #98be65;">'&#23567;&#22827;'</span>,<span style="color: #98be65;">'&#38463;&#31119;'</span>,<span style="color: #98be65;">'&#39791;&#22827;'</span>]
-<span class="linenr">12: </span>
-<span class="linenr">13: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21482;&#30475;&#30561;&#30496;&#65288;w2=0 &#34920;&#31034;&#23436;&#20840;&#24573;&#30053;&#21654;&#21857;&#65289;
-<span class="linenr">14: </span></span><span style="color: #dcaeea;">w</span> <span style="color: #51afef;">=</span> np.array([1, 0])
-<span class="linenr">15: </span><span style="color: #dcaeea;">b</span> <span style="color: #51afef;">=</span> <span style="color: #51afef;">-</span>5.5  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38272;&#27323; = 5.5 &#23567;&#26178;
-<span class="linenr">16: </span></span>
-<span class="linenr">17: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#38928;&#28204;&#32080;&#26524;&#65288;&#21482;&#30475;&#30561;&#30496;&#26178;&#25976;&#65289;:"</span>)
-<span class="linenr">18: </span><span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #c678dd;">len</span>(X)):
-<span class="linenr">19: </span>    <span style="color: #dcaeea;">pred</span> <span style="color: #51afef;">=</span> step_function(np.dot(w, X[i]) <span style="color: #51afef;">+</span> b)
-<span class="linenr">20: </span>    <span style="color: #dcaeea;">label</span> <span style="color: #51afef;">=</span> <span style="color: #98be65;">'&#28165;&#37266;'</span> <span style="color: #51afef;">if</span> pred <span style="color: #51afef;">==</span> 1 <span style="color: #51afef;">else</span> <span style="color: #98be65;">'&#30561;&#33879;'</span>
-<span class="linenr">21: </span>    <span style="color: #dcaeea;">correct</span> <span style="color: #51afef;">=</span> <span style="color: #98be65;">'&#9675;'</span> <span style="color: #51afef;">if</span> pred <span style="color: #51afef;">==</span> y[i] <span style="color: #51afef;">else</span> <span style="color: #98be65;">'&#215;'</span>
-<span class="linenr">22: </span>    <span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"  </span>{names[i]}<span style="color: #98be65;">&#65288;&#30561;</span>{X[i][0]}<span style="color: #98be65;">hr, &#21654;&#21857;</span>{X[i][1]}<span style="color: #98be65;">&#26479;&#65289;&#8594; </span>{label}<span style="color: #98be65;"> </span>{correct}<span style="color: #98be65;">"</span>)
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21295;&#20837; numpy
+<span class="linenr"> 2: </span></span>
+<span class="linenr"> 3: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38542;&#26799;&#20989;&#25976;&#65306;&gt;= 0 &#36664;&#20986; 1&#65288;&#28165;&#37266;&#65289;&#65292;&lt; 0 &#36664;&#20986; 0&#65288;&#30561;&#33879;&#65289;
+<span class="linenr"> 4: </span></span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">step_function</span>(x):
+<span class="linenr"> 5: </span>    <span style="color: #51afef;">return</span> np.array(x <span style="color: #51afef;">&gt;=</span> 0, dtype<span style="color: #51afef;">=</span><span style="color: #c678dd;">int</span>)
+<span class="linenr"> 6: </span>
+<span class="linenr"> 7: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21516;&#23416;&#36039;&#26009;&#65306;&#27599;&#21015; = [&#26152;&#26202;&#30561;&#24190;&#23567;&#26178;, &#20170;&#22825;&#21654;&#21857;&#24190;&#26479;]
+<span class="linenr"> 8: </span></span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">8 &#20301;&#21516;&#23416;&#30340;&#29983;&#27963;&#20316;&#24687;&#65292;&#32769;&#24107;&#20599;&#20599;&#35352;&#19979;&#20358;&#30340;&#65288;&#38577;&#31169;&#20160;&#40636;&#30340;&#20808;&#19981;&#31649;&#20102;&#65289;
+<span class="linenr"> 9: </span></span><span style="color: #dcaeea;">X</span> <span style="color: #51afef;">=</span> np.array([[8,2], [4,0], [7,1], [3,1],
+<span class="linenr">10: </span>              [6,2], [5,0], [4,2], [3,0]])
+<span class="linenr">11: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27161;&#31844;&#65288;&#27491;&#30906;&#31572;&#26696;&#65289;: &#28165;&#37266;=1, &#30561;&#33879;=0
+<span class="linenr">12: </span></span><span style="color: #dcaeea;">y</span> <span style="color: #51afef;">=</span> np.array([1, 0, 1, 0, 1, 0, 1, 0])
+<span class="linenr">13: </span><span style="color: #dcaeea;">names</span> <span style="color: #51afef;">=</span> [<span style="color: #98be65;">'&#38463;&#26126;'</span>,<span style="color: #98be65;">'&#23567;&#32654;'</span>,<span style="color: #98be65;">'&#22823;&#38596;'</span>,<span style="color: #98be65;">'&#32982;&#34382;'</span>,<span style="color: #98be65;">'&#38748;&#39321;'</span>,<span style="color: #98be65;">'&#23567;&#22827;'</span>,<span style="color: #98be65;">'&#38463;&#31119;'</span>,<span style="color: #98be65;">'&#39791;&#22827;'</span>]
+<span class="linenr">14: </span>
+<span class="linenr">15: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35373;&#23450;&#24863;&#30693;&#22120;&#30340;&#27402;&#37325;&#21644;&#20559;&#31227;&#20540;
+<span class="linenr">16: </span></span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">w=[1, 0] &#34920;&#31034;&#65306;&#21482;&#30475;&#30561;&#30496;&#26178;&#25976;&#65288;&#27402;&#37325;=1&#65289;&#65292;&#23436;&#20840;&#24573;&#30053;&#21654;&#21857;&#65288;&#27402;&#37325;=0&#65289;
+<span class="linenr">17: </span></span><span style="color: #dcaeea;">w</span> <span style="color: #51afef;">=</span> np.array([1, 0])
+<span class="linenr">18: </span><span style="color: #dcaeea;">b</span> <span style="color: #51afef;">=</span> <span style="color: #51afef;">-</span>5.5  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38272;&#27323; 5.5 &#23567;&#26178;&#65288;&#30561;&#36229;&#36942; 5.5hr &#25165;&#21028;&#23450;&#28858;&#28165;&#37266;&#65289;
+<span class="linenr">19: </span></span>
+<span class="linenr">20: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36880;&#19968;&#38928;&#28204;&#27599;&#20301;&#21516;&#23416;&#30340;&#19978;&#35506;&#29376;&#24907;
+<span class="linenr">21: </span></span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#38928;&#28204;&#32080;&#26524;&#65288;&#21482;&#30475;&#30561;&#30496;&#26178;&#25976;&#65289;:"</span>)
+<span class="linenr">22: </span><span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #c678dd;">len</span>(X)):
+<span class="linenr">23: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">np.dot(w, X[i]) + b = 1*&#30561;&#30496; + 0*&#21654;&#21857; - 5.5 = &#30561;&#30496; - 5.5
+<span class="linenr">24: </span></span>    <span style="color: #dcaeea;">pred</span> <span style="color: #51afef;">=</span> step_function(np.dot(w, X[i]) <span style="color: #51afef;">+</span> b)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36942;&#38542;&#26799;&#20989;&#25976;&#24471;&#21040; 0 &#25110; 1
+<span class="linenr">25: </span></span>    <span style="color: #dcaeea;">label</span> <span style="color: #51afef;">=</span> <span style="color: #98be65;">'&#28165;&#37266;'</span> <span style="color: #51afef;">if</span> pred <span style="color: #51afef;">==</span> 1 <span style="color: #51afef;">else</span> <span style="color: #98be65;">'&#30561;&#33879;'</span>     <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25226; 0/1 &#32763;&#35695;&#25104;&#20154;&#35441;
+<span class="linenr">26: </span></span>    <span style="color: #dcaeea;">correct</span> <span style="color: #51afef;">=</span> <span style="color: #98be65;">'&#9675;'</span> <span style="color: #51afef;">if</span> pred <span style="color: #51afef;">==</span> y[i] <span style="color: #51afef;">else</span> <span style="color: #98be65;">'&#215;'</span>      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36319;&#27491;&#30906;&#31572;&#26696;&#27604;&#23565;
+<span class="linenr">27: </span></span>    <span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"  </span>{names[i]}<span style="color: #98be65;">&#65288;&#30561;</span>{X[i][0]}<span style="color: #98be65;">hr, &#21654;&#21857;</span>{X[i][1]}<span style="color: #98be65;">&#26479;&#65289;&#8594; </span>{label}<span style="color: #98be65;"> </span>{correct}<span style="color: #98be65;">"</span>)
 </pre>
 </div>
 
@@ -1233,8 +1258,8 @@ XOR(1,1):  0
 </p>
 </div>
 </div>
-<div id="outline-container-orgcdf2eab" class="outline-4">
-<h4 id="orgcdf2eab"><span class="section-number-4">4.1.2.</span> 你的任務：讓感知器也看到咖啡</h4>
+<div id="outline-container-orgb65ec66" class="outline-4">
+<h4 id="orgb65ec66"><span class="section-number-4">4.1.2.</span> 你的任務：讓感知器也看到咖啡</h4>
 <div class="outline-text-4" id="text-4-1-2">
 <p>
 把範例程式碼複製過來，修改 <code>w</code> 和 <code>b</code> ，讓感知器 <b>同時考慮</b> 睡眠和咖啡，把 8 個人全部分對。
@@ -1251,7 +1276,7 @@ XOR(1,1):  0
 <p>
 <b>正確答案（用來驗證）：</b>
 </p>
-<pre class="example" id="orgab2ea8b">
+<pre class="example" id="orgc96048d">
 w=[1, 2], b=-6 可以全部分對（8/8）
 
   阿明（睡8hr, 咖啡2杯）→ 分數=6  → 清醒 ○
@@ -1265,57 +1290,63 @@ w=[1, 2], b=-6 可以全部分對（8/8）
 </pre>
 
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
-<span class="linenr"> 2: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
-<span class="linenr"> 3: </span>
-<span class="linenr"> 4: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">step_function</span>(x):
-<span class="linenr"> 5: </span>    <span style="color: #51afef;">return</span> np.array(x <span style="color: #51afef;">&gt;=</span> 0, dtype<span style="color: #51afef;">=</span><span style="color: #c678dd;">int</span>)
-<span class="linenr"> 6: </span>
-<span class="linenr"> 7: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21516;&#23416;&#36039;&#26009; [&#26152;&#26202;&#30561;&#24190;&#23567;&#26178;, &#20170;&#22825;&#21654;&#21857;&#24190;&#26479;]
-<span class="linenr"> 8: </span></span><span style="color: #dcaeea;">X</span> <span style="color: #51afef;">=</span> np.array([[8,2], [4,0], [7,1], [3,1],
-<span class="linenr"> 9: </span>              [6,2], [5,0], [4,2], [3,0]])
-<span class="linenr">10: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27161;&#31844;: &#28165;&#37266;=1, &#30561;&#33879;=0
-<span class="linenr">11: </span></span><span style="color: #dcaeea;">y</span> <span style="color: #51afef;">=</span> np.array([1, 0, 1, 0, 1, 0, 1, 0])
-<span class="linenr">12: </span><span style="color: #dcaeea;">names</span> <span style="color: #51afef;">=</span> [<span style="color: #98be65;">'&#38463;&#26126;'</span>,<span style="color: #98be65;">'&#23567;&#32654;'</span>,<span style="color: #98be65;">'&#22823;&#38596;'</span>,<span style="color: #98be65;">'&#32982;&#34382;'</span>,<span style="color: #98be65;">'&#38748;&#39321;'</span>,<span style="color: #98be65;">'&#23567;&#22827;'</span>,<span style="color: #98be65;">'&#38463;&#31119;'</span>,<span style="color: #98be65;">'&#39791;&#22827;'</span>]
-<span class="linenr">13: </span>
-<span class="linenr">14: </span><span style="color: #5B6268;"># </span><span style="color: #ECBE7B; font-weight: bold;">TODO:</span><span style="color: #5B6268;"> &#20462;&#25913; w &#21644; b&#65292;&#21516;&#26178;&#32771;&#24942;&#30561;&#30496;&#21644;&#21654;&#21857;&#65292;&#35731; 8 &#20491;&#20154;&#20840;&#37096;&#20998;&#23565;
-<span class="linenr">15: </span></span><span style="color: #dcaeea;">w</span> <span style="color: #51afef;">=</span> np.array([___, ___])  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">[&#30561;&#30496;&#27402;&#37325;, &#21654;&#21857;&#27402;&#37325;]
-<span class="linenr">16: </span></span><span style="color: #dcaeea;">b</span> <span style="color: #51afef;">=</span> ___
-<span class="linenr">17: </span>
-<span class="linenr">18: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#28204;&#35430;&#24863;&#30693;&#22120;
-<span class="linenr">19: </span></span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#38928;&#28204;&#32080;&#26524;:"</span>)
-<span class="linenr">20: </span><span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #c678dd;">len</span>(X)):
-<span class="linenr">21: </span>    <span style="color: #dcaeea;">pred</span> <span style="color: #51afef;">=</span> step_function(np.dot(w, X[i]) <span style="color: #51afef;">+</span> b)
-<span class="linenr">22: </span>    <span style="color: #dcaeea;">label</span> <span style="color: #51afef;">=</span> <span style="color: #98be65;">'&#28165;&#37266;'</span> <span style="color: #51afef;">if</span> pred <span style="color: #51afef;">==</span> 1 <span style="color: #51afef;">else</span> <span style="color: #98be65;">'&#30561;&#33879;'</span>
-<span class="linenr">23: </span>    <span style="color: #dcaeea;">correct</span> <span style="color: #51afef;">=</span> <span style="color: #98be65;">'&#9675;'</span> <span style="color: #51afef;">if</span> pred <span style="color: #51afef;">==</span> y[i] <span style="color: #51afef;">else</span> <span style="color: #98be65;">'&#215;'</span>
-<span class="linenr">24: </span>    <span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"  </span>{names[i]}<span style="color: #98be65;">&#65288;&#30561;</span>{X[i][0]}<span style="color: #98be65;">hr, &#21654;&#21857;</span>{X[i][1]}<span style="color: #98be65;">&#26479;&#65289;&#8594; </span>{label}<span style="color: #98be65;"> </span>{correct}<span style="color: #98be65;">"</span>)
-<span class="linenr">25: </span>
-<span class="linenr">26: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#32362;&#35069;&#25955;&#20296;&#22294;&#33287;&#27770;&#31574;&#37002;&#30028;
-<span class="linenr">27: </span></span>plt.figure(figsize<span style="color: #51afef;">=</span>(6, 5))
-<span class="linenr">28: </span><span style="color: #dcaeea;">awake</span> <span style="color: #51afef;">=</span> y <span style="color: #51afef;">==</span> 1
-<span class="linenr">29: </span><span style="color: #dcaeea;">asleep</span> <span style="color: #51afef;">=</span> y <span style="color: #51afef;">==</span> 0
-<span class="linenr">30: </span>plt.scatter(X[awake, 0], X[awake, 1], c<span style="color: #51afef;">=</span><span style="color: #98be65;">'green'</span>, marker<span style="color: #51afef;">=</span><span style="color: #98be65;">'o'</span>, s<span style="color: #51afef;">=</span>100, label<span style="color: #51afef;">=</span><span style="color: #98be65;">'&#28165;&#37266;'</span>)
-<span class="linenr">31: </span>plt.scatter(X[asleep, 0], X[asleep, 1], c<span style="color: #51afef;">=</span><span style="color: #98be65;">'red'</span>, marker<span style="color: #51afef;">=</span><span style="color: #98be65;">'x'</span>, s<span style="color: #51afef;">=</span>100, label<span style="color: #51afef;">=</span><span style="color: #98be65;">'&#30561;&#33879;'</span>)
-<span class="linenr">32: </span><span style="color: #51afef;">for</span> i, name <span style="color: #51afef;">in</span> <span style="color: #c678dd;">enumerate</span>(names):
-<span class="linenr">33: </span>    plt.annotate(name, (X[i,0]<span style="color: #51afef;">+</span>0.1, X[i,1]<span style="color: #51afef;">+</span>0.1))
-<span class="linenr">34: </span>
-<span class="linenr">35: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27770;&#31574;&#37002;&#30028;: w1*x1 + w2*x2 + b = 0 &#8594; x2 = -(w1*x1 + b)/w2
-<span class="linenr">36: </span></span><span style="color: #dcaeea;">x1_line</span> <span style="color: #51afef;">=</span> np.linspace(2, 9, 100)
-<span class="linenr">37: </span><span style="color: #dcaeea;">x2_line</span> <span style="color: #51afef;">=</span> <span style="color: #51afef;">-</span>(w[0] <span style="color: #51afef;">*</span> x1_line <span style="color: #51afef;">+</span> b) <span style="color: #51afef;">/</span> w[1]
-<span class="linenr">38: </span>plt.plot(x1_line, x2_line, <span style="color: #98be65;">'b--'</span>, linewidth<span style="color: #51afef;">=</span>2, label<span style="color: #51afef;">=</span><span style="color: #98be65;">'&#27770;&#31574;&#37002;&#30028;'</span>)
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np          <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25976;&#23416;&#36939;&#31639;
+<span class="linenr"> 2: </span></span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#30059;&#22294;&#29992;&#65288;matplotlib &#26159; Python &#30340;&#30059;&#22294;&#31070;&#22120;&#65289;
+<span class="linenr"> 3: </span></span>
+<span class="linenr"> 4: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38542;&#26799;&#20989;&#25976;
+<span class="linenr"> 5: </span></span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">step_function</span>(x):
+<span class="linenr"> 6: </span>    <span style="color: #51afef;">return</span> np.array(x <span style="color: #51afef;">&gt;=</span> 0, dtype<span style="color: #51afef;">=</span><span style="color: #c678dd;">int</span>)
+<span class="linenr"> 7: </span>
+<span class="linenr"> 8: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21516;&#23416;&#36039;&#26009; [&#26152;&#26202;&#30561;&#24190;&#23567;&#26178;, &#20170;&#22825;&#21654;&#21857;&#24190;&#26479;]
+<span class="linenr"> 9: </span></span><span style="color: #dcaeea;">X</span> <span style="color: #51afef;">=</span> np.array([[8,2], [4,0], [7,1], [3,1],
+<span class="linenr">10: </span>              [6,2], [5,0], [4,2], [3,0]])
+<span class="linenr">11: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27161;&#31844;&#65288;&#27491;&#30906;&#31572;&#26696;&#65289;: &#28165;&#37266;=1, &#30561;&#33879;=0
+<span class="linenr">12: </span></span><span style="color: #dcaeea;">y</span> <span style="color: #51afef;">=</span> np.array([1, 0, 1, 0, 1, 0, 1, 0])
+<span class="linenr">13: </span><span style="color: #dcaeea;">names</span> <span style="color: #51afef;">=</span> [<span style="color: #98be65;">'&#38463;&#26126;'</span>,<span style="color: #98be65;">'&#23567;&#32654;'</span>,<span style="color: #98be65;">'&#22823;&#38596;'</span>,<span style="color: #98be65;">'&#32982;&#34382;'</span>,<span style="color: #98be65;">'&#38748;&#39321;'</span>,<span style="color: #98be65;">'&#23567;&#22827;'</span>,<span style="color: #98be65;">'&#38463;&#31119;'</span>,<span style="color: #98be65;">'&#39791;&#22827;'</span>]
+<span class="linenr">14: </span>
+<span class="linenr">15: </span><span style="color: #5B6268;"># </span><span style="color: #ECBE7B; font-weight: bold;">TODO:</span><span style="color: #5B6268;"> &#20462;&#25913; w &#21644; b&#65292;&#35731;&#24863;&#30693;&#22120;&#21516;&#26178;&#32771;&#24942;&#30561;&#30496;&#21644;&#21654;&#21857;
+<span class="linenr">16: </span></span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25552;&#31034;&#65306;&#21654;&#21857;&#30340;&#25552;&#31070;&#25928;&#26524;&#22823;&#32004;&#26159;&#30561;&#30496;&#30340; 2 &#20493;&#65292;&#25152;&#20197;&#21654;&#21857;&#27402;&#37325;&#25033;&#35442;&#26356;&#22823;
+<span class="linenr">17: </span></span><span style="color: #dcaeea;">w</span> <span style="color: #51afef;">=</span> np.array([___, ___])  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">[&#30561;&#30496;&#27402;&#37325;, &#21654;&#21857;&#27402;&#37325;]&#65292;&#35531;&#22635;&#20837;&#25976;&#23383;
+<span class="linenr">18: </span></span><span style="color: #dcaeea;">b</span> <span style="color: #51afef;">=</span> ___                    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20559;&#31227;&#20540;&#65288;&#38272;&#27323;&#65289;&#65292;&#35531;&#22635;&#20837;&#25976;&#23383;
+<span class="linenr">19: </span></span>
+<span class="linenr">20: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36880;&#19968;&#28204;&#35430;&#27599;&#20301;&#21516;&#23416;
+<span class="linenr">21: </span></span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#38928;&#28204;&#32080;&#26524;:"</span>)
+<span class="linenr">22: </span><span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #c678dd;">len</span>(X)):
+<span class="linenr">23: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">np.dot(w, X[i]) &#35336;&#31639;&#20839;&#31309; = w1*&#30561;&#30496; + w2*&#21654;&#21857;
+<span class="linenr">24: </span></span>    <span style="color: #dcaeea;">pred</span> <span style="color: #51afef;">=</span> step_function(np.dot(w, X[i]) <span style="color: #51afef;">+</span> b)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21152;&#19978;&#20559;&#31227;&#20540;&#24460;&#36942;&#38542;&#26799;&#20989;&#25976;
+<span class="linenr">25: </span></span>    <span style="color: #dcaeea;">label</span> <span style="color: #51afef;">=</span> <span style="color: #98be65;">'&#28165;&#37266;'</span> <span style="color: #51afef;">if</span> pred <span style="color: #51afef;">==</span> 1 <span style="color: #51afef;">else</span> <span style="color: #98be65;">'&#30561;&#33879;'</span>
+<span class="linenr">26: </span>    <span style="color: #dcaeea;">correct</span> <span style="color: #51afef;">=</span> <span style="color: #98be65;">'&#9675;'</span> <span style="color: #51afef;">if</span> pred <span style="color: #51afef;">==</span> y[i] <span style="color: #51afef;">else</span> <span style="color: #98be65;">'&#215;'</span>
+<span class="linenr">27: </span>    <span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"  </span>{names[i]}<span style="color: #98be65;">&#65288;&#30561;</span>{X[i][0]}<span style="color: #98be65;">hr, &#21654;&#21857;</span>{X[i][1]}<span style="color: #98be65;">&#26479;&#65289;&#8594; </span>{label}<span style="color: #98be65;"> </span>{correct}<span style="color: #98be65;">"</span>)
+<span class="linenr">28: </span>
+<span class="linenr">29: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">===== &#20197;&#19979;&#26159;&#30059;&#22294;&#37096;&#20998; =====
+<span class="linenr">30: </span></span>plt.figure(figsize<span style="color: #51afef;">=</span>(6, 5))            <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;&#31435; 6x5 &#21515;&#30340;&#22294;
+<span class="linenr">31: </span></span><span style="color: #dcaeea;">awake</span> <span style="color: #51afef;">=</span> y <span style="color: #51afef;">==</span> 1                         <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24067;&#26519;&#38499;&#21015;&#65306;&#21738;&#20123;&#20154;&#26159;&#28165;&#37266;&#30340;
+<span class="linenr">32: </span></span><span style="color: #dcaeea;">asleep</span> <span style="color: #51afef;">=</span> y <span style="color: #51afef;">==</span> 0                        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24067;&#26519;&#38499;&#21015;&#65306;&#21738;&#20123;&#20154;&#26159;&#30561;&#33879;&#30340;
+<span class="linenr">33: </span></span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#28165;&#37266;&#30340;&#21516;&#23416;&#30059;&#32160;&#33394;&#22291;&#40670;&#65292;&#30561;&#33879;&#30340;&#30059;&#32005;&#33394;&#21449;&#21449;
+<span class="linenr">34: </span></span>plt.scatter(X[awake, 0], X[awake, 1], c<span style="color: #51afef;">=</span><span style="color: #98be65;">'green'</span>, marker<span style="color: #51afef;">=</span><span style="color: #98be65;">'o'</span>, s<span style="color: #51afef;">=</span>100, label<span style="color: #51afef;">=</span><span style="color: #98be65;">'&#28165;&#37266;'</span>)
+<span class="linenr">35: </span>plt.scatter(X[asleep, 0], X[asleep, 1], c<span style="color: #51afef;">=</span><span style="color: #98be65;">'red'</span>, marker<span style="color: #51afef;">=</span><span style="color: #98be65;">'x'</span>, s<span style="color: #51afef;">=</span>100, label<span style="color: #51afef;">=</span><span style="color: #98be65;">'&#30561;&#33879;'</span>)
+<span class="linenr">36: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#22312;&#27599;&#20491;&#40670;&#26049;&#37002;&#27161;&#19978;&#21517;&#23383;
+<span class="linenr">37: </span></span><span style="color: #51afef;">for</span> i, name <span style="color: #51afef;">in</span> <span style="color: #c678dd;">enumerate</span>(names):
+<span class="linenr">38: </span>    plt.annotate(name, (X[i,0]<span style="color: #51afef;">+</span>0.1, X[i,1]<span style="color: #51afef;">+</span>0.1))
 <span class="linenr">39: </span>
-<span class="linenr">40: </span>plt.xlabel(<span style="color: #98be65;">'&#26152;&#26202;&#30561;&#24190;&#23567;&#26178;'</span>)
-<span class="linenr">41: </span>plt.ylabel(<span style="color: #98be65;">'&#20170;&#22825;&#21654;&#21857;&#24190;&#26479;'</span>)
-<span class="linenr">42: </span>plt.title(<span style="color: #98be65;">'&#24863;&#30693;&#22120;&#38928;&#28204;&#65306;&#20320;&#26371;&#19981;&#26371;&#30561;&#33879;&#65311;'</span>)
-<span class="linenr">43: </span>plt.legend()
-<span class="linenr">44: </span>plt.grid(<span style="color: #a9a1e1;">True</span>)
-<span class="linenr">45: </span>plt.savefig(<span style="color: #98be65;">"images/perceptron-sleep.png"</span>, dpi<span style="color: #51afef;">=</span>300)
+<span class="linenr">40: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#30059;&#27770;&#31574;&#37002;&#30028;&#65288;&#23601;&#26159;&#37027;&#26781;&#25226;&#28165;&#37266;&#21644;&#30561;&#33879;&#20998;&#38283;&#30340;&#32218;&#65289;
+<span class="linenr">41: </span></span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25976;&#23416;&#65306;w1*x1 + w2*x2 + b = 0&#65292;&#31227;&#38917;&#24471; x2 = -(w1*x1 + b)/w2
+<span class="linenr">42: </span></span><span style="color: #dcaeea;">x1_line</span> <span style="color: #51afef;">=</span> np.linspace(2, 9, 100)              <span style="color: #5B6268;"># </span><span style="color: #5B6268;">x &#36600;&#19978;&#21462; 100 &#20491;&#22343;&#21243;&#30340;&#40670;
+<span class="linenr">43: </span></span><span style="color: #dcaeea;">x2_line</span> <span style="color: #51afef;">=</span> <span style="color: #51afef;">-</span>(w[0] <span style="color: #51afef;">*</span> x1_line <span style="color: #51afef;">+</span> b) <span style="color: #51afef;">/</span> w[1]        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23565;&#25033;&#30340; y &#20540;
+<span class="linenr">44: </span></span>plt.plot(x1_line, x2_line, <span style="color: #98be65;">'b--'</span>, linewidth<span style="color: #51afef;">=</span>2, label<span style="color: #51afef;">=</span><span style="color: #98be65;">'&#27770;&#31574;&#37002;&#30028;'</span>)
+<span class="linenr">45: </span>
+<span class="linenr">46: </span>plt.xlabel(<span style="color: #98be65;">'&#26152;&#26202;&#30561;&#24190;&#23567;&#26178;'</span>)
+<span class="linenr">47: </span>plt.ylabel(<span style="color: #98be65;">'&#20170;&#22825;&#21654;&#21857;&#24190;&#26479;'</span>)
+<span class="linenr">48: </span>plt.title(<span style="color: #98be65;">'&#24863;&#30693;&#22120;&#38928;&#28204;&#65306;&#20320;&#26371;&#19981;&#26371;&#30561;&#33879;&#65311;'</span>)
+<span class="linenr">49: </span>plt.legend()        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39023;&#31034;&#22294;&#20363;
+<span class="linenr">50: </span></span>plt.grid(<span style="color: #a9a1e1;">True</span>)      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39023;&#31034;&#26684;&#32218;
+<span class="linenr">51: </span></span>plt.savefig(<span style="color: #98be65;">"images/perceptron-sleep.png"</span>, dpi<span style="color: #51afef;">=</span>300)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20786;&#23384;&#22294;&#29255;</span>
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-org54e95a1" class="outline-4">
-<h4 id="org54e95a1"><span class="section-number-4">4.1.3.</span> 思考題</h4>
+<div id="outline-container-org33ebc45" class="outline-4">
+<h4 id="org33ebc45"><span class="section-number-4">4.1.3.</span> 思考題</h4>
 <div class="outline-text-4" id="text-4-1-3">
 <ol class="org-ol">
 <li>如果你只用睡眠時數（w2 設為 0），能不能把 8 個人全部分對？哪個人會被分錯？為什麼？</li>
@@ -1325,15 +1356,15 @@ w=[1, 2], b=-6 可以全部分對（8/8）
 </div>
 </div>
 </div>
-<div id="outline-container-orgbbd284b" class="outline-3">
-<h3 id="orgbbd284b"><span class="section-number-3">4.2.</span> 練習二：感知器學習演算法</h3>
+<div id="outline-container-org6d74cac" class="outline-3">
+<h3 id="org6d74cac"><span class="section-number-3">4.2.</span> 練習二：感知器學習演算法</h3>
 <div class="outline-text-3" id="text-4-2">
 <p>
 在練習一中，我們靠「猜」來找權重。但感知器其實可以透過 <b>學習演算法</b> 自動找到適合的權重！
 </p>
 </div>
-<div id="outline-container-org7ca1436" class="outline-4">
-<h4 id="org7ca1436"><span class="section-number-4">4.2.1.</span> 感知器學習規則</h4>
+<div id="outline-container-org89925b9" class="outline-4">
+<h4 id="org89925b9"><span class="section-number-4">4.2.1.</span> 感知器學習規則</h4>
 <div class="outline-text-4" id="text-4-2-1">
 <p>
 感知器的學習過程就像「從錯誤中學習」：每次預測錯了，就稍微調整權重，讓下次更可能答對。具體步驟如下：
@@ -1358,8 +1389,8 @@ w=[1, 2], b=-6 可以全部分對（8/8）
 </p>
 </div>
 </div>
-<div id="outline-container-orgd3c2c63" class="outline-4">
-<h4 id="orgd3c2c63"><span class="section-number-4">4.2.2.</span> 故事背景</h4>
+<div id="outline-container-org022673b" class="outline-4">
+<h4 id="org022673b"><span class="section-number-4">4.2.2.</span> 故事背景</h4>
 <div class="outline-text-4" id="text-4-2-2">
 <p>
 期中考成績出來了。導師看著成績單，眉頭深鎖。
@@ -1443,55 +1474,58 @@ w=[1, 2], b=-6 可以全部分對（8/8）
 </p>
 </div>
 </div>
-<div id="outline-container-orge7d1e86" class="outline-4">
-<h4 id="orge7d1e86"><span class="section-number-4">4.2.3.</span> 任務 A：執行學習演算法</h4>
+<div id="outline-container-orgf41d79d" class="outline-4">
+<h4 id="orgf41d79d"><span class="section-number-4">4.2.3.</span> 任務 A：執行學習演算法</h4>
 <div class="outline-text-4" id="text-4-2-3">
 <p>
 請執行以下程式碼，觀察感知器如何 <b>自動</b> 找到權重，不用再像練習一那樣猜來猜去。
 </p>
 
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
-<span class="linenr"> 2: </span>
-<span class="linenr"> 3: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">step_function</span>(x):
-<span class="linenr"> 4: </span>    <span style="color: #51afef;">return</span> np.array(x <span style="color: #51afef;">&gt;=</span> 0, dtype<span style="color: #51afef;">=</span><span style="color: #c678dd;">int</span>)
-<span class="linenr"> 5: </span>
-<span class="linenr"> 6: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35347;&#32244;&#36039;&#26009; [&#27599;&#36913;&#28369;&#25163;&#27231;hr, &#27599;&#36913;&#35712;&#26360;hr]
-<span class="linenr"> 7: </span></span><span style="color: #dcaeea;">X</span> <span style="color: #51afef;">=</span> np.array([[30,2], [5,25], [25,5], [10,20], [20,10], [15,15]])
-<span class="linenr"> 8: </span><span style="color: #dcaeea;">y</span> <span style="color: #51afef;">=</span> np.array([0, 1, 0, 1, 0, 1])  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">0=&#34987;&#30070;, 1=&#23384;&#27963;
-<span class="linenr"> 9: </span></span><span style="color: #dcaeea;">names</span> <span style="color: #51afef;">=</span> [<span style="color: #98be65;">'&#23567;&#26126;'</span>, <span style="color: #98be65;">'&#23416;&#38712;'</span>, <span style="color: #98be65;">'&#38463;&#23429;'</span>, <span style="color: #98be65;">'&#35469;&#30495;&#22969;'</span>, <span style="color: #98be65;">'&#31038;&#30044;'</span>, <span style="color: #98be65;">'&#35258;&#37266;&#32773;'</span>]
-<span class="linenr">10: </span>
-<span class="linenr">11: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21021;&#22987;&#21270;
-<span class="linenr">12: </span></span><span style="color: #dcaeea;">w</span> <span style="color: #51afef;">=</span> np.zeros(2)
-<span class="linenr">13: </span><span style="color: #dcaeea;">b</span> <span style="color: #51afef;">=</span> 0.0
-<span class="linenr">14: </span><span style="color: #dcaeea;">eta</span> <span style="color: #51afef;">=</span> 0.01   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23416;&#32722;&#29575;
-<span class="linenr">15: </span></span>
-<span class="linenr">16: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35347;&#32244;
-<span class="linenr">17: </span></span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#21021;&#22987;&#29376;&#24907;: w=[</span>{w[0]:.3f}<span style="color: #98be65;">, </span>{w[1]:.3f}<span style="color: #98be65;">], b=</span>{b:.3f}<span style="color: #98be65;">"</span>)
-<span class="linenr">18: </span><span style="color: #51afef;">for</span> epoch <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(50):
-<span class="linenr">19: </span>    <span style="color: #dcaeea;">w_before</span>, <span style="color: #dcaeea;">b_before</span> <span style="color: #51afef;">=</span> w.copy(), b  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35352;&#37636; epoch &#38283;&#22987;&#21069;&#30340;&#29376;&#24907;
-<span class="linenr">20: </span></span>    <span style="color: #dcaeea;">errors</span> <span style="color: #51afef;">=</span> 0
-<span class="linenr">21: </span>    <span style="color: #51afef;">for</span> xi, yi <span style="color: #51afef;">in</span> <span style="color: #c678dd;">zip</span>(X, y):
-<span class="linenr">22: </span>        <span style="color: #dcaeea;">y_pred</span> <span style="color: #51afef;">=</span> step_function(np.dot(w, xi) <span style="color: #51afef;">+</span> b)
-<span class="linenr">23: </span>        <span style="color: #dcaeea;">error</span> <span style="color: #51afef;">=</span> yi <span style="color: #51afef;">-</span> y_pred
-<span class="linenr">24: </span>        <span style="color: #51afef;">if</span> error <span style="color: #51afef;">!=</span> 0:
-<span class="linenr">25: </span>            <span style="color: #dcaeea;">w</span> <span style="color: #51afef;">=</span> w <span style="color: #51afef;">+</span> eta <span style="color: #51afef;">*</span> error <span style="color: #51afef;">*</span> xi  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27402;&#37325;&#26356;&#26032;
-<span class="linenr">26: </span></span>            <span style="color: #dcaeea;">b</span> <span style="color: #51afef;">=</span> b <span style="color: #51afef;">+</span> eta <span style="color: #51afef;">*</span> error        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20559;&#31227;&#20540;&#26356;&#26032;
-<span class="linenr">27: </span></span>            <span style="color: #dcaeea;">errors</span> <span style="color: #51afef;">+=</span> 1
-<span class="linenr">28: </span>    <span style="color: #51afef;">if</span> epoch <span style="color: #51afef;">&lt;</span> 5 <span style="color: #51afef;">or</span> errors <span style="color: #51afef;">==</span> 0:
-<span class="linenr">29: </span>        <span style="color: #dcaeea;">changed</span> <span style="color: #51afef;">=</span> <span style="color: #98be65;">"&#65288;&#27402;&#37325;&#24050;&#26356;&#26032;&#65289;"</span> <span style="color: #51afef;">if</span> (<span style="color: #51afef;">not</span> np.array_equal(w, w_before) <span style="color: #51afef;">or</span> b <span style="color: #51afef;">!=</span> b_before) <span style="color: #51afef;">else</span> <span style="color: #98be65;">"&#65288;&#28961;&#35722;&#21270;&#65289;"</span>
-<span class="linenr">30: </span>        <span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"Epoch </span>{epoch<span style="color: #51afef;">+</span>1:2d}<span style="color: #98be65;">: w=[</span>{w[0]:.3f}<span style="color: #98be65;">, </span>{w[1]:.3f}<span style="color: #98be65;">], b=</span>{b:.3f}<span style="color: #98be65;">, &#37679;&#35492;&#25976;=</span>{errors}<span style="color: #98be65;"> </span>{changed}<span style="color: #98be65;">"</span>)
-<span class="linenr">31: </span>    <span style="color: #51afef;">if</span> errors <span style="color: #51afef;">==</span> 0:
-<span class="linenr">32: </span>        <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#35347;&#32244;&#23436;&#25104;&#65281;&#23566;&#24107;&#30340; AI &#38928;&#35686;&#31995;&#32113;&#19978;&#32218;&#20102;&#12290;"</span>)
-<span class="linenr">33: </span>        <span style="color: #51afef;">break</span>
-<span class="linenr">34: </span>
-<span class="linenr">35: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#28204;&#35430;
-<span class="linenr">36: </span></span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">=== &#38928;&#28204;&#32080;&#26524; ==="</span>)
-<span class="linenr">37: </span><span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #c678dd;">len</span>(X)):
-<span class="linenr">38: </span>    <span style="color: #dcaeea;">pred</span> <span style="color: #51afef;">=</span> step_function(np.dot(w, X[i]) <span style="color: #51afef;">+</span> b)
-<span class="linenr">39: </span>    <span style="color: #dcaeea;">result</span> <span style="color: #51afef;">=</span> <span style="color: #98be65;">'&#23384;&#27963;'</span> <span style="color: #51afef;">if</span> pred <span style="color: #51afef;">==</span> 1 <span style="color: #51afef;">else</span> <span style="color: #98be65;">'&#34987;&#30070;'</span>
-<span class="linenr">40: </span>    <span style="color: #dcaeea;">correct</span> <span style="color: #51afef;">=</span> <span style="color: #98be65;">'&#9675;'</span> <span style="color: #51afef;">if</span> pred <span style="color: #51afef;">==</span> y[i] <span style="color: #51afef;">else</span> <span style="color: #98be65;">'&#215;'</span>
-<span class="linenr">41: </span>    <span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"  </span>{names[i]}<span style="color: #98be65;">: &#28369;&#25163;&#27231;</span>{X[i][0]}<span style="color: #98be65;">hr &#35712;&#26360;</span>{X[i][1]}<span style="color: #98be65;">hr &#8594; </span>{result}<span style="color: #98be65;"> </span>{correct}<span style="color: #98be65;">"</span>)
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21295;&#20837; numpy
+<span class="linenr"> 2: </span></span>
+<span class="linenr"> 3: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38542;&#26799;&#20989;&#25976;&#65306;&#24863;&#30693;&#22120;&#30340;&#12300;&#21028;&#23448;&#12301;
+<span class="linenr"> 4: </span></span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">step_function</span>(x):
+<span class="linenr"> 5: </span>    <span style="color: #51afef;">return</span> np.array(x <span style="color: #51afef;">&gt;=</span> 0, dtype<span style="color: #51afef;">=</span><span style="color: #c678dd;">int</span>)
+<span class="linenr"> 6: </span>
+<span class="linenr"> 7: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35347;&#32244;&#36039;&#26009;&#65306;&#27599;&#21015; = [&#27599;&#36913;&#28369;&#25163;&#27231;hr, &#27599;&#36913;&#35712;&#26360;hr]
+<span class="linenr"> 8: </span></span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23566;&#24107;&#26263;&#20013;&#35264;&#23519;&#30340; 6 &#20301;&#21516;&#23416;&#65288;&#36889;&#31278;&#32769;&#24107;&#30495;&#30340;&#23384;&#22312;&#21966;&#65311;&#65289;
+<span class="linenr"> 9: </span></span><span style="color: #dcaeea;">X</span> <span style="color: #51afef;">=</span> np.array([[30,2], [5,25], [25,5], [10,20], [20,10], [15,15]])
+<span class="linenr">10: </span><span style="color: #dcaeea;">y</span> <span style="color: #51afef;">=</span> np.array([0, 1, 0, 1, 0, 1])  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27491;&#30906;&#31572;&#26696;&#65306;0=&#34987;&#30070;, 1=&#23384;&#27963;
+<span class="linenr">11: </span></span><span style="color: #dcaeea;">names</span> <span style="color: #51afef;">=</span> [<span style="color: #98be65;">'&#23567;&#26126;'</span>, <span style="color: #98be65;">'&#23416;&#38712;'</span>, <span style="color: #98be65;">'&#38463;&#23429;'</span>, <span style="color: #98be65;">'&#35469;&#30495;&#22969;'</span>, <span style="color: #98be65;">'&#31038;&#30044;'</span>, <span style="color: #98be65;">'&#35258;&#37266;&#32773;'</span>]
+<span class="linenr">12: </span>
+<span class="linenr">13: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">===== &#21021;&#22987;&#21270;&#65306;&#19968;&#20999;&#24478;&#38646;&#38283;&#22987; =====
+<span class="linenr">14: </span></span><span style="color: #dcaeea;">w</span> <span style="color: #51afef;">=</span> np.zeros(2)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27402;&#37325;&#21021;&#22987;&#28858; [0, 0]&#65288;&#24863;&#30693;&#22120;&#19968;&#38283;&#22987;&#20160;&#40636;&#37117;&#19981;&#30693;&#36947;&#65289;
+<span class="linenr">15: </span></span><span style="color: #dcaeea;">b</span> <span style="color: #51afef;">=</span> 0.0          <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20559;&#31227;&#20540;&#20063;&#24478; 0 &#38283;&#22987;
+<span class="linenr">16: </span></span><span style="color: #dcaeea;">eta</span> <span style="color: #51afef;">=</span> 0.01       <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23416;&#32722;&#29575;&#65306;&#27599;&#27425;&#29359;&#37679;&#26178;&#35519;&#25972;&#30340;&#24133;&#24230;&#65288;&#22826;&#22823;&#26371;&#26292;&#36208;&#65292;&#22826;&#23567;&#26371;&#40860;&#36895;&#65289;
+<span class="linenr">17: </span></span>
+<span class="linenr">18: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">===== &#35347;&#32244;&#36942;&#31243;&#65306;&#24478;&#37679;&#35492;&#20013;&#23416;&#32722; =====
+<span class="linenr">19: </span></span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#21021;&#22987;&#29376;&#24907;: w=[</span>{w[0]:.3f}<span style="color: #98be65;">, </span>{w[1]:.3f}<span style="color: #98be65;">], b=</span>{b:.3f}<span style="color: #98be65;">"</span>)
+<span class="linenr">20: </span><span style="color: #51afef;">for</span> epoch <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(50):  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#26368;&#22810;&#36305; 50 &#36650;&#65288;epoch = &#25226;&#25152;&#26377;&#36039;&#26009;&#30475;&#19968;&#36941;&#65289;
+<span class="linenr">21: </span></span>    <span style="color: #dcaeea;">w_before</span>, <span style="color: #dcaeea;">b_before</span> <span style="color: #51afef;">=</span> w.copy(), b  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20808;&#35352;&#20303;&#36889;&#36650;&#38283;&#22987;&#21069;&#30340;&#27402;&#37325;&#65288;&#31561;&#19979;&#27604;&#36611;&#29992;&#65289;
+<span class="linenr">22: </span></span>    <span style="color: #dcaeea;">errors</span> <span style="color: #51afef;">=</span> 0  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36889;&#36650;&#29359;&#20102;&#24190;&#27425;&#37679;
+<span class="linenr">23: </span></span>    <span style="color: #51afef;">for</span> xi, yi <span style="color: #51afef;">in</span> <span style="color: #c678dd;">zip</span>(X, y):  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36880;&#31558;&#30475;&#35347;&#32244;&#36039;&#26009;
+<span class="linenr">24: </span></span>        <span style="color: #dcaeea;">y_pred</span> <span style="color: #51afef;">=</span> step_function(np.dot(w, xi) <span style="color: #51afef;">+</span> b)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#29992;&#30446;&#21069;&#30340;&#27402;&#37325;&#20570;&#38928;&#28204;
+<span class="linenr">25: </span></span>        <span style="color: #dcaeea;">error</span> <span style="color: #51afef;">=</span> yi <span style="color: #51afef;">-</span> y_pred  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31639;&#35492;&#24046;&#65306;&#27491;&#30906;&#31572;&#26696; - &#38928;&#28204;&#20540;&#65288;0=&#29468;&#23565;&#65292;&#38750;0=&#29468;&#37679;&#65289;
+<span class="linenr">26: </span></span>        <span style="color: #51afef;">if</span> error <span style="color: #51afef;">!=</span> 0:  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#29468;&#37679;&#20102;&#65281;&#35442;&#35519;&#25972;&#20102;
+<span class="linenr">27: </span></span>            <span style="color: #dcaeea;">w</span> <span style="color: #51afef;">=</span> w <span style="color: #51afef;">+</span> eta <span style="color: #51afef;">*</span> error <span style="color: #51afef;">*</span> xi  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#26356;&#26032;&#27402;&#37325;&#65306;&#24448;&#27491;&#30906;&#26041;&#21521;&#24494;&#35519;
+<span class="linenr">28: </span></span>            <span style="color: #dcaeea;">b</span> <span style="color: #51afef;">=</span> b <span style="color: #51afef;">+</span> eta <span style="color: #51afef;">*</span> error       <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#26356;&#26032;&#20559;&#31227;&#20540;
+<span class="linenr">29: </span></span>            <span style="color: #dcaeea;">errors</span> <span style="color: #51afef;">+=</span> 1               <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#37679;&#35492;&#25976; +1
+<span class="linenr">30: </span></span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21360;&#20986;&#21069; 5 &#36650;&#25110;&#25910;&#25986;&#37027;&#36650;&#30340;&#29376;&#24907;
+<span class="linenr">31: </span></span>    <span style="color: #51afef;">if</span> epoch <span style="color: #51afef;">&lt;</span> 5 <span style="color: #51afef;">or</span> errors <span style="color: #51afef;">==</span> 0:
+<span class="linenr">32: </span>        <span style="color: #dcaeea;">changed</span> <span style="color: #51afef;">=</span> <span style="color: #98be65;">"&#65288;&#27402;&#37325;&#24050;&#26356;&#26032;&#65289;"</span> <span style="color: #51afef;">if</span> (<span style="color: #51afef;">not</span> np.array_equal(w, w_before) <span style="color: #51afef;">or</span> b <span style="color: #51afef;">!=</span> b_before) <span style="color: #51afef;">else</span> <span style="color: #98be65;">"&#65288;&#28961;&#35722;&#21270;&#65289;"</span>
+<span class="linenr">33: </span>        <span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"Epoch </span>{epoch<span style="color: #51afef;">+</span>1:2d}<span style="color: #98be65;">: w=[</span>{w[0]:.3f}<span style="color: #98be65;">, </span>{w[1]:.3f}<span style="color: #98be65;">], b=</span>{b:.3f}<span style="color: #98be65;">, &#37679;&#35492;&#25976;=</span>{errors}<span style="color: #98be65;"> </span>{changed}<span style="color: #98be65;">"</span>)
+<span class="linenr">34: </span>    <span style="color: #51afef;">if</span> errors <span style="color: #51afef;">==</span> 0:  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#19968;&#25972;&#36650;&#37117;&#27794;&#29359;&#37679; &#8594; &#35347;&#32244;&#23436;&#25104;&#65281;
+<span class="linenr">35: </span></span>        <span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#35347;&#32244;&#23436;&#25104;&#65281;&#23566;&#24107;&#30340; AI &#38928;&#35686;&#31995;&#32113;&#19978;&#32218;&#20102;&#12290;"</span>)
+<span class="linenr">36: </span>        <span style="color: #51afef;">break</span>
+<span class="linenr">37: </span>
+<span class="linenr">38: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">===== &#29992;&#23416;&#21040;&#30340;&#27402;&#37325;&#38928;&#28204;&#27599;&#20301;&#21516;&#23416; =====
+<span class="linenr">39: </span></span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">=== &#38928;&#28204;&#32080;&#26524; ==="</span>)
+<span class="linenr">40: </span><span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #c678dd;">len</span>(X)):
+<span class="linenr">41: </span>    <span style="color: #dcaeea;">pred</span> <span style="color: #51afef;">=</span> step_function(np.dot(w, X[i]) <span style="color: #51afef;">+</span> b)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20839;&#31309; + &#20559;&#31227; &#8594; &#38542;&#26799;&#20989;&#25976;
+<span class="linenr">42: </span></span>    <span style="color: #dcaeea;">result</span> <span style="color: #51afef;">=</span> <span style="color: #98be65;">'&#23384;&#27963;'</span> <span style="color: #51afef;">if</span> pred <span style="color: #51afef;">==</span> 1 <span style="color: #51afef;">else</span> <span style="color: #98be65;">'&#34987;&#30070;'</span>
+<span class="linenr">43: </span>    <span style="color: #dcaeea;">correct</span> <span style="color: #51afef;">=</span> <span style="color: #98be65;">'&#9675;'</span> <span style="color: #51afef;">if</span> pred <span style="color: #51afef;">==</span> y[i] <span style="color: #51afef;">else</span> <span style="color: #98be65;">'&#215;'</span>
+<span class="linenr">44: </span>    <span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"  </span>{names[i]}<span style="color: #98be65;">: &#28369;&#25163;&#27231;</span>{X[i][0]}<span style="color: #98be65;">hr &#35712;&#26360;</span>{X[i][1]}<span style="color: #98be65;">hr &#8594; </span>{result}<span style="color: #98be65;"> </span>{correct}<span style="color: #98be65;">"</span>)
 </pre>
 </div>
 
@@ -1507,7 +1541,7 @@ w=[1, 2], b=-6 可以全部分對（8/8）
 <p>
 <b>正確答案：</b>
 </p>
-<pre class="example" id="org819fbe5">
+<pre class="example" id="org9a4e4b4">
 Epoch 6 收斂（6 個 epoch 就全部答對）
 最終權重：w=[-0.300, 0.580], b=0.010
 
@@ -1517,8 +1551,8 @@ Epoch 6 收斂（6 個 epoch 就全部答對）
 </pre>
 </div>
 </div>
-<div id="outline-container-org6363479" class="outline-4">
-<h4 id="org6363479"><span class="section-number-4">4.2.4.</span> 任務 B：預測新同學的命運</h4>
+<div id="outline-container-orgceb597d" class="outline-4">
+<h4 id="orgceb597d"><span class="section-number-4">4.2.4.</span> 任務 B：預測新同學的命運</h4>
 <div class="outline-text-4" id="text-4-2-4">
 <p>
 導師又盯上了三位可疑人物。在上方程式碼的 <b>最後面</b> 加入以下程式碼，預測他們期末的下場：
@@ -1526,21 +1560,22 @@ Epoch 6 收斂（6 個 epoch 就全部答對）
 
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#65288;&#25509;&#32396;&#19978;&#26041;&#31243;&#24335;&#30908;&#65292;&#35531;&#36028;&#22312;&#26368;&#24460;&#38754;&#19968;&#36215;&#22519;&#34892;&#65289;
-<span class="linenr"> 2: </span></span>
-<span class="linenr"> 3: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38928;&#28204;&#26032;&#21516;&#23416;
-<span class="linenr"> 4: </span></span><span style="color: #dcaeea;">new_students</span> <span style="color: #51afef;">=</span> [
-<span class="linenr"> 5: </span>    (<span style="color: #98be65;">"&#37002;&#32227;&#20154;"</span>, [18, 12]),   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#28369;&#25163;&#27231;&#30053;&#22810;&#26044;&#35712;&#26360;
-<span class="linenr"> 6: </span></span>    (<span style="color: #98be65;">"&#20315;&#31995;&#20180;"</span>, [15, 16]),   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24190;&#20046;&#19968;&#21322;&#19968;&#21322;&#65292;&#35712;&#26360;&#21482;&#22810; 1 &#23567;&#26178;
-<span class="linenr"> 7: </span></span>    (<span style="color: #98be65;">"&#25163;&#36938;&#29579;"</span>, [35, 1]),    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#19981;&#29992;&#38928;&#28204;&#20320;&#20063;&#30693;&#36947;
-<span class="linenr"> 8: </span></span>]
-<span class="linenr"> 9: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">=== &#23566;&#24107;&#30340;&#40657;&#21517;&#21934;&#38928;&#28204; ==="</span>)
-<span class="linenr">10: </span><span style="color: #51afef;">for</span> name, data <span style="color: #51afef;">in</span> new_students:
-<span class="linenr">11: </span>    <span style="color: #dcaeea;">x</span> <span style="color: #51afef;">=</span> np.array(data)
-<span class="linenr">12: </span>    <span style="color: #dcaeea;">score</span> <span style="color: #51afef;">=</span> np.dot(w, x) <span style="color: #51afef;">+</span> b
-<span class="linenr">13: </span>    <span style="color: #dcaeea;">pred</span> <span style="color: #51afef;">=</span> step_function(score)
-<span class="linenr">14: </span>    <span style="color: #dcaeea;">status</span> <span style="color: #51afef;">=</span> <span style="color: #98be65;">'&#23384;&#27963;'</span> <span style="color: #51afef;">if</span> pred <span style="color: #51afef;">==</span> 1 <span style="color: #51afef;">else</span> <span style="color: #98be65;">'&#34987;&#30070;'</span>
-<span class="linenr">15: </span>    <span style="color: #dcaeea;">emoji</span> <span style="color: #51afef;">=</span> <span style="color: #98be65;">'&#23433;&#20840;&#36942;&#38364;'</span> <span style="color: #51afef;">if</span> pred <span style="color: #51afef;">==</span> 1 <span style="color: #51afef;">else</span> <span style="color: #98be65;">'&#28310;&#20633;&#21483;&#23478;&#38263;'</span>
-<span class="linenr">16: </span>    <span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"  </span>{name}<span style="color: #98be65;">: &#28369;</span>{data[0]}<span style="color: #98be65;">hr &#35712;</span>{data[1]}<span style="color: #98be65;">hr &#8594; &#20998;&#25976;=</span>{score:.2f}<span style="color: #98be65;"> &#8594; </span>{status}<span style="color: #98be65;">&#65288;</span>{emoji}<span style="color: #98be65;">&#65289;"</span>)
+<span class="linenr"> 2: </span></span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27880;&#24847;&#65306;&#36889;&#27573;&#38656;&#35201;&#29992;&#21040;&#19978;&#26041;&#24050;&#32147;&#35347;&#32244;&#22909;&#30340; w &#21644; b&#65292;&#25152;&#20197;&#35201;&#19968;&#36215;&#36305;
+<span class="linenr"> 3: </span></span>
+<span class="linenr"> 4: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#19977;&#20301;&#26032;&#21516;&#23416;&#30340;&#36039;&#26009;&#65306;[&#27599;&#36913;&#28369;&#25163;&#27231;hr, &#27599;&#36913;&#35712;&#26360;hr]
+<span class="linenr"> 5: </span></span><span style="color: #dcaeea;">new_students</span> <span style="color: #51afef;">=</span> [
+<span class="linenr"> 6: </span>    (<span style="color: #98be65;">"&#37002;&#32227;&#20154;"</span>, [18, 12]),   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#28369;&#25163;&#27231;&#30053;&#22810;&#26044;&#35712;&#26360;&#65292;&#21629;&#36939;&#26410;&#21340;
+<span class="linenr"> 7: </span></span>    (<span style="color: #98be65;">"&#20315;&#31995;&#20180;"</span>, [15, 16]),   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24190;&#20046;&#19968;&#21322;&#19968;&#21322;&#65292;&#35712;&#26360;&#21482;&#22810; 1 &#23567;&#26178;
+<span class="linenr"> 8: </span></span>    (<span style="color: #98be65;">"&#25163;&#36938;&#29579;"</span>, [35, 1]),    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#19981;&#29992;&#38928;&#28204;&#20320;&#20063;&#30693;&#36947;&#32080;&#26524;&#20102;&#21543;
+<span class="linenr"> 9: </span></span>]
+<span class="linenr">10: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">=== &#23566;&#24107;&#30340;&#40657;&#21517;&#21934;&#38928;&#28204; ==="</span>)
+<span class="linenr">11: </span><span style="color: #51afef;">for</span> name, data <span style="color: #51afef;">in</span> new_students:
+<span class="linenr">12: </span>    <span style="color: #dcaeea;">x</span> <span style="color: #51afef;">=</span> np.array(data)               <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25226;&#36039;&#26009;&#36681;&#25104; numpy &#38499;&#21015;
+<span class="linenr">13: </span></span>    <span style="color: #dcaeea;">score</span> <span style="color: #51afef;">=</span> np.dot(w, x) <span style="color: #51afef;">+</span> b         <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31639;&#20998;&#25976; = w1*&#28369;&#25163;&#27231; + w2*&#35712;&#26360; + b
+<span class="linenr">14: </span></span>    <span style="color: #dcaeea;">pred</span> <span style="color: #51afef;">=</span> step_function(score)       <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20998;&#25976; &gt;= 0 &#8594; &#23384;&#27963;(1)&#65292;&lt; 0 &#8594; &#34987;&#30070;(0)
+<span class="linenr">15: </span></span>    <span style="color: #dcaeea;">status</span> <span style="color: #51afef;">=</span> <span style="color: #98be65;">'&#23384;&#27963;'</span> <span style="color: #51afef;">if</span> pred <span style="color: #51afef;">==</span> 1 <span style="color: #51afef;">else</span> <span style="color: #98be65;">'&#34987;&#30070;'</span>
+<span class="linenr">16: </span>    <span style="color: #dcaeea;">emoji</span> <span style="color: #51afef;">=</span> <span style="color: #98be65;">'&#23433;&#20840;&#36942;&#38364;'</span> <span style="color: #51afef;">if</span> pred <span style="color: #51afef;">==</span> 1 <span style="color: #51afef;">else</span> <span style="color: #98be65;">'&#28310;&#20633;&#21483;&#23478;&#38263;'</span>
+<span class="linenr">17: </span>    <span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"  </span>{name}<span style="color: #98be65;">: &#28369;</span>{data[0]}<span style="color: #98be65;">hr &#35712;</span>{data[1]}<span style="color: #98be65;">hr &#8594; &#20998;&#25976;=</span>{score:.2f}<span style="color: #98be65;"> &#8594; </span>{status}<span style="color: #98be65;">&#65288;</span>{emoji}<span style="color: #98be65;">&#65289;"</span>)
 </pre>
 </div>
 
@@ -1556,7 +1591,7 @@ Epoch 6 收斂（6 個 epoch 就全部答對）
 <p>
 <b>正確答案：</b>
 </p>
-<pre class="example" id="org5716930">
+<pre class="example" id="orgfebf5f4">
   邊緣人: 滑18hr 讀12hr → 分數=1.57 → 存活（驚險過關）
   佛系仔: 滑15hr 讀16hr → 分數=4.79 → 存活（讀書權重比滑手機高，多讀 1 小時就夠了）
   手遊王: 滑35hr 讀1hr → 分數=-9.91 → 被當（毫無懸念，準備叫家長）
@@ -1568,8 +1603,8 @@ Epoch 6 收斂（6 個 epoch 就全部答對）
 </pre>
 </div>
 </div>
-<div id="outline-container-org0906b31" class="outline-4">
-<h4 id="org0906b31"><span class="section-number-4">4.2.5.</span> 任務 C：調整學習率</h4>
+<div id="outline-container-orge7b345c" class="outline-4">
+<h4 id="orge7b345c"><span class="section-number-4">4.2.5.</span> 任務 C：調整學習率</h4>
 <div class="outline-text-4" id="text-4-2-5">
 <p>
 把任務 A 程式碼中的 <code>eta = 0.01</code> 分別改成 <code>0.001</code> 和 <code>0.1</code> ，重新執行，比較：
@@ -1583,7 +1618,7 @@ Epoch 6 收斂（6 個 epoch 就全部答對）
 <p>
 <b>正確答案：</b>
 </p>
-<pre class="example" id="org99dcc8b">
+<pre class="example" id="orgec63686">
 eta=0.001: 收斂 Epoch  6, w=[-0.030, 0.058], b=0.001
 eta=0.010: 收斂 Epoch  6, w=[-0.300, 0.580], b=0.010
 eta=0.100: 收斂 Epoch  6, w=[-3.000, 5.800], b=0.100
@@ -1595,8 +1630,8 @@ eta=1.000: 收斂 Epoch  6, w=[-30.00, 58.00], b=1.000
 </pre>
 </div>
 </div>
-<div id="outline-container-org0b1f18a" class="outline-4">
-<h4 id="org0b1f18a"><span class="section-number-4">4.2.6.</span> 任務 D：畫出決策邊界</h4>
+<div id="outline-container-org50263ce" class="outline-4">
+<h4 id="org50263ce"><span class="section-number-4">4.2.6.</span> 任務 D：畫出決策邊界</h4>
 <div class="outline-text-4" id="text-4-2-6">
 <p>
 在任務 A 程式碼的最後面加入以下程式碼，把導師的 AI 預警系統「看得見」：
@@ -1604,34 +1639,41 @@ eta=1.000: 收斂 Epoch  6, w=[-30.00, 58.00], b=1.000
 
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#65288;&#25509;&#32396;&#20219;&#21209; A &#31243;&#24335;&#30908;&#65292;&#35531;&#36028;&#22312;&#26368;&#24460;&#38754;&#19968;&#36215;&#22519;&#34892;&#65289;
-<span class="linenr"> 2: </span></span>
-<span class="linenr"> 3: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
-<span class="linenr"> 4: </span>
-<span class="linenr"> 5: </span>plt.figure(figsize<span style="color: #51afef;">=</span>(7, 6))
-<span class="linenr"> 6: </span><span style="color: #dcaeea;">survived</span> <span style="color: #51afef;">=</span> y <span style="color: #51afef;">==</span> 1
-<span class="linenr"> 7: </span><span style="color: #dcaeea;">failed</span> <span style="color: #51afef;">=</span> y <span style="color: #51afef;">==</span> 0
-<span class="linenr"> 8: </span>plt.scatter(X[survived, 0], X[survived, 1], c<span style="color: #51afef;">=</span><span style="color: #98be65;">'green'</span>, marker<span style="color: #51afef;">=</span><span style="color: #98be65;">'o'</span>, s<span style="color: #51afef;">=</span>120, label<span style="color: #51afef;">=</span><span style="color: #98be65;">'&#23384;&#27963;'</span>, zorder<span style="color: #51afef;">=</span>5)
-<span class="linenr"> 9: </span>plt.scatter(X[failed, 0], X[failed, 1], c<span style="color: #51afef;">=</span><span style="color: #98be65;">'red'</span>, marker<span style="color: #51afef;">=</span><span style="color: #98be65;">'x'</span>, s<span style="color: #51afef;">=</span>120, linewidths<span style="color: #51afef;">=</span>2, label<span style="color: #51afef;">=</span><span style="color: #98be65;">'&#34987;&#30070;'</span>, zorder<span style="color: #51afef;">=</span>5)
-<span class="linenr">10: </span>
-<span class="linenr">11: </span><span style="color: #51afef;">for</span> i, name <span style="color: #51afef;">in</span> <span style="color: #c678dd;">enumerate</span>(names):
-<span class="linenr">12: </span>    plt.annotate(name, (X[i,0]<span style="color: #51afef;">+</span>0.5, X[i,1]<span style="color: #51afef;">+</span>0.5), fontsize<span style="color: #51afef;">=</span>10)
-<span class="linenr">13: </span>
-<span class="linenr">14: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27770;&#31574;&#37002;&#30028;
-<span class="linenr">15: </span></span><span style="color: #dcaeea;">x1_line</span> <span style="color: #51afef;">=</span> np.linspace(0, 40, 100)
-<span class="linenr">16: </span><span style="color: #51afef;">if</span> w[1] <span style="color: #51afef;">!=</span> 0:
-<span class="linenr">17: </span>    <span style="color: #dcaeea;">x2_line</span> <span style="color: #51afef;">=</span> <span style="color: #51afef;">-</span>(w[0] <span style="color: #51afef;">*</span> x1_line <span style="color: #51afef;">+</span> b) <span style="color: #51afef;">/</span> w[1]
-<span class="linenr">18: </span>    plt.plot(x1_line, x2_line, <span style="color: #98be65;">'b--'</span>, linewidth<span style="color: #51afef;">=</span>2, label<span style="color: #51afef;">=</span><span style="color: #98be65;">'&#27770;&#31574;&#37002;&#30028;&#65288;&#29983;&#27515;&#32218;&#65289;'</span>)
+<span class="linenr"> 2: </span></span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38656;&#35201;&#29992;&#21040;&#19978;&#26041;&#30340; w, b, X, y, names
+<span class="linenr"> 3: </span></span>
+<span class="linenr"> 4: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21295;&#20837;&#30059;&#22294;&#24037;&#20855;
+<span class="linenr"> 5: </span></span>
+<span class="linenr"> 6: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;&#31435;&#19968;&#24373; 7x6 &#21515;&#30340;&#22294;
+<span class="linenr"> 7: </span></span>plt.figure(figsize<span style="color: #51afef;">=</span>(7, 6))
+<span class="linenr"> 8: </span><span style="color: #dcaeea;">survived</span> <span style="color: #51afef;">=</span> y <span style="color: #51afef;">==</span> 1  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24067;&#26519;&#36974;&#32617;&#65306;&#23384;&#27963;&#30340;&#21516;&#23416;
+<span class="linenr"> 9: </span></span><span style="color: #dcaeea;">failed</span> <span style="color: #51afef;">=</span> y <span style="color: #51afef;">==</span> 0    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24067;&#26519;&#36974;&#32617;&#65306;&#34987;&#30070;&#30340;&#21516;&#23416;
+<span class="linenr">10: </span></span>
+<span class="linenr">11: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#30059;&#25955;&#20296;&#22294;&#65306;&#23384;&#27963;=&#32160;&#33394;&#22291;&#40670;&#65292;&#34987;&#30070;=&#32005;&#33394;&#21449;&#21449;
+<span class="linenr">12: </span></span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">zorder=5 &#35731;&#40670;&#30059;&#22312;&#26368;&#19978;&#23652;&#65288;&#19981;&#26371;&#34987;&#32218;&#33995;&#20303;&#65289;
+<span class="linenr">13: </span></span>plt.scatter(X[survived, 0], X[survived, 1], c<span style="color: #51afef;">=</span><span style="color: #98be65;">'green'</span>, marker<span style="color: #51afef;">=</span><span style="color: #98be65;">'o'</span>, s<span style="color: #51afef;">=</span>120, label<span style="color: #51afef;">=</span><span style="color: #98be65;">'&#23384;&#27963;'</span>, zorder<span style="color: #51afef;">=</span>5)
+<span class="linenr">14: </span>plt.scatter(X[failed, 0], X[failed, 1], c<span style="color: #51afef;">=</span><span style="color: #98be65;">'red'</span>, marker<span style="color: #51afef;">=</span><span style="color: #98be65;">'x'</span>, s<span style="color: #51afef;">=</span>120, linewidths<span style="color: #51afef;">=</span>2, label<span style="color: #51afef;">=</span><span style="color: #98be65;">'&#34987;&#30070;'</span>, zorder<span style="color: #51afef;">=</span>5)
+<span class="linenr">15: </span>
+<span class="linenr">16: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#22312;&#27599;&#20491;&#40670;&#26049;&#37002;&#27161;&#19978;&#21516;&#23416;&#21517;&#23383;
+<span class="linenr">17: </span></span><span style="color: #51afef;">for</span> i, name <span style="color: #51afef;">in</span> <span style="color: #c678dd;">enumerate</span>(names):
+<span class="linenr">18: </span>    plt.annotate(name, (X[i,0]<span style="color: #51afef;">+</span>0.5, X[i,1]<span style="color: #51afef;">+</span>0.5), fontsize<span style="color: #51afef;">=</span>10)
 <span class="linenr">19: </span>
-<span class="linenr">20: </span>plt.xlabel(<span style="color: #98be65;">'&#27599;&#36913;&#28369;&#25163;&#27231;&#26178;&#25976;'</span>)
-<span class="linenr">21: </span>plt.ylabel(<span style="color: #98be65;">'&#27599;&#36913;&#35712;&#26360;&#26178;&#25976;'</span>)
-<span class="linenr">22: </span>plt.title(<span style="color: #98be65;">'&#23566;&#24107;&#30340; AI &#38928;&#35686;&#31995;&#32113;&#65306;&#26399;&#26411;&#29983;&#27515;&#20998;&#30028;&#32218;'</span>)
-<span class="linenr">23: </span>plt.legend()
-<span class="linenr">24: </span>plt.grid(<span style="color: #a9a1e1;">True</span>, alpha<span style="color: #51afef;">=</span>0.3)
-<span class="linenr">25: </span>plt.xlim(0, 40)
-<span class="linenr">26: </span>plt.ylim(0, 30)
-<span class="linenr">27: </span>plt.savefig(<span style="color: #98be65;">"images/perceptron-flunk.png"</span>, dpi<span style="color: #51afef;">=</span>300)
-<span class="linenr">28: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#27770;&#31574;&#37002;&#30028;&#22294;&#24050;&#20786;&#23384;&#65281;"</span>)
-<span class="linenr">29: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#29983;&#27515;&#32218;&#26041;&#31243;&#24335;: </span>{w[0]:.3f}<span style="color: #98be65;"> &#215; &#28369;&#25163;&#27231; + </span>{w[1]:.3f}<span style="color: #98be65;"> &#215; &#35712;&#26360; + </span>{b:.3f}<span style="color: #98be65;"> = 0"</span>)
+<span class="linenr">20: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#30059;&#27770;&#31574;&#37002;&#30028;&#65288;&#29983;&#27515;&#32218;&#65289;
+<span class="linenr">21: </span></span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25976;&#23416;&#25512;&#23566;&#65306;w1*x1 + w2*x2 + b = 0 &#8594; x2 = -(w1*x1 + b) / w2
+<span class="linenr">22: </span></span><span style="color: #dcaeea;">x1_line</span> <span style="color: #51afef;">=</span> np.linspace(0, 40, 100)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">x &#36600;&#65288;&#28369;&#25163;&#27231;&#26178;&#25976;&#65289;&#21462; 100 &#20491;&#40670;
+<span class="linenr">23: </span></span><span style="color: #51afef;">if</span> w[1] <span style="color: #51afef;">!=</span> 0:  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#30906;&#35469; w2 &#19981;&#26159; 0&#65288;&#38500;&#20197; 0 &#26371;&#29190;&#28856;&#65289;
+<span class="linenr">24: </span></span>    <span style="color: #dcaeea;">x2_line</span> <span style="color: #51afef;">=</span> <span style="color: #51afef;">-</span>(w[0] <span style="color: #51afef;">*</span> x1_line <span style="color: #51afef;">+</span> b) <span style="color: #51afef;">/</span> w[1]  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31639;&#20986;&#23565;&#25033;&#30340; y &#20540;&#65288;&#35712;&#26360;&#26178;&#25976;&#65289;
+<span class="linenr">25: </span></span>    plt.plot(x1_line, x2_line, <span style="color: #98be65;">'b--'</span>, linewidth<span style="color: #51afef;">=</span>2, label<span style="color: #51afef;">=</span><span style="color: #98be65;">'&#27770;&#31574;&#37002;&#30028;&#65288;&#29983;&#27515;&#32218;&#65289;'</span>)
+<span class="linenr">26: </span>
+<span class="linenr">27: </span>plt.xlabel(<span style="color: #98be65;">'&#27599;&#36913;&#28369;&#25163;&#27231;&#26178;&#25976;'</span>)   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">x &#36600;&#27161;&#31844;
+<span class="linenr">28: </span></span>plt.ylabel(<span style="color: #98be65;">'&#27599;&#36913;&#35712;&#26360;&#26178;&#25976;'</span>)     <span style="color: #5B6268;"># </span><span style="color: #5B6268;">y &#36600;&#27161;&#31844;
+<span class="linenr">29: </span></span>plt.title(<span style="color: #98be65;">'&#23566;&#24107;&#30340; AI &#38928;&#35686;&#31995;&#32113;&#65306;&#26399;&#26411;&#29983;&#27515;&#20998;&#30028;&#32218;'</span>)
+<span class="linenr">30: </span>plt.legend()                    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39023;&#31034;&#22294;&#20363;
+<span class="linenr">31: </span></span>plt.grid(<span style="color: #a9a1e1;">True</span>, alpha<span style="color: #51afef;">=</span>0.3)      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#28129;&#28129;&#30340;&#26684;&#32218;
+<span class="linenr">32: </span></span>plt.xlim(0, 40)                <span style="color: #5B6268;"># </span><span style="color: #5B6268;">x &#36600;&#31684;&#22285;
+<span class="linenr">33: </span></span>plt.ylim(0, 30)                <span style="color: #5B6268;"># </span><span style="color: #5B6268;">y &#36600;&#31684;&#22285;
+<span class="linenr">34: </span></span>plt.savefig(<span style="color: #98be65;">"images/perceptron-flunk.png"</span>, dpi<span style="color: #51afef;">=</span>300)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23384;&#27284;&#65288;dpi=300 &#39640;&#30059;&#36074;&#65289;
+<span class="linenr">35: </span></span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#27770;&#31574;&#37002;&#30028;&#22294;&#24050;&#20786;&#23384;&#65281;"</span>)
+<span class="linenr">36: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#29983;&#27515;&#32218;&#26041;&#31243;&#24335;: </span>{w[0]:.3f}<span style="color: #98be65;"> &#215; &#28369;&#25163;&#27231; + </span>{w[1]:.3f}<span style="color: #98be65;"> &#215; &#35712;&#26360; + </span>{b:.3f}<span style="color: #98be65;"> = 0"</span>)
 </pre>
 </div>
 
@@ -1642,7 +1684,7 @@ eta=1.000: 收斂 Epoch  6, w=[-30.00, 58.00], b=1.000
 <p>
 <b>正確答案：</b>
 </p>
-<pre class="example" id="orgef42e20">
+<pre class="example" id="org0ee47fb">
 生死線方程式: -0.300 × 滑手機 + 0.580 × 讀書 + 0.010 = 0
 → 線的右上方（讀書多、滑手機少）= 安全區
 → 線的左下方（讀書少、滑手機多）= 危險區
@@ -1668,7 +1710,7 @@ eta=1.000: 收斂 Epoch  6, w=[-30.00, 58.00], b=1.000
 </div></div>
 <div id="postamble" class="status">
 <p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2026-04-15 Wed 18:27</p>
+<p class="date">Created: 2026-04-15 Wed 19:43</p>
 </div>
 </body>
 </html>

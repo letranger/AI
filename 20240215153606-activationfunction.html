@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2026-02-14 Sat 18:19 -->
+<!-- 2026-04-15 Wed 20:56 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Activation Function</title>
@@ -235,25 +235,25 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org6d6f2e7">1. 簡介</a>
+<li><a href="#org995e3d4">1. 簡介</a>
 <ul>
-<li><a href="#org8500c84">1.1. 線性模型的限制與啟動函數的必要性</a></li>
+<li><a href="#org9eba306">1.1. 線性模型的限制與啟動函數的必要性</a></li>
 </ul>
 </li>
-<li><a href="#orgf8ce7a7">2. 常見的啟動函數（Activation Functions）</a>
+<li><a href="#orgcef7f33">2. 常見的啟動函數（Activation Functions）</a>
 <ul>
-<li><a href="#org3bf23f6">2.1. Step function（階梯函數）</a></li>
-<li><a href="#orgb0c8c00">2.2. Sigmoid</a></li>
-<li><a href="#org76dd56d">2.3. ReLU</a></li>
-<li><a href="#org2f057e8">2.4. Softmax</a></li>
+<li><a href="#orge1e1de9">2.1. Step function（階梯函數）</a></li>
+<li><a href="#org1b851a0">2.2. Sigmoid</a></li>
+<li><a href="#orgde86f1c">2.3. ReLU</a></li>
+<li><a href="#orgac42a72">2.4. Softmax</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 <a href="https://letranger.github.io/AI/20240215153606-activationfunction.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20240215153606-activationfunction.html.svg"/></a>
-<div id="outline-container-org6d6f2e7" class="outline-2">
-<h2 id="org6d6f2e7"><span class="section-number-2">1.</span> 簡介</h2>
+<div id="outline-container-org995e3d4" class="outline-2">
+<h2 id="org995e3d4"><span class="section-number-2">1.</span> 簡介</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 在神經網路中，有一個非常重要的元件叫做 Activation Function（啟動函數）。這個詞的中文翻譯有很多版本，常見的包括：
@@ -282,8 +282,8 @@ Activation Function 是讓神經網路真正「有智慧」的關鍵之一，它
 </ul></li>
 </ol>
 </div>
-<div id="outline-container-org8500c84" class="outline-3">
-<h3 id="org8500c84"><span class="section-number-3">1.1.</span> 線性模型的限制與啟動函數的必要性</h3>
+<div id="outline-container-org9eba306" class="outline-3">
+<h3 id="org9eba306"><span class="section-number-3">1.1.</span> 線性模型的限制與啟動函數的必要性</h3>
 <div class="outline-text-3" id="text-1-1">
 <p>
 如果一個神經網路由沒有使用 Activation Function 的感知器（Perceptron）所組成，那它本質上只是個線性模型。線性模型無法處理複雜的非線性問題。
@@ -291,11 +291,11 @@ Activation Function 是讓神經網路真正「有智慧」的關鍵之一，它
 
 <p>
 為了解釋這個概念，我們來看看底下這個堆疊兩層<a href="20221023103538-感知器.html">感知器</a>的例子，這個例子中我們假設有兩個輸入特徵 \(x_1\) 和 \(x_2\)，沒有使用 Activation Function，為了讓概念更清楚，我們也暫時忽略偏移值(bias) \(b\)，只看權重\(w\)與輸入\(x\)。
- 的感知器只能計算出一個線性組合：
+沒有啟動函數的感知器只能計算出一個線性組合：
 </p>
 
 
-<div id="org196aa30" class="figure">
+<div id="org8a115c3" class="figure">
 <p><img src="./images/MLP-AC.png" alt="MLP-AC.png" width="500" />
 </p>
 <p><span class="figure-number">Figure 1: </span>Stacked perceptrons</p>
@@ -322,7 +322,7 @@ y_2 = w_3^1x_1 + w_4^1x_2 \\
 這表示：
 </p>
 <ul class="org-ul">
-<li>雖然我們堆了兩層，但最後結果仍是 輸入變數 x1,x2x1​,x2​ 的線性組合。</li>
+<li>雖然我們堆了兩層，但最後結果仍是輸入變數 \(x_1, x_2\) 的線性組合。</li>
 <li>堆再多層都沒有用，本質上還是單一感知器可以做的事。</li>
 </ul>
 
@@ -331,11 +331,11 @@ y_2 = w_3^1x_1 + w_4^1x_2 \\
 </p>
 
 <p>
-舉個常見的例子，如果輸入的資料如圖<a href="#orgbfbbd1b">2</a>(這是互斥或閘XOR的例子)，紅點(B)與藍點(A)分別是兩種不同的類別，我們的目標就是利用一條直線將兩類別切開，但實際上根本辦不到，這就是線性模型的極限。
+舉個常見的例子，如果輸入的資料如圖<a href="#orga68074a">2</a>(這是互斥或閘XOR的例子)，紅點(B)與藍點(A)分別是兩種不同的類別，我們的目標就是利用一條直線將兩類別切開，但實際上根本辦不到，這就是線性模型的極限。
 </p>
 
 
-<div id="orgbfbbd1b" class="figure">
+<div id="orga68074a" class="figure">
 <p><img src="images/2021-05-24_14-18-51.jpg" alt="2021-05-24_14-18-51.jpg" width="400" />
 </p>
 <p><span class="figure-number">Figure 2: </span>XOR Gate Solution ideas</p>
@@ -352,15 +352,15 @@ y_2 = w_3^1x_1 + w_4^1x_2 \\
 </div>
 </div>
 </div>
-<div id="outline-container-orgf8ce7a7" class="outline-2">
-<h2 id="orgf8ce7a7"><span class="section-number-2">2.</span> 常見的啟動函數（Activation Functions）</h2>
+<div id="outline-container-orgcef7f33" class="outline-2">
+<h2 id="orgcef7f33"><span class="section-number-2">2.</span> 常見的啟動函數（Activation Functions）</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 在神經網路中，啟動函數的主要目的在於引入非線性，使得模型能處理複雜、非線性可分的問題。以下介紹幾種常見的啟動函數：
 </p>
 </div>
-<div id="outline-container-org3bf23f6" class="outline-3">
-<h3 id="org3bf23f6"><span class="section-number-3">2.1.</span> Step function（階梯函數）</h3>
+<div id="outline-container-orge1e1de9" class="outline-3">
+<h3 id="orge1e1de9"><span class="section-number-3">2.1.</span> Step function（階梯函數）</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
 Step 函數是最早期的啟動函數之一。它的規則很簡單：
@@ -371,33 +371,36 @@ Step 函數是最早期的啟動函數之一。它的規則很簡單：
 </ul>
 
 <p>
-這裡是它的數學表示式（見公式 \eqref{orga89ae26}）與對應圖形（圖<a href="#org4439129">3</a>)：
+這裡是它的數學表示式（見公式 \eqref{org427e9c1}）與對應圖形（圖<a href="#org61acf60">3</a>)：
 </p>
 \begin{equation}
-\label{orga89ae26}
+\label{org427e9c1}
 h(x) = \begin{cases}
 1 & \text{if } x > 0 \\
 0 & \text{if } x\leq 0
 \end{cases}
 \end{equation}
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
-<span class="linenr"> 2: </span><span style="color: #51afef;">import</span> matplotlib.pylab <span style="color: #51afef;">as</span> plt
-<span class="linenr"> 3: </span>
-<span class="linenr"> 4: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">step_function</span>(x):
-<span id="coderef-why" class="coderef-off"><span class="linenr"> 5: </span>    <span style="color: #51afef;">return</span> np.array(x&gt;<span style="color: #da8548; font-weight: bold;">0</span>, dtype=np.<span style="color: #c678dd;">int</span>)</span>
-<span class="linenr"> 6: </span>
-<span class="linenr"> 7: </span><span style="color: #dcaeea;">x</span> = np.arange(-<span style="color: #da8548; font-weight: bold;">5.0</span>, <span style="color: #da8548; font-weight: bold;">5.0</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>)
-<span class="linenr"> 8: </span><span style="color: #dcaeea;">y</span> = step_function(x)
-<span class="linenr"> 9: </span>plt.figure(figsize=(<span style="color: #da8548; font-weight: bold;">4</span>,<span style="color: #da8548; font-weight: bold;">3</span>))
-<span class="linenr">10: </span>plt.plot(x, y)
-<span class="linenr">11: </span>plt.ylim(-<span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">1.1</span>)
-<span class="linenr">12: </span>plt.savefig(<span style="color: #98be65;">"images/stepFuncPlot.png"</span>)
-<span class="linenr">13: </span><span style="color: #51afef;">return</span> <span style="color: #98be65;">"images/stepFuncPlot.png"</span>
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np               <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21295;&#20837; NumPy&#65292;&#25976;&#20540;&#36939;&#31639;&#30340;&#29790;&#22763;&#20992;
+<span class="linenr"> 2: </span></span><span style="color: #51afef;">import</span> matplotlib.pylab <span style="color: #51afef;">as</span> plt   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21295;&#20837; Matplotlib&#65292;&#23560;&#38272;&#30059;&#22294;&#29992;&#30340;
+<span class="linenr"> 3: </span></span>
+<span class="linenr"> 4: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23450;&#32681;&#38542;&#26799;&#20989;&#25976;&#65306;&#36664;&#20837;&#22823;&#26044; 0 &#23601;&#36664;&#20986; 1&#65292;&#21542;&#21063;&#36664;&#20986; 0
+<span class="linenr"> 5: </span></span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23601;&#20687;&#32771;&#35430;&#21450;&#26684;&#33287;&#19981;&#21450;&#26684;&#65292;&#27794;&#26377;&#20013;&#38291;&#22320;&#24118;&#65292;&#38750;&#40657;&#21363;&#30333;
+<span class="linenr"> 6: </span></span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">step_function</span>(x):
+<span class="linenr"> 7: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">x&gt;0 &#26371;&#29986;&#29983; True/False &#38499;&#21015;&#65292;&#20877;&#29992; dtype=int &#25226; True &#35722; 1&#12289;False &#35722; 0
+<span class="linenr"> 8: </span></span>    <span style="color: #51afef;">return</span> np.array(x<span style="color: #51afef;">&gt;</span>0, dtype<span style="color: #51afef;">=</span><span style="color: #c678dd;">int</span>)
+<span class="linenr"> 9: </span>
+<span class="linenr">10: </span><span style="color: #dcaeea;">x</span> <span style="color: #51afef;">=</span> np.arange(<span style="color: #51afef;">-</span>5.0, 5.0, 0.1)   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#29986;&#29983;&#24478; -5 &#21040; 5&#65288;&#19981;&#21547;&#65289;&#30340;&#25976;&#21015;&#65292;&#38291;&#38548; 0.1
+<span class="linenr">11: </span></span><span style="color: #dcaeea;">y</span> <span style="color: #51afef;">=</span> step_function(x)             <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25226;&#27599;&#20491; x &#20540;&#19999;&#36914;&#38542;&#26799;&#20989;&#25976;&#65292;&#24471;&#21040;&#23565;&#25033;&#30340; y &#20540;
+<span class="linenr">12: </span></span>plt.figure(figsize<span style="color: #51afef;">=</span>(4,3))        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;&#31435;&#19968;&#24373; 4x3 &#21515;&#30340;&#30059;&#24067;
+<span class="linenr">13: </span></span>plt.plot(x, y)                   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#30059;&#20986; x &#21644; y &#30340;&#25240;&#32218;&#22294;
+<span class="linenr">14: </span></span>plt.ylim(<span style="color: #51afef;">-</span>0.1, 1.1)             <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35373;&#23450; y &#36600;&#31684;&#22285;&#65292;&#30041;&#19968;&#40670;&#31354;&#38291;&#27604;&#36611;&#22909;&#30475;
+<span class="linenr">15: </span></span>plt.savefig(<span style="color: #98be65;">"images/stepFuncPlot.png"</span>)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25226;&#22294;&#23384;&#25104; PNG &#27284;
+<span class="linenr">16: </span></span><span style="color: #51afef;">return</span> <span style="color: #98be65;">"images/stepFuncPlot.png"</span>
 </pre>
 </div>
 
-<div id="org4439129" class="figure">
+<div id="org61acf60" class="figure">
 <p><img src="images/stepFuncPlot.png" alt="stepFuncPlot.png" width="400" />
 </p>
 <p><span class="figure-number">Figure 3: </span>階梯函數圖</p>
@@ -419,37 +422,42 @@ Step 函數的優點在於：
 </ul>
 </div>
 </div>
-<div id="outline-container-orgb0c8c00" class="outline-3">
-<h3 id="orgb0c8c00"><span class="section-number-3">2.2.</span> Sigmoid</h3>
+<div id="outline-container-org1b851a0" class="outline-3">
+<h3 id="org1b851a0"><span class="section-number-3">2.2.</span> Sigmoid</h3>
 <div class="outline-text-3" id="text-2-2">
 <p>
-Sigmoid 函數能將輸入轉換為 0 到 1 之間的實數，曲線平滑，常用於輸出表示機率。公式\eqref{org2408908}即為 sigmoid 函數(sigmoid function)，其中的\(exp(-x)\)代表\(e^{-x}\)，\(e\)為納皮爾常數(Napier&rsquo;s constant)，這是一個值為2.71828的實數。
+Sigmoid 函數能將輸入轉換為 0 到 1 之間的實數，曲線平滑，常用於輸出表示機率。公式\eqref{org4c55411}即為 sigmoid 函數(sigmoid function)，其中的\(exp(-x)\)代表\(e^{-x}\)，\(e\)為納皮爾常數(Napier&rsquo;s constant)，這是一個值為2.71828的實數。
 </p>
 \begin{equation}
-\label{org2408908}
+\label{org4c55411}
 h(x) = \frac{1}{1+exp(-x)} = \frac{1}{1+e^{-x}}
 \end{equation}
 
 <p>
-sigmoid 函數的 python 實作如下所述，而其圖形結果為平滑曲線(圖<a href="#org3ebbdd6">4</a>)，針對輸入產生連續性的輸出，但仍與階梯函數相同，以 0 為界線，這種平滑度對於神經網路有相當重要的意義。此外，step function只能回傳 0 或 1，而 sigmoid 函數可以回傳實數。
+sigmoid 函數的 python 實作如下所述，而其圖形結果為平滑曲線(圖<a href="#org0f33def">4</a>)，針對輸入產生連續性的輸出，但仍與階梯函數相同，以 0 為界線，這種平滑度對於神經網路有相當重要的意義。此外，step function只能回傳 0 或 1，而 sigmoid 函數可以回傳實數。
 </p>
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
-<span class="linenr"> 2: </span><span style="color: #51afef;">import</span> matplotlib.pylab <span style="color: #51afef;">as</span> plt
-<span class="linenr"> 3: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">sigmoid</span>(x):
-<span class="linenr"> 4: </span>    <span style="color: #51afef;">return</span> <span style="color: #da8548; font-weight: bold;">1</span> / (<span style="color: #da8548; font-weight: bold;">1</span> + np.exp(-x))
-<span class="linenr"> 5: </span><span style="color: #dcaeea;">x</span> = np.arange(-<span style="color: #da8548; font-weight: bold;">5.0</span>, <span style="color: #da8548; font-weight: bold;">5.0</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>)
-<span class="linenr"> 6: </span><span style="color: #dcaeea;">y</span> = sigmoid(x)
-<span class="linenr"> 7: </span><span style="color: #c678dd;">print</span>(y)
-<span class="linenr"> 8: </span>plt.figure(figsize=(<span style="color: #da8548; font-weight: bold;">4</span>,<span style="color: #da8548; font-weight: bold;">3</span>))
-<span class="linenr"> 9: </span>plt.plot(x, y)
-<span class="linenr">10: </span>plt.ylim(-<span style="color: #da8548; font-weight: bold;">0.1</span>, <span style="color: #da8548; font-weight: bold;">1.1</span>)
-<span class="linenr">11: </span>plt.savefig(<span style="color: #98be65;">"images/sigmoidplot2.png"</span>)
-<span class="linenr">12: </span><span style="color: #51afef;">return</span> <span style="color: #98be65;">"images/sigmoidplot2.png"</span>
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np               <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21295;&#20837; NumPy
+<span class="linenr"> 2: </span></span><span style="color: #51afef;">import</span> matplotlib.pylab <span style="color: #51afef;">as</span> plt   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21295;&#20837; Matplotlib &#30059;&#22294;&#22871;&#20214;
+<span class="linenr"> 3: </span></span>
+<span class="linenr"> 4: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23450;&#32681; Sigmoid &#20989;&#25976;&#65306;&#25226;&#20219;&#24847;&#25976;&#23383;&#12300;&#22739;&#32302;&#12301;&#21040; 0&#65374;1 &#20043;&#38291;
+<span class="linenr"> 5: </span></span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24819;&#20687;&#25104;&#19968;&#20491;&#28331;&#26580;&#29256;&#30340;&#38542;&#26799;&#20989;&#25976;&#65292;&#19981;&#20877;&#26159;&#38750;&#40657;&#21363;&#30333;&#65292;&#32780;&#26159;&#28472;&#23652;&#36942;&#28193;
+<span class="linenr"> 6: </span></span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">sigmoid</span>(x):
+<span class="linenr"> 7: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20844;&#24335;&#65306;1 / (1 + e^(-x))&#65292;e &#26159;&#33258;&#28982;&#24120;&#25976;&#65288;&#22823;&#32004; 2.718&#65289;
+<span class="linenr"> 8: </span></span>    <span style="color: #51afef;">return</span> 1 <span style="color: #51afef;">/</span> (1 <span style="color: #51afef;">+</span> np.exp(<span style="color: #51afef;">-</span>x))
+<span class="linenr"> 9: </span>
+<span class="linenr">10: </span><span style="color: #dcaeea;">x</span> <span style="color: #51afef;">=</span> np.arange(<span style="color: #51afef;">-</span>5.0, 5.0, 0.1)   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#29986;&#29983; -5 &#21040; 5 &#30340;&#25976;&#21015;&#65292;&#38291;&#38548; 0.1
+<span class="linenr">11: </span></span><span style="color: #dcaeea;">y</span> <span style="color: #51afef;">=</span> sigmoid(x)                   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35336;&#31639;&#27599;&#20491; x &#23565;&#25033;&#30340; sigmoid &#20540;
+<span class="linenr">12: </span></span><span style="color: #c678dd;">print</span>(y)                         <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21360;&#20986; y &#20540;&#65292;&#30475;&#30475; sigmoid &#30340;&#36664;&#20986;&#38263;&#20160;&#40636;&#27171;
+<span class="linenr">13: </span></span>plt.figure(figsize<span style="color: #51afef;">=</span>(4,3))        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;&#31435; 4x3 &#21515;&#30340;&#30059;&#24067;
+<span class="linenr">14: </span></span>plt.plot(x, y)                   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#30059;&#20986;&#24179;&#28369;&#30340; S &#24418;&#26354;&#32218;&#65288;sigmoid &#30340;&#25307;&#29260;&#36896;&#22411;&#65289;
+<span class="linenr">15: </span></span>plt.ylim(<span style="color: #51afef;">-</span>0.1, 1.1)             <span style="color: #5B6268;"># </span><span style="color: #5B6268;">y &#36600;&#31684;&#22285;&#35373;&#28858; -0.1 &#21040; 1.1
+<span class="linenr">16: </span></span>plt.savefig(<span style="color: #98be65;">"images/sigmoidplot2.png"</span>)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23384;&#22294;
+<span class="linenr">17: </span></span><span style="color: #51afef;">return</span> <span style="color: #98be65;">"images/sigmoidplot2.png"</span>
 </pre>
 </div>
 
-<div id="org3ebbdd6" class="figure">
+<div id="org0f33def" class="figure">
 <p><img src="images/sigmoidplot2.png" alt="sigmoidplot2.png" width="400" />
 </p>
 <p><span class="figure-number">Figure 4: </span>sigmoid 函數圖</p>
@@ -468,15 +476,15 @@ Sigmoid函數的特點：
 </p>
 </div>
 </div>
-<div id="outline-container-org76dd56d" class="outline-3">
-<h3 id="org76dd56d"><span class="section-number-3">2.3.</span> ReLU</h3>
+<div id="outline-container-orgde86f1c" class="outline-3">
+<h3 id="orgde86f1c"><span class="section-number-3">2.3.</span> ReLU</h3>
 <div class="outline-text-3" id="text-2-3">
 <p>
-雖然 sigmoid 函數很早就應用於神經網路中，但目前最常使用的啟動函數則為 ReLU（Rectified Linear Unit）。ReLU的定義很簡單：若輸入超過 0，則直接輸出；若輸入小於 0，則輸出 0，如公式\eqref{org4d41100}所示：
+雖然 sigmoid 函數很早就應用於神經網路中，但目前最常使用的啟動函數則為 ReLU（Rectified Linear Unit）。ReLU的定義很簡單：若輸入超過 0，則直接輸出；若輸入小於 0，則輸出 0，如公式\eqref{org8c30dee}所示：
 </p>
 
 \begin{equation}
-\label{org4d41100}
+\label{org8c30dee}
 h(x) = \begin{cases} x & \text{if } x > 0
 \\ 0 & \text{if } x\leq 0 \end{cases}
 \end{equation}
@@ -487,25 +495,30 @@ h(x) = \begin{cases} x & \text{if } x > 0
 </p>
 
 <p>
-至於其函數圖形則如圖<a href="#org558c937">5</a>所示。
+至於其函數圖形則如圖<a href="#orgced80a8">5</a>所示。
 </p>
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
-<span class="linenr"> 2: </span><span style="color: #51afef;">import</span> matplotlib.pylab <span style="color: #51afef;">as</span> plt
-<span class="linenr"> 3: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">relu</span>(x):
-<span class="linenr"> 4: </span>    <span style="color: #51afef;">return</span> np.maximum(<span style="color: #da8548; font-weight: bold;">0</span>, x)
-<span class="linenr"> 5: </span><span style="color: #dcaeea;">x</span> = np.arange(-<span style="color: #da8548; font-weight: bold;">5.0</span>, <span style="color: #da8548; font-weight: bold;">5.0</span>, <span style="color: #da8548; font-weight: bold;">0.1</span>)
-<span class="linenr"> 6: </span><span style="color: #dcaeea;">y</span> = relu(x)
-<span class="linenr"> 7: </span><span style="color: #c678dd;">print</span>(y)
-<span class="linenr"> 8: </span>plt.figure(figsize=(<span style="color: #da8548; font-weight: bold;">4</span>,<span style="color: #da8548; font-weight: bold;">3</span>))
-<span class="linenr"> 9: </span>plt.plot(x, y)
-<span class="linenr">10: </span>plt.ylim(-<span style="color: #da8548; font-weight: bold;">0.5</span>, <span style="color: #da8548; font-weight: bold;">5</span>)
-<span class="linenr">11: </span>plt.savefig(<span style="color: #98be65;">"images/ReLUPlot.png"</span>)
-<span class="linenr">12: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">return "ReLUPlot.png"</span>
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np               <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21295;&#20837; NumPy
+<span class="linenr"> 2: </span></span><span style="color: #51afef;">import</span> matplotlib.pylab <span style="color: #51afef;">as</span> plt   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21295;&#20837; Matplotlib &#30059;&#22294;&#22871;&#20214;
+<span class="linenr"> 3: </span></span>
+<span class="linenr"> 4: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23450;&#32681; ReLU &#20989;&#25976;&#65306;&#27491;&#25976;&#23601;&#21407;&#23553;&#19981;&#21205;&#25918;&#34892;&#65292;&#36000;&#25976;&#19968;&#24459;&#27512;&#38646;
+<span class="linenr"> 5: </span></span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31777;&#21934;&#31895;&#26292;&#20294;&#36229;&#26377;&#25928;&#65292;&#30446;&#21069;&#31070;&#32147;&#32178;&#36335;&#30028;&#30340;&#30070;&#32005;&#28856;&#23376;&#38622;
+<span class="linenr"> 6: </span></span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">relu</span>(x):
+<span class="linenr"> 7: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">np.maximum(0, x) &#26371;&#36880;&#20803;&#32032;&#27604;&#36611;&#65292;&#21462; 0 &#21644; x &#20013;&#36611;&#22823;&#30340;&#37027;&#20491;
+<span class="linenr"> 8: </span></span>    <span style="color: #51afef;">return</span> np.maximum(0, x)
+<span class="linenr"> 9: </span>
+<span class="linenr">10: </span><span style="color: #dcaeea;">x</span> <span style="color: #51afef;">=</span> np.arange(<span style="color: #51afef;">-</span>5.0, 5.0, 0.1)   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#29986;&#29983; -5 &#21040; 5 &#30340;&#25976;&#21015;
+<span class="linenr">11: </span></span><span style="color: #dcaeea;">y</span> <span style="color: #51afef;">=</span> relu(x)                      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35336;&#31639; ReLU &#36664;&#20986;&#65306;&#36000;&#30340;&#20840;&#30733;&#65292;&#27491;&#30340;&#30041;&#19979;
+<span class="linenr">12: </span></span><span style="color: #c678dd;">print</span>(y)                         <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21360;&#20986;&#30475;&#30475;&#32080;&#26524;
+<span class="linenr">13: </span></span>plt.figure(figsize<span style="color: #51afef;">=</span>(4,3))        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38283;&#19968;&#24373; 4x3 &#21515;&#30340;&#30059;&#24067;
+<span class="linenr">14: </span></span>plt.plot(x, y)                   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#30059;&#20986;&#20358;&#26371;&#26159;&#19968;&#26781;&#24478;&#21407;&#40670;&#38283;&#22987;&#24448;&#21491;&#19978;&#30340;&#30452;&#32218;
+<span class="linenr">15: </span></span>plt.ylim(<span style="color: #51afef;">-</span>0.5, 5)               <span style="color: #5B6268;"># </span><span style="color: #5B6268;">y &#36600;&#31684;&#22285; -0.5 &#21040; 5
+<span class="linenr">16: </span></span>plt.savefig(<span style="color: #98be65;">"images/ReLUPlot.png"</span>)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23384;&#22294;
+<span class="linenr">17: </span></span><span style="color: #51afef;">return</span> <span style="color: #98be65;">"images/ReLUPlot.png"</span>
 </pre>
 </div>
 
-<div id="org558c937" class="figure">
+<div id="orgced80a8" class="figure">
 <p><img src="images/ReLUPlot.png" alt="ReLUPlot.png" width="400" />
 </p>
 <p><span class="figure-number">Figure 5: </span>ReLU 函數圖</p>
@@ -553,8 +566,8 @@ ReLU函數的特點：
 </p>
 </div>
 </div>
-<div id="outline-container-org2f057e8" class="outline-3">
-<h3 id="org2f057e8"><span class="section-number-3">2.4.</span> Softmax</h3>
+<div id="outline-container-orgac42a72" class="outline-3">
+<h3 id="orgac42a72"><span class="section-number-3">2.4.</span> Softmax</h3>
 <div class="outline-text-3" id="text-2-4">
 <p>
 Softmax 函數主要用在輸出層，適合多分類問題。它的輸出：
@@ -567,11 +580,11 @@ Softmax 函數主要用在輸出層，適合多分類問題。它的輸出：
 有什麼場景是很多小數總和為1的？答案是：「機率分布」
 </p>
 </div>
-<div id="outline-container-org9944beb" class="outline-4">
-<h4 id="org9944beb"><span class="section-number-4">2.4.1.</span> 特色</h4>
+<div id="outline-container-orgaa6c087" class="outline-4">
+<h4 id="orgaa6c087"><span class="section-number-4">2.4.1.</span> 特色</h4>
 <div class="outline-text-4" id="text-2-4-1">
 <p>
-softmaxe 的輸出為介於 0 到 1 間的實數，此外，其輸出總和為 1，這個性質使得 softmax 函數的輸出也可解釋為「機率」。例如，前節程式碼的輸出結果為[0.01821127 0.24519181 0.73659691]，從以機率的角度我們可以說：分類的結果有 1.8%的機率為第 0 類；有 24.52%的機率為第 1 類；有 73.66%的機率為第 2 類。換言之，使用 softmax 函數可以針對問題提出對應的機率。
+softmax 的輸出為介於 0 到 1 間的實數，此外，其輸出總和為 1，這個性質使得 softmax 函數的輸出也可解釋為「機率」。例如，前節程式碼的輸出結果為[0.01821127 0.24519181 0.73659691]，從以機率的角度我們可以說：分類的結果有 1.8%的機率為第 0 類；有 24.52%的機率為第 1 類；有 73.66%的機率為第 2 類。換言之，使用 softmax 函數可以針對問題提出對應的機率。
 softmax 函數的另一個特色是其輸出結果仍保持與輸入訊息一致的大小關係，這是因為指數函數\(y=exp(x)\)為單調函數。一般而言，神經網路會把輸出最大神經元的類別當作辨識結果，然而，因為 softmax 不影響大小順序，所以一般會省略 softmax 函數。
 </p>
 
@@ -580,29 +593,35 @@ softmax 函數的另一個特色是其輸出結果仍保持與輸入訊息一致
 </p>
 </div>
 </div>
-<div id="outline-container-org9244ccf" class="outline-4">
-<h4 id="org9244ccf"><span class="section-number-4">2.4.2.</span> 公式</h4>
+<div id="outline-container-orgd2ccb84" class="outline-4">
+<h4 id="orgd2ccb84"><span class="section-number-4">2.4.2.</span> 公式</h4>
 <div class="outline-text-4" id="text-2-4-2">
 \begin{equation}
-\label{org987b31c}
+\label{org7791ae0}
 y_k = \frac{exp(a_k)}{\sum_{i=1}^{n}exp(a_i)}
 \end{equation}
 </div>
 </div>
-<div id="outline-container-orga17bf01" class="outline-4">
-<h4 id="orga17bf01"><span class="section-number-4">2.4.3.</span> 實作</h4>
+<div id="outline-container-org72ab477" class="outline-4">
+<h4 id="org72ab477"><span class="section-number-4">2.4.3.</span> 實作</h4>
 <div class="outline-text-4" id="text-2-4-3">
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">python code for softmax funtion</span>
-<span class="linenr"> 2: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
-<span class="linenr"> 3: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">softmax</span>(a):
-<span id="coderef-softmax-overflow1" class="coderef-off"><span class="linenr"> 4: </span>    <span style="color: #dcaeea;">exp_a</span> = np.exp(a)</span>
-<span id="coderef-softmax-overflow2" class="coderef-off"><span class="linenr"> 5: </span>    <span style="color: #5B6268;">#</span><span style="color: #5B6268;">exp_a = np.exp(a - np.max(a))</span></span>
-<span class="linenr"> 6: </span>    <span style="color: #dcaeea;">sum_exp_a</span> = np.<span style="color: #c678dd;">sum</span>(exp_a)
-<span class="linenr"> 7: </span>    <span style="color: #dcaeea;">y</span> = exp_a / sum_exp_a
-<span class="linenr"> 8: </span>    <span style="color: #51afef;">return</span>(y)
-<span class="linenr"> 9: </span><span style="color: #dcaeea;">a</span> = np.array([<span style="color: #da8548; font-weight: bold;">0.3</span>, <span style="color: #da8548; font-weight: bold;">2.9</span>, <span style="color: #da8548; font-weight: bold;">4.0</span>])
-<span class="linenr">10: </span><span style="color: #c678dd;">print</span>(softmax(a))
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21295;&#20837; NumPy
+<span class="linenr"> 2: </span></span>
+<span class="linenr"> 3: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23450;&#32681; Softmax &#20989;&#25976;&#65306;&#25226;&#19968;&#22534;&#20998;&#25976;&#36681;&#25563;&#25104;&#12300;&#27231;&#29575;&#20998;&#24067;&#12301;
+<span class="linenr"> 4: </span></span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36664;&#20986;&#20540;&#37117;&#22312; 0&#65374;1 &#20043;&#38291;&#65292;&#32780;&#19988;&#20840;&#37096;&#21152;&#36215;&#20358;&#21083;&#22909;&#31561;&#26044; 1
+<span class="linenr"> 5: </span></span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#26368;&#36969;&#21512;&#29992;&#22312;&#22810;&#20998;&#39006;&#30340;&#36664;&#20986;&#23652;&#65292;&#20687;&#26159;&#21028;&#26039;&#25163;&#23531;&#25976;&#23383;&#26159; 0&#65374;9 &#21738;&#19968;&#20491;
+<span class="linenr"> 6: </span></span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">softmax</span>(a):
+<span class="linenr"> 7: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20808;&#28187;&#21435;&#26368;&#22823;&#20540;&#20877;&#20570;&#25351;&#25976;&#36939;&#31639;&#65292;&#36991;&#20813; e &#30340;&#27425;&#26041;&#29190;&#25481;&#65288;&#25976;&#23383;&#22826;&#22823;&#38651;&#33126;&#26371;&#23849;&#28528;&#65289;
+<span class="linenr"> 8: </span></span>    <span style="color: #dcaeea;">exp_a</span> <span style="color: #51afef;">=</span> np.exp(a <span style="color: #51afef;">-</span> np.<span style="color: #c678dd;">max</span>(a))
+<span class="linenr"> 9: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31639;&#20986;&#25152;&#26377;&#25351;&#25976;&#20540;&#30340;&#32317;&#21644;&#65292;&#31561;&#19968;&#19979;&#35201;&#25343;&#20358;&#30070;&#20998;&#27597;
+<span class="linenr">10: </span></span>    <span style="color: #dcaeea;">sum_exp_a</span> <span style="color: #51afef;">=</span> np.<span style="color: #c678dd;">sum</span>(exp_a)
+<span class="linenr">11: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27599;&#20491;&#25351;&#25976;&#20540;&#38500;&#20197;&#32317;&#21644;&#65292;&#23601;&#24471;&#21040;&#27231;&#29575;&#20102;&#65288;&#21152;&#36215;&#20358;&#19968;&#23450;&#26159; 1&#65289;
+<span class="linenr">12: </span></span>    <span style="color: #dcaeea;">y</span> <span style="color: #51afef;">=</span> exp_a <span style="color: #51afef;">/</span> sum_exp_a
+<span class="linenr">13: </span>    <span style="color: #51afef;">return</span>(y)
+<span class="linenr">14: </span>
+<span class="linenr">15: </span><span style="color: #dcaeea;">a</span> <span style="color: #51afef;">=</span> np.array([0.3, 2.9, 4.0])   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20551;&#35373;&#31070;&#32147;&#32178;&#36335;&#26368;&#24460;&#19968;&#23652;&#36664;&#20986;&#20102;&#19977;&#20491;&#20540;
+<span class="linenr">16: </span></span><span style="color: #c678dd;">print</span>(softmax(a))                <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21360;&#20986; softmax &#36681;&#25563;&#24460;&#30340;&#27231;&#29575;&#20998;&#24067;</span>
 </pre>
 </div>
 <pre class="example">
@@ -625,7 +644,7 @@ y_k = \frac{exp(a_k)}{\sum_{i=1}^{n}exp(a_i)}
 </div></div>
 <div id="postamble" class="status">
 <p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2026-02-14 Sat 18:19</p>
+<p class="date">Created: 2026-04-15 Wed 20:56</p>
 </div>
 </body>
 </html>
