@@ -1,166 +1,220 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-Hant-TW">
 <head>
-    <meta charset="UTF-8">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            width: 80%;
-            background-color: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-        }
-        .input-section {
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: left;
-        }
-
-        #say {
-            width: 60%;
-            padding: 8px;
-            font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            margin-right: 5px;
-        }
-        input[type="submit"] {
-            padding: 8px 12px;
-            font-size: 16px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        input[type="submit"]:hover {
-            background-color: #45a049;
-        }
-        #dialogBox {
-            width: 90%; /* 調整寬度，讓其不會超出容器 */
-            max-width: 100%;
-            margin: 15px auto; /* 置中對話框 */
-            height: 400px;
-            overflow-y: auto;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background-color: #fafafa;
-            text-align: left;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-        .footer {
-            margin-top: 20px;
-            font-size: 13px;
-            color: #777;
-        }
-        .footer a {
-            color: #4CAF50;
-            text-decoration: none;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ELIZA</title>
+  <style>
+    body {font-family: system-ui, -apple-system, "Noto Sans TC", Arial, sans-serif; background:#f4f4f9;color:#333;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0}
+    .container {max-width:900px; width:92vw; height:90vh; background:#fff; box-shadow:0 4px 14px rgba(0,0,0,.12); border-radius:12px; padding:20px; box-sizing:border-box; display:flex; flex-direction:column;}
+    .input-section {margin-bottom:10px; display:flex; align-items:center; gap:8px}
+    #say {flex:1; padding:10px; font-size:16px; border:1px solid #ddd; border-radius:8px}
+    button {padding:10px 14px; font-size:16px; background:#16a34a; color:#fff; border:0; border-radius:8px; cursor:pointer}
+    button:hover {background:#15803d}
+    #dialogBox {width:100%; max-width:100%; flex:1 1 auto; min-height:0; overflow-y:auto; padding:16px; border:1px solid #eee; border-radius:10px; background:#fafafa; text-align:left; font-size:15px; line-height:1.7; box-sizing:border-box;}
+    .bubble {margin:8px 0; display:flex; gap:10px; word-break:break-word}
+    .me .msg {background:#e0f2fe}
+    .bot .msg {background:#f1f5f9}
+    .msg {padding:10px 12px; border-radius:10px; box-shadow:0 1px 0 rgba(0,0,0,.04)}
+    .typing {opacity:.8; font-style:italic}
+    .footer {margin-top:14px; font-size:12px; color:#999; display:flex; justify-content:center; align-items:center; flex-wrap:wrap; text-align:center}
+    .footer a {color:#16a34a; text-decoration:none}
+  </style>
 </head>
-<body onload="onRuleLoaded()">
-    <div class="container">
-        <div class="input-section">
-            <img src="images/tuzuki-angry.gif" alt="GIF image" width="60" height="60" style="vertical-align: middle;"/>
-            <span>請輸入問題：</span>
-            <input id="say" name="say" type="text" value="" onkeydown="keyin(event)"/> <!-- 按 enter 時呼叫 keyin() 回答 -->
-            <input type="submit" value="送出" onclick="say()"/> <!-- 當送出按鈕按下，就呼叫 say() 函數回答 -->
-        </div>
-        <div id="dialogBox">
-            >> 您好，我的朋友! 有心事嗎 ?<br>
-        </div>
-        <div class="footer">
-            本程式碼衍生自<a href="http://ccckmit.wikidot.com/">陳鍾誠作品</a>，採用 <a href="http://creativecommons.org/licenses/by-sa/3.0/tw/">CC授權-姓名標示-相同方式分享</a>
-            <a href="license.html">授權方式</a>
-            <a href="https://hits.sh/letranger.github.io/AI/eliza.html/"><img alt="Hits" src="https://hits.sh/letranger.github.io/AI/eliza.html.svg" style="vertical-align: middle; margin-left: 10px;"/></a>
-        </div>
+<body>
+  <div class="container">
+    <div class="input-section">
+      <img src="images/tuzuki-angry.gif" alt="GIF" width="48" height="48" style="vertical-align:middle"/>
+      <span>請輸入問題：</span>
+      <input id="say" name="say" type="text" value="" placeholder="例如：我有點猶豫要不要換工作…" />
+      <button id="sendBtn">送出</button>
     </div>
+    <div id="dialogBox"></div>
+    <div class="footer" id="footerBar"></div>
+  </div>
 
-    <script type="text/javascript">
-       // Q&A 陣列宣告
-       var qaList = [
-           { Q:"笨蛋", A:"這樣說不太好吧..."},
-           { Q:"謝謝", A:"不客氣!"},
-           { Q:"對不起 | 抱歉 | 不好意思", A:"別說抱歉 !|別客氣，儘管說 !"},
-           { Q:"可否 | 可不可以", A:"你確定想*?"},
-           { Q:"我想", A:"你為何想*?"},
-           { Q:"我要", A:"你為何要*?"},
-           { Q:"你是", A:"你認為我是*?"},
-           { Q:"認為 | 以為", A:"為何說*?"},
-           { Q:"感覺", A:"常有這種感覺嗎?"},
-           { Q:"為何不", A:"你希望我*!"},
-           { Q:"是否", A:"為何想知道是否*?"},
-           { Q:"不能", A:"為何不能*?|你試過了嗎?|或許你現在能*了呢?"},
-           { Q:"我是", A:"你好，久仰久仰!"},
-           { Q:"甚麼 | 什麼 | 何時 | 誰 | 哪裡 | 如何 | 為何 | 因何", A:"為何這樣問?|為何你對這問題有興趣?|你認為答案是甚麼呢?|你認為如何呢?|你常問這類問題嗎?|這真的是你想知道的嗎?|為何不問問別人?|你曾有過類似的問題嗎?|你問這問題的原因是甚麼呢?"},
-           { Q:"原因", A:"這是真正的原因嗎?|還有其他原因嗎?"},
-           { Q:"理由", A:"這說明了甚麼呢?|還有其他理由嗎?"},
-           { Q:"你好 | 嗨 | 您好", A:"你好，有甚麼問題嗎?"},
-           { Q:"或許", A:"你好像不太確定?"},
-           { Q:"不曉得 | 不知道", A:"為何不知道?|在想想看，有沒有甚麼可能性?"},
-           { Q:"不想 | 不希望", A:"有沒有甚麼辦法呢?|為何不想*呢?|那你希望怎樣呢?"},
-           { Q:"想 | 希望", A:"為何想*呢?|真的想*?|那就去做阿?為何不呢?"},
-           { Q:"不", A:"為何不*?|所以你不*?"},
-           { Q:"請", A:"我該如何*呢?|你想要我*嗎?"},
-           { Q:"你", A:"你真的是在說我嗎?|別說我了，談談你吧!|為何這麼關心我*?|不要再說我了，談談你吧!|你自己*"},
-           { Q:"總是 | 常常", A:"能不能具體說明呢?|何時?"},
-           { Q:"像", A:"有多像?|哪裡像?"},
-           { Q:"對", A:"你確定嗎?|我了解!"},
-           { Q:"朋友", A:"多告訴我一些有關他的事吧!|你認識他多久了呢?"},
-           { Q:"電腦", A:"你說的電腦是指我嗎?"},
-           { Q:"難過", A:"別想它了|別難過|別想那麼多了|事情總是會解決的"},
-           { Q:"高興", A:"不錯ㄚ|太棒了|這樣很好ㄚ"},
-           { Q:"是阿|是的", A:"甚麼事呢?|我可以幫助你嗎?|我希望我能幫得上忙!"},
-           { Q:"", A:"我了解|我能理解|還有問題嗎 ?|請繼續說下去|可以說的更詳細一點嗎?|這樣喔! 我知道!|然後呢? 發生甚麼事?|再來呢? 可以多說一些嗎|接下來呢? |可以多告訴我一些嗎?|多談談有關你的事，好嗎?|想多聊一聊嗎|可否多告訴我一些呢?"}
-       ];
+  <script>
+    // ===== Footer 一列資訊 =====
+    const footerBar = document.getElementById('footerBar');
+    const today = new Date();
+    const y = today.getFullYear();
+    const m = String(today.getMonth() + 1).padStart(2, '0');
+    const d = String(today.getDate()).padStart(2, '0');
+    footerBar.innerHTML = `由 <a href="mailto:letranger@gm.tnfsh.tn.edu.tw">Letranger</a> 修改自 <a href="http://ccckmit.wikidot.com/">陳鍾誠作品</a> ｜ 採用 <a href="http://creativecommons.org/licenses/by-sa/3.0/tw/">創作共用：姓名標示、相同方式分享</a> ｜ <a href="license.html">授權方式</a> ｜ 最後修改：${y}/${m}/${d} ｜ <a href="https://hits.sh/letranger.github.io/AI/eliza.html/"><img alt="Hits" src="https://hits.sh/letranger.github.io/AI/eliza.html.svg" style="vertical-align:middle"/></a>`;
 
-       function random(n) { return Math.floor(Math.random() * n); }
-       function say() { append(document.getElementById("say").value); answer(); }
-       function keyin(event) { if (event.which == 13) say(); }
-       function append(line) {
-           var dialogBox = document.getElementById("dialogBox");
-           dialogBox.innerHTML += line + "<br>\n";
-           dialogBox.scrollTop = dialogBox.scrollHeight;
-       }
-       function answer() {
-           setTimeout(function () { append(">> " + getAnswer()); }, 1000 + random(2000));
-       }
-       function getAnswer() {
-           var say = document.getElementById("say").value;
-           for (var i in qaList) {
-               try {
-                   var qa = qaList[i];
-                   var qList = qa.Q.split("|");
-                   var aList = qa.A.split("|");
-                   for (var qi in qList) {
-                       var q = qList[qi];
-                       if (q == "") return aList[random(aList.length)];
-                       var r = new RegExp("(.*)" + q + "([^?.;]*)", "gi");
-                       if (say.match(r)) {
-                           tail = RegExp.$2;
-                           tail = tail.replace("我", "#").replace("你", "我").replace("#", "你");
-                           return aList[random(aList.length)].replace(/\*/, tail);
-                       }
-                   }
-               } catch (err) {}
-           }
-           return "然後呢？";
-       }
-    </script>
+    // ===== 本土用語設定 =====
+    const taiwaneseFiller = ["嗯…", "嘿嘿", "欸", "我覺得…", "其實…", "說真的…", "老實講…", "有點…"];    
+    const taiwaneseOpeners = [
+      () => greetingByTime(),
+      () => "嗨～今天還順利嗎？",
+      () => "哈囉！想聊聊什麼？",
+      () => "嘿，你心裡在想什麼呢？"
+    ];
+
+    function localizePhrases(text) {
+      return text
+        .replace(/晚上好/g, "晚安")
+        .replace(/您/g, "你")
+        .replace(/貴/g, "你們")
+        .replace(/啥/g, "什麼")
+        .replace(/俺/g, "我")
+        .replace(/嗯哼/g, "嗯…");
+    }
+
+    function greetingByTime() {
+      const hr = new Date().getHours();
+      if (hr < 5) return "夜深了，還沒睡嗎？要不要先休息一下？";
+      if (hr < 12) return "早安！喝水了嗎？";
+      if (hr < 18) return "午安～需要我幫你釐清點想法嗎？";
+      return "晚安！今天過得還行嗎？"; 
+    }
+
+    // ===== 狀態記憶 =====
+    let memory = { topics: [], mood: "neutral" };
+    function remember(s) { if (!s) return; memory.topics.push(s); if (memory.topics.length>6) memory.topics.shift(); }
+    function randomPick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+    // ===== UI: 泡泡與打字 =====
+    function addBubble(text, who='bot', typing=false){
+      const dialog = document.getElementById('dialogBox');
+      const wrap = document.createElement('div');
+      wrap.className = `bubble ${who}`;
+      const span = document.createElement('div');
+      span.className = 'msg' + (typing ? ' typing' : '');
+      span.textContent = text;
+      wrap.appendChild(span);
+      dialog.appendChild(wrap);
+      dialog.scrollTop = dialog.scrollHeight;
+      return span;
+    }
+
+    // ===== 情緒偵測與同理回覆 =====
+    function detectMood(text){
+      const t = text.toLowerCase();
+      if (/(難過|傷心|沮喪|低落|好累|心累|好煩|壓力|崩潰)/.test(t)) return 'sad';
+      if (/(怒|生氣|火大|氣炸|不爽|幹|靠)/.test(t)) return 'angry';
+      if (/(開心|高興|興奮|好爽|太棒|讚)/.test(t)) return 'happy';
+      if (/(焦慮|緊張|擔心|害怕|怕|不安)/.test(t)) return 'anxious';
+      return 'neutral';
+    }
+
+    function moodReply(mood){
+      const f = randomPick(taiwaneseFiller);
+      const map = {
+        sad:[ `${f} 聽起來有點悶悶的，要不要多說一點？`, `我了解，心情卡住的時候，把感受說出來就很好了。`, `最讓你在意的是哪一段？` ],
+        angry:[ `${f} 先深呼吸一下...最火大的點是什麼？`, `生氣很正常，你覺得需要被看見的是什麼？` ],
+        happy:[ `${f} 聽起來超棒的！多分享一點？`, `好耶～接下來你想做什麼？` ],
+        anxious:[ `${f} 嗯，對，那種不踏實真的不舒服。最擔心的是什麼？`, `把可能情況列一下，我們一起想備案？` ],
+        neutral:[ `${f} 想法在腦袋打轉嗎？說說看，我幫你理一理。`, `先抓一個重點開始：你最在意哪件事？` ]
+      };
+      return randomPick(map[mood]||map.neutral);
+    }
+
+    // ===== 規則庫 =====
+    const qaList = [
+      { Q: "謝謝|感謝|感恩", A:["不會啦～","小事小事！","別客氣，有需要就叫我"] },
+      { Q: "對不起|抱歉|不好意思", A:["沒事啦，說說看你在意的點就好","別把責任都攬在自己身上，想想可以怎麼調整"] },
+      { Q: "可否|可不可以|能不能|可以嗎", A:["你最想要的是什麼呢？","如果可以，你理想的結果長怎樣？"] },
+      { Q: "我想", A:["你為何想*？","嗯…你想*的理由是？"] },
+      { Q: "我要", A:["你為何要*？","如果現在就做，你會先從哪裡開始？"] },
+      { Q: "你是", A:["你覺得我是*嗎？","與其說我*，我心較想聽你繼續說下去。"] },
+      { Q: "認為|以為", A:["為何說*？","有沒有其他可能的解讀？"] },
+      { Q: "感覺", A:["常有這種感覺嗎？","這個感覺通常在什麼情境出現？"] },
+      { Q: "為何不", A:["你希望我*？","如果真的*了，你覺得會怎樣？"] },
+      { Q: "是否", A:["為何想知道是否*？","你心裡偏向哪個答案？"] },
+      { Q: "不能|沒辦法", A:["為何不能*？","你試過了嗎？也許先做一小步看看？"] },
+      { Q: "你好|嗨|哈囉|安安", A:["嗨！有什麼想聊的嗎？", greetingByTime] },
+      { Q: "或許|可能|大概|也許", A:["嗯…聽起來你還在觀望，要不要列一下利弊？"] },
+      { Q: "不曉得|不知道|不太確定", A:["哪個部分不確定？我們拆小塊看看。","先猜一個方向也行～"] },
+      { Q: "不想|不希望", A:["那你希望的是什麼？","如果可以避免，你會怎麼做？"] },
+      { Q: "想|希望", A:["為何想*呢？","真的想*？你會怎麼安排第一步？"] },
+      { Q: "請", A:["我該如何*呢？","你希望我*嗎？"] },
+      { Q: "朋友", A:["多告訴我一些他的事吧！","你們怎麼認識的？"] },
+      { Q: "電腦|AI|聊天機器人", A:["你是在說我嗎？","嘿嘿，我還在學習，但我會認真聽你說。"] },
+      { Q: "難過|低落|沮喪|痛苦|失落", A:[() => moodReply('sad')] },
+      { Q: "生氣|火大|不爽|氣炸", A:[() => moodReply('angry')] },
+      { Q: "開心|快樂|太棒|好爽|讚", A:[() => moodReply('happy')] },
+      { Q: "焦慮|緊張|擔心|害怕|不安", A:[() => moodReply('anxious')] },
+      { Q: "工作|職場|上班", A:[
+          "欸，我懂，上班真的會有壓力。你最近遇到什麼事？",
+          "嗯…我覺得工作有時候就是會卡關，你最困擾的是哪一塊？",
+          "說真的，大家都會有職場低潮，你想不想換個角度看？"
+      ]},
+      { Q: "總是|常常", A:["可以舉一個具體的例子嗎？","大概在什麼時候發生最多？"] },
+      { Q: "像", A:["哪裡像？","可以描述一下你看到的相似點嗎？"] },
+      { Q: "對|沒錯|是喔|是啦", A:["你確定嗎？","我懂你的意思。"] },
+      { Q: "原因|理由", A:["這大概說明了什麼？","還有其他可能的原因嗎？"] },
+      { Q: "", A:[ () => randomPick([
+          `${randomPick(taiwaneseFiller)}...能多說一點嗎？`,
+          `好，我先聽你說～`,
+          `我幫你整理一下想法，你先講重點。`,
+          `聽起來有故事，願意多分享嗎？`
+      ]) ]}
+    ];
+
+    function buildRegex(q){ return new RegExp(`(.*)(${q})([^?.;！!。]*)`, 'i'); }
+
+    function generateReply(say){
+      const user = localizePhrases(say.trim());
+      memory.mood = detectMood(user);
+      // 情緒優先（60% 機率）
+      if (memory.mood !== 'neutral' && Math.random() < 0.6) return moodReply(memory.mood);
+
+      for (const qa of qaList){
+        try{
+          const r = buildRegex(qa.Q);
+          const m = user.match(r);
+          if (m){
+            let tail = (m[3]||'').trim();
+            // 代名詞對調
+            tail = tail.replace(/我/g,'#').replace(/你/g,'我').replace(/#/g,'你');
+            const a = randomPick(qa.A);
+            const reply = (typeof a === 'function') ? a() : a;
+            return reply.replace(/\*/g, tail);
+          }
+        }catch(e){}
+      }
+
+      // 記憶回顧（20%）
+      if (memory.topics.length && Math.random() < 0.2){
+        return `${randomPick(taiwaneseFiller)} 你剛剛提到「${randomPick(memory.topics)}」，可以再說一下細節嗎？`;
+      }
+
+      return randomPick([
+        `${randomPick(taiwaneseFiller)} 接著呢？`,
+        `想法很多對吧？我們一件一件來。`,
+        `如果要先做一小步，你會選哪一步？`
+      ]);
+    }
+
+    function handleSend(){
+      const input = document.getElementById('say');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      input.setAttribute('value', '');
+      input.focus();
+      addBubble(text, 'me');
+      remember(text);
+      const typingEl = addBubble('正在輸入中…', 'bot', true);
+      const delay = 600 + Math.random()*900;
+      setTimeout(()=>{
+        const reply = generateReply(text);
+        typingEl.textContent = reply;
+        typingEl.classList.remove('typing');
+      }, delay);
+    }
+
+    function init(){
+      const opener = randomPick(taiwaneseOpeners);
+      const greet = (typeof opener === 'function') ? opener() : opener;
+      addBubble(`>> ${greet}`, 'bot');
+      document.getElementById('sendBtn').addEventListener('click', handleSend);
+      document.getElementById('say').addEventListener('keydown', e=>{ if (e.key==='Enter') { e.preventDefault(); handleSend(); } });
+    }
+
+    // 啟動
+    init();
+  </script>
 </body>
 </html>
