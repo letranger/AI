@@ -1,0 +1,1960 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-TW" xml:lang="zh-TW">
+<head>
+<!-- 2026-08-05 Wed 16:58 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Vibe Coding：從零到上線</title>
+<meta name="author" content="Yung-Chin Yen" />
+<meta name="generator" content="Org Mode" />
+<style type="text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<link rel="stylesheet" type="text/css" href="../css/muse.css" />
+<script src="../css/copy_code.js"></script>
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">Vibe Coding：從零到上線
+<br />
+<span class="subtitle">letranger.github.io / Yen Yung Chin</span>
+</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>&#30446;&#37636;</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org93a3fb1">1. 什麼是 vibe coding</a>
+<ul>
+<li><a href="#org560da72">1.1. 一句話定義</a></li>
+<li><a href="#org6e0e8eb">1.2. 三個常見誤解</a></li>
+<li><a href="#org3354cdd">1.3. 工具: Web-based vs Terminal-based</a></li>
+<li><a href="#org773aa81">1.4. 你還是要會的三件事</a></li>
+<li><a href="#orgc8811fb">1.5. 什麼時候適合、什麼時候不適合</a></li>
+<li><a href="#org8886d36">1.6. 五條守則（上半場 Part 13 的複習）</a></li>
+</ul>
+</li>
+<li><a href="#org666410e">2. 有哪幾種可用工具</a>
+<ul>
+<li><a href="#org9e5d57d">2.1. 主要 CLI 工具</a></li>
+<li><a href="#orgda0b8be">2.2. 共同前置作業</a></li>
+<li><a href="#orgda603da">2.3. 如何申請金鑰</a></li>
+<li><a href="#orgc43845e">2.4. 本課示範工具：Antigravity CLI</a></li>
+<li><a href="#org45753e5">2.5. 三個工具的共同操作模式</a></li>
+<li><a href="#orgf580f3a">2.6. Terminal 生存指令包（會這六個就夠了）</a></li>
+</ul>
+</li>
+<li><a href="#org5d652ec">3. Vibe coding 使用流程：以開發網頁為例</a>
+<ul>
+<li><a href="#org289a94d">3.1. Step 0：開專案資料夾＋立班規</a></li>
+<li><a href="#org6ddfbf7">3.2. Step 1：外觀——先把殼做出來</a></li>
+<li><a href="#org5881428">3.3. Step 2：輸入支出</a></li>
+<li><a href="#org683298a">3.4. Step 3：加類別</a></li>
+<li><a href="#org1b0a569">3.5. Step 4：加統計</a></li>
+<li><a href="#org9c1cb9a">3.6. Step 5：每月零用錢額度</a></li>
+<li><a href="#org76a78a2">3.7. Step 6：存檔點（版本控制）</a></li>
+<li><a href="#orgaa1cd3c">3.8. 三個保命口訣</a></li>
+<li><a href="#org33bfb9e">3.9. 接下來</a></li>
+<li><a href="#orge0ace67">3.10. Prompt 技巧對照表</a></li>
+</ul>
+</li>
+<li><a href="#orge4d1310">4. Vibe coding 的除錯</a>
+<ul>
+<li><a href="#org13fdcaa">4.1. 網頁壞掉的第一現場：開發者工具</a></li>
+<li><a href="#org8ac604d">4.2. 三種餵錯誤的方式（由好到普通）</a></li>
+<li><a href="#orgc0fe11a">4.3. 除錯的節奏</a></li>
+<li><a href="#org7486e53">4.4. 課堂演練 A：弄壞再修（讀錯誤訊息）</a></li>
+<li><a href="#org2dfc2e2">4.5. 課堂演練 B：亂輸入大賽（邊界測試）</a></li>
+</ul>
+</li>
+<li><a href="#orgfbe1dee">5. 如何為 web 串接 API</a>
+<ul>
+<li><a href="#org78ec70c">5.1. API 是什麼</a></li>
+<li><a href="#org685a1e0">5.2. 第一部份：串接一般 API——以查詢天氣為例</a></li>
+<li><a href="#orgfb57675">5.3. 第二部份：串接 LLM API——讓網頁裡真的有 AI</a></li>
+<li><a href="#orgebb0c1b">5.4. 可以直接玩的免費 API</a></li>
+</ul>
+</li>
+<li><a href="#orgde48c39">6. Web 的上架</a>
+<ul>
+<li><a href="#org41ac980">6.1. 三條路</a></li>
+<li><a href="#org1e3373b">6.2. 實作 A：Netlify Drop（兩分鐘上線）</a></li>
+<li><a href="#org4106f6f">6.3. 實作 B：請 AI 幫你上 Vercel</a></li>
+<li><a href="#org8ed07aa">6.4. 上架前的檢查清單</a></li>
+<li><a href="#org7d052b2">6.5. 課後挑戰</a></li>
+</ul>
+</li>
+<li><a href="#orgdbe13f2">7. 進階：Skill——把 AI 變成特定領域的專家</a>
+<ul>
+<li><a href="#orge093c1b">7.1. 什麼是 skill</a></li>
+<li><a href="#org9b445b5">7.2. Skill 如何運作</a></li>
+<li><a href="#orgd429928">7.3. 哪裡找得到現成的 skill</a></li>
+<li><a href="#orgc0b2994">7.4. 如何安裝</a></li>
+<li><a href="#orgfc3a3f5">7.5. 如何使用</a></li>
+<li><a href="#orgb5c4940">7.6. 如何自建 skill</a></li>
+<li><a href="#orgbf8284f">7.7. 參考對話：沒有 skill 也能讀 docx，為什麼還要裝？&#xa0;&#xa0;&#xa0;<span class="tag"><span class="noslide">noslide</span></span></a></li>
+</ul>
+</li>
+<li><a href="#org5dedb0e">8. 進階：先寫規格，再讓 AI 動手（SPEC.md）</a>
+<ul>
+<li><a href="#org521b178">8.1. 先補一點軟體開發常識</a></li>
+<li><a href="#org4b6e532">8.2. 為什麼 vibe coding 也需要規格</a></li>
+<li><a href="#orgd7d96d7">8.3. SPEC.md：五個欄位就夠</a></li>
+<li><a href="#org9645467">8.4. 怎麼用</a></li>
+<li><a href="#org6168ddc">8.5. 跟你們的專題有什麼關係</a></li>
+</ul>
+</li>
+<li><a href="#orga79d8da">9. 附錄：常見狀況急救&#xa0;&#xa0;&#xa0;<span class="tag"><span class="noslide">noslide</span></span></a></li>
+<li><a href="#orgecc05cb">10. 結語：AI 放大的是人</a></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org93a3fb1" class="outline-2">
+<h2 id="org93a3fb1"><span class="section-number-2">1.</span> 什麼是 vibe coding</h2>
+<div class="outline-text-2" id="text-1">
+</div>
+<div id="outline-container-org560da72" class="outline-3">
+<h3 id="org560da72"><span class="section-number-3">1.1.</span> 一句話定義</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+你用 <b>中文描述</b> 想要的東西，AI 負責寫程式；你負責 <b>出主意、驗收、給回饋</b> 。
+這個詞是 OpenAI 共同創辦人 Andrej Karpathy 在 2025 年初提出的：
+</p>
+<blockquote>
+<p>
+"Fully give in to the vibes&#x2026; forget that the code even exists."
+（完全順著感覺走……甚至忘記程式碼的存在。）
+</p>
+</blockquote>
+<p>
+但我們不會真的「忘記程式碼存在」——上半場講過： <b>程式碼也會有幻覺</b> ，
+會驗收的人才開得快。
+</p>
+</div>
+</div>
+<div id="outline-container-org6e0e8eb" class="outline-3">
+<h3 id="org6e0e8eb"><span class="section-number-3">1.2.</span> 三個常見誤解</h3>
+<div class="outline-text-3" id="text-1-2">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">誤解</th>
+<th scope="col" class="org-left">真相</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">「就是讓 AI 幫我寫程式」</td>
+<td class="org-left">是 <b>你</b> 描述需求、驗收、微調——AI 是你 <b>意志的延伸</b> ，不是替代</td>
+</tr>
+
+<tr>
+<td class="org-left">「就是不用學程式了」</td>
+<td class="org-left">打字、查語法交給 AI；但 <b>想清楚、看得懂、會驗收</b> 更重要了</td>
+</tr>
+
+<tr>
+<td class="org-left">「那是不會寫程式的人在用的」</td>
+<td class="org-left">資深工程師用得更兇——它是每個人都該會的基本功，像會用 Google 一樣</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-org3354cdd" class="outline-3">
+<h3 id="org3354cdd"><span class="section-number-3">1.3.</span> 工具: Web-based vs Terminal-based</h3>
+<div class="outline-text-3" id="text-1-3">
+<p>
+你們可能已經用過 ChatGPT 網頁版寫程式：貼題目 → 複製程式碼 → 貼到檔案
+→ 存檔 → 執行 → 出錯 → 把錯誤貼回去……一直「當人肉傳令兵」。
+</p>
+
+<p>
+Terminal 版的差別：AI 就住在你的專案資料夾裡， <b>自己動手</b> 。
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">比較</th>
+<th scope="col" class="org-left">Web-based（ChatGPT 網頁）</th>
+<th scope="col" class="org-left">Terminal-based（Claude Code 等）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">寫檔案</td>
+<td class="org-left">你複製貼上</td>
+<td class="org-left">AI 直接建立、修改檔案</td>
+</tr>
+
+<tr>
+<td class="org-left">執行程式</td>
+<td class="org-left">你自己跑</td>
+<td class="org-left">AI 自己跑、自己看結果</td>
+</tr>
+
+<tr>
+<td class="org-left">看錯誤</td>
+<td class="org-left">你貼給它</td>
+<td class="org-left">AI 自己讀錯誤訊息、自己修</td>
+</tr>
+
+<tr>
+<td class="org-left">改多檔</td>
+<td class="org-left">很痛苦</td>
+<td class="org-left">AI 一次改好幾個檔案</td>
+</tr>
+
+<tr>
+<td class="org-left">你的角色</td>
+<td class="org-left">傳令兵＋驗收</td>
+<td class="org-left"><b>指揮官＋驗收</b></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-org773aa81" class="outline-3">
+<h3 id="org773aa81"><span class="section-number-3">1.4.</span> 你還是要會的三件事</h3>
+<div class="outline-text-3" id="text-1-4">
+<ol class="org-ol">
+<li><b>說清楚需求</b> ：對象是誰、要做什麼、長什麼樣子。</li>
+<li><b>驗收</b> ：打開來用用看，判斷「這是不是我要的」。</li>
+<li><b>看懂大意</b> ：不必會寫每一行，但要能看懂 AI 說它做了什麼。</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-orgc8811fb" class="outline-3">
+<h3 id="orgc8811fb"><span class="section-number-3">1.5.</span> 什麼時候適合、什麼時候不適合</h3>
+<div class="outline-text-3" id="text-1-5">
+<ul class="org-ul">
+<li>適合：小工具與自動化腳本、做原型、幫既有程式補文件、探索別人的程式碼
+——今天的零用錢程式就是典型場景。</li>
+<li>不適合： <b>你完全無法驗收結果</b> 的領域（例如醫療、金融的核心邏輯）。
+看不懂又沒能力測，那不是在 coding， <b>是在賭</b> 。</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org8886d36" class="outline-3">
+<h3 id="org8886d36"><span class="section-number-3">1.6.</span> 五條守則（上半場 Part 13 的複習）</h3>
+<div class="outline-text-3" id="text-1-6">
+<ol class="org-ol">
+<li>API key 只放後端環境變數：不進前端程式碼、不貼進聊天視窗。</li>
+<li>AI 寫的程式要 <b>跑過、看懂再收下</b> ——程式碼也會有幻覺。</li>
+<li>小步快跑：一次只改一件事，改完馬上測。</li>
+<li>個資、照片、帳密不丟進 AI。</li>
+<li>免費額度有限：省著用、善用免費工具。</li>
+</ol>
+</div>
+</div>
+</div>
+<div id="outline-container-org666410e" class="outline-2">
+<h2 id="org666410e"><span class="section-number-2">2.</span> 有哪幾種可用工具</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-org9e5d57d" class="outline-3">
+<h3 id="org9e5d57d"><span class="section-number-3">2.1.</span> 主要 CLI 工具</h3>
+<div class="outline-text-3" id="text-2-1">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">工具</th>
+<th scope="col" class="org-left">公司</th>
+<th scope="col" class="org-left">安裝</th>
+<th scope="col" class="org-left">需要的帳號／費用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">Claude Code</td>
+<td class="org-left">Anthropic</td>
+<td class="org-left"><code>npm install -g @anthropic-ai/claude-code</code></td>
+<td class="org-left">Claude Pro 訂閱（月費）或 API 付費</td>
+</tr>
+
+<tr>
+<td class="org-left">Codex CLI</td>
+<td class="org-left">OpenAI</td>
+<td class="org-left"><code>npm install -g @openai/codex</code></td>
+<td class="org-left">ChatGPT 帳號（Plus 訂閱）</td>
+</tr>
+
+<tr>
+<td class="org-left">Gemini CLI</td>
+<td class="org-left">Google</td>
+<td class="org-left"><code>npm install -g @google/gemini-cli</code></td>
+<td class="org-left">API 金鑰（免費 Google 登入已終止）</td>
+</tr>
+
+<tr>
+<td class="org-left">Antigravity CLI</td>
+<td class="org-left">Google</td>
+<td class="org-left">一行安裝指令（見前置作業）</td>
+<td class="org-left"><b>本課示範工具</b> ：貼金鑰或 Google 帳號登入</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+⚠ 挑工具前的背景：Gemini CLI 的「Sign in with Google」免費登入已於
+2026/6/18 被 Google 終止，免費額度移到接班的 <b>Antigravity CLI</b> ——
+所以 <b>本課直接用 Antigravity CLI</b> （指令叫 <code>agy</code> ）。
+</p>
+
+<p>
+課堂做法：啟動 <code>agy</code> 後，把 <b>老師發的 API 金鑰</b> 直接貼進認證欄即可。
+課程結束後金鑰會作廢， <b>不要</b> 把金鑰貼到任何網頁或程式碼裡。
+家裡有 ChatGPT Plus 的同學可以改用 <b>Codex CLI</b> ，操作邏輯完全相同。
+</p>
+</div>
+</div>
+<div id="outline-container-orgda0b8be" class="outline-3">
+<h3 id="orgda0b8be"><span class="section-number-3">2.2.</span> 共同前置作業</h3>
+<div class="outline-text-3" id="text-2-2">
+<ol class="org-ol">
+<li>安裝 Node.js：到 <a href="https://nodejs.org">nodejs.org</a> 下載 LTS 版，一路下一步。</li>
+<li>打開終端機：
+<ul class="org-ul">
+<li>macOS：Spotlight 搜尋「終端機」（Terminal）</li>
+<li>Windows：開始選單搜尋「PowerShell」</li>
+</ul></li>
+<li><p>
+確認安裝成功：
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">   node -v        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20986;&#29694; v22.x &#20043;&#39006;&#30340;&#29256;&#26412;&#34399;&#23601; OK
+</span>   npm -v
+</pre>
+</div></li>
+</ol>
+<ol class="org-ol">
+<li value="4"><p>
+安裝本課工具 Antigravity CLI（一行指令，不是 npm 套件）：
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">macOS / Linux
+</span>   <span style="color: #ECBE7B;">curl</span> -fsSL https://antigravity.google/cli/install.sh | bash
+   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Windows&#65288;PowerShell&#65289;
+</span>   irm https://antigravity.google/cli/install.ps1 | iex
+</pre>
+</div>
+<p>
+裝好後 <b>重開一個終端機視窗</b> ，指令叫 <code>agy</code> 。
+（Node.js 不是給 <code>agy</code> 用的——之後上架網站的 <code>npx vercel</code> 會用到。）
+</p></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-orgda603da" class="outline-3">
+<h3 id="orgda603da"><span class="section-number-3">2.3.</span> 如何申請金鑰</h3>
+<div class="outline-text-3" id="text-2-3">
+<ol class="org-ol">
+<li>開 <a href="https://aistudio.google.com/apikey">aistudio.google.com/apikey</a>，登入 Google 帳號。</li>
+<li>按「Create API key」→ 複製那串 <code>AIza...</code> 開頭的金鑰。</li>
+<li>免費層 <b>不用綁信用卡</b> ：約每天 250 次請求、限 Flash 系列模型，課堂夠用。</li>
+</ol>
+
+<p>
+注意：AI Studio 的服務條款要求年滿 18 歲，學生的學校帳號通常申請不了
+——所以課堂用 <b>老師課前準備好的金鑰</b> ，回家想自己玩再用家長帳號申請。
+</p>
+
+<p>
+拿到金鑰後 <b>不用設定任何環境變數</b> ：啟動 <code>agy</code> ，
+在認證畫面把金鑰直接貼進認證欄就完成登入。
+</p>
+</div>
+</div>
+<div id="outline-container-orgc43845e" class="outline-3">
+<h3 id="orgc43845e"><span class="section-number-3">2.4.</span> 本課示範工具：Antigravity CLI</h3>
+<div class="outline-text-3" id="text-2-4">
+</div>
+<div id="outline-container-org235f9ba" class="outline-4">
+<h4 id="org235f9ba"><span class="section-number-4">2.4.1.</span> 啟動與認證</h4>
+<div class="outline-text-4" id="text-2-4-1">
+<p>
+安裝（見「共同前置作業」）完成後，進專案資料夾啟動：
+</p>
+<div class="org-src-container">
+<pre class="src src-sh"><span style="color: #ECBE7B;">cd</span> money-app
+agy
+</pre>
+</div>
+<p>
+第一次啟動會依序問你：配色、顯示模式、要不要信任這個資料夾，
+接著出現認證畫面—— <b>把老師發的金鑰貼進認證欄</b> 就完成了。
+（自己有成年 Google 帳號的話，也可以改用帳號直接登入，
+走免費 Individual 方案，月費 $0，還能選到 Claude、gpt-oss 等模型。）
+</p>
+
+<p>
+補充： <code>agy</code> 是 Gemini CLI 的官方接班者，保留了同一套操作習慣——
+中文描述任務、動作前徵求你同意、斜線指令、 <code>GEMINI.md</code> 班規檔照讀
+（連 Claude/Codex 生態的 <code>AGENTS.md</code> 也一併支援）。
+</p>
+</div>
+</div>
+<div id="outline-container-org4ffce0a" class="outline-4">
+<h4 id="org4ffce0a"><span class="section-number-4">2.4.2.</span> 每日能用多少額度？&#xa0;&#xa0;&#xa0;<span class="tag"><span class="noslide">noslide</span></span></h4>
+<div class="outline-text-4" id="text-2-4-2">
+<p>
+<code>agy</code> 的使用額度取決於你綁定的 Google AI／Google Cloud 方案層級：
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">方案層級</th>
+<th scope="col" class="org-left">額度說明</th>
+<th scope="col" class="org-left">備註</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">免費層級（Free Tier）</td>
+<td class="org-left">每天約 1,500 次請求（以 Gemini API 免費層為例）、每分鐘約 15 次（RPM）</td>
+<td class="org-left">短時間連續丟大量程式碼或長檔案，可能觸發 <code>429 Too Many Requests</code> （速率限制）</td>
+</tr>
+
+<tr>
+<td class="org-left">付費／Google Cloud（Vertex AI）</td>
+<td class="org-left">彈性按量計費（Pay-as-you-go）</td>
+<td class="org-left">額度取決於 GCP Console 設定的 API Quota 上限，日常使用基本不受小額限制</td>
+</tr>
+
+<tr>
+<td class="org-left">Google 訂閱方案</td>
+<td class="org-left">依 Gemini Advanced／Workspace 等訂閱層級提供高上限用量</td>
+<td class="org-left">適合高強度的每日開發與大專案維護</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+課堂小提醒：撞到 429 不是壞掉，是 <b>說話太快</b> ——等一分鐘再繼續，
+或把一次塞太多檔案的 prompt 拆小。
+</p>
+
+<p>
+<b>Google 官方的正式說法</b> （官方不公布確切數字，只給定性描述）：
+</p>
+<ul class="org-ul">
+<li>免費（Individual）方案：定價頁寫「Basic weekly rate limits」——官方部落格
+解釋是「改為較寬鬆的 <b>以週為單位</b> 的速率上限，減少專案做到一半突然撞牆」
+（原文：/"we've shifted to a larger, weekly based rate limit to minimize
+hitting rate limits quickly"/）。</li>
+<li>Google AI Pro／Ultra 訂閱：「最高、最寬鬆的速率上限， <b>每 5 小時刷新</b> 一次配額」
+（原文：/"quotas that refresh every five hours"/），且享有優先存取。</li>
+<li>各方案 <b>都能用 Gemini 3 Pro</b> ，差別只在額度多寡與刷新頻率，不在模型等級。</li>
+</ul>
+
+<p>
+也就是說：上表的「每天 1,500 次」是 AI 自己回答時 <b>借用了 Gemini API 免費層</b>
+的數字，並不是 Antigravity 的官方額度——官方對 <code>agy</code> 免費層只承諾
+「週制基本額度」。實際夠不夠用，開工前用一天實測最準。
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org45753e5" class="outline-3">
+<h3 id="org45753e5"><span class="section-number-3">2.5.</span> 三個工具的共同操作模式</h3>
+<div class="outline-text-3" id="text-2-5">
+<ol class="org-ol">
+<li><code>cd</code> 進你的專案資料夾，啟動工具（ <code>agy</code> / <code>claude</code> / <code>codex</code> ）。</li>
+<li>用中文打字描述你要做的事。</li>
+<li>AI 提議動作（建立檔案、執行指令），問你 <b>要不要同意</b> 。</li>
+<li>看一眼它要做什麼 → 同意 → 它做完會回報。</li>
+<li>你去驗收，再下一個指令。</li>
+</ol>
+
+<p>
+幾個通用的小技巧：
+</p>
+<ul class="org-ul">
+<li><code>/</code> 開頭是給 <b>工具本身</b> 的指令（不是給 AI 的）： <code>/help</code> 指令總覽、
+<code>/stats</code> 看額度用量、 <code>/quit</code> 離開；卡住按 <code>Esc</code> 或 <code>Ctrl-C</code> 中斷。</li>
+<li><code>@檔名</code> 把檔案內容附給 AI（ <code>@index.html 幫我解釋這段</code> ）；
+<code>!指令</code> 不問 AI 直接跑 shell（ <code>!ls</code> ）。</li>
+<li>這些工具都有「全自動同意」模式—— <b>課堂禁用</b> ：
+上半場才講過 AI 會幻覺，全自動＝閉著眼睛開車。</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgf580f3a" class="outline-3">
+<h3 id="orgf580f3a"><span class="section-number-3">2.6.</span> Terminal 生存指令包（會這六個就夠了）</h3>
+<div class="outline-text-3" id="text-2-6">
+<div class="org-src-container">
+<pre class="src src-sh"><span style="color: #ECBE7B;">pwd</span>            <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25105;&#29694;&#22312;&#22312;&#21738;&#20491;&#36039;&#26009;&#22846;&#65311;
+</span><span style="color: #ECBE7B;">ls</span>             <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36889;&#35041;&#26377;&#20160;&#40636;&#27284;&#26696;&#65311;
+</span><span style="color: #ECBE7B;">cd</span> &#36039;&#26009;&#22846;&#21517;     <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36914;&#20837;&#36039;&#26009;&#22846;
+</span><span style="color: #ECBE7B;">cd</span> ..          <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#22238;&#19978;&#19968;&#23652;
+</span><span style="color: #ECBE7B;">mkdir</span> &#21517;&#23383;      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;&#26032;&#36039;&#26009;&#22846;
+</span>open index.html   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">macOS &#29992;&#38928;&#35373;&#28687;&#35261;&#22120;&#38283;&#27284;&#65288;Windows &#29992; start index.html&#65289;</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org5d652ec" class="outline-2">
+<h2 id="org5d652ec"><span class="section-number-2">3.</span> Vibe coding 使用流程：以開發網頁為例</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+今天的實作目標：做一個 <b>「我的零用錢管理程式」</b> 單頁網站——
+一步一步長出功能，最後真的上線給別人用。
+每一步都是同一個循環： <b>說需求 → AI 動手 → 打開驗收 → 滿意就存檔</b> 。
+</p>
+</div>
+<div id="outline-container-org289a94d" class="outline-3">
+<h3 id="org289a94d"><span class="section-number-3">3.1.</span> Step 0：開專案資料夾＋立班規</h3>
+<div class="outline-text-3" id="text-3-1">
+<div class="org-src-container">
+<pre class="src src-sh"><span style="color: #ECBE7B;">mkdir</span> money-app
+<span style="color: #ECBE7B;">cd</span> money-app
+agy
+</pre>
+</div>
+<p>
+<b>為什麼要先開資料夾？</b> AI 會在「目前資料夾」裡動手，開新資料夾＝給它一個
+乾淨的工作間，它不會誤改到你其他東西。
+</p>
+
+<p>
+進去後的第一件事：建「班規」檔 <code>GEMINI.md</code> ——放在專案資料夾裡的這個檔，
+<code>agy</code> 每次啟動都會自動讀，等於 <b>不用每次重講的長期規則</b>
+（Claude Code 的同款檔案叫 <code>CLAUDE.md</code> ，Codex 叫 <code>AGENTS.md</code> ， <code>agy</code> 都認）。
+直接請 AI 代勞：
+</p>
+<pre class="example" id="org23e2211">
+幫我建立 GEMINI.md，規則：一律繁體中文回答；整站只用一個 index.html，
+不用框架；每次修改後用一句話總結；要裝任何套件前先問我。
+</pre>
+</div>
+</div>
+<div id="outline-container-org6ddfbf7" class="outline-3">
+<h3 id="org6ddfbf7"><span class="section-number-3">3.2.</span> Step 1：外觀——先把殼做出來</h3>
+<div class="outline-text-3" id="text-3-2">
+</div>
+<div id="outline-container-org01cda9c" class="outline-4">
+<h4 id="org01cda9c"><span class="section-number-4">3.2.1.</span> 動手前：先聊需求，不要寫程式</h4>
+<div class="outline-text-4" id="text-3-2-1">
+<p>
+好導演不會一句話交代整部電影。第一個訊息先把 AI 當 <b>諮詢顧問</b> ，
+並且 <b>要求它反問你</b> ：
+</p>
+<pre class="example" id="org23dd205">
+我想做一個給高中生自己用的零用錢管理網頁。
+先不要寫程式，先反問我三個問題，幫我釐清需求。
+</pre>
+<p>
+它可能會問：要不要分類別？資料存哪裡？要不要設額度上限？——
+你回答完，需求就自己長清楚了，正好變成下一步 prompt 的素材。
+</p>
+</div>
+</div>
+<div id="outline-container-org25f81e5" class="outline-4">
+<h4 id="org25f81e5"><span class="section-number-4">3.2.2.</span> 第一個 prompt</h4>
+<div class="outline-text-4" id="text-3-2-2">
+<p>
+壞的開場：
+</p>
+<pre class="example" id="orgf852896">
+幫我做一個記帳網站
+</pre>
+<p>
+好的開場（目的＋對象＋版面＋風格＋技術限制）：
+</p>
+<pre class="example" id="org46b55c8">
+幫我做「我的零用錢管理程式」單頁網站，給高中生自己用的。
+版面：最上方顯示「本月支出總額」（先寫 0 元），中間是支出列表
+（先放三筆假資料），下方有一顆「新增支出」按鈕（先不用有功能）。
+風格：清爽、手機上好操作。
+技術：只用一個 index.html，CSS 和 JavaScript 都寫在裡面，不要用任何框架。
+</pre>
+<p>
+最後一行很重要—— <b>限制越清楚，AI 越不會自作主張</b> 裝一堆你看不懂的東西。
+「先放假資料、按鈕先不用有功能」也是重要技巧： <b>先看到樣子，再談功能</b> 。
+</p>
+</div>
+</div>
+<div id="outline-container-orgb8e3688" class="outline-4">
+<h4 id="orgb8e3688"><span class="section-number-4">3.2.3.</span> 驗收</h4>
+<div class="outline-text-4" id="text-3-2-3">
+<p>
+做完馬上驗收，不要只回「好」， <b>打開看</b> ：
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">open index.html      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Windows: start index.html</span>
+</pre>
+</div>
+<ul class="org-ul">
+<li class="off"><code>[&#xa0;]</code> 版面跟你想的一樣嗎？</li>
+<li class="off"><code>[&#xa0;]</code> 手機寬度好讀嗎？（瀏覽器視窗拉窄看看）</li>
+<li class="off"><code>[&#xa0;]</code> 有沒有它自己加的、你沒要求的東西？</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org5881428" class="outline-3">
+<h3 id="org5881428"><span class="section-number-3">3.3.</span> Step 2：輸入支出</h3>
+<div class="outline-text-3" id="text-3-3">
+<pre class="example" id="org4319bc9">
+把「新增支出」做成真的：按下去出現輸入格（金額、項目名稱），
+送出後加進列表，本月總額同步更新。
+資料存在 localStorage，重新整理頁面後不會不見。
+</pre>
+<p>
+不懂 localStorage？ <b>當場問它</b> ——這是 vibe coding 最被低估的功能，
+它同時是你的家教：
+</p>
+<pre class="example" id="orge46976a">
+localStorage 是什麼？用高中生聽得懂的方式解釋你剛剛怎麼用它。
+</pre>
+<p>
+驗收重點：新增幾筆 → 重新整理 → 資料還在嗎？
+</p>
+</div>
+</div>
+<div id="outline-container-org683298a" class="outline-3">
+<h3 id="org683298a"><span class="section-number-3">3.4.</span> Step 3：加類別</h3>
+<div class="outline-text-3" id="text-3-4">
+<pre class="example" id="orga357b72">
+新增支出時可以選類別：飲食、交通、娛樂、學用品、其他。
+列表每一筆顯示類別，不同類別用不同顏色的小標籤。
+</pre>
+<p>
+<b>一次只加一個功能</b> ：不要把類別、統計、額度一口氣全丟給它——
+改壞了你會不知道是哪一個造成的。
+</p>
+</div>
+</div>
+<div id="outline-container-org1b0a569" class="outline-3">
+<h3 id="org1b0a569"><span class="section-number-3">3.5.</span> Step 4：加統計</h3>
+<div class="outline-text-3" id="text-3-5">
+<pre class="example" id="org7ef1a34">
+加一個「本月統計」區塊：各類別的小計和佔比，
+用簡單的橫條圖呈現（不要用圖表套件，用 div 的寬度畫就好）。
+</pre>
+<p>
+「不要用圖表套件」呼應了 Step 0 寫進 <code>GEMINI.md</code> 的班規（「不用框架、
+裝套件前先問我」）——多裝一個套件＝多一個你看不懂的黑盒子。
+</p>
+</div>
+</div>
+<div id="outline-container-org9c1cb9a" class="outline-3">
+<h3 id="org9c1cb9a"><span class="section-number-3">3.6.</span> Step 5：每月零用錢額度</h3>
+<div class="outline-text-3" id="text-3-6">
+<pre class="example" id="org746a849">
+加上「每月零用錢額度」設定（例如 2000 元），
+最上方顯示：剩餘額度 ＝ 額度 － 本月總支出。
+剩餘不到兩成時變橘色；超支時變紅色並顯示「本月已超支」。
+</pre>
+<p>
+驗收：故意記帳記到超支，顏色真的有變嗎？
+</p>
+</div>
+</div>
+<div id="outline-container-org76a78a2" class="outline-3">
+<h3 id="org76a78a2"><span class="section-number-3">3.7.</span> Step 6：存檔點（版本控制）</h3>
+<div class="outline-text-3" id="text-3-7">
+<p>
+每完成一個 Step，就值得請 AI 存一個「進度存檔」：
+</p>
+<pre class="example" id="org9048e4e">
+幫我 git init 並把目前的版本 commit，訊息寫「零用錢程式：基本功能完成」
+</pre>
+<p>
+之後改壞了隨時可以回來。不會 git 沒關係—— <b>AI 會</b> ，你只要記得喊存檔。
+</p>
+
+<p>
+存檔前多問一句，還能抓到 <b>它偷偷改的東西</b> ：
+</p>
+<pre class="example" id="orgf69184d">
+commit 之前，先用 git diff 總結這次改了哪些檔案的哪些地方。
+</pre>
+<p>
+你說「改 A」它順手動了 B、C，畫面上看不出來，diff 一眼就看到——
+這是驗收的最後一道網。
+</p>
+</div>
+</div>
+<div id="outline-container-orgaa1cd3c" class="outline-3">
+<h3 id="orgaa1cd3c"><span class="section-number-3">3.8.</span> 三個保命口訣</h3>
+<div class="outline-text-3" id="text-3-8">
+<ol class="org-ol">
+<li><b>先談清楚，再動手</b> ：談需求、談畫面、談步驟，最後才寫程式。</li>
+<li><b>小步快跑</b> ：一次只做一件事，做完就驗收。</li>
+<li><b>看不懂就停</b> ：AI 寫出你看不懂的東西，立刻問清楚，不要想著
+「之後再說」——之後永遠不會再說，出了 bug 你也救不回來。</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-org33bfb9e" class="outline-3">
+<h3 id="org33bfb9e"><span class="section-number-3">3.9.</span> 接下來</h3>
+<div class="outline-text-3" id="text-3-9">
+<p>
+程式「能用」了，但還差三步才算「完成」：
+</p>
+<ol class="org-ol">
+<li>禁得起亂輸入（負數、0、天文數字）→ 下一章「除錯」</li>
+<li>讓 AI 給你省錢建議（串 LLM API）→ 「串接 API」章第二部份</li>
+<li>上線給別人用 → 「上架」章</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-orge0ace67" class="outline-3">
+<h3 id="orge0ace67"><span class="section-number-3">3.10.</span> Prompt 技巧對照表</h3>
+<div class="outline-text-3" id="text-3-10">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">情境</th>
+<th scope="col" class="org-left">壞 prompt</th>
+<th scope="col" class="org-left">好 prompt</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">起步</td>
+<td class="org-left">幫我做個網站</td>
+<td class="org-left">做「XX」單頁網站，給 OO 看，內容有 A、B、C，只用一個 html</td>
+</tr>
+
+<tr>
+<td class="org-left">修改</td>
+<td class="org-left">弄好看一點</td>
+<td class="org-left">標題改深綠底白字、內文行距加大</td>
+</tr>
+
+<tr>
+<td class="org-left">修改</td>
+<td class="org-left">改一堆（列 10 項）</td>
+<td class="org-left">一次一件事，改完驗收再下一件</td>
+</tr>
+
+<tr>
+<td class="org-left">不滿意</td>
+<td class="org-left">不對，重做</td>
+<td class="org-left">我要的是 X，你做成了 Y，請往 X 的方向改</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="outline-container-orge4d1310" class="outline-2">
+<h2 id="orge4d1310"><span class="section-number-2">4.</span> Vibe coding 的除錯</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+程式一定會壞， <b>壞了不是你的問題，是流程的一部分</b> 。
+</p>
+</div>
+<div id="outline-container-org13fdcaa" class="outline-3">
+<h3 id="org13fdcaa"><span class="section-number-3">4.1.</span> 網頁壞掉的第一現場：開發者工具</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+瀏覽器按 <code>F12</code> （或右鍵 → 檢查）→ 切到 <b>Console</b> 分頁。
+紅色的字＝錯誤訊息＝ <b>給 AI 的線索</b> 。
+</p>
+</div>
+</div>
+<div id="outline-container-org8ac604d" class="outline-3">
+<h3 id="org8ac604d"><span class="section-number-3">4.2.</span> 三種餵錯誤的方式（由好到普通）</h3>
+<div class="outline-text-3" id="text-4-2">
+<ol class="org-ol">
+<li><p>
+<b>全文照貼</b> ：把 Console 的紅字整段複製，貼進終端機：
+</p>
+<pre class="example" id="org70db9b2">
+   網頁按下按鈕沒反應，Console 顯示這個錯誤，請修好：
+   Uncaught TypeError: Cannot read properties of null (reading 'addEventListener')
+       at index.html:52
+</pre></li>
+<li><b>預期 vs 實際</b> ：「我預期按下『查詢』會顯示天氣，實際上畫面完全沒變化，
+也沒有錯誤訊息。」</li>
+<li><b>叫它自己查</b> ：「你自己打開 index.html 檢查為什麼按鈕沒綁到事件，
+需要的話加 console.log 找問題。」——terminal 工具的強項，它真的會去讀檔案。</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-orgc0fe11a" class="outline-3">
+<h3 id="orgc0fe11a"><span class="section-number-3">4.3.</span> 除錯的節奏</h3>
+<div class="outline-text-3" id="text-4-3">
+<ul class="org-ul">
+<li>修一次 → 測一次。還是壞的就把 <b>新的</b> 錯誤貼回去（錯誤訊息會變！）。</li>
+<li>同一個問題修了 <b>三次</b> 還在鬼打牆 → 換策略：
+<ol class="org-ol">
+<li>換個說法重新描述問題（常常是你們雞同鴨講）。</li>
+<li>「把這個功能整段砍掉，重寫一個最簡單的版本。」</li>
+<li>回到上一個存檔點：「git 回到上一個 commit。」</li>
+</ol></li>
+<li>AI 說「修好了」 <b>不等於</b> 修好了。永遠以你的驗收為準。</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org7486e53" class="outline-3">
+<h3 id="org7486e53"><span class="section-number-3">4.4.</span> 課堂演練 A：弄壞再修（讀錯誤訊息）</h3>
+<div class="outline-text-3" id="text-4-4">
+<p>
+故意把 index.html 裡某個 <code>getElementById</code> 的名字改錯一個字母，
+存檔重整 → 看 Console 出現什麼 → 照上面的方式讓 AI 修回來。
+（體會一次完整的「壞掉 → 讀錯誤 → 餵 AI → 驗收」循環。）
+</p>
+</div>
+</div>
+<div id="outline-container-org2dfc2e2" class="outline-3">
+<h3 id="org2dfc2e2"><span class="section-number-3">4.5.</span> 課堂演練 B：亂輸入大賽（邊界測試）</h3>
+<div class="outline-text-3" id="text-4-5">
+<p>
+除錯不只是修紅字—— <b>使用者亂用而程式照單全收</b> ，也是 bug。
+拿你的零用錢程式，故意輸入這些：
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">亂輸入</th>
+<th scope="col" class="org-left">現在會發生什麼？</th>
+<th scope="col" class="org-left">你希望發生什麼？</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left"><code>-100</code></td>
+<td class="org-left">大概照收</td>
+<td class="org-left">拒絕——負支出等於在賺錢？</td>
+</tr>
+
+<tr>
+<td class="org-left"><code>0</code></td>
+<td class="org-left">大概照收</td>
+<td class="org-left">拒絕——0 元的支出沒有意義</td>
+</tr>
+
+<tr>
+<td class="org-left"><code>999999999</code></td>
+<td class="org-left">大概照收</td>
+<td class="org-left">提示——一次花九億零用錢？</td>
+</tr>
+
+<tr>
+<td class="org-left"><code>abc</code> 、空白</td>
+<td class="org-left">可能變 NaN</td>
+<td class="org-left">拒絕非數字，給出提示</td>
+</tr>
+</tbody>
+</table>
+<p>
+Console 完全沒紅字，但這些都是問題——這叫 <b>需求缺口</b> ：
+你沒說，AI 就沒做。把驗收結果變成下一個 prompt：
+</p>
+<pre class="example" id="orgb89f218">
+幫金額輸入加上驗證：只接受 1 到 10000 之間的整數，
+不合法時在輸入框下方顯示紅字提示，不要用 alert 彈窗。
+</pre>
+<p>
+（「不要用 alert」——彈窗會打斷操作，好的提示是就地顯示。這種
+使用體驗的細節，AI 不會自動幫你想，要 <b>你</b> 當產品經理。）
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgfbe1dee" class="outline-2">
+<h2 id="orgfbe1dee"><span class="section-number-2">5.</span> 如何為 web 串接 API</h2>
+<div class="outline-text-2" id="text-5">
+</div>
+<div id="outline-container-org78ec70c" class="outline-3">
+<h3 id="org78ec70c"><span class="section-number-3">5.1.</span> API 是什麼</h3>
+<div class="outline-text-3" id="text-5-1">
+<p>
+一句話： <b>別人寫好的服務，你的網頁用網址去要資料</b> 。
+瀏覽器裡的 JavaScript 用 <code>fetch(網址)</code> 要資料，對方回傳 JSON（一種文字格式的資料）。
+</p>
+
+<p>
+本章分兩部份：先串 <b>一般 API</b> （查天氣——資料是現成的、查表就有），
+再串 <b>LLM API</b> （讓你的網頁裡真的有 AI——回答是即時生成的）。
+兩者的做法差很多，關鍵就在「要不要金鑰」。
+</p>
+</div>
+</div>
+<div id="outline-container-org685a1e0" class="outline-3">
+<h3 id="org685a1e0"><span class="section-number-3">5.2.</span> 第一部份：串接一般 API——以查詢天氣為例</h3>
+<div class="outline-text-3" id="text-5-2">
+</div>
+<div id="outline-container-org7eb74ea" class="outline-4">
+<h4 id="org7eb74ea"><span class="section-number-4">5.2.1.</span> 先玩免金鑰的：Open-Meteo 天氣</h4>
+<div class="outline-text-4" id="text-5-2-1">
+<p>
+你們「溫室植栽專家系統」首頁的天氣就是用它——免註冊、免金鑰、可直接從網頁呼叫。
+在瀏覽器網址列直接貼這串（麥寮的經緯度）：
+</p>
+<pre class="example" id="org961c092">
+https://api.open-meteo.com/v1/forecast?latitude=23.75&amp;longitude=120.25&amp;current=temperature_2m,relative_humidity_2m
+</pre>
+<p>
+看到回傳的 JSON 了嗎？那就是 API 的全部—— <b>一個網址，換一包資料</b> 。
+</p>
+</div>
+</div>
+<div id="outline-container-org246221f" class="outline-4">
+<h4 id="org246221f"><span class="section-number-4">5.2.2.</span> 實作：幫零用錢程式加「美金匯率」小卡</h4>
+<div class="outline-text-4" id="text-5-2-2">
+<p>
+換一個跟錢有關的免金鑰 API——Frankfurter（歐洲央行匯率，免註冊）。
+先在瀏覽器網址列試試：
+</p>
+<pre class="example" id="org2164aeb">
+https://api.frankfurter.dev/v1/latest?base=USD&amp;symbols=TWD
+</pre>
+<p>
+然後下 prompt：
+</p>
+<pre class="example" id="orgaf2a9f8">
+在統計區下方加一個「美金匯率」小卡：顯示 1 美元等於多少台幣，
+並把本月總支出換算成美元一併顯示。
+用 Frankfurter API（免金鑰）：
+https://api.frankfurter.dev/v1/latest?base=USD&amp;symbols=TWD
+用 fetch 取得資料，載入中要顯示「載入中…」，失敗要顯示「匯率暫時無法取得」。
+</pre>
+<p>
+注意最後一行： <b>要求處理「失敗」的情況</b> 。網路會斷、API 會掛，
+好的網頁不能因此整個爆掉——這也是驗收項目之一（把 Wi-Fi 關掉試試看）。
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgfb57675" class="outline-3">
+<h3 id="orgfb57675"><span class="section-number-3">5.3.</span> 第二部份：串接 LLM API——讓網頁裡真的有 AI</h3>
+<div class="outline-text-3" id="text-5-3">
+</div>
+<div id="outline-container-orgbf10169" class="outline-4">
+<h4 id="orgbf10169"><span class="section-number-4">5.3.1.</span> LLM API 跟一般 API 哪裡不一樣？</h4>
+<div class="outline-text-4" id="text-5-3-1">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">比較</th>
+<th scope="col" class="org-left">一般 API（Open-Meteo）</th>
+<th scope="col" class="org-left">LLM API（Gemini／Groq）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">回傳內容</td>
+<td class="org-left">現成資料，查表就有</td>
+<td class="org-left"><b>即時生成</b> 的文字，每次可能不同</td>
+</tr>
+
+<tr>
+<td class="org-left">金鑰</td>
+<td class="org-left">這類公共服務常免金鑰</td>
+<td class="org-left"><b>一定要金鑰</b></td>
+</tr>
+
+<tr>
+<td class="org-left">費用</td>
+<td class="org-left">免費</td>
+<td class="org-left">有免費額度，刷爆要錢</td>
+</tr>
+
+<tr>
+<td class="org-left">呼叫位置</td>
+<td class="org-left">前端直接 <code>fetch</code></td>
+<td class="org-left"><b>必須經過自己的後端</b> （藏金鑰）</td>
+</tr>
+
+<tr>
+<td class="org-left">回應速度</td>
+<td class="org-left">快（毫秒）</td>
+<td class="org-left">慢（秒級），介面要有「思考中…」</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-org7a13a25" class="outline-4">
+<h4 id="org7a13a25"><span class="section-number-4">5.3.2.</span> 金鑰規則：LLM API 絕不能從前端直接呼叫</h4>
+<div class="outline-text-4" id="text-5-3-2">
+<p>
+<b>金鑰絕對不能寫在前端網頁裡</b> ——網頁的原始碼人人看得到，
+金鑰被抄走＝別人刷爆你的額度。
+</p>
+
+<p>
+正確做法（你們的「溫室植栽專家系統」就是這樣）：
+</p>
+<pre class="example" id="org03036cc">
+瀏覽器 → 你自己的後端（Vercel serverless function）→ 拿著金鑰去呼叫 LLM API
+                     ↑ 金鑰放在後端的「環境變數」裡，前端永遠看不到
+</pre>
+<p>
+對 AI 下指令時直接講規則：
+</p>
+<pre class="example" id="org59cfe44">
+幫我加一個 serverless function 來呼叫 XXX API，
+金鑰用環境變數 XXX_API_KEY 讀取，絕對不要出現在前端程式碼裡。
+</pre>
+</div>
+</div>
+<div id="outline-container-orgee41db1" class="outline-4">
+<h4 id="orgee41db1"><span class="section-number-4">5.3.3.</span> 實作：加「省錢小軍師」——問 AI 如何節省開支</h4>
+<div class="outline-text-4" id="text-5-3-3">
+<p>
+目標：按一顆「幫我省錢」按鈕，把 <b>本月支出統計＋你的問題</b> 送給 LLM，
+拿回針對你實際花費的具體建議。
+用 Groq 的免費 API（跟你們「溫室植栽專家系統」的生成端同一家）。prompt：
+</p>
+<pre class="example" id="orga10fabe">
+幫零用錢程式加「省錢小軍師」功能：
+1. 前端：統計區旁加一顆「幫我省錢」按鈕，按下後把本月各類別
+   支出小計和問題「我如何節省開支？」送到我們自己的 /api/advice，
+   等待時顯示「小軍師思考中…」，失敗顯示「暫時無法給建議」。
+2. 後端：建立 api/advice.js（Vercel serverless function），
+   收到資料後呼叫 Groq API 的 llama-3.3-70b-versatile 模型，
+   金鑰從環境變數 GROQ_API_KEY 讀取，絕對不要出現在前端。
+3. system prompt 設成「你是理財小老師，根據支出數據，
+   給高中生三條具體、做得到的省錢建議，用繁體中文，
+   資料不足就說資料不足，不要瞎猜」。
+</pre>
+<p>
+這裡藏著一個 LLM 應用的核心觀念： <b>把資料跟問題一起送進去</b> 。
+只問「我如何節省開支」，AI 只能講幹話；附上「飲食 1,200、
+娛樂 800、交通 300」，它才能說出「你的飲食佔六成，先從
+每天一杯的手搖飲下手」這種 <b>看得出有讀你資料</b> 的建議。
+（你們「溫室植栽專家系統」的 RAG 就是同一個道理——附上手冊段落再問。）
+</p>
+<p>
+注意三件事：
+</p>
+<ul class="org-ul">
+<li>有了 <code>api/</code> 資料夾，本機測試要改用 <code>npx vercel dev</code> 啟動
+（純靜態的開法看不到後端），部署也要用 Vercel。</li>
+<li>金鑰在 Vercel 上用 <code>npx vercel env add GROQ_API_KEY</code> 設定，
+或叫 AI 帶你在網頁後台設。</li>
+<li>system prompt 裡的「不知道就說不知道」是上半場講的 <b>降低幻覺</b> 的第一道防線。</li>
+</ul>
+
+<p>
+做完之後對照一下：你們「溫室植栽專家系統」的 <code>/api/ask</code> 是同一套骨架，
+差別是它把「附資料」這步自動化了——RAG 自動從栽培手冊撈相關段落
+塞給模型（上半場 Part 08），而你這裡是手動把支出統計附上去。
+</p>
+</div>
+</div>
+<div id="outline-container-org2b402fc" class="outline-4">
+<h4 id="org2b402fc"><span class="section-number-4">5.3.4.</span> 一定要用 Vercel 嗎？</h4>
+<div class="outline-text-4" id="text-5-3-4">
+<p>
+不一定。先分清楚你屬於哪一種：
+</p>
+<ol class="org-ol">
+<li><b>用的是免金鑰 API</b> （本課的 Open-Meteo、Frankfurter）→ <b>完全不需要後端</b> ，
+前端直接 fetch，網站拖上 Netlify Drop 就上線了。</li>
+<li><b>用的是有金鑰的 API</b> → 才需要一個「藏金鑰的後端」。選項由簡到繁：</li>
+</ol>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">方案</th>
+<th scope="col" class="org-left">需要什麼</th>
+<th scope="col" class="org-left">特色</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">Val Town</td>
+<td class="org-left">只要瀏覽器＋帳號</td>
+<td class="org-left">在網頁上寫一小段函式，存檔就有網址，最無痛</td>
+</tr>
+
+<tr>
+<td class="org-left">Cloudflare Workers</td>
+<td class="org-left"><code>npx wrangler deploy</code></td>
+<td class="org-left">一個檔案就是一個後端，免費額度大</td>
+</tr>
+
+<tr>
+<td class="org-left">Vercel（CLI 直推）</td>
+<td class="org-left"><code>npx vercel</code> ，email 登入</td>
+<td class="org-left"><b>不用接 GitHub</b> ——CLI 從資料夾直接部署</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+常見誤會：「用 Vercel 要先學 GitHub」——不用。在專案資料夾執行
+<code>npx vercel</code> 登入後就直接上線；接 GitHub 只是加值功能（push 自動重新部署），
+之後想要再加。課堂上一律叫 AI 代勞：
+</p>
+<pre class="example" id="org27340cb">
+用 npx vercel 幫我把這個專案部署上去，不要走 GitHub，一步一步帶我做。
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgebb0c1b" class="outline-3">
+<h3 id="orgebb0c1b"><span class="section-number-3">5.4.</span> 可以直接玩的免費 API</h3>
+<div class="outline-text-3" id="text-5-4">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">API</th>
+<th scope="col" class="org-left">用途</th>
+<th scope="col" class="org-left">金鑰？</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">Open-Meteo</td>
+<td class="org-left">天氣預報</td>
+<td class="org-left">不用</td>
+</tr>
+
+<tr>
+<td class="org-left">Frankfurter</td>
+<td class="org-left">匯率（歐洲央行資料）</td>
+<td class="org-left">不用</td>
+</tr>
+
+<tr>
+<td class="org-left">BigDataCloud</td>
+<td class="org-left">經緯度 → 地名（反查）</td>
+<td class="org-left">不用</td>
+</tr>
+
+<tr>
+<td class="org-left">政府資料開放平臺</td>
+<td class="org-left">台灣各種公開資料</td>
+<td class="org-left">多數不用</td>
+</tr>
+
+<tr>
+<td class="org-left">Gemini / Groq API</td>
+<td class="org-left">AI 生成（你們 App 在用）</td>
+<td class="org-left"><b>要，放後端</b></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="outline-container-orgde48c39" class="outline-2">
+<h2 id="orgde48c39"><span class="section-number-2">6.</span> Web 的上架</h2>
+<div class="outline-text-2" id="text-6">
+<p>
+做好的網站只在你電腦裡＝不存在。上架後有網址， <b>手機、評審、家人都打得開</b> 。
+</p>
+</div>
+<div id="outline-container-org41ac980" class="outline-3">
+<h3 id="org41ac980"><span class="section-number-3">6.1.</span> 三條路</h3>
+<div class="outline-text-3" id="text-6-1">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">方案</th>
+<th scope="col" class="org-left">難度</th>
+<th scope="col" class="org-left">適合</th>
+<th scope="col" class="org-left">備註</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">Netlify Drop</td>
+<td class="org-left">★（拖拉）</td>
+<td class="org-left">純前端、今天就要看到成果</td>
+<td class="org-left">免註冊可先試，網址隨機</td>
+</tr>
+
+<tr>
+<td class="org-left">GitHub Pages</td>
+<td class="org-left">★★（要 git）</td>
+<td class="org-left">純前端、想要穩定網址＋版本紀錄</td>
+<td class="org-left">免費、跟 git 存檔點整合</td>
+</tr>
+
+<tr>
+<td class="org-left">Vercel</td>
+<td class="org-left">★★</td>
+<td class="org-left"><b>有後端 serverless（串金鑰 API）</b></td>
+<td class="org-left">你們的「溫室植栽專家系統」就在這裡</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+判斷法： <b>只有 HTML/CSS/JS → 前兩個都行；有 api/ 資料夾（後端）→ Vercel。</b>
+</p>
+
+<p>
+對照你的零用錢程式，上架分兩個階段：
+</p>
+<ul class="org-ul">
+<li>做到 Step 5（純前端，還沒有 <code>api/</code> ）→ 走 <b>最簡單的 Netlify Drop</b> ，
+拖上去兩分鐘就有網址。</li>
+<li>加了「省錢小軍師」（有 <code>api/</code> ）之後 → 改用 <code>npx vercel</code> ，
+因為 Netlify Drop 跑不了你的後端。</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org1e3373b" class="outline-3">
+<h3 id="org1e3373b"><span class="section-number-3">6.2.</span> 實作 A：Netlify Drop（兩分鐘上線）</h3>
+<div class="outline-text-3" id="text-6-2">
+<ol class="org-ol">
+<li>開 <a href="https://app.netlify.com/drop">app.netlify.com/drop</a></li>
+<li>把整個 <code>money-app</code> 資料夾拖進網頁</li>
+<li>得到一個 <code>xxx.netlify.app</code> 網址 → 用手機開開看！</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-org4106f6f" class="outline-3">
+<h3 id="org4106f6f"><span class="section-number-3">6.3.</span> 實作 B：請 AI 幫你上 Vercel</h3>
+<div class="outline-text-3" id="text-6-3">
+<p>
+上架這種瑣事正是 vibe coding 的甜蜜點——流程它都會：
+</p>
+<pre class="example" id="orgc8cbf84">
+幫我把這個專案部署到 Vercel，我還沒有帳號，一步一步告訴我要做什麼。
+</pre>
+<p>
+它會引導你裝 Vercel CLI（ <code>npx vercel</code> ）、登入、部署。
+需要你自己動手的只有「用瀏覽器登入帳號」這種它碰不到的步驟。
+</p>
+</div>
+</div>
+<div id="outline-container-org8ed07aa" class="outline-3">
+<h3 id="org8ed07aa"><span class="section-number-3">6.4.</span> 上架前的檢查清單</h3>
+<div class="outline-text-3" id="text-6-4">
+<ul class="org-ul">
+<li class="off"><code>[&#xa0;]</code> 網頁裡沒有任何 API 金鑰、密碼、個資（ <b>上架＝全世界都看得到</b> ）</li>
+<li class="off"><code>[&#xa0;]</code> 手機實際打開測過（不是只有電腦）</li>
+<li class="off"><code>[&#xa0;]</code> 需要定位／相機的功能，只在 <code>https://</code> 網址下才能用（上架平台都自帶 HTTPS，
+但自己電腦用 IP 分享給手機測試時會失效——你們 App 的 README 裡踩過這個坑）</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org7d052b2" class="outline-3">
+<h3 id="org7d052b2"><span class="section-number-3">6.5.</span> 課後挑戰</h3>
+<div class="outline-text-3" id="text-6-5">
+<ol class="org-ol">
+<li>加「刪除／修改一筆支出」功能（記錯了總要能改）。</li>
+<li>加「本月 vs 上月」比較（提示：localStorage 依月份分開存）。</li>
+<li>把網站上到 GitHub Pages，並讓 AI 教你看 commit 歷史。</li>
+<li>進階：讓省錢小軍師記得你的「存錢目標」，建議往目標靠攏。</li>
+</ol>
+</div>
+</div>
+</div>
+<div id="outline-container-orgdbe13f2" class="outline-2">
+<h2 id="orgdbe13f2"><span class="section-number-2">7.</span> 進階：Skill——把 AI 變成特定領域的專家</h2>
+<div class="outline-text-2" id="text-7">
+</div>
+<div id="outline-container-orge093c1b" class="outline-3">
+<h3 id="orge093c1b"><span class="section-number-3">7.1.</span> 什麼是 skill</h3>
+<div class="outline-text-3" id="text-7-1">
+<p>
+還記得 Step 0 的班規檔 <code>GEMINI.md</code> 嗎？它是「每次啟動都讀」的長期規則。
+<b>Skill 則是「需要時才翻的工具書」</b> ：一個資料夾，裡面放一份 <code>SKILL.md</code>
+說明書（教 AI 某件專門任務的完整做法），還可以附腳本、範本等工具。
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">比較</th>
+<th scope="col" class="org-left">班規（GEMINI.md）</th>
+<th scope="col" class="org-left">Skill</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">讀取時機</td>
+<td class="org-left">每次啟動都讀</td>
+<td class="org-left">任務相關時才載入</td>
+</tr>
+
+<tr>
+<td class="org-left">內容</td>
+<td class="org-left">通用規則（語言、風格）</td>
+<td class="org-left">專門任務的完整做法（步驟＋工具）</td>
+</tr>
+
+<tr>
+<td class="org-left">比喻</td>
+<td class="org-left">貼在牆上的班規</td>
+<td class="org-left">書櫃裡的工具書</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-org9b445b5" class="outline-3">
+<h3 id="org9b445b5"><span class="section-number-3">7.2.</span> Skill 如何運作</h3>
+<div class="outline-text-3" id="text-7-2">
+<p>
+關鍵機制叫 <b>漸進式載入</b> ：AI 平常只記得每本工具書的
+「書名＋一句話簡介」（ <code>SKILL.md</code> 開頭的 name 和 description）；
+當你的任務對上某個簡介，它才把整本翻開來照著做。
+所以裝一堆 skill 不會拖慢平常的對話——沒用到的只佔一行目錄。
+</p>
+
+<p>
+翻開之後，AI 就照 <code>SKILL.md</code> 裡的步驟執行：可能是一套操作流程、
+一個檢查清單，或直接呼叫資料夾裡附的腳本。
+</p>
+</div>
+</div>
+<div id="outline-container-orgd429928" class="outline-3">
+<h3 id="orgd429928"><span class="section-number-3">7.3.</span> 哪裡找得到現成的 skill</h3>
+<div class="outline-text-3" id="text-7-3">
+<ul class="org-ul">
+<li><b>官方倉庫</b> ：<a href="https://github.com/anthropics/skills">github.com/anthropics/skills</a>——Anthropic 維護的
+skill 集，最實用的是文件處理系列： <code>docx</code> 、 <code>xlsx</code> 、 <code>pptx</code> 、 <code>pdf</code>
+（讀寫 Word／Excel／簡報／PDF）。</li>
+<li><b>社群collections</b> ：GitHub 搜「claude skills」或「awesome claude skills」，
+有大量社群整理的清單。</li>
+<li>⚠ 安全提醒：skill 是 <b>給 AI 的指令</b> ，裝之前打開 <code>SKILL.md</code> 看一眼內容
+——跟不亂裝瀏覽器外掛同一個道理。</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgc0b2994" class="outline-3">
+<h3 id="orgc0b2994"><span class="section-number-3">7.4.</span> 如何安裝</h3>
+<div class="outline-text-3" id="text-7-4">
+<p>
+安裝＝ <b>把資料夾放到工具會找的位置</b> ，沒有安裝程式：
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">工具</th>
+<th scope="col" class="org-left">skill 資料夾位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left"><code>agy</code></td>
+<td class="org-left">專案裡的 <code>.agents/skills/</code></td>
+</tr>
+
+<tr>
+<td class="org-left">Claude Code</td>
+<td class="org-left">專案 <code>.claude/skills/</code> 或全域 <code>~/.claude/skills/</code></td>
+</tr>
+</tbody>
+</table>
+<p>
+以官方 docx skill 為例：
+</p>
+<div class="org-src-container">
+<pre class="src src-sh"><span style="color: #ECBE7B;">git</span> clone https://github.com/anthropics/skills
+<span style="color: #ECBE7B;">mkdir</span> -p .agents/skills
+<span style="color: #ECBE7B;">cp</span> -r skills/skills/docx .agents/skills/
+</pre>
+</div>
+<p>
+（懶人法：直接叫 AI 代勞——「幫我把 anthropics/skills 的 docx skill
+裝到這個專案」。）
+</p>
+</div>
+</div>
+<div id="outline-container-orgfc3a3f5" class="outline-3">
+<h3 id="orgfc3a3f5"><span class="section-number-3">7.5.</span> 如何使用</h3>
+<div class="outline-text-3" id="text-7-5">
+<ul class="org-ul">
+<li><b>自動觸發</b> ：任務對上 skill 的 description 就會自己用——
+「幫我摘要 報告.docx 的重點」。</li>
+<li><b>點名使用</b> ：明講「用 docx skill 幫我……」。</li>
+</ul>
+<p>
+用前後差在哪，見本節最後的參考對話。
+</p>
+</div>
+</div>
+<div id="outline-container-orgb5c4940" class="outline-3">
+<h3 id="orgb5c4940"><span class="section-number-3">7.6.</span> 如何自建 skill</h3>
+<div class="outline-text-3" id="text-7-6">
+<p>
+最小的 skill 就是一個 <code>SKILL.md</code> ，兩個部份：開頭的 frontmatter
+（name＋description， <b>description 決定什麼時候被觸發</b> ，要寫「何時用」），
+加上內文的做法步驟。
+</p>
+<p>
+拿零用錢程式舉例：
+</p>
+<div class="org-src-container">
+<pre class="src src-markdown"><span style="color: #5B6268;">---</span>
+<span style="color: #ff6c6b;">name</span><span style="color: #5B6268;">: </span><span style="color: #98be65;">spending-report</span>
+<span style="color: #ff6c6b;">description</span><span style="color: #5B6268;">: </span><span style="color: #98be65;">&#30070;&#20351;&#29992;&#32773;&#35201;&#27714;&#12300;&#29986;&#29983;&#25903;&#20986;&#22577;&#21578;&#12301;&#25110;&#12300;&#26412;&#36913;&#33457;&#36027;&#32317;&#32080;&#12301;&#26178;&#20351;&#29992;&#12290;</span>
+<span style="color: #5B6268;">---</span>
+<span style="color: #ff6c6b; font-weight: bold;"># &#25903;&#20986;&#22577;&#21578;&#29986;&#29983;&#27969;&#31243;
+</span><span style="color: #ff6c6b;">1.</span> &#35712;&#21462; index.html &#35041; localStorage &#30340;&#25903;&#20986;&#36039;&#26009;&#32080;&#27083;&#12290;
+<span style="color: #ff6c6b;">2.</span> &#20381;&#39006;&#21029;&#24409;&#32317;&#26412;&#36913;&#37329;&#38989;&#65292;&#31639;&#20986;&#20308;&#27604;&#33287;&#21069;&#19968;&#36913;&#30340;&#24046;&#38989;&#12290;
+<span style="color: #ff6c6b;">3.</span> &#29992;&#22266;&#23450;&#26684;&#24335;&#36664;&#20986;&#65306;&#32317;&#25903;&#20986;&#12289;&#21069;&#19977;&#22823;&#39006;&#21029;&#12289;&#19968;&#21477;&#35441;&#24314;&#35696;&#12290;
+<span style="color: #ff6c6b;">4.</span> &#35486;&#35328;&#19968;&#24459;&#32321;&#39636;&#20013;&#25991;&#65292;&#37329;&#38989;&#21152;&#21315;&#20998;&#20301;&#12290;
+</pre>
+</div>
+<p>
+放進 <code>.agents/skills/spending-report/SKILL.md</code> ，之後只要說
+「產生支出報告」，AI 就會照這套固定流程做——
+<b>把你調教好的做法固定下來，不用每次重新教</b> ，這就是 skill 的價值。
+</p>
+
+<p>
+訣竅：skill 也可以 vibe 出來——把你剛才手把手教 AI 的流程，
+叫它自己封裝：「把剛才產生報告的做法寫成一個 skill，存到
+.agents/skills/」。
+</p>
+</div>
+</div>
+<div id="outline-container-orgbf8284f" class="outline-3">
+<h3 id="orgbf8284f"><span class="section-number-3">7.7.</span> 參考對話：沒有 skill 也能讀 docx，為什麼還要裝？&#xa0;&#xa0;&#xa0;<span class="tag"><span class="noslide">noslide</span></span></h3>
+<div class="outline-text-3" id="text-7-7">
+<p>
+一段真實的問答，把「要不要裝 skill」的判斷講得很清楚：
+</p>
+
+<p>
+<b>問：沒有 skill 的話，你能讀 docx 的內容嗎？</b>
+</p>
+
+<p>
+答：可以。 <code>.docx</code> 其實是壓縮包（XML 結構），我可以用內建的指令執行
+能力，臨時寫 Python（ <code>zipfile</code> 解析 <code>word/document.xml</code> 或
+<code>python-docx</code> 套件）把文字、表格抓出來。
+</p>
+
+<p>
+<b>問：那我為什麼還要裝</b> <a href="https://github.com/anthropics/skills/tree/main/skills/docx">anthropics/skills 的 docx skill</a> <b>？</b>
+</p>
+
+<p>
+答：差別在「純文字抓取」和「專業排版／完整處理」：
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">功能面向</th>
+<th scope="col" class="org-left">無 skill（臨時抓純文字）</th>
+<th scope="col" class="org-left">裝了 docx skill</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">讀取深度</td>
+<td class="org-left">只抓得出散落的純文字</td>
+<td class="org-left">完整還原標題階層、表格結構、清單與樣式</td>
+</tr>
+
+<tr>
+<td class="org-left">圖文與附件</td>
+<td class="org-left">忽略圖片、頁首頁尾與註腳</td>
+<td class="org-left">支援圖片、頁首頁尾、目錄與頁碼</td>
+</tr>
+
+<tr>
+<td class="org-left">批註與修訂</td>
+<td class="org-left">讀不到批註與修改紀錄</td>
+<td class="org-left">支援修訂追蹤（Track Changes)與批註</td>
+</tr>
+
+<tr>
+<td class="org-left">編輯／修改</td>
+<td class="org-left">難（直接改 XML 容易弄壞檔案）</td>
+<td class="org-left">保留原樣式與範本做精確替換</td>
+</tr>
+
+<tr>
+<td class="org-left">從零生成</td>
+<td class="org-left">只能產出 Markdown／純文字</td>
+<td class="org-left">生成排版完整的專業 <code>.docx</code></td>
+</tr>
+</tbody>
+</table>
+
+<p>
+一句話總結： <b>只是要「讀懂某段寫什麼」，不用裝</b> ；要處理表格、改格式、
+讀修訂紀錄、或自動產出正式的 Word 報告， <b>skill 才是那位排版師</b> 。
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org5dedb0e" class="outline-2">
+<h2 id="org5dedb0e"><span class="section-number-2">8.</span> 進階：先寫規格，再讓 AI 動手（SPEC.md）</h2>
+<div class="outline-text-2" id="text-8">
+</div>
+<div id="outline-container-org521b178" class="outline-3">
+<h3 id="org521b178"><span class="section-number-3">8.1.</span> 先補一點軟體開發常識</h3>
+<div class="outline-text-3" id="text-8-1">
+<p>
+真正的軟體團隊 <b>不是坐下來就開始寫程式</b> 。業界的標準流程長這樣：
+</p>
+<pre class="example" id="orgc951d5a">
+需求（要解決什麼問題）→ 規格（具體要做什麼）→ 實作（寫程式）
+→ 測試（有沒有寫對）→ 驗收（是不是當初要的）
+</pre>
+<p>
+其中「規格」（specification，簡稱 spec）是一份白紙黑字的文件，
+等於 <b>客戶和工程師之間的合約</b> ：要做什麼、不做什麼、怎樣算做完。
+沒有規格的專案，最後一定變成「我以為你要的是這個」大戰。
+</p>
+</div>
+</div>
+<div id="outline-container-org4b6e532" class="outline-3">
+<h3 id="org4b6e532"><span class="section-number-3">8.2.</span> 為什麼 vibe coding 也需要規格</h3>
+<div class="outline-text-3" id="text-8-2">
+<p>
+今天的零用錢程式只有六步，你邊聊邊做沒問題。但專案一變大：
+</p>
+<ul class="org-ul">
+<li>講一句、AI 改一片，改到後來 <b>連你自己都忘了當初要做什麼</b></li>
+<li>對話換過幾輪之後，AI 開始「失憶」、改錯方向、前後矛盾</li>
+</ul>
+<p>
+解法就是把業界那套搬過來： <b>先把規格寫成檔案</b> ，AI 每次動手前都
+對著它做——規格成了你和 AI 之間 <b>共同的合約</b> ，吵架時翻合約就對了。
+</p>
+</div>
+</div>
+<div id="outline-container-orgd7d96d7" class="outline-3">
+<h3 id="orgd7d96d7"><span class="section-number-3">8.3.</span> SPEC.md：五個欄位就夠</h3>
+<div class="outline-text-3" id="text-8-3">
+<p>
+在專案根目錄放一份 <code>SPEC.md</code> ，以零用錢程式為例：
+</p>
+<div class="org-src-container">
+<pre class="src src-markdown"><span style="color: #ff6c6b; font-weight: bold;"># &#25105;&#30340;&#38646;&#29992;&#37666;&#31649;&#29702;&#31243;&#24335;&#8212;&#8212;&#35215;&#26684;
+</span>
+<span style="color: #ff6c6b; font-weight: bold;">## 1. &#32102;&#35504;&#29992;
+</span>&#39640;&#20013;&#29983;&#33258;&#24049;&#29992;&#65292;&#25163;&#27231;&#20778;&#20808;&#12290;
+
+<span style="color: #ff6c6b; font-weight: bold;">## 2. &#21151;&#33021;&#28165;&#21934;
+</span>&#24517;&#35201;&#65306;&#35352;&#25903;&#20986;&#65288;&#37329;&#38989;/&#38917;&#30446;/&#39006;&#21029;&#65289;&#12289;&#26412;&#26376;&#32317;&#38989;&#12289;&#39006;&#21029;&#32113;&#35336;&#12289;&#27599;&#26376;&#38989;&#24230;&#33287;&#36229;&#25903;&#35686;&#31034;
+&#21152;&#20998;&#65306;&#32654;&#37329;&#21295;&#29575;&#25563;&#31639;&#12289;AI &#30465;&#37666;&#24314;&#35696;
+
+<span style="color: #ff6c6b; font-weight: bold;">## 3. &#30059;&#38754;&#33287;&#36039;&#26009;
+</span>&#21934;&#19968; index.html&#65307;&#36039;&#26009;&#23384; localStorage&#65307;&#39006;&#21029;&#22266;&#23450;&#20116;&#31278;&#12290;
+
+<span style="color: #ff6c6b; font-weight: bold;">## 4. &#24590;&#27171;&#31639;&#20570;&#23436;&#65288;&#39511;&#25910;&#26781;&#20214;&#65289;
+</span><span style="color: #ff6c6b;">-</span> &#26032;&#22686;&#19968;&#31558;&#25903;&#20986;&#24460;&#65292;&#37325;&#26032;&#25972;&#29702;&#36039;&#26009;&#36996;&#22312;
+<span style="color: #ff6c6b;">-</span> &#36664;&#20837; -100&#12289;0&#12289;abc &#26371;&#34987;&#25803;&#19979;&#20006;&#25552;&#31034;
+<span style="color: #ff6c6b;">-</span> &#36229;&#25903;&#26178;&#38989;&#24230;&#21312;&#35722;&#32005;
+<span style="color: #ff6c6b;">-</span> &#25163;&#27231;&#30452;&#21521;&#25805;&#20316;&#19981;&#29992;&#24038;&#21491;&#25458;&#21205;
+
+<span style="color: #ff6c6b; font-weight: bold;">## 5. &#19981;&#20570;&#28165;&#21934;
+</span>&#19981;&#20570;&#30331;&#20837;&#12289;&#19981;&#20570;&#38642;&#31471;&#21516;&#27493;&#12289;&#19981;&#20570;&#22810;&#20154;&#20849;&#29992;&#12289;&#19981;&#35037;&#20219;&#20309;&#26694;&#26550;&#33287;&#22871;&#20214;
+</pre>
+</div>
+<p>
+兩個欄位特別講一下，這是軟體業的看家本領：
+</p>
+<ul class="org-ul">
+<li><b>「怎樣算做完」</b> ——業界叫 <b>驗收條件</b> （acceptance criteria）。
+寫得出驗收條件，代表你真的想清楚了；寫不出來，代表你自己
+也不知道要什麼，AI 更不可能猜對。</li>
+<li><b>「不做清單」</b> ——防的是業界最有名的專案殺手 <b>範圍蔓延</b>
+（scope creep）：做著做著「順便加個登入好了」「順便上雲端好了」，
+順便到最後，原本三天的東西三個月都做不完。</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org9645467" class="outline-3">
+<h3 id="org9645467"><span class="section-number-3">8.4.</span> 怎麼用</h3>
+<div class="outline-text-3" id="text-8-4">
+<ul class="org-ul">
+<li><b>動手前</b> ：「先讀 SPEC.md，再開始做第 2 項功能。」</li>
+<li><b>做完後</b> ：「對照 SPEC.md 檢查一遍，有沒有哪條驗收條件沒過、
+有沒有做了不做清單裡的東西？」</li>
+<li><b>要改功能</b> ：先改規格、再叫 AI 照新規格改程式——
+永遠讓合約跟現實一致。</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org6168ddc" class="outline-3">
+<h3 id="org6168ddc"><span class="section-number-3">8.5.</span> 跟你們的專題有什麼關係</h3>
+<div class="outline-text-3" id="text-8-5">
+<p>
+比賽或專題的 <b>企劃書</b> ，本質上就是一份 SPEC.md：給誰用、
+做什麼、怎樣算成功、不做什麼。先在小專案養成寫規格的習慣，
+之後寫企劃書就是把 SPEC.md 換件正式的衣服而已。
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orga79d8da" class="outline-2">
+<h2 id="orga79d8da"><span class="section-number-2">9.</span> 附錄：常見狀況急救&#xa0;&#xa0;&#xa0;<span class="tag"><span class="noslide">noslide</span></span></h2>
+<div class="outline-text-2" id="text-9">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">狀況</th>
+<th scope="col" class="org-left">解法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left"><code>npm : 無法辨識</code> / <code>command not found</code></td>
+<td class="org-left">Node.js 沒裝好或沒重開終端機——重開一次終端機再試</td>
+</tr>
+
+<tr>
+<td class="org-left">安裝時一堆 WARN</td>
+<td class="org-left">黃色 WARN 可以無視，紅色 ERR 才需要處理（貼給 AI）</td>
+</tr>
+
+<tr>
+<td class="org-left">AI 卡住不動</td>
+<td class="org-left"><code>Ctrl-C</code> 中斷，重新描述任務</td>
+</tr>
+
+<tr>
+<td class="org-left">免費額度用完</td>
+<td class="org-left">換一把金鑰或明天再來；下 prompt 前先想清楚，少走冤枉路</td>
+</tr>
+
+<tr>
+<td class="org-left">改壞了回不去</td>
+<td class="org-left">有 commit 就叫 AI「回到上一個版本」；沒有就深呼吸，描述清楚重做</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-orgecc05cb" class="outline-2">
+<h2 id="orgecc05cb"><span class="section-number-2">10.</span> 結語：AI 放大的是人</h2>
+<div class="outline-text-2" id="text-10">
+<p>
+學到這裡，你會發現兩種同學：
+</p>
+<ul class="org-ul">
+<li><b>盲信的</b> ：AI 說什麼都對，程式碼貼上就交——出了錯完全不知道從哪救。</li>
+<li><b>拒斥的</b> ：AI 寫的我看不懂，乾脆不信任，回去一行一行手刻。</li>
+</ul>
+
+<p>
+Vibe coding 走的是中間那條路： <b>懂得驗收、懂得追問、懂得拒絕</b> 。
+需求是你想的、驗收是你把的關、方向是你定的——AI 只是把你的意志
+放大幾十倍的執行力。
+</p>
+
+<p>
+AI 會放大人的能力。而歷史上每一次技術變革，
+<b>取代人的從來不是工具，是把工具用得更好的另一個人</b> 。
+去當那個人。
+</p>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">&#20316;&#32773;: Yung-Chin Yen</p>
+<p class="date">Created: 2026-08-05 Wed 16:58</p>
+</div>
+</body>
+</html>
