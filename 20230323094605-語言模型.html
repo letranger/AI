@@ -3,13 +3,13 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-03-23 Thu 10:33 -->
+<!-- 2026-02-14 Sat 19:54 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>#+title: 語言模型</title>
-<meta name="author" content="Yung Chin, Yen" />
+<title>語言模型</title>
+<meta name="author" content="顏永進" />
 <meta name="generator" content="Org Mode" />
-<style>
+<style type="text/css">
   #content { max-width: 60em; margin: auto; }
   .title  { text-align: center;
              margin-bottom: .2em; }
@@ -193,184 +193,677 @@
     { background-color: #ffff00; color: #000000; font-weight: bold; }
   .org-svg { }
 </style>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        displayAlign: "center",
-        displayIndent: "0em",
-
-        "HTML-CSS": { scale: 100,
-                        linebreaks: { automatic: "false" },
-                        webFont: "TeX"
-                       },
-        SVG: {scale: 100,
-              linebreaks: { automatic: "false" },
-              font: "TeX"},
-        NativeMML: {scale: 100},
-        TeX: { equationNumbers: {autoNumber: "AMS"},
-               MultLineWidth: "85%",
-               TagSide: "right",
-               TagIndent: ".8em"
-             }
-});
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+<link rel="stylesheet" type="text/css" href="../css/muse.css" />
+<script src="../css/copy_code.js"></script>
 </head>
 <body>
 <div id="content" class="content">
-<h1 class="title">#+title: 語言模型</h1>
+<h1 class="title">語言模型</h1>
 <div id="table-of-contents" role="doc-toc">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org67b38c3">1. 什麼是語言模型</a></li>
-<li><a href="#org798996f">2. 語言模型的類別</a>
+<li><a href="#org29aa9dd">1. 什麼是語言模型</a>
 <ul>
-<li><a href="#org8250592">2.1. N-gram</a></li>
-<li><a href="#orgc505e11">2.2. 前饋神經網絡語言模型(FeedForward Neural Network Language Models)</a></li>
-<li><a href="#org2695b0c">2.3. 循環神經網絡語言模型(RNN Language Models)</a></li>
-<li><a href="#org994bb7d">2.4. GPT系列</a></li>
+<li><a href="#orga082480">1.1. 用數學來說</a></li>
+<li><a href="#org555d432">1.2. 用 Python 感受一下</a></li>
 </ul>
 </li>
-<li><a href="#org25d616e">3. 語言模型的應用</a></li>
-<li><a href="#orgad75eed">4. 語言模型的未來發展</a></li>
+<li><a href="#orge2ed226">2. 語言模型的進化史</a>
+<ul>
+<li><a href="#org3609dd6">2.1. 第一代：N-gram 模型（數人頭法）</a></li>
+<li><a href="#org97fe866">2.2. 第二代：神經網路語言模型</a></li>
+<li><a href="#orgae5f4f6">2.3. 第三代：RNN 語言模型</a></li>
+<li><a href="#orgdea9389">2.4. 第四代：Transformer 與 GPT（注意力就是你需要的一切）</a></li>
+<li><a href="#orgc093384">2.5. 小結：語言模型進化比較</a></li>
+</ul>
+</li>
+<li><a href="#orgff12e88">3. 語言模型的應用</a></li>
+<li><a href="#org4d307f2">4. 動手做：文字生成器</a></li>
+<li><a href="#orgc76ea6c">5. 作業</a>
+<ul>
+<li><a href="#org79edc33">5.1. 作業一：我的 Bigram 文學獎</a></li>
+<li><a href="#orgfe58671">5.2. 作業二：Attention 偵探社</a></li>
+<li><a href="#org5b5635c">5.3. 作業三：語言模型時光機</a></li>
+</ul>
+</li>
+<li><a href="#org2787d00">6. 學習資源</a></li>
 </ul>
 </div>
 </div>
-
-<div id="outline-container-org67b38c3" class="outline-2">
-<h2 id="org67b38c3"><span class="section-number-2">1.</span> 什麼是語言模型</h2>
+<a href="https://letranger.github.io/AI/20230323094605-語言模型.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20230323094605-語言模型.html.svg"/></a>
+<div id="outline-container-org29aa9dd" class="outline-2">
+<h2 id="org29aa9dd"><span class="section-number-2">1.</span> 什麼是語言模型</h2>
 <div class="outline-text-2" id="text-1">
-<ul class="org-ul">
-<li>語言模型是一種基於統計和機器學習的自然語言處理技術，它可以模擬人類語言的生成和理解過程。</li>
-<li>語言模型是自然語言處理領域不可或缺的一部分，它通過統計和機器學習技術，模擬人類語言的生成和理解過程<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。</li>
-<li>語言模型起源於語音識別(speech recognition)，輸入一段音頻數據，語音識別系統通常會生成多個句子作為候選，究竟哪個句子更合理？就需要用到語言模型對候選句子進行排序。如今語言模型的應用範圍早已擴展到機器翻譯、信息檢索、問答、文摘等眾多NLP領域<sup><a id="fnr.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup>。</li>
-<li>語言模型是這樣一個模型：對於任意的詞序列，它能夠計算出這個序列是一句話的概率<sup><a id="fnr.2.100" class="footref" href="#fn.2" role="doc-backlink">2</a></sup>。</li>
-</ul>
+<p>
+你每天都在用語言模型，只是你不知道而已。<br />
+</p>
+
+<p>
+打開手機輸入「今天天氣」，鍵盤會自動建議「很好」、「不錯」、「真熱」——這背後就是語言模型在運作。Google 搜尋欄打幾個字就會跳出一整串建議，也是語言模型。甚至你在 LINE 上打字時出現的自動完成，統統都是。<br />
+</p>
+
+<blockquote>
+<p>
+語言模型的核心任務只有一件事：*根據前面的文字，預測下一個最可能出現的字*。<br />
+</p>
+</blockquote>
 </div>
+<div id="outline-container-orga082480" class="outline-3">
+<h3 id="orga082480"><span class="section-number-3">1.1.</span> 用數學來說</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+假設有一句話「我 今天 吃了 一碗 _____」，語言模型的工作就是計算：<br />
+</p>
+
+<ul class="org-ul">
+<li>P(拉麵 | 我今天吃了一碗) = 0.15<br /></li>
+<li>P(牛肉麵 | 我今天吃了一碗) = 0.12<br /></li>
+<li>P(飯 | 我今天吃了一碗) = 0.10<br /></li>
+<li>P(水泥 | 我今天吃了一碗) = 0.0001<br /></li>
+</ul>
+
+<p>
+模型會選擇機率最高的字詞作為預測結果。那這些機率是怎麼來的？答案是：*從大量的文本中統計出來的*。如果模型讀過的文章中，「一碗」後面常常接「飯」、「麵」、「湯」，那這些字的機率就會比較高；「水泥」幾乎從來沒出現在「一碗」後面，所以機率趨近於零。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org555d432" class="outline-3">
+<h3 id="org555d432"><span class="section-number-3">1.2.</span> 用 Python 感受一下</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+我們來寫一個最簡單的「語言模型」——統計一段文字中，每個字後面最常接什麼字：<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #dcaeea;">text</span> = <span style="color: #98be65;">"&#25105;&#21916;&#27489;&#21507;&#25289;&#40629;&#25105;&#21916;&#27489;&#21507;&#29275;&#32905;&#40629;&#25105;&#21916;&#27489;&#21917;&#29645;&#29664;&#22902;&#33590;&#25105;&#19981;&#21916;&#27489;&#21507;&#33510;&#29916;"</span>
+<span class="linenr"> 2: </span>
+<span class="linenr"> 3: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#32113;&#35336;&#27599;&#20491;&#23383;&#24460;&#38754;&#25509;&#20160;&#40636;&#23383;</span>
+<span class="linenr"> 4: </span><span style="color: #dcaeea;">next_char</span> = {}
+<span class="linenr"> 5: </span><span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #c678dd;">len</span>(text) - <span style="color: #da8548; font-weight: bold;">1</span>):
+<span class="linenr"> 6: </span>    <span style="color: #dcaeea;">current</span> = text[i]
+<span class="linenr"> 7: </span>    <span style="color: #dcaeea;">follow</span> = text[i + <span style="color: #da8548; font-weight: bold;">1</span>]
+<span class="linenr"> 8: </span>    <span style="color: #51afef;">if</span> current <span style="color: #51afef;">not</span> <span style="color: #51afef;">in</span> next_char:
+<span class="linenr"> 9: </span>        <span style="color: #dcaeea;">next_char</span>[current] = {}
+<span class="linenr">10: </span>    <span style="color: #51afef;">if</span> follow <span style="color: #51afef;">not</span> <span style="color: #51afef;">in</span> next_char[current]:
+<span class="linenr">11: </span>        next_char[current][follow] = <span style="color: #da8548; font-weight: bold;">0</span>
+<span class="linenr">12: </span>    next_char[current][follow] += <span style="color: #da8548; font-weight: bold;">1</span>
+<span class="linenr">13: </span>
+<span class="linenr">14: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#30475;&#30475;&#12300;&#25105;&#12301;&#24460;&#38754;&#26368;&#24120;&#25509;&#20160;&#40636;</span>
+<span class="linenr">15: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#12300;&#25105;&#12301;&#24460;&#38754;&#25509;&#30340;&#23383;&#21450;&#20986;&#29694;&#27425;&#25976;&#65306;"</span>)
+<span class="linenr">16: </span><span style="color: #51afef;">for</span> char, count <span style="color: #51afef;">in</span> <span style="color: #c678dd;">sorted</span>(next_char[<span style="color: #98be65;">"&#25105;"</span>].items(), key=<span style="color: #51afef;">lambda</span> x: -x[<span style="color: #da8548; font-weight: bold;">1</span>]):
+<span class="linenr">17: </span>    <span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"  </span>{char}<span style="color: #98be65;">: </span>{count}<span style="color: #98be65;"> &#27425;"</span>)
+<span class="linenr">18: </span>
+<span class="linenr">19: </span><span style="color: #c678dd;">print</span>()
+<span class="linenr">20: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#12300;&#21916;&#12301;&#24460;&#38754;&#25509;&#30340;&#23383;&#21450;&#20986;&#29694;&#27425;&#25976;&#65306;"</span>)
+<span class="linenr">21: </span><span style="color: #51afef;">for</span> char, count <span style="color: #51afef;">in</span> <span style="color: #c678dd;">sorted</span>(next_char[<span style="color: #98be65;">"&#21916;"</span>].items(), key=<span style="color: #51afef;">lambda</span> x: -x[<span style="color: #da8548; font-weight: bold;">1</span>]):
+<span class="linenr">22: </span>    <span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"  </span>{char}<span style="color: #98be65;">: </span>{count}<span style="color: #98be65;"> &#27425;"</span>)
+</pre>
 </div>
 
-<div id="outline-container-org798996f" class="outline-2">
-<h2 id="org798996f"><span class="section-number-2">2.</span> 語言模型的類別</h2>
+<p>
+預期輸出：<br />
+</p>
+<pre class="example" id="org0b8378f">
+「我」後面接的字及出現次數：
+  喜: 3 次
+  不: 1 次
+
+「喜」後面接的字及出現次數：
+  歡: 4 次
+</pre>
+
+<p>
+這個迷你模型雖然只統計了一句話，但已經掌握了語言模型的核心精神：*觀察規律，預測未來*。ChatGPT 做的事情本質上和這個一模一樣，只是它讀了幾乎整個網際網路的資料，模型有數千億個參數，預測的精準度自然不可同日而語。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orge2ed226" class="outline-2">
+<h2 id="orge2ed226"><span class="section-number-2">2.</span> 語言模型的進化史</h2>
 <div class="outline-text-2" id="text-2">
 <p>
-語言模型發展史上的幾個里程碑式工作: N-gram LM、FeedForward Neural Network LM、RNN LM和GPT系列
+語言模型的發展就像是「猜字遊戲」的進化——從死背到理解，從短視到遠望。<br />
 </p>
 </div>
-<div id="outline-container-org8250592" class="outline-3">
-<h3 id="org8250592"><span class="section-number-3">2.1.</span> N-gram<sup><a id="fnr.2.100" class="footref" href="#fn.2" role="doc-backlink">2</a></sup></h3>
+<div id="outline-container-org3609dd6" class="outline-3">
+<h3 id="org3609dd6"><span class="section-number-3">2.1.</span> 第一代：N-gram 模型（數人頭法）</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
-在統計學模型橫行NLP的時代，語言模型任務的扛把子是N-gram語言模型。為了簡化 \(p(w_i|w-1,...,w_{i-1})\) 的計算，我們引入一階馬爾可夫假設(first-order Markov assumption)：每個詞只依賴前一個詞，
-\(p(w_i|w-1,...,w_{i-1})\approx(w_i|w{i-1})\)
+最原始的語言模型就是「數人頭」：統計大量文章中，某幾個字連在一起出現的次數。<br />
 </p>
-</div>
-</div>
-<div id="outline-container-orgc505e11" class="outline-3">
-<h3 id="orgc505e11"><span class="section-number-3">2.2.</span> 前饋神經網絡語言模型(FeedForward Neural Network Language Models)<sup><a id="fnr.2.100" class="footref" href="#fn.2" role="doc-backlink">2</a></sup></h3>
-<div class="outline-text-3" id="text-2-2">
+
 <p>
-N-gram語言模型將詞看作離散變量，使用one-hot進行表示，由此帶來兩大弊端：
+例如 Bigram（2-gram）模型只看前一個字：<br />
 </p>
 <ul class="org-ul">
-<li>詞與詞之間不存在語義關聯，簡單來講，從相似性的角度，{&ldquo;貓&rdquo;, &ldquo;狗&rdquo;}要比{&ldquo;貓&rdquo;, &ldquo;電腦&rdquo;}更相似，但是使用one-hot表示後，任意兩個詞之間的距離都相等，則距離度量失去意義，相似性關係蕩然無存，這就導致N-gram語言模型的泛化能力(generalization)受到極大限制，凡是訓練集中沒有出現過的就不是句子。</li>
-<li>N-gram模型的參數數量是指數級：\(|V|^{N-1}\) ，為了減少參數量，只能減小V和N的取值， 減小要去除很多低頻詞導致模型效果有所下降，最致命的是N減小讓N-gram模型徹底在長距離依賴(long dependency)問題上敗下陣來，一般N的取值也就是3~5，面對「Yann LeCun|出生|在|法國|他|提出了|LeNet|他|會說|英語|和|？」這樣的問題，束手無策。</li>
+<li>看到「我」→ 預測下一個字（統計「我」後面最常接什麼）<br /></li>
+<li>看到「今天」→ 預測下一個字（統計「天」後面最常接什麼）<br /></li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> random
+<span class="linenr"> 2: </span>
+<span class="linenr"> 3: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#29992; bigram &#20358;&#12300;&#29983;&#25104;&#12301;&#25991;&#23383;</span>
+<span class="linenr"> 4: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">build_bigram</span>(text):
+<span class="linenr"> 5: </span>    <span style="color: #83898d;">"""&#24314;&#31435; bigram &#27169;&#22411;&#65306;&#32113;&#35336;&#27599;&#20491;&#23383;&#24460;&#38754;&#21508;&#20491;&#23383;&#20986;&#29694;&#30340;&#27425;&#25976;"""</span>
+<span class="linenr"> 6: </span>    <span style="color: #dcaeea;">model</span> = {}
+<span class="linenr"> 7: </span>    <span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #c678dd;">len</span>(text) - <span style="color: #da8548; font-weight: bold;">1</span>):
+<span class="linenr"> 8: </span>        <span style="color: #dcaeea;">c</span> = text[i]
+<span class="linenr"> 9: </span>        <span style="color: #dcaeea;">n</span> = text[i + <span style="color: #da8548; font-weight: bold;">1</span>]
+<span class="linenr">10: </span>        <span style="color: #51afef;">if</span> c <span style="color: #51afef;">not</span> <span style="color: #51afef;">in</span> model:
+<span class="linenr">11: </span>            <span style="color: #dcaeea;">model</span>[c] = {}
+<span class="linenr">12: </span>        model[c][n] = model[c].get(n, <span style="color: #da8548; font-weight: bold;">0</span>) + <span style="color: #da8548; font-weight: bold;">1</span>
+<span class="linenr">13: </span>    <span style="color: #51afef;">return</span> model
+<span class="linenr">14: </span>
+<span class="linenr">15: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">predict_next</span>(model, current_char):
+<span class="linenr">16: </span>    <span style="color: #83898d;">"""&#26681;&#25818; bigram &#27169;&#22411;&#38928;&#28204;&#19979;&#19968;&#20491;&#23383;"""</span>
+<span class="linenr">17: </span>    <span style="color: #51afef;">if</span> current_char <span style="color: #51afef;">not</span> <span style="color: #51afef;">in</span> model:
+<span class="linenr">18: </span>        <span style="color: #51afef;">return</span> <span style="color: #98be65;">"&#65311;"</span>
+<span class="linenr">19: </span>    <span style="color: #dcaeea;">candidates</span> = model[current_char]
+<span class="linenr">20: </span>    <span style="color: #dcaeea;">total</span> = <span style="color: #c678dd;">sum</span>(candidates.values())
+<span class="linenr">21: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39023;&#31034;&#27599;&#20491;&#20505;&#36984;&#23383;&#30340;&#27231;&#29575;</span>
+<span class="linenr">22: </span>    <span style="color: #51afef;">for</span> char, count <span style="color: #51afef;">in</span> <span style="color: #c678dd;">sorted</span>(candidates.items(), key=<span style="color: #51afef;">lambda</span> x: -x[<span style="color: #da8548; font-weight: bold;">1</span>]):
+<span class="linenr">23: </span>        <span style="color: #dcaeea;">prob</span> = count / total * <span style="color: #da8548; font-weight: bold;">100</span>
+<span class="linenr">24: </span>        <span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"  </span>{char}<span style="color: #98be65;">: </span>{prob:.1f}<span style="color: #98be65;">%"</span>)
+<span class="linenr">25: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#22238;&#20659;&#27231;&#29575;&#26368;&#39640;&#30340;</span>
+<span class="linenr">26: </span>    <span style="color: #51afef;">return</span> <span style="color: #c678dd;">max</span>(candidates, key=candidates.get)
+<span class="linenr">27: </span>
+<span class="linenr">28: </span><span style="color: #dcaeea;">corpus</span> = <span style="color: #98be65;">"&#25105;&#21916;&#27489;&#21507;&#25289;&#40629;&#25105;&#21916;&#27489;&#21507;&#29275;&#32905;&#40629;&#25105;&#21916;&#27489;&#21917;&#29645;&#29664;&#22902;&#33590;&#25105;&#19981;&#21916;&#27489;&#21507;&#33510;&#29916;&#25105;&#21916;&#27489;&#25171;&#31811;&#29699;"</span>
+<span class="linenr">29: </span><span style="color: #dcaeea;">model</span> = build_bigram(corpus)
+<span class="linenr">30: </span>
+<span class="linenr">31: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#32102;&#23450;&#12300;&#21507;&#12301;&#65292;&#27169;&#22411;&#38928;&#28204;&#19979;&#19968;&#20491;&#23383;&#30340;&#27231;&#29575;&#65306;"</span>)
+<span class="linenr">32: </span><span style="color: #dcaeea;">best</span> = predict_next(model, <span style="color: #98be65;">"&#21507;"</span>)
+<span class="linenr">33: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#8594; &#27169;&#22411;&#36984;&#25799;&#65306;</span>{best}<span style="color: #98be65;">"</span>)
+<span class="linenr">34: </span><span style="color: #c678dd;">print</span>()
+<span class="linenr">35: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#32102;&#23450;&#12300;&#27489;&#12301;&#65292;&#27169;&#22411;&#38928;&#28204;&#19979;&#19968;&#20491;&#23383;&#30340;&#27231;&#29575;&#65306;"</span>)
+<span class="linenr">36: </span><span style="color: #dcaeea;">best</span> = predict_next(model, <span style="color: #98be65;">"&#27489;"</span>)
+<span class="linenr">37: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#8594; &#27169;&#22411;&#36984;&#25799;&#65306;</span>{best}<span style="color: #98be65;">"</span>)
+</pre>
+</div>
+
+<p>
+N-gram 的致命弱點：*記憶力太差*。Bigram 只看前 1 個字，Trigram 看前 2 個字，頂多看到前 4-5 個字就是極限了。面對「小明上週去日本旅遊，他在那裡吃了很多 _____」這種需要理解整句話才能回答的問題，N-gram 完全無能為力——它只看到「多」這個字，根本不知道前面在講日本。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org97fe866" class="outline-3">
+<h3 id="org97fe866"><span class="section-number-3">2.2.</span> 第二代：神經網路語言模型</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+既然 N-gram 記憶力差，那就換一個記憶力好的模型吧！2003 年，Yoshua Bengio 提出了用神經網路來做語言模型的方法。<br />
+</p>
+
+<p>
+核心改進：<br />
+</p>
+<ul class="org-ul">
+<li>*詞向量（Word Embedding）*：把每個字/詞轉換成一串數字（向量），讓意思相近的詞在數學空間中靠得更近。例如「貓」和「狗」的向量會很接近，但「貓」和「微積分」就離很遠<br /></li>
+<li>*學會泛化*：因為相似的詞有相似的向量，模型即使沒看過「我喜歡吃拉麵」，但看過「我喜歡吃牛肉麵」，也能推測出「吃」後面可以接「拉麵」<br /></li>
+</ul>
+
+<p>
+不過，這個模型的記憶力還是有限——它一次只能看固定長度的前文。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgae5f4f6" class="outline-3">
+<h3 id="orgae5f4f6"><span class="section-number-3">2.3.</span> 第三代：RNN 語言模型</h3>
+<div class="outline-text-3" id="text-2-3">
+<p>
+RNN（循環神經網路）的出場解決了記憶力的問題。RNN 有一個「隱藏狀態」會不斷傳遞，理論上可以記住從句子開頭到目前為止的所有資訊。<br />
+</p>
+
+<blockquote>
+<p>
+如果 N-gram 是金魚腦（只記得前幾秒），RNN 就是一個認真做筆記的學生——雖然筆記越寫越潦草（記憶會隨距離衰減），但至少有在記。<br />
+</p>
+</blockquote>
+
+<p>
+後來 LSTM 和 GRU 改良了 RNN 的記憶機制，讓重要的資訊可以保留更久。想了解更多可以參考<a href="20230108135329-循環神經網路.html#ID-263cb433-d0eb-4400-a373-35175c000c01">循環神經網路</a>這篇教材。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgdea9389" class="outline-3">
+<h3 id="orgdea9389"><span class="section-number-3">2.4.</span> 第四代：Transformer 與 GPT（注意力就是你需要的一切）</h3>
+<div class="outline-text-3" id="text-2-4">
+<p>
+2017 年，Google 發表了一篇名為《Attention Is All You Need》的論文（光看標題就知道他們有多得意），提出了 <b>Transformer</b> 架構，徹底改變了遊戲規則。<br />
+</p>
+
+<p>
+Transformer 的核心武器是 *自注意力機制（Self-Attention）*：<br />
+</p>
+
+<blockquote>
+<p>
+想像你在讀一篇文章：「小明養了一隻貓，他每天都會餵牠吃飼料。」<br />
+</p>
+
+<p>
+當你讀到「牠」的時候，你的大腦會自動回去找「牠」指的是誰——是「貓」，不是「小明」。<br />
+</p>
+
+<p>
+Self-Attention 做的就是這件事：讓模型在處理每個字的時候，能夠「回頭看」整句話中所有的字，並判斷哪些字跟當前的字最相關。<br />
+</p>
+</blockquote>
+
+<p>
+Transformer 相比 RNN 的優勢：<br />
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">比較項目</th>
+<th scope="col" class="org-left">RNN</th>
+<th scope="col" class="org-left">Transformer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">處理方式</td>
+<td class="org-left">一個字一個字依序處理</td>
+<td class="org-left">整句話同時處理</td>
+</tr>
+
+<tr>
+<td class="org-left">訓練速度</td>
+<td class="org-left">慢（無法平行化）</td>
+<td class="org-left">快（可以平行化）</td>
+</tr>
+
+<tr>
+<td class="org-left">長距離記憶</td>
+<td class="org-left">容易遺忘</td>
+<td class="org-left">透過 Attention 直接連結</td>
+</tr>
+
+<tr>
+<td class="org-left">適合規模</td>
+<td class="org-left">中小型模型</td>
+<td class="org-left">超大型模型</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+OpenAI 用 Transformer 的解碼器（Decoder）打造了 GPT 系列：<br />
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">模型</th>
+<th scope="col" class="org-right">年份</th>
+<th scope="col" class="org-left">參數量</th>
+<th scope="col" class="org-left">里程碑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">GPT-1</td>
+<td class="org-right">2018</td>
+<td class="org-left">1.17 億</td>
+<td class="org-left">證明「預訓練 + 微調」路線可行</td>
+</tr>
+
+<tr>
+<td class="org-left">GPT-2</td>
+<td class="org-right">2019</td>
+<td class="org-left">15 億</td>
+<td class="org-left">太強了，OpenAI 一度不敢公開</td>
+</tr>
+
+<tr>
+<td class="org-left">GPT-3</td>
+<td class="org-right">2020</td>
+<td class="org-left">1750 億</td>
+<td class="org-left">少樣本學習，不用微調也能用</td>
+</tr>
+
+<tr>
+<td class="org-left">GPT-4</td>
+<td class="org-right">2023</td>
+<td class="org-left">未公開</td>
+<td class="org-left">多模態，能看圖說故事</td>
+</tr>
+
+<tr>
+<td class="org-left">GPT-4o</td>
+<td class="org-right">2024</td>
+<td class="org-left">未公開</td>
+<td class="org-left">即時語音對話，像電影場景</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+想了解更多 GPT 的應用，可以參考 <a href="20230322090918-ChatGPT.html#ID-22f4856f-104e-4c15-8226-8b9b70bc584b">ChatGPT</a> 這篇教材。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgc093384" class="outline-3">
+<h3 id="orgc093384"><span class="section-number-3">2.5.</span> 小結：語言模型進化比較</h3>
+<div class="outline-text-3" id="text-2-5">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">世代</th>
+<th scope="col" class="org-left">模型</th>
+<th scope="col" class="org-left">記憶力</th>
+<th scope="col" class="org-left">比喻</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">第一代</td>
+<td class="org-left">N-gram</td>
+<td class="org-left">只記前幾個字</td>
+<td class="org-left">金魚：「前面說了什麼？忘了。」</td>
+</tr>
+
+<tr>
+<td class="org-left">第二代</td>
+<td class="org-left">神經網路 LM</td>
+<td class="org-left">固定長度</td>
+<td class="org-left">近視眼：看得到附近，看不到遠方</td>
+</tr>
+
+<tr>
+<td class="org-left">第三代</td>
+<td class="org-left">RNN/LSTM</td>
+<td class="org-left">理論上無限，但會衰減</td>
+<td class="org-left">認真但健忘的學生：筆記越寫越潦草</td>
+</tr>
+
+<tr>
+<td class="org-left">第四代</td>
+<td class="org-left">Transformer</td>
+<td class="org-left">整句話都能看到</td>
+<td class="org-left">全知視角：每個字都能直接關聯到任何其他字</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="outline-container-orgff12e88" class="outline-2">
+<h2 id="orgff12e88"><span class="section-number-2">3.</span> 語言模型的應用</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+語言模型已經滲透到我們生活的各個角落，很多你每天都在用的功能，背後都有語言模型在運作：<br />
+</p>
+
+<ol class="org-ol">
+<li>*手機鍵盤預測*：打字時自動建議下一個詞——最基礎的語言模型應用<br /></li>
+<li>*語音助手*：Siri、Google Assistant 把你說的話轉成文字（語音辨識），再理解你的意思（語言理解）<br /></li>
+<li>*機器翻譯*：Google 翻譯、DeepL 能把一種語言翻譯成另一種語言<br /></li>
+<li>*文字生成*：ChatGPT、Claude 能寫文章、寫程式、回答問題<br /></li>
+<li>*搜尋引擎*：理解你輸入的搜尋意圖，找出最相關的結果<br /></li>
+<li>*垃圾信件過濾*：判斷一封信是正常信件還是垃圾信<br /></li>
+<li>*自動摘要*：把長文章濃縮成重點<br /></li>
+<li>*程式碼補完*：GitHub Copilot 能根據你寫的註解自動生成程式碼<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-org4d307f2" class="outline-2">
+<h2 id="org4d307f2"><span class="section-number-2">4.</span> 動手做：文字生成器</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+我們來用 bigram 模型做一個簡單的「文字生成器」，讓電腦自己寫句子：<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> random
+<span class="linenr"> 2: </span>
+<span class="linenr"> 3: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">generate_text</span>(model, start_char, length=<span style="color: #da8548; font-weight: bold;">20</span>):
+<span class="linenr"> 4: </span>    <span style="color: #83898d;">"""&#29992; bigram &#27169;&#22411;&#29983;&#25104;&#25991;&#23383;"""</span>
+<span class="linenr"> 5: </span>    <span style="color: #dcaeea;">result</span> = start_char
+<span class="linenr"> 6: </span>    <span style="color: #dcaeea;">current</span> = start_char
+<span class="linenr"> 7: </span>    <span style="color: #51afef;">for</span> _ <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(length):
+<span class="linenr"> 8: </span>        <span style="color: #51afef;">if</span> current <span style="color: #51afef;">not</span> <span style="color: #51afef;">in</span> model:
+<span class="linenr"> 9: </span>            <span style="color: #51afef;">break</span>
+<span class="linenr">10: </span>        <span style="color: #dcaeea;">candidates</span> = model[current]
+<span class="linenr">11: </span>        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#26681;&#25818;&#27231;&#29575;&#38568;&#27231;&#36984;&#25799;&#19979;&#19968;&#20491;&#23383;&#65288;&#32780;&#19981;&#26159;&#27599;&#27425;&#37117;&#36984;&#26368;&#39640;&#30340;&#65289;</span>
+<span class="linenr">12: </span>        <span style="color: #dcaeea;">chars</span> = <span style="color: #c678dd;">list</span>(candidates.keys())
+<span class="linenr">13: </span>        <span style="color: #dcaeea;">weights</span> = <span style="color: #c678dd;">list</span>(candidates.values())
+<span class="linenr">14: </span>        <span style="color: #dcaeea;">current</span> = random.choices(chars, weights=weights, k=<span style="color: #da8548; font-weight: bold;">1</span>)[<span style="color: #da8548; font-weight: bold;">0</span>]
+<span class="linenr">15: </span>        <span style="color: #dcaeea;">result</span> += current
+<span class="linenr">16: </span>    <span style="color: #51afef;">return</span> result
+<span class="linenr">17: </span>
+<span class="linenr">18: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#29992;&#27604;&#36611;&#35920;&#23500;&#30340;&#35486;&#26009;&#20358;&#35347;&#32244;</span>
+<span class="linenr">19: </span><span style="color: #dcaeea;">corpus</span> = (<span style="color: #98be65;">"&#25105;&#21916;&#27489;&#21507;&#25289;&#40629;&#25105;&#21916;&#27489;&#21507;&#29275;&#32905;&#40629;&#25105;&#21916;&#27489;&#21917;&#29645;&#29664;&#22902;&#33590;"</span>
+<span class="linenr">20: </span>          <span style="color: #98be65;">"&#25105;&#19981;&#21916;&#27489;&#21507;&#33510;&#29916;&#25105;&#21916;&#27489;&#25171;&#31811;&#29699;&#25105;&#20170;&#22825;&#21507;&#20102;&#19968;&#30871;&#25289;&#40629;"</span>
+<span class="linenr">21: </span>          <span style="color: #98be65;">"&#20170;&#22825;&#22825;&#27683;&#24456;&#22909;&#25105;&#24819;&#20986;&#21435;&#29609;&#20170;&#22825;&#25105;&#35201;&#21435;&#25171;&#31811;&#29699;"</span>
+<span class="linenr">22: </span>          <span style="color: #98be65;">"&#29645;&#29664;&#22902;&#33590;&#24456;&#22909;&#21917;&#25105;&#27599;&#22825;&#37117;&#24819;&#21917;&#29645;&#29664;&#22902;&#33590;"</span>)
+<span class="linenr">23: </span>
+<span class="linenr">24: </span><span style="color: #dcaeea;">model</span> = build_bigram(corpus)
+<span class="linenr">25: </span>
+<span class="linenr">26: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#29983;&#25104; 5 &#21477;&#35441;</span>
+<span class="linenr">27: </span>random.seed(<span style="color: #da8548; font-weight: bold;">42</span>)
+<span class="linenr">28: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"=== AI &#23567;&#20316;&#23478;&#19978;&#32218; ==="</span>)
+<span class="linenr">29: </span><span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #da8548; font-weight: bold;">5</span>):
+<span class="linenr">30: </span>    <span style="color: #dcaeea;">sentence</span> = generate_text(model, <span style="color: #98be65;">"&#25105;"</span>, length=<span style="color: #da8548; font-weight: bold;">15</span>)
+<span class="linenr">31: </span>    <span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#31532;</span>{i+1}<span style="color: #98be65;">&#21477;&#65306;</span>{sentence}<span style="color: #98be65;">"</span>)
+</pre>
+</div>
+
+<p>
+你會發現，這個「AI 小作家」寫出來的句子有時候通順，有時候亂七八糟。這是因為 bigram 模型只看前一個字，完全沒有「理解」語意的能力。它純粹是在做機率性的文字接龍。<br />
+</p>
+
+<p>
+ChatGPT 之所以能寫出通順的長篇文章，是因為：<br />
+</p>
+<ol class="org-ol">
+<li>訓練資料量大到難以想像（幾乎整個網路）<br /></li>
+<li>模型架構（Transformer）能同時看到整段文字的上下文<br /></li>
+<li>參數量高達數千億，能記住極其複雜的語言規律<br /></li>
+<li>經過人類反饋強化學習（RLHF）的調校<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-orgc76ea6c" class="outline-2">
+<h2 id="orgc76ea6c"><span class="section-number-2">5.</span> 作業</h2>
+<div class="outline-text-2" id="text-5">
+</div>
+<div id="outline-container-org79edc33" class="outline-3">
+<h3 id="org79edc33"><span class="section-number-3">5.1.</span> 作業一：我的 Bigram 文學獎</h3>
+<div class="outline-text-3" id="text-5-1">
+<p>
+你的 bigram 模型只用了幾十個字的語料就能「寫作」了。如果給它更多資料，它會寫得更好嗎？<br />
+</p>
+</div>
+<ol class="org-ol">
+<li><a id="org7d8e742"></a>任務說明<br />
+<div class="outline-text-4" id="text-5-1-1">
+<p>
+修改上面「文字生成器」的程式碼，把 <code>corpus</code> 換成你自己準備的語料（至少 200 個字），然後觀察生成結果的變化。<br />
+</p>
+
+<p>
+<b>步驟：</b><br />
+</p>
+<ol class="org-ol">
+<li>準備一段至少 200 字的中文語料（可以從維基百科、新聞、或你喜歡的小說中複製）<br /></li>
+<li>用這段語料訓練 bigram 模型<br /></li>
+<li>分別用 3 個不同的起始字生成句子，每個起始字生成 5 句<br /></li>
+<li>從 15 句中選出「最通順」和「最荒謬」的各一句<br /></li>
+</ol>
+</div>
+</li>
+<li><a id="org7621c4a"></a>繳交內容<br />
+<div class="outline-text-4" id="text-5-1-2">
+<ol class="org-ol">
+<li>你使用的語料來源<br /></li>
+<li>程式碼（含修改後的 corpus）<br /></li>
+<li>生成的 15 句話<br /></li>
+<li>你選出的「最通順」和「最荒謬」各一句，並解釋為什麼<br /></li>
+</ol>
+</div>
+</li>
+<li><a id="org26e3e30"></a>預期輸出格式<br />
+<div class="outline-text-4" id="text-5-1-3">
+<pre class="example" id="orga91bd54">
+=== 語料來源：維基百科「台灣」條目（前200字） ===
+
+起始字「台」：
+第1句：台灣是一個⋯⋯
+第2句：台北市的⋯⋯
+...
+
+最通順的句子：台灣是一個美麗的島嶼
+→ 因為語料中「台灣是」出現頻率高，後續接詞也合理
+
+最荒謬的句子：台北市的氣候是一個美麗的
+→ 因為 bigram 只看前一個字，「的」後面接「氣」和接「美」的機率差不多
+</pre>
+</div>
+</li>
+</ol>
+</div>
+<div id="outline-container-orgfe58671" class="outline-3">
+<h3 id="orgfe58671"><span class="section-number-3">5.2.</span> 作業二：Attention 偵探社</h3>
+<div class="outline-text-3" id="text-5-2">
+<p>
+Transformer 的自注意力機制（Self-Attention）讓模型能判斷句子中哪些字跟哪些字最相關。現在請你當一回「人肉 Attention」。<br />
+</p>
+</div>
+<ol class="org-ol">
+<li><a id="org5d4a1ba"></a>任務說明<br />
+<div class="outline-text-4" id="text-5-2-1">
+<p>
+以下有三個句子，每個句子中有一個畫底線的詞。請你找出句子中與該詞 <b>最相關</b> 的其他詞（1-3個），並解釋為什麼。<br />
+</p>
+
+<p>
+句子 1：「小明養了一隻 <span class="underline">貓</span> ，他每天都會餵牠吃飼料。」<br />
+</p>
+
+<p>
+句子 2：「台北 101 是台灣最高的 <span class="underline">建築</span> ，它位於信義區。」<br />
+</p>
+
+<p>
+句子 3：「雖然今天下雨，但小華還是決定去 <span class="underline">跑步</span> ，因為她正在準備馬拉松。」<br />
+</p>
+</div>
+</li>
+<li><a id="orgbd85186"></a>繳交格式<br />
+<div class="outline-text-4" id="text-5-2-2">
+<pre class="example" id="org2a3d993">
+句子 1：「貓」最相關的詞：
+  - 「牠」（關聯度：高）→ 因為「牠」就是指「貓」
+  - 「餵」（關聯度：中）→ 因為餵的對象是貓
+  - 「小明」（關聯度：中）→ 因為小明是貓的主人
+
+句子 2：⋯⋯
+句子 3：⋯⋯
+</pre>
+</div>
+</li>
+<li><a id="orgbfc5e2c"></a>延伸思考<br />
+<div class="outline-text-4" id="text-5-2-3">
+<p>
+如果用 bigram 模型來處理句子 1，它在讀到「牠」的時候能知道「牠」指的是「貓」嗎？為什麼？（提示：bigram 只看前一個字）<br />
+</p>
+</div>
+</li>
+</ol>
+</div>
+<div id="outline-container-org5b5635c" class="outline-3">
+<h3 id="org5b5635c"><span class="section-number-3">5.3.</span> 作業三：語言模型時光機</h3>
+<div class="outline-text-3" id="text-5-3">
+<p>
+語言模型從 N-gram 進化到 Transformer，花了將近 30 年。下面這張表格少了一些內容，請你補完它：<br />
+</p>
+</div>
+<ol class="org-ol">
+<li><a id="orgc1396ea"></a>任務說明<br />
+<div class="outline-text-4" id="text-5-3-1">
+<pre class="example" id="org3a5b083">
+| 世代 | 代表模型 | 優點 | 缺點 | 生活中的比喻 |
+|------+----------+------+------+--------------|
+| 1    | N-gram   | ???  | ???  | ???          |
+| 2    | FFNN LM  | ???  | ???  | ???          |
+| 3    | RNN/LSTM | ???  | ???  | ???          |
+| 4    | Transformer | ??? | ??? | ???         |
+</pre>
+
+<p>
+<b>要求：</b><br />
+</p>
+<ol class="org-ol">
+<li>每個模型的優點和缺點至少寫一項（用自己的話，不要直接抄教材）<br /></li>
+<li>「生活中的比喻」要用一個你自己想的比喻來形容每個模型（教材中的不算，要自己想新的）<br /></li>
+</ol>
+</div>
+</li>
+<li><a id="org0f807d7"></a>預期成果<br />
+<div class="outline-text-4" id="text-5-3-2">
+<p>
+一張完整的比較表，比喻要有創意。例如：<br />
+</p>
+<pre class="example" id="orgd19e193">
+N-gram 就像是一個只會死背課文的學生，
+你問他「台灣的首都是？」他背得出來，
+但問他「為什麼台灣的首都是台北？」他就當機了。
+</pre>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-org2787d00" class="outline-2">
+<h2 id="org2787d00"><span class="section-number-2">6.</span> 學習資源</h2>
+<div class="outline-text-2" id="text-6">
+<ul class="org-ul">
+<li><a href="https://www.youtube.com/watch?v=yiY4nPOzJEg&amp;list=RDCMUC2ggjtuuWvxrHHHiaDH1dlQ&amp;index=3">李宏毅：ChatGPT 原理剖析 (1/3) — 對 ChatGPT 的常見誤解</a><br /></li>
+<li><a href="https://www.youtube.com/watch?v=1ah7Qsri_c8&amp;list=RDCMUC2ggjtuuWvxrHHHiaDH1dlQ&amp;index=1">李宏毅：ChatGPT 原理剖析 (2/3) — 預訓練 (Pre-train)</a><br /></li>
+<li><a href="https://www.youtube.com/watch?v=UsaZhQ9bY2k&amp;list=RDCMUC2ggjtuuWvxrHHHiaDH1dlQ&amp;index=3">李宏毅：ChatGPT 原理剖析 (3/3) — ChatGPT 所帶來的研究問題</a><br /></li>
+<li><a href="https://zhuanlan.zhihu.com/p/32292060">一起入門語言模型 (Language Models)</a><br /></li>
+<li><a href="https://foncc.com/archives/30865">語言模型是什麼？它如何改變了自然語言處理的未來？</a><br /></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org2695b0c" class="outline-3">
-<h3 id="org2695b0c"><span class="section-number-3">2.3.</span> 循環神經網絡語言模型(RNN Language Models)<sup><a id="fnr.2.100" class="footref" href="#fn.2" role="doc-backlink">2</a></sup></h3>
-<div class="outline-text-3" id="text-2-3">
-<blockquote>
-<p>
-You shall know a word by the company it keeps (Firth,J. R. 1957:11).
-</p>
-</blockquote>
-
-<p>
-上下文信息(context)決定了詞的語義，而前饋神經網絡語言模型（FFNNLM）同N-gram類似，每個$w<sub>i</sub>$只依賴前n個詞，無疑限制了FFNNLM的性能，有沒有更適合語言模型任務的網絡結構？顯然，RNN是個相當不錯的選擇，序列的問題就該讓序列模型去解決。得嘞您內：讀PyTorch源碼學習RNN（1）
-</p>
-
-<p>
-說起RNNLM，就不得不提到一個人Tomas Mikolov，博士期間專注於RNNLM的研究：包括RNNLM的訓練、在標準數據集上的對比評估、訓練加速技巧等各方面，也就不難理解為什麼是Mikolov開發了word2vec，因為詞向量在語言模型中太重要了。建議對語言模型領域感興趣的同學都去讀一下Mikolov的博士論文[6]。
-</p>
-
-<p>
-從方法創新角度來看，從FFNNLM到RNNLM，似乎只是模型上的普通過渡：用RNN模型替換了FFNN，或者是再用LSTM替換RNN。然而，在這看似平平無奇的模型迭代更新之下，一場新的方法論革命正在悄悄地醞釀、發酵。
-</p>
 </div>
-</div>
-<div id="outline-container-org994bb7d" class="outline-3">
-<h3 id="org994bb7d"><span class="section-number-3">2.4.</span> GPT系列<sup><a id="fnr.2.100" class="footref" href="#fn.2" role="doc-backlink">2</a></sup></h3>
-<div class="outline-text-3" id="text-2-4">
-<blockquote>
-<p>
-GPT GPT，聽說你要開闢新的天地？
-GPT GPT，聽說你要把微調都丟棄？
-GPT GPT，是誰給你的勇氣？
-因為我的參數有1700億！
-</p>
-</blockquote>
-
-<p>
-2017年是NLP領域的大年，這一年Transformer橫空出世[9]，強大的模型擬合能力迅速席捲了sequence-to-sequence的各項任務，Transformer Encoder主攻特徵表示，Transformer Decoder擅長文本生成，二者合則天下無敵，分則各自為王。
-</p>
-
-<p>
-OpenAI的GPT系列就對Transformer Decoder作為語言模型的能力進行了探索，Alec Radford等人高舉無監督預訓練的大旗，首先登場的是GPT-1模型[10]，在規模約5GB的數據集上，使用Transformer Decoder替換RNN進行語言模型任務，然後在下游任務對預訓練好的模型進行微調，並且對下游任務也不挑剔，甭管你是分類還是問答，沒有語言模型解決不了的問題，如果有，那就把訓練數據序列化，梭哈干就完事了！和RNNLM預訓練+微調的套路相似，但是這一次，預訓練數據集更大了，模型更強了，效果也更顯著了，15個下游任務，有12個都超過了當時的SOTA，並且多個任務效果提升明顯。
-</p>
-</div>
-</div>
-</div>
-
-<div id="outline-container-org25d616e" class="outline-2">
-<h2 id="org25d616e"><span class="section-number-2">3.</span> 語言模型的應用</h2>
-<div class="outline-text-2" id="text-3">
-<p>
-語言模型在自然語言處理領域有著廣泛的應用，主要包括以下幾個方面<sup><a id="fnr.1.100" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>：
-</p>
-
-<ol class="org-ol">
-<li>語音識別：語言模型可以幫助語音識別系統對語音信號進行解碼，進而生成對應的文本。</li>
-<li>機器翻譯：語言模型可以幫助機器翻譯系統生成更加自然流暢的翻譯結果，提高翻譯的質量和可讀性。</li>
-<li>文本生成：語言模型可以幫助生成自然語言文本，例如自動寫作、情感分析、文本摘要等。</li>
-<li>對話生成：語言模型可以幫助生成自然流暢的對話，例如智能客服、智能助手等。</li>
-<li>語言理解：語言模型可以幫助自然語言理解系統識別和分析文本中的語義和結構。</li>
-</ol>
-</div>
-</div>
-
-<div id="outline-container-orgad75eed" class="outline-2">
-<h2 id="orgad75eed"><span class="section-number-2">4.</span> 語言模型的未來發展</h2>
-<div class="outline-text-2" id="text-4">
-<p>
-隨著人工智慧技術的不斷發展，語言模型在自然語言處理領域的應用將會越來越廣泛。未來語言模型的發展方向主要包括以下幾個方面<sup><a id="fnr.1.100" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>：
-</p>
-<ol class="org-ol">
-<li>優化模型結構和參數：通過深度學習技術和大量的文本數據，優化語言模型的結構和參數，提高模型的精度和泛化能力。</li>
-<li>深入理解語言：通過語言模型的應用和優化，進一步深入理解語言的結構、語法和語義，提高自然語言處理的效率和準確性。</li>
-<li>發展多模態語言模型：通過融合圖像、聲音、文本等多種語言模式，發展多模態語言模型，進一步拓展自然語言處理的應用範圍。</li>
-<li>基於語言模型的智能應用：通過與人工智慧技術的結合，基於語言模型開發智能助手、智能客服、智能寫作等應用，為人們帶來更加便捷和高效的服務體驗。</li>
-</ol>
-</div>
-</div>
-<div id="footnotes">
-<h2 class="footnotes">Footnotes: </h2>
-<div id="text-footnotes">
-
-<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
-<a href="https://foncc.com/archives/30865">語言模型是什麼？它如何改變了自然語言處理的未來？</a>
-</p></div></div>
-
-<div class="footdef"><sup><a id="fn.2" class="footnum" href="#fnr.2" role="doc-backlink">2</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
-<a href="https://zhuanlan.zhihu.com/p/32292060">一起入門語言模型(Language Models)</a>
-</p></div></div>
-
-
-</div>
-</div></div>
 <div id="postamble" class="status">
-<p class="author">Author: Yung Chin, Yen</p>
-<p class="date">Created: 2023-03-23 Thu 10:33</p>
+<p class="author">Author: 顏永進</p>
+<p class="date">Created: 2026-02-14 Sat 19:54</p>
 </div>
 </body>
 </html>

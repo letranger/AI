@@ -3,21 +3,19 @@
 :ROAM_ALIASES: NLP
 :END:
 #+title: 自然語言處理
-
-#+INCLUDE: ../pdf.org
-#+TAGS: AI
+#+AUTHOR: 顏永進
+#+TAGS: AI, Machine Learning
 #+OPTIONS: toc:2 ^:nil num:5
-#+PROPERTY: header-args :eval never-export
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/white.css" />
+#+OPTIONS: H:4
+#+PROPERTY: header-args :python :python "/Users/letranger/Dropbox/notes/roam/venv/bin/python3" :eval never-export
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/muse.css" />
+#+HTML_HEAD_EXTRA: <script src="../css/copy_code.js"></script>
 #+EXCLUDE_TAGS: noexport
-#+latex:\newpage
+#+begin_export html
+<a href="https://letranger.github.io/AI/20221023101534-自然語言處理.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20221023101534-自然語言處理.html.svg"/></a>
+#+end_export
 
-* Wathch this
-- [[https://leemeng.tw/shortest-path-to-the-nlp-world-a-gentle-guide-of-natural-language-processing-and-deep-learning-for-everyone.html][進入 NLP 世界的最佳橋樑：寫給所有人的自然語言處理與深度學習入門指南 ]]
-- [[https://mooc.nthu.edu.tw/classroom/chapter/170][2022-自學課程-從自然語言到文字探勘(7-12月) ]]
-- [[https://huggingface.co/spaces/facebook/Hokkien_Translation?fbclid=IwAR26uyDhgybAqe5Xn3b3-N8GlC6bcoOzHbhsSPaZSDZaXbQjwME-GcUxwK0][英語->台語]]
-
-* NLP Introduction
+* NLP 簡介
 NLP，全名 Natural Language Processing（自然語言處理），是一門集電腦科學，人工智慧，語言學三者於一身的交叉性學科。其終極研究目標是讓電腦能夠處理甚至是“理解”人類的自然語言，進而説明人類解決一些現實生活中遇到的實際問題。這裡的語言“理解”是一個很抽象也很哲學的概念[fn:1]。
 
 在 NLP 中，我們將對語言的“理解”定義為是學習一個能夠解決具體問題的複雜函數的過程。
@@ -32,7 +30,6 @@ NLP，全名 Natural Language Processing（自然語言處理），是一門集�
 
 簡介影片: [[https://www.youtube.com/watch?v=CMrHM8a3hqw][Natural Language Processing In 5 Minutes | What Is NLP And How Does It Work? | Simplilearn]]
 DEMO: [[https://tts.yating.tw/#exp][雅婷文字轉語音]]
-
 
 ** 自然語言處理有哪些技術
 大致包括如下技術[fn:2]:
@@ -62,15 +59,106 @@ DEMO: [[https://tts.yating.tw/#exp][雅婷文字轉語音]]
 - 問題問答
 - 漢語分詞
 - 垂直領域的對話機器人
-** 自然語言處理有哪些應用方向[fn:2]
-- 搜索引擎
-- 文本主題/標籤分類
-- 文本創作與生成
-- 機器翻譯
-- 情感分析
-- 輿情監控
-- 語音識別系統
-- 對話機器人
+** 自然語言處理有哪些應用方向
+- 文字朗讀（Text to speech）/語音合成（Speech synthesis）
+- 語音識別（Speech recognition）
+- 中文自動分詞（Chinese word segmentation）
+- 詞性標註（Part-of-speech tagging）
+- 句法分析（Parsing）
+- 自然語言生成（Natural language generation）
+- 文字分類（Text categorization）
+- 資訊檢索（Information retrieval）
+- 資訊抽取（Information extraction）
+- 文字校對（Text-proofing）
+- 問答系統（Question answering）
+- 機器翻譯（Machine translation）
+- 自動摘要（Automatic summarization）
+- 文字蘊涵（Textual entailment）
+- 命名實體辨識（Named entity recognition）
+** NLP 學習路線
+若要讓電腦理解人類的語言，以中文來說，分成兩步驟：第一步是斷詞、理解詞；第二步則是分析句子，包含語法及語義的自動解析。自然語言處理透過這兩個步驟，將複雜的語言轉化為電腦容易處理、計算的形式。早期是人工訂定規則，現在則是讓機器自己學習[fn:5]。
+
+#+begin_quote
+早期的方式是基於一套詞彙資料庫，用程式語言寫好人工訂定的規則，讓電腦依指令做出反應。但這種人工方式不可能包含所有語言的歧異性，例如，當同樣的詞在不同上下文產生不同意思，就會和原本的人工規則相互牴觸。1980 年代末期，自然語言處理引進機器學習 (Machine Learning) 的演算法，不再用程式語言命令電腦所有規則，而是建立演算法模型，讓電腦學會從訓練的資料中，尋找資料所含的特定模式和趨勢[fn:5]。
+#+end_quote
+
+要掌握自然語言處理，學習順序大致如下
+1. 熟悉基本知識、基本操作
+1. 如文本操作、正則、掌握一些基本文本處理框架英文有NLTK、spaCy，中文有中研院CKIP Transformers、CKIP Tagger、Jieba
+1. 知道什麼是語言模型、利用語言模型來完成一些項目
+1. 文本表示:將文本中的字符串轉化爲計算機當中的向量
+1. 文本分類:分類模型傳統的一個解決方法就是標帶標註的語料，再特徵提取，然後訓分類器進行分類。這個分類器就會用比如說邏輯迴歸、貝葉斯、支持向量機、決策樹等等。
+1. 主題模型:使用無監督學習的方式對文本中的隱含語義進行聚類的統計模型
+1. seq2seq模型:通過深度神經網絡將一個序列作爲映射爲另外一個輸出的序列。
+1. 文本生成:GAN文本生成，也叫機器人寫作。
+
+* 近年 NLP 重要發展
+本文前述內容主要涵蓋 RNN/LSTM 時代的 NLP 技術。自 2017 年起，NLP 領域經歷了數次典範轉移，以下簡介重要里程碑。
+** Transformer 架構（2017）
+Google 於 2017 年發表論文《Attention Is All You Need》，提出 Transformer 架構，以 *自注意力機制（Self-Attention）* 完全取代 RNN/LSTM 的循序處理方式。其核心優勢：
+- *平行化計算*：不像 RNN 必須逐步處理序列，Transformer 可同時處理所有位置的 token，大幅加速訓練
+- *長距離依賴*：Self-Attention 讓每個 token 直接關注序列中的任意其他 token，解決 RNN 的長距離遺忘問題
+- 架構分為 Encoder（編碼器）與 Decoder（解碼器）兩部分，後續模型多擇一使用或兩者兼用
+
+Transformer 已成為當代幾乎所有 NLP 模型的基礎架構。
+
+** 預訓練語言模型
+Transformer 催生了「先在大規模語料上預訓練（Pre-training），再針對下游任務微調（Fine-tuning）」的訓練範式。
+
+*** BERT（2018）
+Google 提出的 *Bidirectional Encoder Representations from Transformers*，採用 Transformer 的 Encoder 部分：
+- 以「遮罩語言模型（Masked Language Model）」為預訓練目標：隨機遮蔽句中 15% 的 token，讓模型預測被遮蔽的詞
+- 雙向理解上下文，在問答、文本分類、命名實體辨識等任務大幅刷新紀錄
+- 衍生版本眾多：RoBERTa、ALBERT、DistilBERT 等
+
+*** GPT 系列（2018–2024）
+OpenAI 提出的 *Generative Pre-trained Transformer*，採用 Transformer 的 Decoder 部分：
+- GPT-1（2018）：證明了大規模預訓練 + 微調的有效性
+- GPT-2（2019）：展示零樣本（zero-shot）文本生成能力
+- GPT-3（2020）：1,750 億參數，展現強大的少樣本學習（few-shot learning）與情境學習（in-context learning）能力
+- GPT-4（2023）：多模態模型，同時處理文字與圖像，推理能力大幅提升
+
+** 大型語言模型（LLM）時代
+以 GPT-3 為起點，NLP 進入了大型語言模型（Large Language Model, LLM）時代。LLM 的特點是：
+- *規模效應（Scaling Law）*：模型參數量、訓練資料量與計算量的增加，帶來能力的跳躍式提升
+- *湧現能力（Emergent Abilities）*：模型規模達到一定程度後，會展現出未經明確訓練的能力（如邏輯推理、程式撰寫）
+- 代表性模型：GPT-4（OpenAI）、Claude（Anthropic）、Gemini（Google）、LLaMA（Meta）
+
+*** ChatGPT 與對話式 AI（2022–）
+2022 年底 OpenAI 發布 ChatGPT，結合 LLM 與 *人類回饋的強化學習（RLHF）*，使模型能產生更符合人類期望的回答，掀起全球 AI 應用浪潮。
+
+** Prompt Engineering 與 In-Context Learning
+在 LLM 時代，使用者不再需要微調模型，而是透過設計適當的提示詞（Prompt）來引導模型完成任務：
+- *Zero-shot*：直接描述任務，不提供範例
+- *Few-shot*：在提示中提供少數範例，讓模型理解任務格式
+- *Chain-of-Thought（CoT）*：引導模型逐步推理，提升複雜問題的正確率
+
+** 檢索增強生成（RAG）
+*Retrieval-Augmented Generation（RAG）* 結合資訊檢索與文本生成：
+1. 根據使用者的問題，先從外部知識庫（文件、資料庫、網頁）檢索相關段落
+2. 將檢索結果與問題一起送入 LLM 生成回答
+此方法能有效減少 LLM 的幻覺（hallucination）問題，並讓模型能回答訓練資料中未包含的最新資訊。
+
+** 現代 Tokenization
+傳統的 NLP 以「詞」為基本單位（如本文前述的 Jieba 斷詞），但現代 LLM 多採用 *子詞（Subword）* 切分法：
+- *BPE（Byte Pair Encoding）*：GPT 系列採用，透過統計合併高頻字元對來建立詞彙表
+- *WordPiece*：BERT 採用，與 BPE 類似但以機率為合併依據
+- *SentencePiece*：Google 開源工具，可直接處理原始文本（無需事先斷詞），支援多語言
+
+子詞切分的優點是能在詞彙量有限的情況下處理任意未見過的詞（將其拆成已知的子詞組合），特別適合多語言場景。
+
+** NLP 發展時間軸
+| 年份 | 里程碑 | 說明 |
+|------+------------------------------+----------------------------------------------|
+| 2013 | Word2Vec | 以神經網路學習詞向量，開啟分散式語義表示時代 |
+| 2017 | Transformer | 自注意力機制取代 RNN，成為新一代基礎架構 |
+| 2018 | BERT / GPT-1 | 預訓練 + 微調範式確立 |
+| 2018 | ELMo | 上下文相關的詞嵌入 |
+| 2019 | GPT-2 / XLNet / RoBERTa | 預訓練模型快速迭代 |
+| 2020 | GPT-3 | 千億參數，展現 few-shot 與 in-context learning |
+| 2022 | ChatGPT | 對話式 AI 引爆全球應用 |
+| 2023 | GPT-4 | 多模態 LLM |
+| 2024 | 開源 LLM 蓬勃發展 | LLaMA 3、Mistral、Qwen 等 |
 
 * NLP 資料預處理
 情緒分析 (sentiment analysis) 又稱為意見探勘 (opinion mining). 是使用 "自然語言處理", 文字分析等方法, 找出作者某些話題上的態度, 情感, 評價或情緒.
@@ -84,7 +172,7 @@ IMDb 資料集共有 50,000 筆 "影評文字", 分為訓練資料與測試資�
 
 我們希望能建立一個模型, 經過大量 "影評文字" 訓練後, 此模型能用於預測 "影評文字" 是 "正面評價" 或 "負面評價".
 #+CAPTION: 資料前處理
-#+name: fig:TrainingPredict
+#+name: fig:TrainingPredict-overview
 #+ATTR_LATEX: :width 400
 #+ATTR_ORG: :width 400
 #+ATTR_HTML: :width 400
@@ -304,8 +392,12 @@ import pandas as pd
 
 ## Read-in the reviews and print some basic descriptions of them
 
-!wget -q "http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz"
-!tar xzf aclImdb_v1.tar.gz
+# Colab/Jupyter magic commands:
+# !wget -q "http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz"
+# !tar xzf aclImdb_v1.tar.gz
+import subprocess
+subprocess.run(["wget", "-q", "http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz"])
+subprocess.run(["tar", "xzf", "aclImdb_v1.tar.gz"])
 #+end_src
 ** Define Tokenization, Stop-word and Punctuation Removal Functions
 #+begin_src python -r -n :results output :exports both
@@ -316,13 +408,13 @@ maxtokenlen = 100 # the maximum length of each token
 ** Tokenization
 #+begin_src python -r -n :results output :exports both
 def tokenize(row):
-    if row is None or row is '':
+    if row is None or row == '':
         tokens = ""
     else:
         tokens = row.split(" ")[:maxtokens]
     return tokens
 #+end_src
-p** Use regular expressions to remove unnecessary characters
+** Use regular expressions to remove unnecessary characters
 #+begin_src python -r -n :results output :exports both
 import re
 
@@ -366,343 +458,249 @@ def stop_word_removal(row):
     return token
 #+end_src
 
-* 資料預處理實務
-- 情緒分析 (sentiment analysis) 又稱為意見探勘 (opinion mining). 是使用 "自然語言處理", 文字分析等方法, 找出作者某些話題上的態度, 情感, 評價或情緒.
-- 情緒分析的商業價值, 可以提早得知顧客對公司或產品觀感, 以調整銷售策略方向.
-** IMDB 介簡
-- IMDB 網路資料庫 (Internet Movie Database), 是一個電影相關的線上資料庫. IMDB 開始於 1990 年, 自 1998 年起成為亞馬遜旗下的網站, 至今已經累積大量的電影資訊. IMDb 共收錄了四百多萬作品資料.
-- IMDB 資料集共有 50,000 筆 "影評文字", 分為訓練資料與測試資料各 25,000 筆,每一筆 "影評文字" 都被標記成 "正面評價" 或 "負面評價".
-- 我們希望能建立一個模型, 經過大量 "影評文字" 訓練後, 此模型能用於預測 "影評文字" 是 "正面評價" 或 "負面評價"[fn:4]。
-#+CAPTION: 資料前處理
-#+name: fig:TrainingPredict
-#+ATTR_LATEX: :width 400
-#+ATTR_ORG: :width 400
-#+ATTR_HTML: :width 400
-[[file:images/TrainingPredict.jpg]]
-** 查看 IMDB 資料
-- num_words=10000 意味著只保留訓練集中最常出現的前 10000 個詞，不經常出現的單詞被拋棄—最終所有評論的維度保持相同。
-- 變數 train_data,test_data 是電影評論的列表，每條評論由數字(對應單詞在詞典中出現的位置下標)列表組成。
-- train_labels,test_labels 是 0,1 列表，0負面評論，1表示正面評論。
+* 中文自然語言處理
+中文 NLP 相較於英文有幾項獨特挑戰，以下分別說明。
+
+** 中文 NLP 的獨特挑戰
+*** 斷詞問題
+英文單詞之間有空格自然分隔，但中文字與字之間沒有分隔符號，因此「斷詞（Word Segmentation）」是中文 NLP 的首要步驟。例如：
+- 「下雨天留客天留我不留」可以有多種斷法，語意完全不同
+- 「台北市長」→「台北/市長」或「台北市/長」
+斷詞的好壞直接影響後續所有 NLP 任務的表現。
+
+*** 繁體與簡體
+中文存在繁體與簡體兩套書寫系統，且兩者並非單純的一對一對應（如：簡體「发」對應繁體「發」或「髮」）。許多中文 NLP 資源以簡體為主，處理繁體文本時需注意：
+- 預訓練模型若以簡體語料訓練，直接用於繁體文本效果可能打折
+- 繁簡轉換工具（如 OpenCC）可輔助，但無法處理用詞差異（如：簡體「软件」= 繁體「軟體」）
+- 建議優先選用針對繁體訓練的模型（如 CKIP Transformers）
+
+*** 無詞形變化
+中文不像英文有時態（go/went/gone）、單複數（cat/cats）等詞形變化，因此不需要做詞幹提取（Stemming）或詞形還原（Lemmatization）。但中文的量詞、語氣助詞等帶來另一層處理複雜度。
+
+** 中文斷詞工具
+*** Jieba
+最廣泛使用的開源中文斷詞工具，支援繁簡體：
+#+begin_src python -r -n :results output :exports both
+import jieba
+
+# 精確模式
+seg = jieba.cut("自然語言處理是人工智慧的重要領域", cut_all=False)
+print("精確模式:", "/".join(seg))
+
+# 全模式
+seg = jieba.cut("自然語言處理是人工智慧的重要領域", cut_all=True)
+print("全模式:", "/".join(seg))
+#+end_src
+
+*** CKIP（中研院）
+中研院開發的繁體中文 NLP 工具，有兩個版本：
+- *CkipTagger*（舊版）：基於 BiLSTM，提供斷詞、詞性標注、命名實體辨識
+- *CKIP Transformers*（新版，推薦）：基於 Transformer 架構（ALBERT/BERT），效能更好
 
 #+begin_src python -r -n :results output :exports both
-from keras.datasets import imdb
+# CKIP Transformers（新版，推薦使用）
+from ckip_transformers.nlp import CkipWordSegmenter, CkipPosTagger, CkipNerChunker
 
-(train_data,train_labels),(test_data,test_labels) = imdb.load_data(num_words=10000)
+# 初始化（首次使用會自動下載模型）
+ws_driver = CkipWordSegmenter(model="bert-base")
+pos_driver = CkipPosTagger(model="bert-base")
+ner_driver = CkipNerChunker(model="bert-base")
 
-print(train_data[0]) #查看第 0 筆 "影評文字"
-print(train_labels[0]) #第 0 筆的評價 label 為 1, 也就是 正面評價
+text = ["自然語言處理是人工智慧的重要研究領域。"]
+
+# 斷詞
+ws_result = ws_driver(text)
+print("斷詞:", ws_result)
+
+# 詞性標注
+pos_result = pos_driver(ws_result)
+print("詞性:", pos_result)
+
+# 命名實體辨識
+ner_result = ner_driver(text)
+print("NER:", ner_result)
 #+end_src
 
-#+RESULTS:
-: [1, 14, 22, 16, 43, 530, 973, 1622, 1385, 65, 458, 4468, 66, 3941, 4, 173, 36, 256, 5, 25, 100, 43, 838, 112, 50, 670, 2, 9, 35, 480, 284, 5, 150, 4, 172, 112, 167, 2, 336, 385, 39, 4, 172, 4536, 1111, 17, 546, 38, 13, 447, 4, 192, 50, 16, 6, 147, 2025, 19, 14, 22, 4, 1920, 4613, 469, 4, 22, 71, 87, 12, 16, 43, 530, 38, 76, 15, 13, 1247, 4, 22, 17, 515, 17, 12, 16, 626, 18, 2, 5, 62, 386, 12, 8, 316, 8, 106, 5, 4, 2223, 5244, 16, 480, 66, 3785, 33, 4, 130, 12, 16, 38, 619, 5, 25, 124, 51, 36, 135, 48, 25, 1415, 33, 6, 22, 12, 215, 28, 77, 52, 5, 14, 407, 16, 82, 2, 8, 4, 107, 117, 5952, 15, 256, 4, 2, 7, 3766, 5, 723, 36, 71, 43, 530, 476, 26, 400, 317, 46, 7, 4, 2, 1029, 13, 104, 88, 4, 381, 15, 297, 98, 32, 2071, 56, 26, 141, 6, 194, 7486, 18, 4, 226, 22, 21, 134, 476, 26, 480, 5, 144, 30, 5535, 18, 51, 36, 28, 224, 92, 25, 104, 4, 226, 65, 16, 38, 1334, 88, 12, 16, 283, 5, 16, 4472, 113, 103, 32, 15, 16, 5345, 19, 178, 32]
-: 1
-** 資料預處理
-不能直接將 list 型別的資料送到神經網路中訓練，必須將 list 型別轉換為 tensor 張量型別。有兩種轉換方式：
-- 填充列表使每個列表長度都相同，然後轉換為整數型別的張量，形狀為(samples, word_indices),使用張量作為神經網路的第一層(Embedding 層，能處理這樣的整數型別張量)；
-- 將列表進行 one-hot 編碼，轉換成 0、 1 向量。然後用 Dense 網路層作為神經網路的第一層，處理浮點型別向量資料。
+** 中文預訓練模型
+近年有許多針對中文訓練的預訓練語言模型：
 
+*** BERT 系列（適合理解型任務：分類、問答、NER）
+| 模型 | 來源 | 說明 |
+|------------------+----------+----------------------------------------------|
+| BERT-wwm | HFL 哈工大 | 全詞遮罩（Whole Word Masking），更適合中文 |
+| MacBERT | HFL 哈工大 | 以同義詞替換取代 [MASK]，減少預訓練與微調差異 |
+| ERNIE | 百度 | 融入知識圖譜的預訓練模型 |
+| CKIP BERT | 中研院 | 專為繁體中文訓練，適合台灣應用場景 |
+
+*** 生成式大型語言模型
+| 模型 | 來源 | 說明 |
+|------------------+----------+----------------------------------------------|
+| Qwen（通義千問） | 阿里巴巴 | 開源中文 LLM，支援長文本與多模態 |
+| ChatGLM | 清華/智譜 | 中英雙語對話模型，有開源版本 |
+| Taiwan-LLaMA | 台大 | 基於 LLaMA 以繁體中文語料微調 |
+| Breeze | 聯發科 | 針對繁體中文優化的開源 LLM |
+| TAIDE | 國科會 | 台灣政府主導，基於 LLaMA 以繁體中文微調 |
+
+*** 使用 Hugging Face 載入中文模型範例
 #+begin_src python -r -n :results output :exports both
-import numpy as np
-from keras.datasets import imdb
+from transformers import AutoTokenizer, AutoModel
 
-(train_data,train_labels),(test_data,test_labels) = imdb.load_data(num_words=10000)
+# 以 CKIP BERT 為例
+tokenizer = AutoTokenizer.from_pretrained("ckiplab/bert-base-chinese")
+model = AutoModel.from_pretrained("ckiplab/bert-base-chinese")
 
-def vectorize_sequences(sequences, dimension=10000):
-    # 資料集長度，每個評論維度10000
-    results = np.zeros((len(sequences), dimension)) #資料集長度，每個評論維度10000
-    for i, sequence in enumerate(sequences):
-        results[i, sequence] = 1 # one-hot
-    return results
-
-x_train = vectorize_sequences(train_data)
-x_test = vectorize_sequences(test_data)
-print('vectorize_sequences: train_data')
-print(x_train)
-
-# 向量化標籤資料
-y_train = np.asarray(train_labels).astype('float32')
-y_test = np.asarray(test_labels).astype('float32')
-print('np.asarray: train_labels')
-print(y_train)
+text = "自然語言處理是一門跨領域的學科"
+inputs = tokenizer(text, return_tensors="pt")
+outputs = model(**inputs)
+print("輸出向量維度:", outputs.last_hidden_state.shape)
+# (batch_size, sequence_length, hidden_size)
 #+end_src
 
-#+RESULTS:
-#+begin_example
-vectorize_sequences: train_data
-[[0. 1. 1. ... 0. 0. 0.]
- [0. 1. 1. ... 0. 0. 0.]
- [0. 1. 1. ... 0. 0. 0.]
- ...
- [0. 1. 1. ... 0. 0. 0.]
- [0. 1. 1. ... 0. 0. 0.]
- [0. 1. 1. ... 0. 0. 0.]]
-np.asarray: train_labels
-[1. 0. 0. ... 0. 1. 0.]
-#+end_example
-** Define Tokenization, Stop-word and Punctuation Removal Functions
-Before proceeding, we must decide how many samples to draw from each class. We must also decide the maximum number of tokens per email, and the maximum length of each token. This is done by setting the following overarching hyperparameters
+** 中文 NLP 常見應用
+- *情感分析*：電商評論、社群媒體輿情監控
+- *文本分類*：新聞分類、垃圾訊息過濾
+- *命名實體辨識（NER）*：從文本中抽取人名、地名、機構名
+- *機器翻譯*：中英互譯、中台語翻譯
+- *文本摘要*：自動摘要新聞或文件
+- *對話系統*：客服機器人、智慧助理
+
+** 繁體中文資源與工具
+
+*** 繁簡轉換：OpenCC
+[[https://github.com/BYVoid/OpenCC][OpenCC]]（Open Chinese Convert）是開源的中文繁簡轉換工具，在處理簡體中文語料時經常用到：
 #+begin_src python -r -n :results output :exports both
-Nsamp = 1000 # number of samples to generate in each class - 'spam', 'not spam'
-maxtokens = 200 # the maximum number of tokens per document
-maxtokenlen = 100 # the maximum length of each token
+from opencc import OpenCC
+
+# 簡體轉繁體（台灣用語）
+s2tw = OpenCC('s2tw')
+print(s2tw.convert("我们使用深度学习的算法来处理自然语言"))
+# → 我們使用深度學習的算法來處理自然語言
+
+# 簡體轉繁體（台灣用語 + 慣用詞轉換）
+s2twp = OpenCC('s2twp')
+print(s2twp.convert("我们使用深度学习的算法来处理自然语言"))
+# → 我們使用深度學習的演算法來處理自然語言
+
+# 繁體轉簡體
+tw2s = OpenCC('tw2s')
+print(tw2s.convert("我們使用深度學習的演算法來處理自然語言"))
+# → 我们使用深度学习的演算法来处理自然语言
 #+end_src
-*** Tokenization
+
+常用轉換模式：
+| 模式 | 說明 |
+|------+------|
+| =s2t= | 簡體 → 繁體 |
+| =s2tw= | 簡體 → 繁體（台灣） |
+| =s2twp= | 簡體 → 繁體（台灣，含慣用詞轉換，推薦） |
+| =t2s= | 繁體 → 簡體 |
+| =tw2s= | 繁體（台灣）→ 簡體 |
+
+安裝方式：
+#+begin_src bash
+pip install opencc-python-reimplemented
+#+end_src
+
+*** 繁體中文語料與資料集
+以下是進行繁體中文 NLP 研究與應用常用的資源：
+| 資源 | 說明 | 取得方式 |
+|----------------------------+----------------------------------------------+----------------------|
+| 中研院平衡語料庫 | 約五百萬詞的標注語料，含詞性標注 | 需向中研院申請授權 |
+| 中研院詞知識庫（E-HowNet） | 中文詞彙語義知識庫 | 線上查詢 |
+| PTT 語料 | 台灣最大 BBS 站文章，大量口語化繁體文本 | 需自行爬取或使用開源版 |
+| 維基百科繁體中文 | 可做為預訓練語料 | Wikimedia Dumps 免費下載 |
+| DRCD | 繁體中文閱讀理解資料集（類似 SQuAD） | GitHub 開源 |
+| ASBC（中研院平衡語料庫） | 書面語為主的標注語料 | 需申請 |
+| 教育部國語辭典 | 標準繁體中文詞彙定義 | 提供線上 API |
+
+*** TAIDE 模型
+[[https://taide.tw/][TAIDE]]（Trustworthy AI Dialogue Engine，可信任生成式 AI 對話引擎）是由台灣國科會主導開發的繁體中文大型語言模型。基於 LLaMA 架構，使用大量繁體中文語料進行預訓練與微調，目標是打造適合台灣本土需求的 AI 語言模型。
+
+TAIDE 的特色：
+- 以繁體中文為主要訓練語料，能理解台灣用語和文化脈絡
+- 開源釋出，可在 Hugging Face 下載使用
+- 提供多種版本（7B、8B），適合不同應用場景
+- 支援對話、摘要、翻譯等多種 NLP 任務
+
+以下示範如何使用 TAIDE 模型進行文字生成，讓初學者了解中文語言模型的基本用法：
 #+begin_src python -r -n :results output :exports both
-def tokenize(row):
-    if row is None or row is '':
-        tokens = ""
-    else:
-        tokens = row.split(" ")[:maxtokens]
-    return tokens
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
+
+# 載入 TAIDE 模型與 tokenizer（首次執行會下載模型，約需 15GB 空間）
+model_name = "taide/TAIDE-LX-7B-Chat"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    torch_dtype=torch.float16,  # 使用半精度以節省記憶體
+    device_map="auto"           # 自動分配到可用的 GPU
+)
+
+# 範例 1：請模型解釋概念
+prompt = "[INST] 請用三句話簡單解釋什麼是自然語言處理 [/INST]"
+inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+outputs = model.generate(**inputs, max_new_tokens=200, temperature=0.7)
+print("=== 概念解釋 ===")
+print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+
+# 範例 2：文本摘要
+article = "台積電今日宣布將在高雄設立新的晶圓廠，預計投資金額超過新台幣三千億元。新廠將採用先進的2奈米製程技術，預計2027年開始量產。此舉將為南台灣帶來大量就業機會，並進一步鞏固台灣在全球半導體產業的領導地位。"
+prompt = f"[INST] 請將以下新聞摘要成一句話：\n{article} [/INST]"
+inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+outputs = model.generate(**inputs, max_new_tokens=100, temperature=0.3)
+print("\n=== 文本摘要 ===")
+print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+
+# 範例 3：情感分析
+review = "這家餐廳的牛肉麵真的超好吃，湯頭濃郁，牛肉軟嫩，下次還會再來！"
+prompt = f"[INST] 請判斷以下評論的情感是正面還是負面，並簡述理由：\n{review} [/INST]"
+inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+outputs = model.generate(**inputs, max_new_tokens=100, temperature=0.3)
+print("\n=== 情感分析 ===")
+print(tokenizer.decode(outputs[0], skip_special_tokens=True))
 #+end_src
-#+end_src
-*** Use regular expressions to remove unnecessary characters
-
-Next, we define a function to remove punctuation marks and other nonword characters (using regular expressions) from the emails with the help of the ubiquitous python regex library. In the same step, we truncate all tokens to hyperparameter maxtokenlen defined above.
-#+begin_src python -r -n :results output :exports both
-import re
-
-def reg_expressions(row):
-    tokens = []
-    try:
-        for token in row:
-            token = token.lower() # make all characters lower case
-            token = re.sub(r'[\W\d]', "", token)
-            token = token[:maxtokenlen] # truncate token
-            tokens.append(token)
-    except:
-        token = ""
-        tokens.append(token)
-    return tokens
-#+end_src
-** Stop-word removal
-
-Stop-words are also removed. Stop-words are words that are very common in text but offer no useful information that can be used to classify the text. Words such as is, and, the, are are examples of stop-words. The NLTK library contains a list of 127 English stop-words and can be used to filter our tokenized strings.
-
-#+begin_src python -r -n :results output :exports both
-import nltk
-
-nltk.download('stopwords')
-from nltk.corpus import stopwords
-stopwords = stopwords.words('english')
-
-# print(stopwords) # see default stopwords
-# it may be beneficial to drop negation words from the removal list,
-# as they can change the positive/negative meaning
-# of a sentence
-# stopwords.remove("no")
-# stopwords.remove("nor")
-# stopwords.remove("not")
-#+end_src
-#+begin_src python -r -n :results output :exports both
-def stop_word_removal(row):
-    token = [token for token in row if token not in stopwords]
-    token = filter(None, token)
-    return token
-#+end_src
-** Bag-of-words model
-
-- For the computer to make inferences of the e-mails, it has to be able to interpret the text by making a numerical representation of it. One way to do this is by using something called a "bag-of-words" model. This model simply counts the frequency of word tokens for each email and thereby represents it as a vector of these counts.
-- 詞袋模型（英語：Bag-of-words model）是個在自然語言處理和信息檢索(IR)下被簡化的表達模型。此模型下，一段文本（比如一個句子或是一個文檔）可以用一個裝著這些詞的袋子來表示，這種表示方式不考慮文法以及詞的順序。
-- 詞袋模型被廣泛應用在文件分類，詞出現的頻率可以用來當作訓練分類器的特徵
-
-*** Example implementation
-The following models a text document using bag-of-words. Here are two simple text documents:
-
-#+BEGIN_EXAMPLE
-1) John likes to watch movies. Mary likes movies too.
-2) Mary also likes to watch football games.
-#+END_EXAMPLE
-
-Based on these two text documents, a list is constructed as follows for each document:
-
-#+BEGIN_EXAMPLE
-1) "John","likes","to","watch","movies","Mary","likes","movies","too"
-2) "Mary","also","likes","to","watch","football","games"
-#+END_EXAMPLE
-
-Representing each bag-of-words as a JSON object, and attributing to the respective JavaScript variable:
-
-#+BEGIN_EXAMPLE
-1) BoW1 = {"John":1,"likes":2,"to":1,"watch":1,"movies":2,"Mary":1,"too":1};
-2) BoW2 = {"Mary":1,"also":1,"likes":1,"to":1,"watch":1,"football":1,"games":1};
-#+END_EXAMPLE
-
-Each key is the word, and each value is the number of occurrences of that word in the given text document.
-
-The order of elements is free, so, for example
-
-{"too":1,"Mary":1,"movies":2,"John":1,"watch":1,"likes":2,"to":1} is also equivalent to BoW1. It is also what we expect from a strict JSON object representation.
-
-Note: if another document is like a union of these two,
-
-(3) John likes to watch movies. Mary likes movies too. Mary also likes to watch football games.
-
-its JavaScript representation will be:
-#+BEGIN_EXAMPLE
-BoW3 = {"John":1,"likes":3,"to":2,"watch":2,"movies":2,"Mary":2,"too":1,"also":1,"football":1,"games":1};
-
-若只有上述單字,且以BoW3 的順序為基準來表示BoW1和BoW2:
-
-#+BEGIN_EXAMPLE
-BoW1 = [1, 2, 1, 1, 2, 1, 1, 0, 0, 0]
-BoW2 = [0, 1, 1, 1, 0, 1, 0, 1, 1, 1]
-#+END_EXAMPLE
-
-So, as we see in the bag algebra, the "union" of two documents in the bags-of-words representation is, formally, the disjoint union, summing the multiplicities of each element.
-$Bow3=Bow1 \uplus Bow2$
-
-*** Assemble matrices function
-
-The assemble_bag() function assembles a new dataframe containing all the unique words found in the text documents. It counts the word frequency and then returns the new dataframe.
-
-#+begin_src python -r -n :results output :exports both
-def assemble_bag(data):
-    used_tokens = []
-    all_tokens = []
-
-    for item in data:
-        for token in item:
-            if token in all_tokens:
-                if token not in used_tokens:
-                    used_tokens.append(token)
-            else:
-                all_tokens.append(token)
-
-    df = pd.DataFrame(0, index = np.arange(len(data)), columns = used_tokens)
-
-    for i, item in enumerate(data):
-        for token in item:
-            if token in used_tokens:
-                df.iloc[i][token] += 1
-    return df
-#+end_src
-** Putting It All Together To Assemble Dataset
-
-Now, putting all the preprocessing steps together we assemble our dataset...
-
-1. shuffle raw data and load data
-
-#+begin_src python -r -n :results output :exports both
-import os
-import numpy as np
-
-# shuffle raw data first
-def unison_shuffle_data(data, header):
-    p = np.random.permutation(len(header))
-    data = data[p]
-    header = np.asarray(header)[p]
-    return data, header
-
-# load data in appropriate form
-def load_data(path):
-    data, sentiments = [], []
-    for folder, sentiment in (('neg', 0), ('pos', 1)):
-        folder = os.path.join(path, folder)
-        for name in os.listdir(folder):
-            with open(os.path.join(folder, name), 'r') as reader:
-                  text = reader.read()
-            text = tokenize(text)
-            text = stop_word_removal(text)
-            text = reg_expressions(text)
-            data.append(text)
-            sentiments.append(sentiment)
-    data_np = np.array(data)
-    data, sentiments = unison_shuffle_data(data_np, sentiments)
-
-    return data, sentiments
-
-train_path = os.path.join('aclImdb', 'train')
-test_path = os.path.join('aclImdb', 'test')
-raw_data, raw_header = load_data(train_path)
-
-print(raw_data.shape)
-print(len(raw_header))
-#+end_src
-
-2. Subsample required number of samples
-   #+begin_src python -r -n :results output :exports both
-# Subsample required number of samples
-random_indices = np.random.choice(range(len(raw_header)),size=(Nsamp*2,),replace=False)
-data_train = raw_data[random_indices]
-header = raw_header[random_indices]
-
-print("DEBUG::data_train::")
-print(data_train)
-   #+end_src
-
-3. Display sentiments and their frequencies in the dataset, to ensure it is roughly balanced between classes
-#+begin_src python -r -n :results output :exports both
-unique_elements, counts_elements = np.unique(header, return_counts=True)
-print("Sentiments and their frequencies:")
-print(unique_elements)
-print(counts_elements)
-#+end_src
-
-4. Featurize and Create Labels
-#+begin_src python -r -n :results output :exports both
-MixedBagOfReviews = assemble_bag(data_train)
-# this is the list of words in our bag-of-words model
-predictors = [column for column in MixedBagOfReviews.columns]
-
-# expand default pandas display options to make emails more clearly visible when printed
-pd.set_option('display.max_colwidth', 300)
-
-MixedBagOfReviews # you could do print(MixedBagOfReviews), but Jupyter displays this nicer for pandas DataFrames
-#+end_src
-
-5. split into independent 70% training and 30% testing sets
-   #+begin_src python -r -n :results output :exports both
-# split into independent 70% training and 30% testing sets
-data = MixedBagOfReviews.values
-
-idx = int(0.7*data.shape[0])
-
-# 70% of data for training
-train_x = data[:idx,:]
-train_y = header[:idx]
-# remaining 30% for testing
-test_x = data[idx:,:]
-test_y = header[idx:]
-
-print("train_x/train_y list details, to make sure it is of the right form:")
-print(len(train_x))
-print(train_x)
-print(train_y[:5])
-print(len(train_y))
-   #+end_src
-
-* 中文
-** Jeiba
-** CKIP
-*** CkipTagger
-#+begin_src python -r -n :results output :exports both
-from ckiptagger import data_utils, construct_dictionary, WS, POS, NER
-# Downloads to ./data.zip (2GB) and extracts to ./data/
-# data_utils.download_data_url("./") # iis-ckip
-data_utils.download_data_gdown("./") # gdrive-ckip
-#+end_src
-
-#+RESULTS:
-
-* 自然語言處理學習路線
-若要讓電腦理解人類的語言，以中文來說，分成兩步驟：第一步是斷詞、理解詞；第二步則是分析句子，包含語法及語義的自動解析。自然語言處理透過這兩個步驟，將複雜的語言轉化為電腦容易處理、計算的形式。早期是人工訂定規則，現在則是讓機器自己學習[fn:5]。
 
 #+begin_quote
-早期的方式是基於一套詞彙資料庫，用程式語言寫好人工訂定的規則，讓電腦依指令做出反應。但這種人工方式不可能包含所有語言的歧異性，例如，當同樣的詞在不同上下文產生不同意思，就會和原本的人工規則相互牴觸。1980 年代末期，自然語言處理引進機器學習 (Machine Learning) 的演算法，不再用程式語言命令電腦所有規則，而是建立演算法模型，讓電腦學會從訓練的資料中，尋找資料所含的特定模式和趨勢[fn:5]。
+*注意*：TAIDE-LX-7B-Chat 模型約需 14GB GPU 記憶體（使用 float16）。若 GPU 記憶體不足，可改用量化版本：
 #+end_quote
 
-要掌握自然語言處理，學習順序大至如下
-1. 熟悉基本知識、基本操作
-1. 如文本操作、正則、掌握一些基本文本處理框架英文有NLTK、spaCy，中文有中研院CKIP Transformers、CKIP Tagger、Jeiba
-1. 知道什麼是語言模型、利用語言模型來完成一些項目
-1. 文本表示:將文本中的字符串轉化爲計算機當中的向量
-1. 文本分類:分類模型傳統的一個解決方法就是標帶標註的語料，再特徵提取，然後訓分類器進行分類。這個分類器就會用比如說邏輯迴歸、貝葉斯、支持向量機、決策樹等等。
-1. 主題模型:使用無監督學習的方式對文本中的隱含語義進行聚類的統計模型
-1. seq2seq模型:通過深度神經網絡將一個序列作爲映射爲另外一個輸出的序列。
-1. 文本生成:GAN文本生成，也叫機器人寫作。
+#+begin_src python -r -n :results output :exports both
+# 使用 4-bit 量化載入，僅需約 4GB GPU 記憶體
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+import torch
 
-* 如何表示自然語言與字詞(數學化)
+quantization_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_compute_dtype=torch.float16
+)
+
+model_name = "taide/TAIDE-LX-7B-Chat"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    quantization_config=quantization_config,
+    device_map="auto"
+)
+#+end_src
+
+** NLTK
+[[file:NLTK.org][NLTK]]: NLP的處理工具
+
+** 語料集
+自然語言中，雖然算法、模型很重要，但沒有資料驅動還是什麼都做不了，尤其是文字不像圖片一樣不分國界，每個地方用的語言不同，所需要的資料也就不同，英文因為是世界語言，加上論文的發表大部分以研究英文為主，所以資料當然是最多，不過幸運地，中文的語料也算蠻多的，這邊列出幾個好用的中文資料集或預訓練模型[fn:9]
+*** NLP-Chinese-Corpus
+[[https://github.com/brightmart/nlp_chinese_corpus][NLP_Chinese-Corpus]] 是在github上由brightmart開源的中文語料統整，裡面包含了一些維基百科、新聞、社區問答等語料，比較多是通用型的中文語料，可以當作詞向量訓練的材料，或者其它應用
+*** PTT-Gossiping-Corpus
+[[https://github.com/zake7749/Gossiping-Chinese-Corpus][PTT-Gossiping-Corpus]]是由zake7749在github以及Kaggle上提供的繁體中文問答語料集，一個問句對應到一句鄉民回答，對於想實作中文Sequence2Sequence的朋友，會是蠻不錯的實驗語料
+圖片截自zake7749/Gossiping-Chinese-Corpus 中的範例說明
+*** Wiki-corpus
+繁體中文的語料，通常就會想到PTT以及中文維基百科，而現在獲取中文維基百科的手段有很多種，維基百科本身也有提供API，大家可以視個人需求來拿到資料
+*** Tencent AI LAB
+騰訊AI實驗室非常佛心的釋出相當多有用的中文資料集，像是Dialogue Research中包含一些在聊天機器人領域上實用的中文語料，有興趣的朋友可以參考我這篇論文的介紹：Improving Open-Domain Dialogue Systems via Multi-Turn Incomplete Utterance Restoration此外，騰訊AI也有提供預訓練的中文詞向量模型，有興趣的朋友也能試試看
+*** BERT
+BERT就像詞向量模型一樣，需要大量的語料進行預訓練，好處是我們這種一般大眾可以直接使用一些科技巨擘所釋出的預訓練模型，像是Google, HuggingFace, 還有一些開源的github項目都有提供中文的BERT預訓練模型
+
+* 文字的數學表示
 語言由文字構成，利用「字詞」組合成各種意思。電腦透過三種手段來理解「字詞」：
 1. 詞庫
 1. 計數
@@ -714,7 +712,7 @@ data_utils.download_data_gdown("./") # gdrive-ckip
 digraph wordThesaurus {
   rankdir=TD
   o1 [label="object" shape="record"]
-  o2 [label="motor vechcle" shape="record"]
+  o2 [label="motor vehicle" shape="record"]
   o31 [label="car" shape="record"]
   o32 [label="go-kart" shape="record"]
   o33 [label="truck" shape="record"]
@@ -736,7 +734,7 @@ digraph wordThesaurus {
 
 透過這種方式定義字詞間的關係。
 *** WordNet
-NLP中最有名的詞連: WordNet，由普林斯頓大學於1985年開發。
+NLP中最有名的詞庫: WordNet，由普林斯頓大學於1985年開發。
 詞庫的問題：
 1. 難以因應時代變遷：舊詞與新詞（如，crowdfunding、比特幣）
 1. 人工作業成本昂貴
@@ -761,7 +759,7 @@ print(word_to_id)
 print(id_to_word)
 
 corpus = [word_to_id[w] for w in words]
-print(corpus) #文字句字轉數字表示
+print(corpus) #文字句子轉數字表示
 #+end_src
 
 #+RESULTS:
@@ -924,7 +922,7 @@ most_similar('you', word_to_id, id_to_word, C, top=5)
 :  and: 0.0
 ** Pointwise Mutual Information (PMI)
 從共生矩陣中看不出"...the car..."這種常見用法中the和car的強烈關聯性。
-$$PMI(x,y)=\log_2{\frac{P(x,y)}{P(x)P(y)}}=\log_2{\frac{\frac{C(x,y)}{N}}{\frac{C(x)}{N}\frac{C(y)}{N}}=\log_2{\frac{C(x,y)\cdot{N}}{C(x)C(y)}$$
+$$PMI(x,y)=\log_2\frac{P(x,y)}{P(x)P(y)}=\log_2\frac{\frac{C(x,y)}{N}}{\frac{C(x)}{N}\frac{C(y)}{N}}=\log_2\frac{C(x,y)\cdot N}{C(x)C(y)}$$
 P(X)為字詞x在語料庫出現的機率、P(y)為字詞y在語料庫出現的機率、P(X,y)為字詞x與y同時在語料庫出現的機率。PMI越高、x,y關聯性越強。
 #+begin_src python -r -n :results output :exports both
 def ppmi(C, verbose=False, eps = 1e-8):
@@ -984,18 +982,18 @@ print(W)
 ** 降維
 dimensionality reduction: 刪減向量的維度並 *儘量保留* 「重要資訊」。
 如下圖:
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: 降維示意圖
+#+LABEL:fig:dim-reduction
+#+name: fig:dim-reduction
 #+ATTR_LATEX: :width 500
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/2022-05-10_13-36-40.png]]
 *** 奇異值分解(Singular Value Decomposition, SVD)
 把任意矩陣分解成三個矩陣乘積：$A=U\Sigma V^T$ ，U與V為正交矩陣(orthogonal matrix)，其行矩陣彼此正交，S為對角矩陣(對角線以外全部為0)
-<#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: SVD 分解示意圖
+#+LABEL:fig:svd-decomposition
+#+name: fig:svd-decomposition
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -1004,9 +1002,9 @@ dimensionality reduction: 刪減向量的維度並 *儘量保留* 「重要資�
 1. 旋轉$V^T$
 1. 伸縮$\Sigma$
 1. 再旋轉$U$
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: SVD 旋轉與伸縮步驟
+#+LABEL:fig:svd-rotation
+#+name: fig:svd-rotation
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -1048,9 +1046,9 @@ plt.savefig('images/SVD-1.png', dpi=300)
 : [ 1.665e-16 -4.978e-01  2.776e-17  6.804e-01 -1.110e-16  5.378e-01
 :   7.467e-17]
 利用SVD，可以把sparse vector W[0]轉變成dense vector U[0]，若要對U降維，則只要取U的前幾個元素，下圖為降成二維的結果。
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: SVD 二維降維結果
+#+LABEL:fig:svd-2d
+#+name: fig:svd-2d
 #+ATTR_LATEX: :width 500
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -1071,7 +1069,7 @@ W = ppmi(C)
 U, S, V = np.linalg.svd(W)
 # 3D
 fig = plt.figure()
-ax = fig.gca(projection='3d')
+ax = fig.add_subplot(111, projection='3d')
 UX = list(word_to_id.keys())
 print(UX)
 #ax.scatter(U[:,0],U[:,1],U[:,2], alpha=0.5)
@@ -1089,9 +1087,9 @@ plt.savefig('images/SVD-3D.png', dpi=300)
 
 #+RESULTS:
 : ['you', 'say', 'goodbye', 'and', 'i', 'hello', '.']
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: SVD 三維降維結果
+#+LABEL:fig:svd-3d
+#+name: fig:svd-3d
 #+ATTR_LATEX: :width 500
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -1206,17 +1204,17 @@ BoW2 = {"Mary":1,"also":1,"likes":1,"to":1,"watch":1,"football":1,"games":1};
 BoW3 = {"John":1,"likes":3,"to":2,"watch":2,"movies":2,"Mary":2,"too":1,"also":1,"football":1,"games":1};
 #+end_src
 - 只有上述單字,且以 BoW3 的順序為基準
-#+begin_src python -r -n :results output :exports both
+#+BEGIN_EXAMPLE
 (1) BoW1 = [1, 2, 1, 1, 2, 1, 1, 0, 0, 0]
 (2) BoW2 = [0, 1, 1, 1, 0, 1, 0, 1, 1, 1]
-#+end_src
+#+END_EXAMPLE
 *** Bag-of-words model
 To interpret the text by making a numerical representation of it.
 
 One way to do this is by using something called a "bag-of-words" model.
 This model simply counts the frequency of word tokens for each email and thereby represents it as a vector of these counts.
 
-*** Assemble matrices function**
+*** Assemble matrices function
 
 The assemble_bag() function assembles a new dataframe containing all the unique words found in the text documents.
 It counts the word frequency and then returns the new dataframe.
@@ -1344,8 +1342,9 @@ The following functions are used to extract fastText embedding vectors for each 
 #+begin_src python -r -n :results output :exports both
 import time
 from gensim.models import FastText, KeyedVectors
+import os
 
-!ls
+print(os.listdir('.'))
 
 start=time.time()
 FastText_embedding = KeyedVectors.load_word2vec_format("../input/jigsaw/wiki.en.vec")
@@ -1446,7 +1445,6 @@ print(unique_elements)
 print(counts_elements)
 #+end_src
 
-* Representing text as numbers
 Machine learning models take vectors (arrays of numbers) as input.
 
 When working with text, the first thing we must do come up with a strategy to convert strings to numbers (or to "vectorize" the text) before feeding it to the model.
@@ -1471,7 +1469,7 @@ Continuing the example above, we could assign 1 to "cat", 2 to "mat", and so on.
 
 We could then encode the sentence "The cat sat on the mat" as a dense vector like [5, 1, 4, 3, 5, 2].
 
-This appoach is efficient. Instead of a sparse vector, we now have a dense one (where all elements are full).
+This approach is efficient. Instead of a sparse vector, we now have a dense one (where all elements are full).
 
 缺點有二:
 1. The integer-encoding is arbitrary (it does not capture any relationship between words).
@@ -1497,36 +1495,36 @@ After these weights have been learned, we can encode each word by looking up the
 *** Learning embeddings from scratch
 https://www.tensorflow.org/tutorials/text/word_embeddings
 
-* 推論: word2vec
+* 推論法：word2vec
 前章以「計數手法」取得字詞的分散式表示，本章要以「推論」取代「計數」，在推論中可以使用類神經網路，即word2vec。
 ** 計數 v.s. 推論
 - 計數要建立共生矩陣，再套用到SVD獲得dense matrix，處理資料量為 $n\times n$ 的矩陣，花費 $O(n^2)$ 的時間成本。
 - 推論(以類神經網路為例)一般使用小批次進行學習。
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: 計數與推論的比較
+#+LABEL:fig:count-vs-inference
+#+name: fig:count-vs-inference
 #+ATTR_LATEX: :width 500
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/2022-05-10_11-39-22.png]]
 ** 推論
 以下圖為例，推論的工作是由you與goodbye推論出?會出現哪個字詞。
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: 推論範例
+#+LABEL:fig:inference-example
+#+name: fig:inference-example
 #+ATTR_LATEX: :width 500
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/2022-05-10_11-47-05.png]]
 在推論中，將上下文輸入某一模型，然後輸出各字詞可能出現的機率
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: 推論模型輸出機率
+#+LABEL:fig:inference-probability
+#+name: fig:inference-probability
 #+ATTR_LATEX: :width 500
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/2022-05-10_11-49-39.png]]
-** 在類神經網網路中表達字詞
+** 在類神經網路中表達字詞
 類神經網路無法直接處理you、say等字詞，而是將這些字詞 *轉換* 為「固定長度的向量」，方法之一是使用one-hot-encoding。
 如:
 |---------+--------+------------------|
@@ -1537,17 +1535,17 @@ https://www.tensorflow.org/tutorials/text/word_embeddings
 |---------+--------+------------------|
 *** 輸入層
 字詞以one-hot encoding表示後，輸入層就如下圖所示，每個字詞為一個神經元
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: one-hot encoding 輸入層
+#+LABEL:fig:onehot-input
+#+name: fig:onehot-input
 #+ATTR_LATEX: :width 500
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/2022-05-10_13-38-22.png]]
 每個神經元(字詞)以 *全連接(full-connected)* 方式連至中間層，每個箭頭都有權重（參數)，將權重與輸入層的神經元加權求平均就得到中間層。此處的權重為一矩陣，此處略過bias的概念。
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: 權重矩陣示意圖
+#+LABEL:fig:weight-matrix
+#+name: fig:weight-matrix
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -1587,9 +1585,9 @@ class MatMul:
         self.grads[0][...] = dW
         return dx
 #+end_src
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: 字詞 you 與權重矩陣運算結果
+#+LABEL:fig:word-you-weight
+#+name: fig:word-you-weight
 #+ATTR_LATEX: :width 500
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -1599,17 +1597,17 @@ class MatMul:
 :ORDERED:  t
 :END:
 CBOW有兩個輸入層（即前後字詞、各自有其weight matrix），中間層的神經元由兩個輸入層的全連接轉換後求其平均，即第一個輸入層變成 $h_1$ 、第二個輸入層轉為 $h_2$ 、中間層為 $\frac{1}{2}(h_1+h_2)$ 。
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: CBOW 模型架構
+#+LABEL:fig:cbow-architecture
+#+name: fig:cbow-architecture
 #+ATTR_LATEX: :width 500
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/2022-05-10_14-15-25.png]]
 
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: CBOW 模型計算流程
+#+LABEL:fig:cbow-computation
+#+name: fig:cbow-computation
 #+ATTR_LATEX: :width 500
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -1626,7 +1624,7 @@ from common.layers import MatMul
 c0 = np.array([[1, 0, 0, 0, 0, 0, 0]])
 c1 = np.array([[0, 0, 1, 0, 0, 0, 0]])
 
-# 初始化權重W_in = np.random.randn(7, 3)
+# 初始化權重
 W_in = np.random.randn(7, 3)
 W_out = np.random.randn(3, 7)
 # 產生各層
@@ -1648,34 +1646,33 @@ print(s)
 :   -0.27397258]]
 ** CBOW模型的學習
 求出中間層的各神經元內容值後，再透過另一個輸出weight matrix加權計算即可得輸出層，最後經由Softmax函數將每一字詞的機率轉換為正解label，其流程如下所示：
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: CBOW 學習流程
+#+LABEL:fig:cbow-learning
+#+name: fig:cbow-learning
 #+ATTR_LATEX: :width 500
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/2022-05-10_15-08-20.png]]
 如上例，若前後文為you、goodbye，則其label應為say；在一個擁有優質weight matrix的類神經網路中，我們可以期待對應到正解的神經元「機率」變高。
-這件事可以透過數學手段來解決:利用Softmax把分數轉成機率，從機率與label求出交叉熵誤差，把它當成損失函數(loss function)，學習目標就是找出能將中oss function值最小化的那組weight matrix。
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+這件事可以透過數學手段來解決:利用Softmax把分數轉成機率，從機率與label求出交叉熵誤差，把它當成損失函數(loss function)，學習目標就是找出能將 loss function 值最小化的那組 weight matrix。
+#+CAPTION: Softmax 與交叉熵損失函數
+#+LABEL:fig:softmax-crossentropy
+#+name: fig:softmax-crossentropy
 #+ATTR_LATEX: :width 500
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/2022-05-10_15-23-46.png]]
 
-* word2vec的學習
 ** 先找出上下文與目標對象
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: 上下文與目標對象
+#+LABEL:fig:context-target
+#+name: fig:context-target
 #+ATTR_LATEX: :width 500
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/2022-05-10_15-30-52.png]]
 ** 將上下文與目標以one-hot encoding編碼
-#+CAPTION: Caption
+#+CAPTION: 上下文與目標的 one-hot encoding
 #+LABEL:fig:CTTGOneHotEncoding
 #+name: fig:CTTGOneHotEncoding
 #+ATTR_LATEX: :width 500
@@ -1712,7 +1709,8 @@ class SimpleCBOW:
             self.params += layer.params
             self.grads += layer.grads
 
-        # 在成員變數中，設定字詞的分散式表示        self.word_vecs = W_in
+        # 在成員變數中，設定字詞的分散式表示
+        self.word_vecs = W_in
 
     def forward(self, contexts, target):
         h0 = self.in_layer0.forward(contexts[:, 0])
@@ -1732,11 +1730,11 @@ class SimpleCBOW:
 
 #+end_src
 *** forward()取得contexts與target兩個引數，回傳loss
-- contexts為三維NumPy陣列，形狀為圖[[fig:CTTGOneHotEncoding]]中的(6, 2, 7)，表示有6個batch、上下文參考window size為2、人ne-hot encoding向量長度為7。
+- contexts為三維NumPy陣列，形狀為圖[[fig:CTTGOneHotEncoding]]中的(6, 2, 7)，表示有6個batch、上下文參考window size為2、one-hot encoding 向量長度為7。
 - target為二維，假設形狀為(6, 7)
 *** backward()執行反向傳播
 反向傳播由圖[[fig:backward]]中的最右「1」開始，將之輸入Softmax with Loss層、再把Softmax with Loss層的反向輸出當作ds、將ds做為MatMul層的輸入。
-#+CAPTION: Caption
+#+CAPTION: 反向傳播流程
 #+LABEL:fig:backward
 #+name: fig:backward
 #+ATTR_LATEX: :width 500
@@ -1746,15 +1744,124 @@ class SimpleCBOW:
 *** 學習
 這段找別的書來看，這本書用太多自己寫的code，麻煩，意義不太大
 
-* NLP實作: Fake News Classification
+* NLP實作
+** IMDB 電影評論
+
+參考來源：[[https://www.tensorflow.org/tutorials/keras/text_classification][TensorFlow 官方教學]]
+
+IMDB 資料集已打包在 Keras 中，包含 50,000 則影評，每則已轉換為整數序列（每個整數對應字典中的一個單詞）。標籤為 0（負評）或 1（正評）。
+
+以下程式碼完成：載入資料 → 補齊序列長度 → 建立模型 → 訓練 → 評估 → 畫出訓練曲線。
+
+#+begin_src python -r -n :results output :exports both
+# -*- coding: utf-8 -*-
+import tensorflow as tf
+from tensorflow import keras
+import numpy as np
+import matplotlib.pyplot as plt
+
+print(f"TensorFlow 版本: {tf.__version__}")
+
+# ===== 1. 載入 IMDB 資料集 =====
+# num_words=10000：只保留最常見的 10,000 個詞，其餘用 <UNK> 代替
+imdb = keras.datasets.imdb
+(train_data, train_labels), (test_data, test_labels) = imdb.load_data(num_words=10000)
+
+print(f"訓練資料: {len(train_data)} 筆, 測試資料: {len(test_data)} 筆")
+print(f"第一筆評論長度: {len(train_data[0])} 個詞, 標籤: {train_labels[0]}")
+
+# 建立「索引 → 單詞」的對照表，方便將數字序列還原成文字
+word_index = imdb.get_word_index()
+word_index = {k: (v + 3) for k, v in word_index.items()}
+word_index["<PAD>"] = 0
+word_index["<START>"] = 1
+word_index["<UNK>"] = 2
+word_index["<UNUSED>"] = 3
+reverse_word_index = {v: k for k, v in word_index.items()}
+
+def decode_review(text):
+    """將整數序列還原成英文句子"""
+    return ' '.join(reverse_word_index.get(i, '?') for i in text)
+
+# 偷看第一筆評論的前 50 個詞
+print(f"\n第一筆評論（前 50 詞）:\n{decode_review(train_data[0][:50])}...")
+
+# ===== 2. 資料預處理：補齊序列長度 =====
+# 每則評論長度不同，用 0 補齊到固定長度 256（太短補 0，太長截斷）
+train_data = keras.preprocessing.sequence.pad_sequences(
+    train_data, value=word_index["<PAD>"], padding='post', maxlen=256)
+test_data = keras.preprocessing.sequence.pad_sequences(
+    test_data, value=word_index["<PAD>"], padding='post', maxlen=256)
+
+print(f"\n補齊後的形狀: 訓練 {train_data.shape}, 測試 {test_data.shape}")
+
+# ===== 3. 建立模型 =====
+# Embedding: 將每個詞對應到 16 維向量
+# GlobalAveragePooling1D: 對所有詞向量取平均，壓縮成固定長度
+# Dense(16, relu): 全連接層提取特徵
+# Dense(1, sigmoid): 輸出 0~1 之間的機率（>0.5 判為正評）
+model = keras.Sequential([
+    keras.layers.Embedding(10000, 16),
+    keras.layers.GlobalAveragePooling1D(),
+    keras.layers.Dense(16, activation='relu'),
+    keras.layers.Dense(1, activation='sigmoid')
+])
+model.summary()
+
+# ===== 4. 編譯與訓練 =====
+model.compile(optimizer='adam',
+              loss='binary_crossentropy',
+              metrics=['accuracy'])
+
+# 從訓練集中切出 10,000 筆作為驗證集
+x_val, partial_x_train = train_data[:10000], train_data[10000:]
+y_val, partial_y_train = train_labels[:10000], train_labels[10000:]
+
+history = model.fit(partial_x_train, partial_y_train,
+                    epochs=40, batch_size=512,
+                    validation_data=(x_val, y_val),
+                    verbose=1)
+
+# ===== 5. 評估模型 =====
+loss, accuracy = model.evaluate(test_data, test_labels)
+print(f"\n測試集 Loss: {loss:.4f}")
+print(f"測試集 Accuracy: {accuracy:.4f}")
+
+# ===== 6. 畫出訓練曲線 =====
+hist = history.history
+epochs = range(1, len(hist['accuracy']) + 1)
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+
+# 左圖：損失值
+axes[0].plot(epochs, hist['loss'], 'bo', label='訓練 loss')
+axes[0].plot(epochs, hist['val_loss'], 'b-', label='驗證 loss')
+axes[0].set_title('損失值變化')
+axes[0].set_xlabel('Epoch')
+axes[0].set_ylabel('Loss')
+axes[0].legend()
+
+# 右圖：準確率
+axes[1].plot(epochs, hist['accuracy'], 'bo', label='訓練 acc')
+axes[1].plot(epochs, hist['val_accuracy'], 'b-', label='驗證 acc')
+axes[1].set_title('準確率變化')
+axes[1].set_xlabel('Epoch')
+axes[1].set_ylabel('Accuracy')
+axes[1].legend(loc='lower right')
+
+plt.tight_layout()
+plt.savefig('images/imdb-text-classification.png', dpi=300)
+print("\n訓練曲線已儲存")
+#+end_src
+** 假新聞分類
 - 本段所有內容來自[[https://leemeng.tw/shortest-path-to-the-nlp-world-a-gentle-guide-of-natural-language-processing-and-deep-learning-for-everyone.html][進入 NLP 世界的最佳橋樑：寫給所有人的自然語言處理與深度學習入門指南]]
 - [[https://www.kaggle.com/c/fake-news-pair-classification-challenge][WSDM - Fake News Classification]]
   此競賽的目的在於想辦法自動找出假新聞以節省人工檢查的成本。資料集則是由中國的手機新聞應用：今日頭條的母公司字節跳動所提出的。（知名的抖音也是由該公司的產品）[fn:6]
-** 資料集
+*** 資料集
 訓練資料集（Training Set）約有 32 萬筆數據、測試資料集（Test Set）則約為 8 萬筆。
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: Kaggle 假新聞資料集
+#+LABEL:fig:kaggle-fakenews-data
+#+name: fig:kaggle-fakenews-data
 #+ATTR_LATEX: :width 600
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -1768,13 +1875,13 @@ class SimpleCBOW:
 - disagreed：B 不同意 A 的敘述
 如果新聞 B 同意假新聞 A 的敘述的話，我們可以將 B 也視為一個假新聞；而如果 B 不同意假新聞 A 的敘述的話，我們可以放心地將 B 新聞釋出給一般大眾查看；如果 B 與 A 無關的話，可以考慮再進一步處理 B。
 第 3、 4 欄位則為新聞標題的英文翻譯。而因為該翻譯為 *機器翻譯* ， *不一定能 100% 正確反映本來中文新聞想表達的意思* ，因此接下來的文章會忽視這兩個欄位，只使用簡體中文的新聞標題來訓練 NLP 模型。
-** 思路
+*** 思路
 現在任務目標: 要將有 32 萬筆數據的訓練資料集（Training Set）交給我們的 NLP 模型，讓它「閱讀」每一列裡頭的假新聞 A 與新聞 B 的標題並瞭解它們之間的關係（不相關、B 同意 A、B 不同意 A）。這是一個非常典型的機器學習（Machine Learning, ML）問題。我們當然希望不管使用什麼樣的模型，該模型都能夠幫我們減少人工檢查的成本，並同時最大化分類的準確度。
-*** 觀察資料集
+**** 觀察資料集
 訓練集中的三個類別比例如下：
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: 假新聞分類比例分布
+#+LABEL:fig:fakenews-dist
+#+name: fig:fakenews-dist
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -1789,7 +1896,7 @@ where
 - $y$ are ground truths
 - $\hat y$ are the predicted results
 - $\omega_i$ 為資料庫中第 $i$ 個項目的權重
-** 資料前處理：讓機器能夠處理文字
+*** 資料前處理：讓機器能夠處理文字
 即，如何將
 #+begin_verse
 用大蒜鉴别地沟油的方法,怎么鉴别地沟油
@@ -1799,7 +1906,7 @@ where
 [217, 1268, 32, 1178, 25, 489, 116]
 #+end_verse
 資料型態轉換流程:
-*** 讀入資料
+**** 讀入資料
 先讓我們用 Pandas 將訓練資料集讀取進來
 #+begin_src python -r -n :results output :exports both :session fakenews
 import pandas as pd
@@ -1836,7 +1943,7 @@ print(train.head(3))
 : 1   "你不来深圳，早晚你儿子也要来"，不出10年深圳人均GDP将超香港       GDP首超香港？深圳澄清：还差一点点……  unrelated
 
 有了必要的欄位以後，我們可以開始進行數據的前處理了。
-*** 文本分詞（Text Segmentation）
+**** 用 Jieba 進行中文斷詞
 文本分詞（Text Segmentation）是一個將一連串文字切割成多個有意義的單位的步驟。這單位可以是
 - 一個中文漢字 / 英文字母（Character）
 - 一個中文詞彙 / 英文單字（Word）
@@ -1949,7 +2056,7 @@ print(train.iloc[:, [1, 4]].head())
 : 2   去年深圳GDP首超香港？深圳统计局辟谣：还差611亿  去年 深圳 GDP 首 超 香港 深圳 统计局 辟谣 还 差 611 亿
 : 9      吃了30年食用油才知道，一片大蒜轻松鉴别地沟油     吃 了 30 年 食用油 才 知道 一片 大蒜 轻松 鉴别 地沟油
 
-*** 建立字典並將文本轉成數字序列
+**** 建立字典並將文本轉成數字序列
 當我們將完整的新聞標題切成一個個有意義的詞彙（Token）以後，下一步就是將這些詞彙轉換成一個數字序列，方便電腦處理。
 這些數字是所謂的索引（Index），分別對應到特定的詞彙。
 假設我們現在就只有一個新聞標題：
@@ -2006,12 +2113,12 @@ print([word_index[w] for w in words])
 : ['陌生人', '被', '狐狸', '拍照']
 : [2, 1, 0, 3]
 在這個簡單的狐狸例子裡頭，word_index 就是我們的字典；我們利用該字典，將 1 句話轉成包含多個數字的序列，而每個數字實際上代表著一個 Token。
-*** 如何將新聞標題轉為數字序列
+**** 如何將新聞標題轉為數字序列
 1. 將已被斷詞的新聞標題 A 以及新聞標題 B 全部倒在一起
 1. 建立一個空字典
 1. 查看所有新聞標題，裏頭每出現一個字典裡頭沒有的詞彙，就為該詞彙指定一個字典裡頭還沒出現的索引數字，並將該詞彙放入字典
 1. 利用建好的字典，將每個新聞標題裡頭包含的詞彙轉換成數字
-**** 步驟1: 將已被斷詞的新聞標題 A 以及新聞標題 B 全部倒在一起
+***** 步驟1: 將已被斷詞的新聞標題 A 以及新聞標題 B 全部倒在一起
 上述步驟幾乎是NLP的必要動作，許多套件都提供了相應的function，如Keras
 #+begin_src python -r -n :results output :exports both :session fakenews
 import keras
@@ -2048,7 +2155,7 @@ print(pd.DataFrame(corpus.iloc[14:19], columns=['title']))
 : 14                 男人 在 机舱 口 跪下 原来 一切 都 只 因为 爱
 : 16   飞机 就要 起飞 一个 男人 在 机舱 口 跪下 这 是 今天 最 催泪 的 一幕
 : 18  飞机 就要 起飞 一个 男人 在 机舱 口 跪下 这 是 见 过 最 催泪 的 一幕
-**** 步驟2,3: 呼叫 tokenizer 為我們查看所有文本，並建立一個字典
+***** 步驟2,3: 呼叫 tokenizer 為我們查看所有文本，並建立一個字典
 #+begin_src python -r -n :results output :exports both :session fakenews
 tokenizer.fit_on_texts(corpus)
 #+end_src
@@ -2080,7 +2187,7 @@ for seq in x1_train[:1]:
 
 #+RESULTS:
 : ['2017', '养老保险', '又', '新增', '两项', '农村', '老人', '人人', '可', '申领', '你', '领到', '了', '吗']
-*** 序列的 Zero Padding
+**** 序列的 Zero Padding
 雖然我們已經將每個新聞標題的文本轉為一行行的數字序列，你會發現每篇標題的序列長度並不相同：
 #+begin_src python -r -n :results output :exports both :session fakenews
 for seq in x1_train[:10]:
@@ -2146,7 +2253,7 @@ print(x1_train[:3])
 :  [   0    4   10   47  678 2558    4  166   34   17   47 5150   63   15
 :    678 4502 3211   23  284 1181]]
 接下來要處理label
-*** 將正解做 One-hot Encoding
+**** 將正解做 One-hot Encoding
 #+begin_src python -r -n :results output :exports both :session fakenews
 print(train.label[:5])
 #+end_src
@@ -2183,9 +2290,8 @@ print(y_train[:20])
 
 現在每個分類的文字標籤都已經被轉成對應的數字，接著讓我們利用 Keras 做 One Hot Encoding：
 #+begin_src python -r -n :results output :exports both :session fakenews
-#from tensorflow.keras.utils import to_categorical
-from keras.utils import np_utils
-y_train = np_utils.to_categorical(y_train)
+from keras.utils import to_categorical
+y_train = to_categorical(y_train)
 print(y_train[:5])
 #+end_src
 
@@ -2200,16 +2306,16 @@ print(y_train[:5])
 - [0, 1, 0] 代表 label 為 agreed
 - [0, 0, 1] 代表 label 為 disagreed
 用這樣的方式表達 label 的好處是我們可以把分類結果想成機率分佈。[1, 0, 0] 就代表一組新聞標題 A、B 為 unrelated 的機率等於 100 %；假設預測的結果為[0.7, 0.2, 0.1]，則代表模型認為這 2 個新聞標題的關係有 70 % 的機率為 unrelated、20 % 的機率是 agreed 而 10 % 為 disagreed。
-**** Why One-Hot Encoding?
+***** Why One-Hot Encoding?
 轉換後有兩個優點
 1.能夠處理非連續型的分類變量。
 2.在一定程度上也擴充了特徵，讓特徵之間更稀疏。
-*** 切割訓練資料集 & 驗證資料集
+**** 切割訓練資料集 & 驗證資料集
 - 驗證集: 我們會反覆在 Train / Valid Set 上訓練並測試模型，最後用 Test Set 一決生死，至於驗證集的必要，簡而言之，當你多次利用驗證資料集的預測結果以修正模型，並讓它在該資料集表現更好時，過適（Overfitting）的風險就已經產生了。
 - 測試集: 儘管你沒有直接讓模型看到驗證資料集（Validation Set）內的任何數據，你還是間接地洩漏了該資料集的重要資訊：你讓模型知道怎樣的參數設定會讓它在該資料集表現比較好，亦或表現較差。因此有一個完全跟模型訓練過程獨立的測試資料集（Test Set）就顯得重要許多了。
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: 訓練/驗證/測試資料集切割
+#+LABEL:fig:train-valid-test-split
+#+name: fig:train-valid-test-split
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -2267,8 +2373,8 @@ Test Set
 我們可以看到，切割後的訓練資料集有 288,488 筆資料。每一筆資料裡頭，成對新聞標題 A & B 的長度皆為 20 個 Tokens，分類結果則有 3 個；驗證資料集的內容一模一樣，僅差在資料筆數較少（32,055 筆）。
 
 到此為此，資料前處理大功告成！
-** [[id:263cb433-d0eb-4400-a373-35175c000c01][循環神經網路]]
-** 詞向量：將詞彙表達成有意義的向量¶
+*** [[id:263cb433-d0eb-4400-a373-35175c000c01][循環神經網路]]
+*** 詞向量：將詞彙表達成有意義的向量¶
 訓練資料集裡頭前 5 筆的假新聞標題 A：
 #+begin_src python -r -n :results output :exports both :session fakenews
 for i, seq in enumerate(x1_train[:5]):
@@ -2329,9 +2435,9 @@ for i, seq in enumerate(x1_train[:5]):
 ['', '', '', '', '', '', '', '', '网', '曝', '杜', '海涛', '与', '沈梦辰', '已', '分手', '疑似', '女方', '劈', '腿']
 #+end_example
 但事實上要讓神經網路能夠處理標題序列內的詞彙，我們要將它們表示成向量（更精準地說，是張量：Tensor），而不是一個單純數字。如果我們能做到這件事情，則 RNN 就能用以下的方式讀入我們的資料：
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: RNN 處理詞向量序列
+#+LABEL:fig:rnn-process-vectors
+#+name: fig:rnn-process-vectors
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -2350,7 +2456,7 @@ for i, seq in enumerate(x1_train[:5]):
 
 依照剛剛說的方法，我們可以設定 N = 2，並為每個詞彙隨機分配一個 2 維向量後將它們畫在一個平面空間裡頭：
 
-#+CAPTION: Caption
+#+CAPTION: 隨機詞向量分布
 #+LABEL:fig:rndW2V
 #+name: fig:rndW2V
 #+ATTR_LATEX: :width 300
@@ -2368,7 +2474,7 @@ for i, seq in enumerate(x1_train[:5]):
 
 一個理想的轉換應該是如圖[[fig:goodW2V]]：
 
-#+CAPTION: Caption
+#+CAPTION: 理想詞向量分布
 #+LABEL:fig:goodW2V
 #+name: fig:goodW2V
 #+ATTR_LATEX: :width 300
@@ -2384,7 +2490,7 @@ for i, seq in enumerate(x1_train[:5]):
 
 好消息是，大部分的情況我們並不需要自己手動設定每個詞彙的詞向量。我們可以隨機初始化所有詞向量（如前述的隨機轉換），並利用平常訓練神經網路的反向傳播算法（Backpropagation），讓神經網路自動學到一組適合當前 NLP 任務的詞向量（如上張圖的理想狀態）。
 
-#+CAPTION: Caption
+#+CAPTION: 反向傳播修正參數示意
 #+LABEL:fig:bkpex
 #+name: fig:bkpex
 #+ATTR_LATEX: :width 300
@@ -2460,9 +2566,9 @@ embedding_layer = layers.Embedding(
 ]
 #+end_verse
 序列裡頭的每個數字（即詞彙）都被轉換成一個 3 維的詞向量，而相同數字則當然都會對應到同一個詞向量（如前 3 個 0 所對應到的詞向量）。
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: RNN 處理詞向量
+#+LABEL:fig:rnn-process-vectors-2
+#+name: fig:rnn-process-vectors-2
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -2471,14 +2577,14 @@ embedding_layer = layers.Embedding(
 有了這樣的轉換，我們就能將轉換後的詞向量丟入 RNN / LSTM 裏頭，讓模型逐步修正隨機初始化的詞向量，使得詞向量裡頭的值越來越有意義。
 
 有了兩個新聞標題的詞向量，接著讓我們瞧瞧能夠處理這些數據的神經網路架構吧！
-** 一個神經網路，兩個新聞標題
+*** 一個神經網路，兩個新聞標題
 一般來說，多數你見過的神經網路只會接受一個資料來源：
 - 輸入一張圖片，判斷是狗還是貓
 - 輸入一個音訊，將其轉成文字
 - 輸入一篇新聞，判斷是娛樂還是運動新聞
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: 單一輸入的神經網路
+#+LABEL:fig:one-data-source-nn
+#+name: fig:one-data-source-nn
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -2493,14 +2599,14 @@ embedding_layer = layers.Embedding(
 我們可以使用孿生神經網路（Siamese Network）架構：
 
 #+CAPTION: 使用孿生神經網路架構來處理同類型的 2 個新聞標題
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:siamese-network
+#+name: fig:siamese-network
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/siamese-network.jpg]]
 
-所謂孿生神網網路指的是：一部份的神經網路（紅框部分）被重複用來處理多個不同的資料來源（在本篇中為 2 篇不同的新聞標題）。
+所謂孿生神經網路指的是：一部份的神經網路（紅框部分）被重複用來處理多個不同的資料來源（在本篇中為 2 篇不同的新聞標題）。
 
 而會想這樣做，是因為不管標題內容是新聞 A 還是新聞 B，其標題本身的語法 & 語義結構大同小異。
 #+begin_comment
@@ -2511,14 +2617,14 @@ embedding_layer = layers.Embedding(
 以這樣的觀點來看的話，我們並不需要兩個不同的 LSTM 來分別將新聞 A 以及新聞 B 的詞向量做有意義的轉換，而是只需要讓標題 A 與標題 B 共享一個 LSTM 即可。畢竟，標題 A 跟標題 B 的數據結構很像。
 
 如果我們只寫一個 Python 函式就能處理 2 個相同格式的輸入的話，為何要寫 2 個函式呢？孿生神經網路也是相同的概念。
-** 建立模型
+*** 建立模型
 深度學習以及 NLP 領域的學問博大精深，但一般來說，當你想要實際動手寫出一個神經網路的時候，有 3 個基本步驟可以 follow：
 1. 定義神經網路的架構
 1. 決定如何衡量模型的表現
 1. 訓練模型並挑選最好的結果
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: 深度學習三步驟
+#+LABEL:fig:dl-three-steps
+#+name: fig:dl-three-steps
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -2526,11 +2632,11 @@ embedding_layer = layers.Embedding(
 接下來你會看到，大約 80 % 的程式碼會花在實作第一個步驟。剩餘 2 個步驟在使用 Keras 的情況下非常容易就能實現；但後面我們也會談到，你將花 80 % 的時間在最後一個步驟上面。
 
 首先，先讓我們進入第一步驟。
-*** 定義神經網路的架構
+**** 定義神經網路的架構
 在實作之前，先讓我們回顧一下前面段落看到的模型架構：
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: 孿生 LSTM 模型架構
+#+LABEL:fig:siamese-network-detail
+#+name: fig:siamese-network-detail
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -2628,8 +2734,7 @@ model = Model(
 
 也可以透過keras的function將模型的架構圖畫出來
 #+begin_src python -r -n :results output :exports both :session fakenews
-#from keras.utils import plot_model
-from keras.utils.vis_utils import plot_model
+from keras.utils import plot_model
 plot_model(
     model,
     to_file='siameseModel.png',
@@ -2640,9 +2745,9 @@ plot_model(
 
 #+RESULTS:
 
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: Keras 孿生模型架構圖
+#+LABEL:fig:siamese-model-plot
+#+name: fig:siamese-model-plot
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -2653,11 +2758,11 @@ plot_model(
 除了模型架構以外，我們還可以看到所有層的輸入 / 輸出張量（Tensor）的維度。在 Keras 裏頭，張量的第 1 個維度通常為樣本數（比方說 5 則新聞標題），而 None 則代表可以指定任意值。
 
 最重要的是，這個用 Keras 定義出來的模型，跟我們之前想像中的孿生神經網路可以說是一模一樣：
-*** 全連接層
+**** 全連接層
 全連接層顧名思義，代表該層的每個神經元（Neuron）都會跟前一層的所有神經元享有連結：
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: 全連接層示意圖
+#+LABEL:fig:fully-connected
+#+name: fig:fully-connected
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -2707,16 +2812,16 @@ Param # 則紀錄了每一層所包含的模型參數（Parameters）。在機�
 
 而之所以每層的樣本數為 None 是因為 Keras 為了因應在不同場合會丟入不同數量的樣本需求。比方說，在訓練時你可能會一次丟 32 筆資料給模型訓練，但在預測的時候一次只丟 16 筆資料。
 
-*** Softmax 函式
+**** Softmax 函式
 
 
 Softmax 函式一般都會被用在整個神經網路的最後一層上面，比方說我們這次的全連接層。
 
 Softmax 函式能將某層中的所有神經元裡頭的數字作正規化（Normalization）：將它們全部壓縮到 0 到 1 之間的範圍，並讓它們的和等於 1。
 
-#+CAPTION:Softmax 能將多個數字作正規化，讓它們的和為 1
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: Softmax 能將多個數字作正規化，讓它們的和為 1
+#+LABEL:fig:softmax-normalization
+#+name: fig:softmax-normalization
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -2739,7 +2844,7 @@ Softmax 函式能將某層中的所有神經元裡頭的數字作正規化（Nor
 如果現在是在做預測且我們只能選出一個分類當作答案的話，我們可以說這次的分類結果最有可能是「不相關」這個類別，因為其發生機率最高。
 
 在定義好模型以後，我們就可以進入下個步驟：定義衡量模型好壞的指標。
-#+CAPTION: Caption
+#+CAPTION: 損失函數示意圖
 #+LABEL:fig:lfjpg
 #+name: fig:lfjpg
 #+ATTR_LATEX: :width 300
@@ -2757,7 +2862,7 @@ Softmax 函式能將某層中的所有神經元裡頭的數字作正規化（Nor
 
 這 2 個機率分佈的「差距」越小越好。而能計算 2 個機率分佈之間的差距的交叉熵（Cross Entropy）就是這次的分類問題中最適合的損失函數。
 
-*** 評估模型效能
+**** 評估模型效能
 
 為了讓機器自動「學習」，我們得給它一個損失函數（Loss Function）。
 
@@ -2766,8 +2871,8 @@ Softmax 函式能將某層中的所有神經元裡頭的數字作正規化（Nor
 透過損失函數的回饋，模型會盡全力修正參數，以期將此損失函數的值下降到最低（也就是讓預測結果 y_head 跟正解 y 越來越接近）。
 
 #+CAPTION: 交叉熵能幫我們計算兩個機率分佈的差距，適合作為分類問題的損失函數
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:cross-entropy
+#+name: fig:cross-entropy
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -2792,8 +2897,8 @@ categorical_crossentropy 即是我們剛剛所說的交叉熵，而 accuracy 則
 #+end_verse
 雖然有了交叉熵來當作我們模型的損失函數，但是實際上模型要如何更新裡頭的參數呢？我們需要一個優化器（Optimizer）來做到這件事情。
 #+CAPTION: 不同優化器透過調整參數來降低損失函數的情形，就像是在想辦法往溜滑梯的低處滑一樣
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:optimizer-loss
+#+name: fig:optimizer-loss
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -2808,7 +2913,7 @@ categorical_crossentropy 即是我們剛剛所說的交叉熵，而 accuracy 則
 
 現在就先讓我們使用 RMSProp 優化器。而在有了損失函數以及優化器以後，我們就可以正式開始訓練模型了！
 
-*** 訓練模型並挑選最好的結果
+**** 訓練模型並挑選最好的結果
 這步驟很直觀，我們就是實際使用 model.fit 來訓練剛剛定義出來的孿生 LSTM 模型：
 #+begin_src python -r -n :results output :exports both :session fakenews
 # 決定一次要放多少成對標題給模型訓練
@@ -2852,17 +2957,17 @@ loss: 0.2228 - accuracy: 0.9103
 - NUM_EPOCHS
 依照我們前面對損失函數（Loss Function）的說明，理論上模型是把訓練資料集裡頭的 32 萬筆資料全部看完一遍之後，再更新一次參數以降低損失函數。
 
-但是這樣太曠日廢時，訓練可能要花很久才能完成。
-*** BATCH
+但是這樣太曠日費時，訓練可能要花很久才能完成。
+**** BATCH
 實務上都是每次只放入幾筆訓練數據，讓模型看完這些資料後就做一次參數的更新。而這個「幾筆」，就是 BATCH_SIZE。
 
 依照 BATCH_SIZE 的大小，梯度下降（Gradient Descent, 後稱 GD）可以概括為 3 個類別：
 - GD（BATCH_SIZE = 訓練資料集大小，且這時不稱為 batch）
 - Mini-batch GD（BATCH_SIZE 通常為一個較小的 2 的倍數）
 - SGD（BATCH_SIZE = 1）
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: SGD 與 Mini-batch GD 比較
+#+LABEL:fig:sgd-vs-minibatch
+#+name: fig:sgd-vs-minibatch
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -2872,9 +2977,9 @@ loss: 0.2228 - accuracy: 0.9103
 如上圖所示，下方的 GD 因為在每次更新參數前都會看完訓練資料集裡頭所有的數據，因此它更新參數的方向是最可靠的。但要往前走一步就就得看完 32 萬筆數據，未免成本也太大。
 
 另一個極端是上方的 SGD：模型每看完 1 個訓練數據就嘗試更新權重，而因為單一一筆訓練數據並不能很好地代表整個訓練資料集，前進的方向非常不穩定。
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: Mini-batch 梯度下降
+#+LABEL:fig:mini-batch
+#+name: fig:mini-batch
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -2887,9 +2992,9 @@ NUM_EPOCHS 則很容易理解：你希望模型不只將 32 萬筆的訓練數�
 
 接著讓我們看看 Keras 的訓練過程：
 
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: Keras 訓練過程
+#+LABEL:fig:training-process
+#+name: fig:training-process
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -2901,25 +3006,25 @@ NUM_EPOCHS 則很容易理解：你希望模型不只將 32 萬筆的訓練數�
 這代表我們的模型越來越熟悉訓練資料集裡頭的數據，因此在訓練資料集裡頭的表現越來越好。
 
 如果依照準確度以及損失值分別畫圖的話則會長這樣：
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: 訓練結果 (準確度與損失)
+#+LABEL:fig:training-result
+#+name: fig:training-result
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/training-result.jpg]]
 
 
-很明顯地，我們的神經網路有過適（Overfittng）的問題：儘管在訓練資料集表現得非常好（準確度超過 90 %、損失小於 0.2），在從沒看過的驗證資料集的表現就相對遜色不少。且在第 6 個 epoch 之後驗證資料集的準確度 val_acc 就沒什麼在上升，驗證集的損失 val_loss 則已經逐漸上升。
+很明顯地，我們的神經網路有過適（Overfitting）的問題：儘管在訓練資料集表現得非常好（準確度超過 90 %、損失小於 0.2），在從沒看過的驗證資料集的表現就相對遜色不少。且在第 6 個 epoch 之後驗證資料集的準確度 val_acc 就沒什麼在上升，驗證集的損失 val_loss 則已經逐漸上升。
 
 這代表模型利用從訓練資料集學到的模式（Pattern）還無法非常精準地預測沒見過的事物。
 
 如同我們在這章節一開頭所說的，雖然第 3 步驟：「訓練模型並挑選最好的結果」的 Keras 實作非常簡單（基本上就是 model.fit( ...)），但實際上在一個機器學習 / 深度學習專案裡頭，你將會花 80 % 的時間在這個步驟裡頭調整參數，想辦法找到一個最棒的模型。
 
 儘管如此，我們現在最想知道的還是這個模型在真實世界（也就是測試資料集）到底能表現多好，因此先讓我們試著拿這個簡單模型來做預測吧！
-** 進行預測並提交結果
+*** 進行預測並提交結果
 就跟我們對訓練 / 驗證資料集做的資料前處理一樣，要對測試資料集（Test Set）做預測，我們得先將裡頭的文本數據通通轉換成能夠丟進模型的數字序列資料。
-*** 首先，讓我們把測試資料集讀取進來：
+**** 首先，讓我們把測試資料集讀取進來：
 #+begin_src python -r -n :results output :exports both :session fakenews
 import pandas as pd
 test = pd.read_csv("./dataset/fakenews.train.csv", index_col=0, encoding='utf-8', dtype=str)
@@ -2990,8 +3095,8 @@ print(submission.head())
 
 得到上面的 DataFrame 以後，我們可以將其儲存成 CSV 並上傳到 kaggle，而結果如下：
 #+CAPTION: NLP 模型第一次的結果
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:first-submission
+#+name: fig:first-submission
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -3019,729 +3124,365 @@ print(submission.head())
 
 走到這裡代表你已經完整地經歷了一個 NLP 專案所需要的大部分步驟。在下一節．讓我們回顧一下在這趟旅程中你所學到的東西。
 
-* 3 門推薦的線上課程
-  - 台大電機系李宏毅教授的深度學習課程: 奠定理論基礎
-  - Coursera 的 Deep Learning 專項課程: 理論 70 % + 實作 30 %
-  - [[https://www.oreilly.com/library/view/deep-learning-with/9781617294433VE/][Deep Learning with Python: 注重程式實作
+* [作業] 毒舌美食家 AI：用 NLP 分析餐廳評論 :TNFSH:
 
-* 工具
-** 中研院CkipTagger中文處理工具
-*** 官網: https://ckip.iis.sinica.edu.tw/
-- CKIP [[https://github.com/ckiplab/ckip-transformers][Transformers]] — 繁體中文的 transformers 模型（包含 ALBERT、BERT、GPT2）及自然語言處理工具。
-- CKIP [[https://github.com/ckiplab/ckiptagger][Tagger]] — 新的開源斷詞、詞性標注、實體辨識系統。
-*** 簡介
-根據該工具的文件說明，這套CkipTagger中文處理工具，不只提供繁體中文斷詞的功能，也加入詞性標注和18類專有名詞的實體辨識（Named entity recognition）等功能，甚至當以多達5萬句的ASBC 4.0漢語語料庫測試集，來進行中文斷詞測試時，CkipTagger表現遠高於中國的結巴，中研院在中文斷詞準確度可達到97.49%，相較之下，中國的結巴只有90.51%[fn:7]。
+#+begin_quote
+*劇情設定*
 
-新版本也提供幾大特色，包括了加強斷詞表現、可以不自動刪／改字，並且能夠支援不限長度的句子，另外，新版也加入使用者自訂功能，提供參考／強制 詞典的自訂功能[fn:7]。
-** 結巴Jieba1
-*** 使用教學
-- [[https://blog.kennycoder.io/2020/02/12/Python-%E7%9F%A5%E5%90%8DJieba%E4%B8%AD%E6%96%87%E6%96%B7%E8%A9%9E%E5%B7%A5%E5%85%B7%E6%95%99%E5%AD%B8/][Python - 知名 Jieba 中文斷詞工具教學 ]]
-*** Jieba 原理介紹[fn:8]
-Jieba 斷詞主要是结合：
-- 規則斷詞: 主要是透過詞典，在對句子進行斷詞的時候，將句子的每個字與詞典中的詞進行匹配，找到則斷詞，否則無法斷詞。
-- 統計斷詞: 主要是看如果相連的字在不同的文本中出現的次數越多，就推斷這相連的字很可能就是一個詞。因此就可以利用字與字相鄰出现的頻率來做統計。當高於某一個臨界值時，便可認為此字組是一個詞語。
+夜市「黑暗料理之王」滷味攤的老闆娘，最近發現 Google 評論上出現了一堆負面評價，氣到差點把手機摔進滷汁裡（手機沒事，但據說滷汁因此更好喝了）。
 
-*** Jieba 斷詞模式[fn:8]
-最著名的功能就是提供斷詞模式，主要分為
-- 精確模式: 將句子最精確的切開，適合文本分析
-- 全模式: 把句子中所有的可以成詞的詞語都斷出来，速度非常快。
-- 搜索引擎模式: 在精確模式的基礎上，對長的詞語再次切分，提高召回率，適合用於搜索引擎分詞。
-** NLTK
-[[file:NLTK.org][NLTK]]: NLP的處理工具
+她決定聘請你——一位會寫 Python 的高中生——開發一套「AI 美食評論分析系統」。目標：用自然語言處理技術分析評論，自動判斷是好評還是負評，並找出顧客最在意的關鍵字。
 
-* 語料集
-自然語言中，雖然算法、模型很重要，但沒有資料驅動還是什麼都做不了，尤其是文字不像圖片一樣不分國界，每個地方用的語言不同，所需要的資料也就不同，英文因為是世界語言，加上論文的發表大部分以研究英文為主，所以資料當然是最多，不過幸運地，中文的語料也算蠻多的，這邊列出幾個好用的中文資料集或預訓練模型[fn:9]
-** NLP-Chinese-Corpus
-[[https://github.com/brightmart/nlp_chinese_corpus][NLP_Chinese-Corpus]] 是在github上由brightmart開源的中文語料統整，裡面包含了一些維基百科、新聞、社區問答等語料，比較多是通用型的中文語料，可以當作詞向量訓練的材料，或者其它應用
-** PTT-Gossiping-Corpus
-[[https://github.com/zake7749/Gossiping-Chinese-Corpus][PTT-Gossiping-Corpus]]是由zake7749在github以及Kaggle上提供的繁體中文問答語料集，一個問句對應到一句鄉民回答，對於想實作中文Sequence2Sequence的朋友，會是蠻不錯的實驗語料
-圖片截自zake7749/Gossiping-Chinese-Corpus 中的範例說明
-** Wiki-corpus
-繁體中文的語料，通常就會想到PTT以及中文維基百科，而現在獲取中文維基百科的手段有很多種，維基百科本身也有提供API，大家可以視個人需求來拿到資料
-** Tencent AI LAB
-騰訊AI實驗室非常佛心的釋出相當多有用的中文資料集，像是Dialogue Research中包含一些在聊天機器人領域上實用的中文語料，有興趣的朋友可以參考我這篇論文的介紹：Improving Open-Domain Dialogue Systems via Multi-Turn Incomplete Utterance Restoration此外，騰訊AI也有提供預訓練的中文詞向量模型，有興趣的朋友也能試試看
-** BERT
-BERT就像詞向量模型一樣，需要大量的語料進行預訓練，好處是我們這種一般大眾可以直接使用一些科技巨擘所釋出的預訓練模型，像是Google, HuggingFace, 還有一些開源的github項目都有提供中文的BERT預訓練模型
+老闆娘的原話是：「我不管你用什麼結巴不結巴的，反正你給我巴結一點，明天之前給我結果，不然你的消費全部算原價。」
+#+end_quote
 
-* NLP 應用
-** 領域
-- 文字朗讀（Text to speech）/語音合成（Speech synthesis）
-- 語音識別（Speech recognition）
-- 中文自動分詞（Chinese word segmentation）
-- 詞性標註（Part-of-speech tagging）
-- 句法分析（Parsing）
-- 自然語言生成（Natural language generation）
-- 文字分類（Text categorization）
-- 資訊檢索（Information retrieval）
-- 資訊抽取（Information extraction）
-- 文字校對（Text-proofing）
-- 問答系統（Question answering）
-- 機器翻譯（Machine translation）
-- 自動摘要（Automatic summarization）
-- 文字蘊涵（Textual entailment）
-- 命名實體辨識（Named entity recognition）
-** 範例
-*** NLP 應用 1:TextClassification 文本分類
-TextClassification 文本分類的意義
-二元分類:分成好與惡
-多元分類:分成不同類型的文章或喜好度
-TextClassification 文本分類
-IMDb-Movie-Review IMDb 網路電影影評資料集 Sentiment Analysis on IMDb
-
-- Sentiment Analysis on IMDb: https://paperswithcode.com/sota/sentiment-analysis-on-imdb
-- 情緒分析 sentiment analysis
-Sentiment analysis (opinion mining or emotion AI)
-https://en.wikipedia.org/wiki/Sentiment_analysis
-很多線上社群網站會蒐集使用者的資料，並且分析使用者行為，
-像是知名的 Facebook 在前幾年開始做「情緒分析(sentiment analysis)」，
-情緒分析是以文字分析、自然語言處理 NLP 的方法，找出使用者的評價、情緒，進而預測出使用者行為來進行商業決策，
-像這樣一連串利用情緒分析帶來的商業價值是相當可觀的。
-
-*** NLP 應用 1:TextClassification 文本分類 技術主題
-
-TF-IDF 與機器學習實現
-https://blog.csdn.net/crazy_scott/article/details/80830399
-
-使用 TensorFlow Estimators
-https://ruder.io/text-classification-tensorflow-estimators/
-
-使用 TF-IDF and ELMo
-https://www.kaggle.com/saikumar587/imdb-text-classification-tf-idf-and-elmo
-
-使用 BERT (2018)
-Sentiment Analysis of IMDb Movie Reviews Using BERT
-BERT Text Classification in 3 Lines of Code Using Keras
-https://towardsdatascience.com/bert-text-classification-in-3-lines-of-code-using-keras-264db7e7a358
-
-
-使用 XLNet(2019)
-XLNet: Generalized Autoregressive Pretraining for Language Understanding
-Zhilin Yang, Zihang Dai, Yiming Yang, Jaime Carbonell, Ruslan Salakhutdinov, Quoc V. Le
-(Submitted on 19 Jun 2019)
-https://arxiv.org/abs/1906.08237
-https://github.com/zihangdai/xlnet
-
-範例程式
-https://colab.research.google.com/github/zihangdai/xlnet/blob/master/notebooks/colab_imdb_gpu.ipynb
-
-*** NLP 應用 2:Text Generation 文本生成
-TextGeneration 文本生成:作詞機器人
-範例程式
-參考資料
-sudharsan13296/Hands-On-Deep-Learning-Algorithms-with-Python
-https://github.com/sudharsan13296/Hands-On-Deep-Learning-Algorithms-with-Python
-
-Hands-On-Deep-Learning-Algorithms-with-Python/
-04. Generating Song Lyrics Using RNN/4.06 Generating Song Lyrics Using RNN.ipynb
-
-*** NLP 應用 3: IMDB
-**** IMDB 正評負評
-- 應用：PTT 裡的噓/推/→
-- 中文斷詞
-- 拿 google 的店家評論來判斷星級
-**** 計算 Vector 的關聯性
-- cos simility
-- 但是 one-hot vector 間無法計算 cos simility，因為兩向量內積為 1，所以要用 word vector representation
-- 在文字處理的狀況下，所謂兩個 vector 的相關指的是兩句話的相似性
-- 用來自動生成考題(vocabulary testing)或生成答案，找人家 train 好的 word emgedding matrix 來做，生成 word vector
-- 可以拿英文 train 好的 model 來做中文嗎？(transfer learning)
-**** Text Classification
-- tf.keras 技術者們必讀！深度學習攻略手冊 施威銘研究室 著 旗標科技  2020-02-13
- #+begin_src python -r -n :results output :exports both
-import matplotlib.pyplot as plt
-def plot(history_dict, keys, title=None, xyLabel=[], ylim=(), size=()):
-    lineType = ('-', '--', '.', ':')    # 線條的樣式, 畫多條線時會依序採用
-    if len(ylim)==2: plt.ylim(*ylim)    # 設定 y 軸最小值及最大值
-    if len(size)==2: plt.gcf().set_size_inches(*size)  # size預設為 (6,4)
-    epochs = range(1, len(history_dict[keys[0]])+1)  # 計算有幾週期的資料
-    for i in range(len(keys)):   # 走訪每一個 key (例如 'loss' 或 'acc' 等)
-        plt.plot(epochs, history_dict[keys[i]], lineType[i])  # 畫出線條
-    if title:   # 是否顯示標題欄
-        plt.title(title)
-    if len(xyLabel)==2:  # 是否顯示 x, y 軸的說明文字
-        plt.xlabel(xyLabel[0])
-        plt.ylabel(xyLabel[1])
-    plt.legend(keys, loc='best') # 顯示圖例 (會以 key 為每條線的說明)
-    plt.show()  # 顯示出畫好的圖
-
-
-from tensorflow.keras.datasets import imdb    #← 從 keras.datasets 套件中匯入 imdb
-(a_train, b_train),(a_test, b_test)= imdb.load_data(num_words=10000) # 載入 IMDB
-
-from tensorflow.keras.preprocessing.text import Tokenizer
-
-tok = Tokenizer(num_words=10000)           #←指定字典的總字數
-x_train = tok.sequences_to_matrix(a_train) #←將訓練樣本做 k-hot 編碼
-x_test  = tok.sequences_to_matrix(a_test)  #←將測試樣本做 k-hot 編碼
-
-y_train = b_train.astype('float32')   #←將訓練標籤轉為浮點向量
-y_test  = b_test.astype('float32')    #←將測試標籤轉為浮點向量
-
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
-
-model = Sequential()                       #←建立模型物件
-model.add(Dense(16, activation='relu', input_dim=10000))  #←輸入層
-model.add(Dense(16, activation='relu'))    #←隱藏層
-model.add(Dense(1, activation='sigmoid'))  #←輸出層
-
-# 中間用全連接層，其實也可以用CNN或RNN
-model.compile(loss='binary_crossentropy',
-              optimizer='rmsprop',
-              metrics=['acc'])
-
-history = model.fit(x_train, y_train,
-                    batch_size=512,  #←每批次 512 筆樣本
-                    epochs=10,       #←共訓練 10 週期
-                    verbose = 2,     #←顯示精簡訊息 (無進度條)
-                    validation_split=0.2)
-                             #↑由訓練資料後面切出 20% 做為驗證用
-
-g1 = plot(history.history,
-       ('loss', 'val_loss'),          #←歷史資料中的 key
-       'Training & Validation Loss',  #←線圖的標題
-       ('Epoch','Loss'))              #←x,y 軸的名稱
-plt.savefig()
-plot(history.history,
-       ('acc', 'val_acc'),            #←歷史資料中的 key
-       'Training & Validation Acc',   #←線圖的標題
-       ('Epoch','Acc'))               #←x,y 軸的名稱
-  #+end_src
-
-- 中間多塞幾層
-  #+begin_src python -r -n :results output :exports both
-import tensorflow as tf
-import matplotlib.pyplot as plt
-def plot(history_dict, keys, title=None, xyLabel=[], ylim=(), size=()):
-    lineType = ('-', '--', '.', ':')    # 線條的樣式, 畫多條線時會依序採用
-    if len(ylim)==2: plt.ylim(*ylim)    # 設定 y 軸最小值及最大值
-    if len(size)==2: plt.gcf().set_size_inches(*size)  # size預設為 (6,4)
-    epochs = range(1, len(history_dict[keys[0]])+1)  # 計算有幾週期的資料
-    for i in range(len(keys)):   # 走訪每一個 key (例如 'loss' 或 'acc' 等)
-        plt.plot(epochs, history_dict[keys[i]], lineType[i])  # 畫出線條
-    if title:   # 是否顯示標題欄
-        plt.title(title)
-    if len(xyLabel)==2:  # 是否顯示 x, y 軸的說明文字
-        plt.xlabel(xyLabel[0])
-        plt.ylabel(xyLabel[1])
-    plt.legend(keys, loc='best') # 顯示圖例 (會以 key 為每條線的說明)
-    plt.show()  # 顯示出畫好的圖
-
-
-from tensorflow.keras.datasets import imdb    #← 從 keras.datasets 套件中匯入 imdb
-(a_train, b_train),(a_test, b_test)= imdb.load_data(num_words=10000) # 載入 IMDB
-
-from tensorflow.keras.preprocessing.text import Tokenizer
-
-tok = Tokenizer(num_words=10000)           #←指定字典的總字數
-x_train = tok.sequences_to_matrix(a_train) #←將訓練樣本做 k-hot 編碼
-x_test  = tok.sequences_to_matrix(a_test)  #←將測試樣本做 k-hot 編碼
-
-y_train = b_train.astype('float32')   #←將訓練標籤轉為浮點向量
-y_test  = b_test.astype('float32')    #←將測試標籤轉為浮點向量
-
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
-from tensorflow.keras import layers
-
-model = Sequential()                       #←建立模型物件
-model.add(Dense(16, activation='relu', input_dim=10000))  #←輸入層
-model.add(Dense(16, activation='relu'))    #←隱藏層
-#加入第二層，該層的 output neurons 數目=64，啟動函式為預設 relu
-#並對該層參數做 l1-regularization，其係數為 0.01
-model.add(layers.Dense(64, kernel_regularizer=tf.keras.regularizers.l1(0.01)))
-
-#加入第三層，該層的 output neurons 數目=64，啟動函式為預設 relu
-#並對該層參數做 l2-regularization，其係數為 0.01
-model.add(layers.Dense(64, bias_regularizer=tf.keras.regularizers.l2(0.01)))
-
-#加入第四層，該層的 output neurons 數目=64，啟動函式為預設 relu
-#該層參數初始化是用正交策略
-model.add(layers.Dense(64, kernel_initializer='orthogonal'))
-#加入第五層，該層的 output neurons 數目=64，啟動函式為預設 relu
-#該層偏移初始化是用常數策略（皆設為2.0）
-model.add(layers.Dense(64, bias_initializer=tf.keras.initializers.Constant(2.0)))
-model.add(Dense(1, activation='sigmoid'))  #←輸出層
-
-model.compile(loss='binary_crossentropy',
-              optimizer='rmsprop',
-              metrics=['acc'])
-
-history = model.fit(x_train, y_train,
-                    batch_size=512,  #←每批次 512 筆樣本
-                    epochs=10,       #←共訓練 10 週期
-                    verbose = 2,     #←顯示精簡訊息 (無進度條)
-                    validation_split=0.2)
-                             #↑由訓練資料後面切出 20% 做為驗證用
-plt.clf()
-plt.plot(history.history,
-       ('loss', 'val_loss'),          #←歷史資料中的 key
-       'Training & Validation Loss',  #←線圖的標題
-       ('Epoch','Loss'))              #←x,y 軸的名稱
-
-plt.savefig('images/plt2020-a.jpg', dpi=300)
-plt.clf()
-plt.plot(history.history,
-       ('acc', 'val_acc'),            #←歷史資料中的 key
-       'Training & Validation Acc',   #←線圖的標題
-       ('Epoch','Acc'))               #←x,y 軸的名稱
-plt.savefig('images/plt2020-b.jpg', dpi=300)
-
-
-
-  #+end_src
-
-  #+RESULTS:
-
-#+CAPTION: 強化學習流程圖
-#+name: fig:ReinforcementLearning
-#+ATTR_LATEX: :width 400
-[[[[file:images/plt2020-a.jpg]]]]
-[[[[file:images/plt2020-b.jpg]]]]
-**** 多元分類:依據不同主題分類各種新聞
-- 路透社新聞：共 47 類，答案部份用 one-hot
-#+begin_src python -r -n :results output :exports both
-from tensorflow.keras.datasets import reuters  # 匯入 reuters 資料集
-
-(a_train, b_train),(a_test, b_test) = reuters.load_data(num_words=10000)
-
-from tensorflow.keras.preprocessing.text import Tokenizer  #←匯入 Tokenizer 類別
-
-tok = Tokenizer(num_words=10000)           #←指定字典的總字數
-x_train = tok.sequences_to_matrix(a_train) #←將訓練樣本做 multi-hot 編碼
-x_test  = tok.sequences_to_matrix(a_test)  #←將測試樣本做 multi-hot 編碼
-
-from tensorflow.keras.utils import to_categorical
-
-y_train = to_categorical(b_train)  #←將訓練標籤轉為 one-hot 編碼
-y_test  = to_categorical(b_test)   #←將測試標籤轉為 one-hot 編碼
-
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
-
-model = Sequential()
-model.add(Dense(64, activation='relu', input_dim=10000))
-model.add(Dense(64, activation='relu'))
-model.add(Dense(46, activation='softmax'))
-
-model.compile(loss='categorical_crossentropy',
-              optimizer='rmsprop',
-              metrics=['acc'])
-
-history = model.fit(x_train, y_train,
-                    batch_size=512,
-                    epochs=20,            #← 訓練 20 個週期
-                    verbose=2,     #←顯示精簡訊息 (無進度條)
-                    validation_split=0.2) #← 由訓練資料切出 20% 做驗證
-
-import util2 as u
-u.plot(history.history, ('acc', 'val_acc'), #←繪製準確率的歷史線圖
-       'Training & Validation Acc', ('Epoch','Acc'))
-
-loss, acc = model.evaluate(x_test, y_test, verbose=2)  #←評估訓練成效
-print('評估測試資料的準確率 =', acc)
-
-from tensorflow.keras.datasets import reuters  # 匯入 reuters 資料集
-
-(a_train, b_train),(a_test, b_test) = reuters.load_data(num_words=10000)
-
-from tensorflow.keras.preprocessing.text import Tokenizer  #←匯入 Tokenizer 類別
-
-tok = Tokenizer(num_words=10000)           #←指定字典的總字數
-x_train = tok.sequences_to_matrix(a_train) #←將訓練樣本做 multi-hot 編碼
-x_test  = tok.sequences_to_matrix(a_test)  #←將測試樣本做 multi-hot 編碼
-
-from tensorflow.keras.utils import to_categorical
-
-y_train = to_categorical(b_train)  #←將訓練標籤轉為 one-hot 編碼
-y_test  = to_categorical(b_test)   #←將測試標籤轉為 one-hot 編碼
-
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
-
-model = Sequential()
-model.add(Dense(64, activation='relu', input_dim=10000))
-model.add(Dense(64, activation='relu'))
-model.add(Dense(46, activation='softmax'))
-
-model.compile(loss='categorical_crossentropy',
-              optimizer='rmsprop',
-              metrics=['acc'])
-
-history = model.fit(x_train, y_train,
-                    batch_size=512,   # 每批次 512 筆樣本
-                    epochs=10,        # 只訓練 10 週期
-                    verbose=0)      # 不顯示訊息
-
-loss, acc = model.evaluate(x_test, y_test, verbose=2)  #←評估訓練成效
-print('評估測試資料的準確率 =', acc)
-
-from tensorflow.keras.datasets import reuters  # 匯入 reuters 資料集
-
-(a_train, b_train),(a_test, b_test) = reuters.load_data(num_words=10000)
-
-from tensorflow.keras.preprocessing.text import Tokenizer  #←匯入 Tokenizer 類別
-
-tok = Tokenizer(num_words=10000)           #←指定字典的總字數
-x_train = tok.sequences_to_matrix(a_train) #←將訓練樣本做 multi-hot 編碼
-x_test  = tok.sequences_to_matrix(a_test)  #←將測試樣本做 multi-hot 編碼
-
-from tensorflow.keras.utils import to_categorical
-
-y_train = b_train  #←直接使用載入的原始標籤 (已為 NumPy 向量)
-y_test  = b_test   #←直接使用載入的原始標籤 (已為 NumPy 向量)
-
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
-
-model = Sequential()
-model.add(Dense(64, activation='relu', input_dim=10000))
-model.add(Dense(64, activation='relu'))
-model.add(Dense(46, activation='softmax'))
-
-model.compile(loss='sparse_categorical_crossentropy',
-              optimizer='rmsprop',
-              metrics=['acc'])
-
-history = model.fit(x_train, y_train,
-                    batch_size=512,   # 每批次 512 筆樣本
-                    epochs=10,        # 只訓練 10 週期
-                    verbose=0)      # 不顯示訊息
-
-loss, acc = model.evaluate(x_test, y_test, verbose=2)  #←評估訓練成效
-print('評估測試資料的準確率 =', acc)
-
-
-#+end_src
-
-* 文本分類:IMDB 電影評論
-
-https://www.tensorflow.org/tutorials/keras/text_classification
-中文版
-
-https://geektutu.com/post/tf2doc-ml-basic-text.html
-https://blog.csdn.net/weixin_41753033/article/details/90815215
-https://www.jishuwen.com/d/2O0H/zh-tw
-
-資料集:網路電影資料庫(Internet Movie Database)
-包含 50,000 條影評文本。
-從該資料集切割出的 25,000 條評論用作訓練，
-另外 25,000 條用作測試。
-訓練集與測試集是*平衡的（balanced）*，意味著它們包含相等數量的積極和消極評論。
-
-此範例評論文本
-將影評分為*積極（positive）*或*消極（nagetive）*兩類。
-這是一個二元（binary）分類問題，一種重要且應用廣泛的機器學習問題。
-
-此範例使用 [tf.keras]，它是一個 Tensorflow 中用於構建和訓練模型的高級 API。
+** 評論資料
+以下是老闆娘從各平台蒐集來的 20 則顧客評論，已經標記好正評（1）和負評（0）：
 
 #+begin_src python -r -n :results output :exports both
-import tensorflow as tf
-from tensorflow import keras
-
-import numpy as np
-print(tf.__version__)
-
-
-imdb = keras.datasets.imdb
-
-(train_data, train_labels), (test_data, test_labels) = imdb.load_data(num_words=10000)
-
-print("Training entries: {}, labels: {}".format(len(train_data), len(train_labels)))
-
-print(train_data[0])
-
-len(train_data[0]), len(train_data[1])
-# 一個映射單詞到整數索引的詞典
-word_index = imdb.get_word_index()
-
-# 保留第一個索引
-word_index = {k:(v+3) for k,v in word_index.items()}
-word_index["<PAD>"] = 0
-word_index["<START>"] = 1
-word_index["<UNK>"] = 2  # unknown
-word_index["<UNUSED>"] = 3
-
-reverse_word_index = dict([(value, key) for (key, value) in word_index.items()])
-
-def decode_review(text):
-    return ' '.join([reverse_word_index.get(i, '?') for i in text])
-
-decode_review(train_data[0])
-
-train_data = keras.preprocessing.sequence.pad_sequences(train_data,
-                                                        value=word_index["<PAD>"],
-                                                        padding='post',
-                                                        maxlen=256)
-
-test_data = keras.preprocessing.sequence.pad_sequences(test_data,
-                                                       value=word_index["<PAD>"],
-                                                       padding='post',
-                                                       maxlen=256)
-
-len(train_data[0]), len(train_data[1])
-
-print(train_data[0])
-
-# 構建模型
-
-vocab_size = 10000
-
-model = keras.Sequential()
-model.add(keras.layers.Embedding(vocab_size, 16))
-model.add(keras.layers.GlobalAveragePooling1D())
-model.add(keras.layers.Dense(16, activation='relu'))
-model.add(keras.layers.Dense(1, activation='sigmoid'))
-
-model.summary()
-
-# 配置模型
-
-model.compile(optimizer='adam',
-              loss='binary_crossentropy',
-              metrics=['accuracy'])
-
-# 建立驗證集
-
-x_val = train_data[:10000]
-partial_x_train = train_data[10000:]
-
-y_val = train_labels[:10000]
-partial_y_train = train_labels[10000:]
-
-# 訓練模型
-
-history = model.fit(partial_x_train,
-                    partial_y_train,
-                    epochs=40,
-                    batch_size=512,
-                    validation_data=(x_val, y_val),
-                    verbose=1)
-
-# 建立 準確率（accuracy）和損失值（loss）隨時間變化的圖表
-
-history_dict = history.history
-history_dict.keys()
-
-
-import matplotlib.pyplot as plt
-
-acc = history_dict['accuracy']
-val_acc = history_dict['val_accuracy']
-loss = history_dict['loss']
-val_loss = history_dict['val_loss']
-
-epochs = range(1, len(acc) + 1)
-
-plt.plot(epochs, loss, 'bo', label='Training loss')
-plt.plot(epochs, val_loss, 'b', label='Validation loss')
-plt.title('Training and validation loss')
-plt.xlabel('Epochs')
-plt.ylabel('Loss')
-plt.legend()
-
-plt.show()
-
-plt.clf()   # 清除數字
-
-plt.plot(epochs, acc, 'bo', label='Training acc')
-plt.plot(epochs, val_acc, 'b', label='Validation acc')
-plt.title('Training and validation accuracy')
-plt.xlabel('Epochs')
-plt.ylabel('Accuracy')
-plt.legend()
-
-plt.show()
-
+reviews = [
+    # (評論文字, 標籤：1=正評, 0=負評)
+    ("滷味超入味，每一口都是幸福的味道，下次還要再來！", 1),
+    ("老闆娘人超好，還多送了一份豆干，佛心來的", 1),
+    ("這個辣度剛剛好，不會辣到懷疑人生，推薦必點鴨血", 1),
+    ("排了半小時但值得，朋友吃完直接問我要不要再排一次", 1),
+    ("價格實惠份量又大，學生黨的救星，吃飽只要一百塊", 1),
+    ("百頁豆腐滷到入口即化，簡直是藝術品等級的滷味", 1),
+    ("每次經過都忍不住買，這攤是我的錢包殺手", 1),
+    ("湯頭濃郁不死鹹，可以喝三碗，冬天必備暖胃神器", 1),
+    ("米血糕外酥內軟，老闆娘的手藝真的是祖傳的吧", 1),
+    ("從高一吃到高三，畢業前一定要再來朝聖一次", 1),
+    ("等了四十分鐘結果冷掉了，花錢買罪受", 0),
+    ("太鹹了吧，吃完喝了三瓶水還是覺得嘴巴是鹹的", 0),
+    ("蒼蠅比客人還多，衛生環境有待加強", 0),
+    ("滷汁味道怪怪的，像是放了一個禮拜的感覺", 0),
+    ("份量越來越少，價格越來越貴，通膨連滷味攤都不放過", 0),
+    ("豆腐又硬又沒味道，到底有沒有在滷啊", 0),
+    ("老闆態度很差，問個價錢就被翻白眼", 0),
+    ("說好的加辣結果完全不辣，跟白開水一樣", 0),
+    ("排隊排到天荒地老，結果東西普普通通", 0),
+    ("買回家發現少了兩樣，打電話也沒人接，差評", 0),
+]
 #+end_src
 
-* 官方範例
-** 文本分類 Text classification::電影評論
+** 任務
+身為一個靠 NLP 技能賺免費滷味的高中生，請完成以下任務：
 
-https://www.tensorflow.org/tutorials/keras/text_classification
-IMDB 資料集已經打包在 Tensorflow `tfds` 中。
-該資料集已經經過預處理，
-評論（單詞序列）已經被轉換為整數序列，其中每個整數表示字典中的特定單詞。
-
-The IMDB movie reviews dataset comes packaged in `tfds`.
-It has already been preprocessed so that the reviews (sequences of words) have been converted to sequences of integers,
-where each integer represents a specific word in a dictionary.
-
-The following code downloads the IMDB dataset to your machine (or uses a cached copy if you've already downloaded it):
-To encode your own text see the [Loading text tutorial](../load_data/text.ipynb)
+*** 任務一：斷詞與詞頻分析（40%）
+用 =jieba= 將所有評論進行斷詞，並移除停用詞，然後分別統計正評和負評中出現頻率最高的前 10 個詞。
 
 #+begin_src python -r -n :results output :exports both
-# -*- coding: utf-8 -*-
-# 環境設定Setup
+import jieba
+from collections import Counter
 
+# 停用詞（可自行增減）
+stop_words = set(['的', '了', '是', '在', '我', '也', '都', '有', '不',
+                  '就', '還', '又', '但', '個', '和', '這', '那', '很',
+                  '讓', '把', '被', '用', '到', '從', '一', '人', '來',
+                  '要', '會', '去', '能', '說', '上', '為', '著', '沒',
+                  '好', '過', '而', '再', '多', '給', '得', '以', '可以',
+                  '每', '才', '只', '所', '次', '已', '吧', '啊', '嗎',
+                  '吃', '買', '完', '比', '跟', '超', '結果', '還是'])
 
-import tensorflow as tf
-from tensorflow import keras
-
-import tensorflow_datasets as tfds
-tfds.disable_progress_bar()
-
-import numpy as np
-print(tf.__version__)
-
-# Download the IMDB dataset  下載 IMDB 資料集
-(train_data, test_data), info = tfds.load(
-    # Use the version pre-encoded with an ~8k vocabulary.
-    'imdb_reviews/subwords8k',
-    # Return the train/test datasets as a tuple.
-    split = (tfds.Split.TRAIN, tfds.Split.TEST),
-    # Return (example, label) pairs from the dataset (instead of a dictionary).
-    as_supervised=True,
-    # Also return the `info` structure.
-    with_info=True)
-
-# Try the encoder
-
-### The dataset `info` includes the text encoder (a `tfds.features.text.SubwordTextEncoder`).
-### ### tfds.features.text.SubwordTextEncoder
-### https://www.tensorflow.org/datasets/api_docs/python/tfds/features/text/SubwordTextEncoder
-
-
-encoder = info.features['text'].encoder
-
-print ('Vocabulary size: {}'.format(encoder.vocab_size))
-
-"""This text encoder will reversibly encode any string:"""
-
-sample_string = 'Hello TensorFlow.'
-
-encoded_string = encoder.encode(sample_string)
-print ('Encoded string is {}'.format(encoded_string))
-
-original_string = encoder.decode(encoded_string)
-print ('The original string: "{}"'.format(original_string))
-
-assert original_string == sample_string
-
-
-## The encoder encodes the string by breaking it into subwords or characters if the word is not in its dictionary.
-## So the more a string resembles the dataset, the shorter the encoded representation will be."""
-
-for ts in encoded_string:
-  print ('{} ----> {}'.format(ts, encoder.decode([ts])))
-
-# Explore the data
-
-## The dataset comes preprocessed: each example is an array of integers representing the words of the movie review.
-## The text of reviews have been converted to integers, where each integer represents a specific word-piece in the dictionary.
-## Each label is an integer value of either 0 or 1, where 0 is a negative review, and 1 is a positive review.
-
-for train_example, train_label in train_data.take(1):
-  print('Encoded text:', train_example[:10].numpy())
-  print('Label:', train_label.numpy())
-
-## The `info` structure contains the encoder/decoder. The encoder can be used to recover the original text:"""
-
-encoder.decode(train_example)
-
-# Data Pre-processing
-```
-## Prepare the data for training
-## You will want to create batches of training data for your model.
-## The reviews are all different lengths, so use `padded_batch` to zero pad the sequences while batching:
-
-BUFFER_SIZE = 1000
-
-train_batches = (
-    train_data
-    .shuffle(BUFFER_SIZE)
-    .padded_batch(32))
-
-test_batches = (
-    test_data
-    .padded_batch(32))
-
-## Each batch will have a shape of `(batch_size, sequence_length)` because the padding is dynamic each batch will have a different length:"""
-
-for example_batch, label_batch in train_batches.take(2):
-  print("Batch shape:", example_batch.shape)
-  print("label shape:", label_batch.shape)
-
-# 構建模型Build the model
-
-model = keras.Sequential([
-  keras.layers.Embedding(encoder.vocab_size, 16),
-  keras.layers.GlobalAveragePooling1D(),
-  keras.layers.Dense(1)])
-
-model.summary()
-
-# 配置模型
-
-model.compile(optimizer='adam',
-              loss=tf.losses.BinaryCrossentropy(from_logits=True),
-              metrics=['accuracy'])
-
-# 訓練模型Train the model
-
-history = model.fit(train_batches,
-                    epochs=10,
-                    validation_data=test_batches,
-                    validation_steps=30)
-
-# 評估模型Evaluate the model
-
-loss, accuracy = model.evaluate(test_batches)
-
-print("Loss: ", loss)
-print("Accuracy: ", accuracy)
-
-# 建立 準確率（accuracy）和損失值（loss）隨時間變化的圖表
-
-history_dict = history.history
-history_dict.keys()
-
-import matplotlib.pyplot as plt
-
-acc = history_dict['accuracy']
-val_acc = history_dict['val_accuracy']
-loss = history_dict['loss']
-val_loss = history_dict['val_loss']
-
-epochs = range(1, len(acc) + 1)
-
-# "bo" is for "blue dot"
-plt.plot(epochs, loss, 'bo', label='Training loss')
-# b is for "solid blue line"
-plt.plot(epochs, val_loss, 'b', label='Validation loss')
-plt.title('Training and validation loss')
-plt.xlabel('Epochs')
-plt.ylabel('Loss')
-plt.legend()
-
-plt.show()
-
-plt.clf()   # clear figure
-
-plt.plot(epochs, acc, 'bo', label='Training acc')
-plt.plot(epochs, val_acc, 'b', label='Validation acc')
-plt.title('Training and validation accuracy')
-plt.xlabel('Epochs')
-plt.ylabel('Accuracy')
-plt.legend(loc='lower right')
-
-plt.show()
-
-
+# 請完成：
+# 1. 將正評和負評分開
+# 2. 用 jieba.cut() 對每則評論斷詞
+# 3. 移除停用詞和長度為 1 的詞
+# 4. 用 Counter 分別統計正評、負評的詞頻
+# 5. 印出正評和負評各自前 10 名的高頻詞
 #+end_src
 
-* 練習
-** SPAM email detection 垃圾郵件偵測
-- Linear & Tree-based models for Email Sentiment Classification
-- https://www.kaggle.com/azunre/tl-for-nlp-section2-1-2-4-emails
-** fake News detection 假新聞偵測
-- Using ELMo for "fake news" detection/classification
-- https://www.kaggle.com/azunre/tl-for-nlp-sections4-2-4-4-fake-news-elmo
+*** 任務二：詞頻視覺化（30%）
+用 =matplotlib= 畫出正評和負評各自的「前 10 名高頻詞」長條圖，左右並排比較。
+
+老闆娘最想知道的是：好評的人都在誇什麼？負評的人都在罵什麼？
+
+#+begin_src python -r -n :results output :exports both
+import matplotlib.pyplot as plt
+
+plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
+plt.rcParams['axes.unicode_minus'] = False
+
+# 請完成：
+# 1. 用 plt.subplot(1, 2, 1) 畫正評前 10 名高頻詞的橫向 bar chart
+# 2. 用 plt.subplot(1, 2, 2) 畫負評前 10 名高頻詞的橫向 bar chart
+# 3. 加上標題和軸標籤
+# 4. plt.tight_layout() 讓排版不重疊
+# 5. plt.savefig('images/nlp-homework-wordfreq.png', dpi=300)
+#+end_src
+
+*** 任務三：簡易情感分類器（30%）
+根據你在任務一觀察到的正負評關鍵詞差異，設計一個簡單的「關鍵詞比對分類器」：給一個新的評論，計算其中出現了多少個正面高頻詞、多少個負面高頻詞，數量多的那方獲勝。
+
+用你的分類器測試以下三則新評論：
+
+#+begin_src python -r -n :results output :exports both
+test_reviews = [
+    "滷味入味好吃，老闆娘態度親切，份量十足",
+    "等超久東西又冷掉，味道太鹹完全不行",
+    "價格還行但環境不太乾淨，東西普通",
+]
+
+# 請完成：
+# 1. 從任務一的結果中，取出正面和負面的高頻詞清單
+# 2. 對每則新評論斷詞後，計算命中正面詞和負面詞的數量
+# 3. 印出每則評論的判斷結果（正評/負評/無法判斷）及命中的關鍵詞
+#+end_src
+
+#+begin_quote
+*思考題*（不計分，但回答得好老闆娘會多送你一份鴨血）：
+1. 你的「關鍵詞比對法」和課堂上教的機器學習情感分析有什麼差別？
+2. 如果評論寫「不難吃」（否定＋負面詞＝其實是正面意思），你的分類器會怎麼判？這種「否定反轉語意」的問題在 NLP 裡叫做 *Negation Handling*，是個至今仍然很有挑戰性的議題。
+3. 如果老闆娘想分析 1000 則評論，你會怎麼改進你的方法？（提示：想想課堂上學過的 Bag-of-Words 和 Word Embedding）
+#+end_quote
+
+** 參考解答 :noexport:
+*** 任務一解答
+#+begin_src python -r -n :results output :exports both
+import jieba
+from collections import Counter
+
+reviews = [
+    ("滷味超入味，每一口都是幸福的味道，下次還要再來！", 1),
+    ("老闆娘人超好，還多送了一份豆干，佛心來的", 1),
+    ("這個辣度剛剛好，不會辣到懷疑人生，推薦必點鴨血", 1),
+    ("排了半小時但值得，朋友吃完直接問我要不要再排一次", 1),
+    ("價格實惠份量又大，學生黨的救星，吃飽只要一百塊", 1),
+    ("百頁豆腐滷到入口即化，簡直是藝術品等級的滷味", 1),
+    ("每次經過都忍不住買，這攤是我的錢包殺手", 1),
+    ("湯頭濃郁不死鹹，可以喝三碗，冬天必備暖胃神器", 1),
+    ("米血糕外酥內軟，老闆娘的手藝真的是祖傳的吧", 1),
+    ("從高一吃到高三，畢業前一定要再來朝聖一次", 1),
+    ("等了四十分鐘結果冷掉了，花錢買罪受", 0),
+    ("太鹹了吧，吃完喝了三瓶水還是覺得嘴巴是鹹的", 0),
+    ("蒼蠅比客人還多，衛生環境有待加強", 0),
+    ("滷汁味道怪怪的，像是放了一個禮拜的感覺", 0),
+    ("份量越來越少，價格越來越貴，通膨連滷味攤都不放過", 0),
+    ("豆腐又硬又沒味道，到底有沒有在滷啊", 0),
+    ("老闆態度很差，問個價錢就被翻白眼", 0),
+    ("說好的加辣結果完全不辣，跟白開水一樣", 0),
+    ("排隊排到天荒地老，結果東西普普通通", 0),
+    ("買回家發現少了兩樣，打電話也沒人接，差評", 0),
+]
+
+stop_words = set(['的', '了', '是', '在', '我', '也', '都', '有', '不',
+                  '就', '還', '又', '但', '個', '和', '這', '那', '很',
+                  '讓', '把', '被', '用', '到', '從', '一', '人', '來',
+                  '要', '會', '去', '能', '說', '上', '為', '著', '沒',
+                  '好', '過', '而', '再', '多', '給', '得', '以', '可以',
+                  '每', '才', '只', '所', '次', '已', '吧', '啊', '嗎',
+                  '吃', '買', '完', '比', '跟', '超', '結果', '還是'])
+
+# 分開正評和負評
+pos_reviews = [r for r, label in reviews if label == 1]
+neg_reviews = [r for r, label in reviews if label == 0]
+
+def tokenize_reviews(review_list, stop_words):
+    """斷詞並移除停用詞"""
+    all_words = []
+    for review in review_list:
+        words = jieba.cut(review)
+        for w in words:
+            w = w.strip()
+            if len(w) > 1 and w not in stop_words:
+                all_words.append(w)
+    return Counter(all_words)
+
+pos_freq = tokenize_reviews(pos_reviews, stop_words)
+neg_freq = tokenize_reviews(neg_reviews, stop_words)
+
+print("=== 正評前 10 名高頻詞 ===")
+for word, count in pos_freq.most_common(10):
+    print(f"  {word}: {count}")
+
+print("\n=== 負評前 10 名高頻詞 ===")
+for word, count in neg_freq.most_common(10):
+    print(f"  {word}: {count}")
+#+end_src
+
+*** 任務二解答
+#+begin_src python -r -n :results output :exports both
+import jieba
+from collections import Counter
+import matplotlib.pyplot as plt
+
+plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
+plt.rcParams['axes.unicode_minus'] = False
+
+reviews = [
+    ("滷味超入味，每一口都是幸福的味道，下次還要再來！", 1),
+    ("老闆娘人超好，還多送了一份豆干，佛心來的", 1),
+    ("這個辣度剛剛好，不會辣到懷疑人生，推薦必點鴨血", 1),
+    ("排了半小時但值得，朋友吃完直接問我要不要再排一次", 1),
+    ("價格實惠份量又大，學生黨的救星，吃飽只要一百塊", 1),
+    ("百頁豆腐滷到入口即化，簡直是藝術品等級的滷味", 1),
+    ("每次經過都忍不住買，這攤是我的錢包殺手", 1),
+    ("湯頭濃郁不死鹹，可以喝三碗，冬天必備暖胃神器", 1),
+    ("米血糕外酥內軟，老闆娘的手藝真的是祖傳的吧", 1),
+    ("從高一吃到高三，畢業前一定要再來朝聖一次", 1),
+    ("等了四十分鐘結果冷掉了，花錢買罪受", 0),
+    ("太鹹了吧，吃完喝了三瓶水還是覺得嘴巴是鹹的", 0),
+    ("蒼蠅比客人還多，衛生環境有待加強", 0),
+    ("滷汁味道怪怪的，像是放了一個禮拜的感覺", 0),
+    ("份量越來越少，價格越來越貴，通膨連滷味攤都不放過", 0),
+    ("豆腐又硬又沒味道，到底有沒有在滷啊", 0),
+    ("老闆態度很差，問個價錢就被翻白眼", 0),
+    ("說好的加辣結果完全不辣，跟白開水一樣", 0),
+    ("排隊排到天荒地老，結果東西普普通通", 0),
+    ("買回家發現少了兩樣，打電話也沒人接，差評", 0),
+]
+
+stop_words = set(['的', '了', '是', '在', '我', '也', '都', '有', '不',
+                  '就', '還', '又', '但', '個', '和', '這', '那', '很',
+                  '讓', '把', '被', '用', '到', '從', '一', '人', '來',
+                  '要', '會', '去', '能', '說', '上', '為', '著', '沒',
+                  '好', '過', '而', '再', '多', '給', '得', '以', '可以',
+                  '每', '才', '只', '所', '次', '已', '吧', '啊', '嗎',
+                  '吃', '買', '完', '比', '跟', '超', '結果', '還是'])
+
+pos_reviews = [r for r, label in reviews if label == 1]
+neg_reviews = [r for r, label in reviews if label == 0]
+
+def tokenize_reviews(review_list, stop_words):
+    all_words = []
+    for review in review_list:
+        words = jieba.cut(review)
+        for w in words:
+            w = w.strip()
+            if len(w) > 1 and w not in stop_words:
+                all_words.append(w)
+    return Counter(all_words)
+
+pos_freq = tokenize_reviews(pos_reviews, stop_words)
+neg_freq = tokenize_reviews(neg_reviews, stop_words)
+
+# 畫圖
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+
+# 正評
+pos_top10 = pos_freq.most_common(10)
+pos_words = [w for w, c in pos_top10][::-1]
+pos_counts = [c for w, c in pos_top10][::-1]
+ax1.barh(pos_words, pos_counts, color='#4CAF50')
+ax1.set_title('正評前 10 名高頻詞', fontsize=14)
+ax1.set_xlabel('出現次數')
+
+# 負評
+neg_top10 = neg_freq.most_common(10)
+neg_words = [w for w, c in neg_top10][::-1]
+neg_counts = [c for w, c in neg_top10][::-1]
+ax2.barh(neg_words, neg_counts, color='#F44336')
+ax2.set_title('負評前 10 名高頻詞', fontsize=14)
+ax2.set_xlabel('出現次數')
+
+plt.suptitle('「黑暗料理之王」滷味攤 — 顧客評論詞頻分析', fontsize=16)
+plt.tight_layout()
+plt.savefig('images/nlp-homework-wordfreq.png', dpi=300)
+print("圖表已儲存")
+#+end_src
+
+*** 任務三解答
+#+begin_src python -r -n :results output :exports both
+import jieba
+from collections import Counter
+
+reviews = [
+    ("滷味超入味，每一口都是幸福的味道，下次還要再來！", 1),
+    ("老闆娘人超好，還多送了一份豆干，佛心來的", 1),
+    ("這個辣度剛剛好，不會辣到懷疑人生，推薦必點鴨血", 1),
+    ("排了半小時但值得，朋友吃完直接問我要不要再排一次", 1),
+    ("價格實惠份量又大，學生黨的救星，吃飽只要一百塊", 1),
+    ("百頁豆腐滷到入口即化，簡直是藝術品等級的滷味", 1),
+    ("每次經過都忍不住買，這攤是我的錢包殺手", 1),
+    ("湯頭濃郁不死鹹，可以喝三碗，冬天必備暖胃神器", 1),
+    ("米血糕外酥內軟，老闆娘的手藝真的是祖傳的吧", 1),
+    ("從高一吃到高三，畢業前一定要再來朝聖一次", 1),
+    ("等了四十分鐘結果冷掉了，花錢買罪受", 0),
+    ("太鹹了吧，吃完喝了三瓶水還是覺得嘴巴是鹹的", 0),
+    ("蒼蠅比客人還多，衛生環境有待加強", 0),
+    ("滷汁味道怪怪的，像是放了一個禮拜的感覺", 0),
+    ("份量越來越少，價格越來越貴，通膨連滷味攤都不放過", 0),
+    ("豆腐又硬又沒味道，到底有沒有在滷啊", 0),
+    ("老闆態度很差，問個價錢就被翻白眼", 0),
+    ("說好的加辣結果完全不辣，跟白開水一樣", 0),
+    ("排隊排到天荒地老，結果東西普普通通", 0),
+    ("買回家發現少了兩樣，打電話也沒人接，差評", 0),
+]
+
+stop_words = set(['的', '了', '是', '在', '我', '也', '都', '有', '不',
+                  '就', '還', '又', '但', '個', '和', '這', '那', '很',
+                  '讓', '把', '被', '用', '到', '從', '一', '人', '來',
+                  '要', '會', '去', '能', '說', '上', '為', '著', '沒',
+                  '好', '過', '而', '再', '多', '給', '得', '以', '可以',
+                  '每', '才', '只', '所', '次', '已', '吧', '啊', '嗎',
+                  '吃', '買', '完', '比', '跟', '超', '結果', '還是'])
+
+pos_reviews = [r for r, label in reviews if label == 1]
+neg_reviews = [r for r, label in reviews if label == 0]
+
+def tokenize_reviews(review_list, stop_words):
+    all_words = []
+    for review in review_list:
+        words = jieba.cut(review)
+        for w in words:
+            w = w.strip()
+            if len(w) > 1 and w not in stop_words:
+                all_words.append(w)
+    return Counter(all_words)
+
+pos_freq = tokenize_reviews(pos_reviews, stop_words)
+neg_freq = tokenize_reviews(neg_reviews, stop_words)
+
+# 取正負評各自的高頻詞作為關鍵詞
+pos_keywords = set([w for w, c in pos_freq.most_common(15)])
+neg_keywords = set([w for w, c in neg_freq.most_common(15)])
+
+# 移除兩邊都出現的詞（避免干擾）
+common = pos_keywords & neg_keywords
+pos_keywords -= common
+neg_keywords -= common
+
+print(f"正面關鍵詞: {pos_keywords}")
+print(f"負面關鍵詞: {neg_keywords}")
+print()
+
+# 測試新評論
+test_reviews = [
+    "滷味入味好吃，老闆娘態度親切，份量十足",
+    "等超久東西又冷掉，味道太鹹完全不行",
+    "價格還行但環境不太乾淨，東西普通",
+]
+
+for review in test_reviews:
+    words = set(jieba.cut(review))
+    pos_hits = words & pos_keywords
+    neg_hits = words & neg_keywords
+
+    if len(pos_hits) > len(neg_hits):
+        label = "正評"
+    elif len(neg_hits) > len(pos_hits):
+        label = "負評"
+    else:
+        label = "無法判斷"
+
+    print(f"評論：{review}")
+    print(f"  命中正面詞: {pos_hits if pos_hits else '無'}")
+    print(f"  命中負面詞: {neg_hits if neg_hits else '無'}")
+    print(f"  判斷結果：{label}")
+    print()
+#+end_src
 
 * 教學資源
 - [超讚][[https://leemeng.tw/shortest-path-to-the-nlp-world-a-gentle-guide-of-natural-language-processing-and-deep-learning-for-everyone.html][進入 NLP 世界的最佳橋樑：寫給所有人的自然語言處理與深度學習入門指南]]
 - [[https://aiacademy.tw/what-is-nlp-natural-language-processing/][斷開中文的鎖鍊！自然語言處理 (NLP)是什麼？]]
 - [[https://www.twblogs.net/a/5eb8fcf386ec4d39f335f108][Python 結巴分詞——自然語言處理之中文分詞器]]
+- [[https://leemeng.tw/shortest-path-to-the-nlp-world-a-gentle-guide-of-natural-language-processing-and-deep-learning-for-everyone.html][進入 NLP 世界的最佳橋樑：寫給所有人的自然語言處理與深度學習入門指南 ]]
+- [[https://mooc.nthu.edu.tw/classroom/chapter/170][2022-自學課程-從自然語言到文字探勘(7-12月) ]]
+- [[https://huggingface.co/spaces/facebook/Hokkien_Translation?fbclid=IwAR26uyDhgybAqe5Xn3b3-N8GlC6bcoOzHbhsSPaZSDZaXbQjwME-GcUxwK0][英語->台語]]
+** 3 門推薦的線上課程
+  - 台大電機系李宏毅教授的深度學習課程: 奠定理論基礎
+  - Coursera 的 Deep Learning 專項課程: 理論 70 % + 實作 30 %
+  - [[https://www.oreilly.com/library/view/deep-learning-with/9781617294433VE/][Deep Learning with Python]]: 注重程式實作
 ** paper
 *** Deep Learning and NLP
 Deep Learning for Source Code Modeling and Generation: Models, Applications and Challenges
@@ -3760,7 +3501,7 @@ https://arxiv.org/abs/2002.05442
 
 [fn:5] [[https://aiacademy.tw/what-is-nlp-natural-language-processing/][斷開中文的鎖鍊！自然語言處理 (NLP)是什麼？]]
 
-[fn:6] 進入 NLP 世界的最佳橋樑：寫給所有人的自然語言處理與深度學習入門指南]]
+[fn:6] [[https://leemeng.tw/shortest-path-to-the-nlp-world-a-gentle-guide-of-natural-language-processing-and-deep-learning-for-everyone.html][進入 NLP 世界的最佳橋樑：寫給所有人的自然語言處理與深度學習入門指南]]
 
 [fn:7] [[https://www.ithome.com.tw/news/132838][千呼萬喚十多年！中研院終於開源釋出國產自動化中文斷詞工具，正式採用GPL 3.0釋出]]
 

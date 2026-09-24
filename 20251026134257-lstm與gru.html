@@ -3,11 +3,11 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2025-10-30 Thu 09:15 -->
+<!-- 2026-02-14 Sat 21:36 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>LSTM與GRU</title>
-<meta name="author" content="Yung-Chin Yen" />
+<meta name="author" content="顏永進" />
 <meta name="generator" content="Org Mode" />
 <style type="text/css">
   #content { max-width: 60em; margin: auto; }
@@ -235,43 +235,56 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgad86458">1. 長期記憶與短期記憶</a></li>
-<li><a href="#org6db581e">2. LSTM的設計理念</a>
+<li><a href="#org5367ccf">1. 長期記憶與短期記憶</a></li>
+<li><a href="#org2010147">2. LSTM的設計理念</a>
 <ul>
-<li><a href="#org795a6db">2.1. LSTM的結構設計</a></li>
-<li><a href="#org4cb68fe">2.2. LSTM細胞結構</a></li>
+<li><a href="#org6c76025">2.1. LSTM的結構設計</a></li>
+<li><a href="#orgbd19aa0">2.2. LSTM細胞結構</a></li>
 </ul>
 </li>
-<li><a href="#orgfdd16da">3. LSTM運作流程</a>
+<li><a href="#org95a44ba">3. LSTM運作流程</a>
 <ul>
-<li><a href="#org3315e29">3.1. 遺忘閘</a></li>
-<li><a href="#orga9554a9">3.2. 輸入閘</a></li>
-<li><a href="#org339bb4c">3.3. 候選記憶狀態</a></li>
-<li><a href="#orgd833c2f">3.4. 由\(c_{t-1}\)到\(c_t\)的更新</a></li>
-<li><a href="#orgf0dbab3">3.5. 輸出閘</a></li>
+<li><a href="#org082376a">3.1. 遺忘閘</a></li>
+<li><a href="#org6eb0940">3.2. 輸入閘</a></li>
+<li><a href="#org608bc50">3.3. 候選記憶狀態</a></li>
+<li><a href="#orga77a0d3">3.4. 由\(c_{t-1}\)到\(c_t\)的更新</a></li>
+<li><a href="#org7d56d89">3.5. 輸出閘</a></li>
 </ul>
 </li>
-<li><a href="#orga9a041f">4. 小結</a>
+<li><a href="#org40944cd">4. 小結</a>
 <ul>
-<li><a href="#orgfc5db39">4.1. LSTM的特點</a></li>
-<li><a href="#orgad4935e">4.2. LSTM 為何能解決 RNN 的問題</a></li>
+<li><a href="#org12143ab">4.1. LSTM的特點</a></li>
+<li><a href="#org4d0b361">4.2. LSTM 為何能解決 RNN 的問題</a></li>
 </ul>
 </li>
-<li><a href="#org32b5973">5. LSTM 範例程式</a>
+<li><a href="#orged4af50">5. LSTM 範例程式</a>
 <ul>
-<li><a href="#orga151143">5.1. LSTM的程式運作示例</a></li>
-<li><a href="#org783c332">5.2. LSTM的程式模型架構</a></li>
-<li><a href="#org303096d">5.3. 實作: 以AI預測股價-隔日漲跌</a></li>
+<li><a href="#orgff18078">5.1. LSTM的程式運作示例</a></li>
+<li><a href="#orgd396a05">5.2. LSTM的程式模型架構</a></li>
+<li><a href="#org18a4a24">5.3. 實作: 以AI預測股價</a></li>
 </ul>
 </li>
-<li><a href="#orgec8ac19">6. GRU</a></li>
-<li><a href="#org69d875a">7. LSTM學習資源</a></li>
+<li><a href="#orgc3d053f">6. GRU</a>
+<ul>
+<li><a href="#org1ae41f7">6.1. GRU 的閘門機制</a></li>
+<li><a href="#orge81f817">6.2. LSTM vs GRU 比較</a></li>
+<li><a href="#org8bec753">6.3. GRU 程式範例</a></li>
+</ul>
+</li>
+<li><a href="#org0641d04">7. 作業</a>
+<ul>
+<li><a href="#org33ecf3b">7.1. 作業一：LSTM 閘門模擬器</a></li>
+<li><a href="#orgdcfce77">7.2. 作業二：LSTM vs GRU 股價預測大對決</a></li>
+<li><a href="#org416c024">7.3. 作業三：AI 股市預言家的自白</a></li>
+</ul>
+</li>
+<li><a href="#org478ba91">8. LSTM學習資源</a></li>
 </ul>
 </div>
 </div>
-<a href="https://letranger.github.io/AI/20230108135329-循環神經網路.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20230108135329-循環神經網路.html.svg"/></a>
-<div id="outline-container-orgad86458" class="outline-2">
-<h2 id="orgad86458"><span class="section-number-2">1.</span> 長期記憶與短期記憶</h2>
+<a href="https://letranger.github.io/AI/20251026134257-lstm與gru.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20251026134257-lstm與gru.html.svg"/></a>
+<div id="outline-container-org5367ccf" class="outline-2">
+<h2 id="org5367ccf"><span class="section-number-2">1.</span> 長期記憶與短期記憶</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 記憶力是人類智慧的重要組成部分，也是我們賴以生存的關鍵能力之一。有了記憶力，我們才能記住過去的經驗，從中學習並做出更好的決策。例如：火很熱，我們學會了不要觸摸火焰，以免被燒傷；蛇有毒，我們學會了遠離蛇，以免被咬傷。
@@ -290,8 +303,8 @@
 </p>
 </div>
 </div>
-<div id="outline-container-org6db581e" class="outline-2">
-<h2 id="org6db581e"><span class="section-number-2">2.</span> LSTM的設計理念</h2>
+<div id="outline-container-org2010147" class="outline-2">
+<h2 id="org2010147"><span class="section-number-2">2.</span> LSTM的設計理念</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 LSTM（Long Short-Term Memory）也是一種遞迴神經網路（RNN），他也有記憶能力，但它把原本RNN的「記憶單元」做了改良，拆成了「記憶狀態（Cell State）」和「隱藏狀態（Hidden State）」，用來模擬人類的長期記憶和短期記憶；而且LSTM還模仿人類的遺忘機制，設計了三個「閘門（Gates）」來控制資訊的流動，讓模型能夠選擇性地保留或遺忘某些資訊。讓模型可以「忘記」不重要的資訊，專注於重要的資訊，從而提高模型的表現。
@@ -305,11 +318,11 @@ RNN的一個主要問題是，當序列變得很長時，它們很難記住遠�
 為了加強這種RNN的「記憶能力」，人們開發各種各樣的變形體，如非常著名的Long Short-term Memory(LSTM)，用於解決「長期及遠距離的依賴關係」。
 </p>
 </div>
-<div id="outline-container-org795a6db" class="outline-3">
-<h3 id="org795a6db"><span class="section-number-3">2.1.</span> LSTM的結構設計</h3>
+<div id="outline-container-org6c76025" class="outline-3">
+<h3 id="org6c76025"><span class="section-number-3">2.1.</span> LSTM的結構設計</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
-如圖<a href="#org12f614b">1</a>所示，LSTM將RNN的隱藏狀態拆成兩部份：
+如圖<a href="#orge5e48fa">1</a>所示，LSTM將RNN的隱藏狀態拆成兩部份：
 </p>
 <ol class="org-ol">
 <li>記憶狀態的變化較慢，能儘量保留先前的記憶，這部份類似於人類的長期記憶。</li>
@@ -317,7 +330,7 @@ RNN的一個主要問題是，當序列變得很長時，它們很難記住遠�
 </ol>
 
 
-<div id="org12f614b" class="figure">
+<div id="orge5e48fa" class="figure">
 <p><img src="images/2025-10-29_09-44-38.png" alt="2025-10-29_09-44-38.png" width="500" />
 </p>
 <p><span class="figure-number">Figure 1: </span>RNN v.s. LSTM</p>
@@ -325,11 +338,11 @@ RNN的一個主要問題是，當序列變得很長時，它們很難記住遠�
 
 
 <p>
-由圖<a href="#org90cb898">2</a>可見，這兩份記憶狀態會同時存在於LSTM的細胞中，兩份記憶狀態看似上下分開獨立，但實際上仍會互相影響與作用。當然，和RNN一樣，每個時間點仍然會有輸入資料(\(x_t\))進入LSTM細胞，並影響這兩份記憶狀態的更新與變化。
+由圖<a href="#orge9a79bc">2</a>可見，這兩份記憶狀態會同時存在於LSTM的細胞中，兩份記憶狀態看似上下分開獨立，但實際上仍會互相影響與作用。當然，和RNN一樣，每個時間點仍然會有輸入資料(\(x_t\))進入LSTM細胞，並影響這兩份記憶狀態的更新與變化。
 </p>
 
 
-<div id="org90cb898" class="figure">
+<div id="orge9a79bc" class="figure">
 <p><img src="images/2025-10-29_09-33-47.png" alt="2025-10-29_09-33-47.png" width="600" />
 </p>
 <p><span class="figure-number">Figure 2: </span>LSTM將rnn的隱藏狀態拆成兩部份</p>
@@ -340,14 +353,14 @@ RNN的一個主要問題是，當序列變得很長時，它們很難記住遠�
 </p>
 </div>
 </div>
-<div id="outline-container-org4cb68fe" class="outline-3">
-<h3 id="org4cb68fe"><span class="section-number-3">2.2.</span> LSTM細胞結構</h3>
+<div id="outline-container-orgbd19aa0" class="outline-3">
+<h3 id="orgbd19aa0"><span class="section-number-3">2.2.</span> LSTM細胞結構</h3>
 <div class="outline-text-3" id="text-2-2">
 <p>
-圖<a href="#org1bf2c5d">3</a>為LSTM細胞的結構示意, 除了上、下兩條主要的記憶狀態傳遞路徑外，還有三個閘門分別負責不同的功能：
+圖<a href="#org6d5e221">3</a>為LSTM細胞的結構示意, 除了上、下兩條主要的記憶狀態傳遞路徑外，還有三個閘門分別負責不同的功能：
 </p>
 
-<div id="org1bf2c5d" class="figure">
+<div id="org6d5e221" class="figure">
 <p><img src="images/2025-10-29_09-33-471.png" alt="2025-10-29_09-33-471.png" width="600" />
 </p>
 <p><span class="figure-number">Figure 3: </span>LSTM Cell</p>
@@ -361,8 +374,8 @@ RNN的一個主要問題是，當序列變得很長時，它們很難記住遠�
 </div>
 </div>
 </div>
-<div id="outline-container-orgfdd16da" class="outline-2">
-<h2 id="orgfdd16da"><span class="section-number-2">3.</span> LSTM運作流程</h2>
+<div id="outline-container-org95a44ba" class="outline-2">
+<h2 id="org95a44ba"><span class="section-number-2">3.</span> LSTM運作流程</h2>
 <div class="outline-text-2" id="text-3">
 <p>
 首先，LSTM Cell會接收兩個主要的輸入：目前時間點的輸入資料 \(x_t\) 和前一個時間點的隱藏狀態 \(h_{t-1}\)。在此要特別說明的是，這兩個輸入( \(x_t, h_{t-1}\) )並不像之前的RNN一樣直接相加，而是先做串接(concatenate)後，形成 \([h_{t-1},\,x_t]\)。舉例來說，如果
@@ -385,8 +398,8 @@ RNN的一個主要問題是，當序列變得很長時，它們很難記住遠�
 同一時間，LSTM Cell還會接收前一個時間點的記憶狀態 \(c_{t-1}\)，這個記憶狀態會在後續步驟中和來自遺忘閘與輸入閘的結果進行結合，最終產生更新後的記憶狀態 \(c_t\)，而這個更新後的記憶狀態 \(c_t\) 又會和輸出閘的結果結合，產生目前時間點的隱藏狀態 \(h_t\)。這種設計有點像是我們的長期記憶和短期記憶互相影響、共同作用的過程。
 </p>
 </div>
-<div id="outline-container-org3315e29" class="outline-3">
-<h3 id="org3315e29"><span class="section-number-3">3.1.</span> 遺忘閘</h3>
+<div id="outline-container-org082376a" class="outline-3">
+<h3 id="org082376a"><span class="section-number-3">3.1.</span> 遺忘閘</h3>
 <div class="outline-text-3" id="text-3-1">
 <p>
 在收到串接後的輸入 \([h_{t-1},\,x_t]\) 後，遺忘閘會決定目前的記憶狀態 \(c_{t-1}\) 要保留多少、遺忘多少。具體來說，這部份是由一個全連接層（fully connected layer）來實現的，這個全連接層對應的權重矩陣為 \(W_f\) ，偏置項為 \(b_f\)。
@@ -450,15 +463,15 @@ f_t &= \sigma(z_f) =
 </p>
 </div>
 </div>
-<div id="outline-container-orga9554a9" class="outline-3">
-<h3 id="orga9554a9"><span class="section-number-3">3.2.</span> 輸入閘</h3>
+<div id="outline-container-org6eb0940" class="outline-3">
+<h3 id="org6eb0940"><span class="section-number-3">3.2.</span> 輸入閘</h3>
 <div class="outline-text-3" id="text-3-2">
 <p>
 處理完遺忘閘後，接下來是輸入閘的部分。
 </p>
 
 <p>
-其實，由圖<a href="#org1bf2c5d">3</a>可以看出，輸入閘和遺忘閘的結構非常相似，都是先將串接後的輸入 \([h_{t-1},\,x_t]\) (也就是剛剛提到的 \( [0.1,0.7,−0.3,0.5,0.2,0.9,−0.4] \))丟進去，然後進行線性變換（乘上權重矩陣並加上偏置項），最後再經過一個 sigmoid 啟動函數，將結果轉換成 0 到 1 之間的數值。所以這裡我們就不再贅述細節，直接給出計算公式：
+其實，由圖<a href="#org6d5e221">3</a>可以看出，輸入閘和遺忘閘的結構非常相似，都是先將串接後的輸入 \([h_{t-1},\,x_t]\) (也就是剛剛提到的 \( [0.1,0.7,−0.3,0.5,0.2,0.9,−0.4] \))丟進去，然後進行線性變換（乘上權重矩陣並加上偏置項），最後再經過一個 sigmoid 啟動函數，將結果轉換成 0 到 1 之間的數值。所以這裡我們就不再贅述細節，直接給出計算公式：
 </p>
 
 <p>
@@ -480,8 +493,8 @@ i_t = \sigma\!\bigl(W_i\,[h_{t-1},\,x_t] + b_i\bigr),
 </p>
 </div>
 </div>
-<div id="outline-container-org339bb4c" class="outline-3">
-<h3 id="org339bb4c"><span class="section-number-3">3.3.</span> 候選記憶狀態</h3>
+<div id="outline-container-org608bc50" class="outline-3">
+<h3 id="org608bc50"><span class="section-number-3">3.3.</span> 候選記憶狀態</h3>
 <div class="outline-text-3" id="text-3-3">
 <p>
 那麼，候選記憶狀態 \(\tilde{c}_t\) 又是怎麼來的呢？
@@ -503,7 +516,7 @@ i_t = \sigma\!\bigl(W_i\,[h_{t-1},\,x_t] + b_i\bigr),
 </p>
 
 <p>
-現在，我們可以把注意力放到圖<a href="#org1bf2c5d">3</a>中的\(tanh\)和\(sigmoid\)兩個符號最後交會的地方，也就是一個\(\times\)的乘號。
+現在，我們可以把注意力放到圖<a href="#org6d5e221">3</a>中的\(tanh\)和\(sigmoid\)兩個符號最後交會的地方，也就是一個\(\times\)的乘號。
 </p>
 
 <p>
@@ -541,8 +554,8 @@ LSTM 透過這樣的設計，讓「記憶的保留」與「新資訊的寫入」
 </p>
 </div>
 </div>
-<div id="outline-container-orgd833c2f" class="outline-3">
-<h3 id="orgd833c2f"><span class="section-number-3">3.4.</span> 由\(c_{t-1}\)到\(c_t\)的更新</h3>
+<div id="outline-container-orga77a0d3" class="outline-3">
+<h3 id="orga77a0d3"><span class="section-number-3">3.4.</span> 由\(c_{t-1}\)到\(c_t\)的更新</h3>
 <div class="outline-text-3" id="text-3-4">
 <p>
 在繼續討論輸出閘之前，我們先要解釋一下記憶狀態 \(c_t\) 是怎麼更新的。因為等一下的輸出閘會用到更新後的記憶狀態 \(c_t\)。
@@ -579,11 +592,11 @@ LSTM細胞會將這三個向量結合起來，形成更新後的記憶狀態 \(c
 </p>
 </div>
 </div>
-<div id="outline-container-orgf0dbab3" class="outline-3">
-<h3 id="orgf0dbab3"><span class="section-number-3">3.5.</span> 輸出閘</h3>
+<div id="outline-container-org7d56d89" class="outline-3">
+<h3 id="org7d56d89"><span class="section-number-3">3.5.</span> 輸出閘</h3>
 <div class="outline-text-3" id="text-3-5">
 <p>
-有了更新後的記憶狀態 \(c_t\) 之後，，LSTM 接下來要做的，就是決定要把這些記憶中的哪一部分「表現出來」。這個任務就是由 輸出閘（Output Gate） 來完成的。
+有了更新後的記憶狀態 \(c_t\) 之後，LSTM 接下來要做的，就是決定要把這些記憶中的哪一部分「表現出來」。這個任務就是由 輸出閘（Output Gate） 來完成的。
 </p>
 
 <p>
@@ -604,12 +617,12 @@ LSTM細胞會將這三個向量結合起來，形成更新後的記憶狀態 \(c
 </div>
 </div>
 </div>
-<div id="outline-container-orga9a041f" class="outline-2">
-<h2 id="orga9a041f"><span class="section-number-2">4.</span> 小結</h2>
+<div id="outline-container-org40944cd" class="outline-2">
+<h2 id="org40944cd"><span class="section-number-2">4.</span> 小結</h2>
 <div class="outline-text-2" id="text-4">
 </div>
-<div id="outline-container-orgfc5db39" class="outline-3">
-<h3 id="orgfc5db39"><span class="section-number-3">4.1.</span> LSTM的特點</h3>
+<div id="outline-container-org12143ab" class="outline-3">
+<h3 id="org12143ab"><span class="section-number-3">4.1.</span> LSTM的特點</h3>
 <div class="outline-text-3" id="text-4-1">
 <ol class="org-ol">
 <li>LSTM模仿人類記憶系統，將記憶分為長期記憶（記憶狀態 \(c_t\)）和短期記憶（隱藏狀態 \(h_t\)）。</li>
@@ -620,8 +633,8 @@ LSTM細胞會將這三個向量結合起來，形成更新後的記憶狀態 \(c
 </ol>
 </div>
 </div>
-<div id="outline-container-orgad4935e" class="outline-3">
-<h3 id="orgad4935e"><span class="section-number-3">4.2.</span> LSTM 為何能解決 RNN 的問題</h3>
+<div id="outline-container-org4d0b361" class="outline-3">
+<h3 id="org4d0b361"><span class="section-number-3">4.2.</span> LSTM 為何能解決 RNN 的問題</h3>
 <div class="outline-text-3" id="text-4-2">
 <p>
 在傳統的 RNN 中，每次更新隱藏狀態時，新的資訊都會直接覆蓋掉舊的資訊。這樣的設計雖然簡單，但當序列變長時，早期的訊息會在反向傳遞中逐漸消失，導致模型無法記住久遠的內容，這就是所謂的 梯度消失問題（vanishing gradient problem）。
@@ -649,12 +662,12 @@ c_t = f_t \odot c_{t-1} + i_t \odot \tilde{c}_t
 </div>
 </div>
 </div>
-<div id="outline-container-org32b5973" class="outline-2">
-<h2 id="org32b5973"><span class="section-number-2">5.</span> LSTM 範例程式</h2>
+<div id="outline-container-orged4af50" class="outline-2">
+<h2 id="orged4af50"><span class="section-number-2">5.</span> LSTM 範例程式</h2>
 <div class="outline-text-2" id="text-5">
 </div>
-<div id="outline-container-orga151143" class="outline-3">
-<h3 id="orga151143"><span class="section-number-3">5.1.</span> LSTM的程式運作示例</h3>
+<div id="outline-container-orgff18078" class="outline-3">
+<h3 id="orgff18078"><span class="section-number-3">5.1.</span> LSTM的程式運作示例</h3>
 <div class="outline-text-3" id="text-5-1">
 <p>
 LSTM 的計算過程可以用以下簡化版 Python 表示：
@@ -677,8 +690,8 @@ LSTM 的計算過程可以用以下簡化版 Python 表示：
 </div>
 </div>
 </div>
-<div id="outline-container-org783c332" class="outline-3">
-<h3 id="org783c332"><span class="section-number-3">5.2.</span> LSTM的程式模型架構</h3>
+<div id="outline-container-orgd396a05" class="outline-3">
+<h3 id="orgd396a05"><span class="section-number-3">5.2.</span> LSTM的程式模型架構</h3>
 <div class="outline-text-3" id="text-5-2">
 <p>
 LSTM 是一種改良版的 RNN，可記住更長期的資訊。只需將 SimpleRNN 改為 LSTM 層即可。以下是一個 LSTM 模型的寫法：
@@ -705,7 +718,7 @@ LSTM 是一種改良版的 RNN，可記住更長期的資訊。只需將 SimpleR
 </pre>
 </div>
 
-<pre class="example" id="orge2170ac">
+<pre class="example" id="org795bf2f">
 Model: "functional"
 ┏----------------━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓
 | Layer (type)                    | Output Shape           |       Param # |
@@ -722,15 +735,19 @@ Model: "functional"
 </pre>
 </div>
 </div>
-<div id="outline-container-org303096d" class="outline-3">
-<h3 id="org303096d"><span class="section-number-3">5.3.</span> 實作: 以AI預測股價-隔日漲跌</h3>
+<div id="outline-container-org18a4a24" class="outline-3">
+<h3 id="org18a4a24"><span class="section-number-3">5.3.</span> 實作: 以AI預測股價</h3>
 <div class="outline-text-3" id="text-5-3">
 <p>
-<a href="https://colab.research.google.com/drive/1IehBuskagMTm6RK6WB-dsf3NPZKTNVqs?usp=sharing">當AI遇上股票-LSTM.ipynb</a>
+接下來我們要用 LSTM 來預測台積電的股價走勢。股價是一種典型的時間序列資料，非常適合用 LSTM 來處理。我們的目標是：用過去 10 天的收盤價，預測第 11 天的收盤價。
+</p>
+
+<p>
+Colab 版本：<a href="https://colab.research.google.com/drive/1IehBuskagMTm6RK6WB-dsf3NPZKTNVqs?usp=sharing">當AI遇上股票-LSTM.ipynb</a>
 </p>
 </div>
-<div id="outline-container-org5f455ff" class="outline-4">
-<h4 id="org5f455ff"><span class="section-number-4">5.3.1.</span> 安裝相關套件</h4>
+<div id="outline-container-orgd5f1f8a" class="outline-4">
+<h4 id="orgd5f1f8a"><span class="section-number-4">5.3.1.</span> 安裝相關套件</h4>
 <div class="outline-text-4" id="text-5-3-1">
 <div class="org-src-container">
 <pre class="src src-shell"><span class="linenr">1: </span>pip install yfinance
@@ -738,234 +755,602 @@ Model: "functional"
 </div>
 </div>
 </div>
-<div id="outline-container-org15b8611" class="outline-4">
-<h4 id="org15b8611"><span class="section-number-4">5.3.2.</span> 下載股價資訊</h4>
+<div id="outline-container-org048ede9" class="outline-4">
+<h4 id="org048ede9"><span class="section-number-4">5.3.2.</span> 下載股價資訊</h4>
 <div class="outline-text-4" id="text-5-3-2">
-<div class="org-src-container">
-<pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> yfinance <span style="color: #51afef;">as</span> yf
-<span class="linenr">2: </span>
-<span class="linenr">3: </span><span style="color: #dcaeea;">df</span> = yf.Ticker(<span style="color: #98be65;">'2330.TW'</span>).history(period=<span style="color: #98be65;">'10y'</span>)
-<span class="linenr">4: </span><span style="color: #c678dd;">print</span>(<span style="color: #c678dd;">type</span>(df))
-</pre>
-</div>
-</div>
-<div id="outline-container-orgce9fac2" class="outline-5">
-<h5 id="orgce9fac2">查看下載的資料集</h5>
-<div class="outline-text-5" id="text-orgce9fac2">
-<div class="org-src-container">
-<pre class="src src-python"><span class="linenr">1: </span>df
-<span class="linenr">2: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">print(df[:5])</span>
-</pre>
-</div>
-</div>
-</div>
-<div id="outline-container-org9c49ab1" class="outline-5">
-<h5 id="org9c49ab1">取出需要的特徵值</h5>
-<div class="outline-text-5" id="text-org9c49ab1">
 <p>
-此次將成交量納入考慮
+我們使用 <code>yfinance</code> 套件下載台積電（2330.TW）過去 10 年的歷史股價資料：
 </p>
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">data</span> = df.<span style="color: #c678dd;">filter</span>([<span style="color: #98be65;">'Close'</span>])
-<span class="linenr">2: </span>data
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> yfinance <span style="color: #51afef;">as</span> yf
+<span class="linenr">2: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr">3: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
+<span class="linenr">4: </span><span style="color: #51afef;">from</span> sklearn.preprocessing <span style="color: #51afef;">import</span> MinMaxScaler
+<span class="linenr">5: </span>
+<span class="linenr">6: </span><span style="color: #dcaeea;">df</span> = yf.Ticker(<span style="color: #98be65;">'2330.TW'</span>).history(period=<span style="color: #98be65;">'10y'</span>)
+<span class="linenr">7: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#36039;&#26009;&#31558;&#25976;: </span>{<span style="color: #c678dd;">len</span>(df)}<span style="color: #98be65;">"</span>)
+<span class="linenr">8: </span><span style="color: #c678dd;">print</span>(df.head())
 </pre>
 </div>
 </div>
 </div>
-</div>
-<div id="outline-container-orge1ee31a" class="outline-4">
-<h4 id="orge1ee31a"><span class="section-number-4">5.3.3.</span> 觀察原始資料/日K圖</h4>
+<div id="outline-container-orgd2070f1" class="outline-4">
+<h4 id="orgd2070f1"><span class="section-number-4">5.3.3.</span> 取出收盤價並繪製日K圖</h4>
 <div class="outline-text-4" id="text-5-3-3">
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
-<span class="linenr">2: </span>plt.clf()
-<span class="linenr">3: </span>plt.plot(data.Close)
-<span class="linenr">4: </span>plt.show()
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">data</span> = df.<span style="color: #c678dd;">filter</span>([<span style="color: #98be65;">'Close'</span>])
+<span class="linenr">2: </span><span style="color: #c678dd;">print</span>(data.head())
 </pre>
 </div>
-</div>
-</div>
-<div id="outline-container-org379cf2b" class="outline-4">
-<h4 id="org379cf2b"><span class="section-number-4">5.3.4.</span> 將資料標準化</h4>
-<div class="outline-text-4" id="text-5-3-4">
+
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">from</span> sklearn.preprocessing <span style="color: #51afef;">import</span> MinMaxScaler
-<span class="linenr">2: </span><span style="color: #dcaeea;">scaler</span> = MinMaxScaler(feature_range=(<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">1</span>))
-<span class="linenr">3: </span><span style="color: #dcaeea;">sc_data</span> = scaler.fit_transform(data.values)
-<span class="linenr">4: </span>
-<span class="linenr">5: </span>sc_data <span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#35722;&#25104;numpy array</span>
+<pre class="src src-python"><span class="linenr">1: </span>plt.figure(figsize=(<span style="color: #da8548; font-weight: bold;">10</span>, <span style="color: #da8548; font-weight: bold;">4</span>))
+<span class="linenr">2: </span>plt.plot(data.Close)
+<span class="linenr">3: </span>plt.title(<span style="color: #98be65;">'TSMC Stock Price (2330.TW)'</span>)
+<span class="linenr">4: </span>plt.xlabel(<span style="color: #98be65;">'Date'</span>)
+<span class="linenr">5: </span>plt.ylabel(<span style="color: #98be65;">'Close Price (TWD)'</span>)
+<span class="linenr">6: </span>plt.tight_layout()
+<span class="linenr">7: </span>plt.savefig(<span style="color: #98be65;">"images/lstm-stock-raw.png"</span>)
+<span class="linenr">8: </span>plt.close()
+</pre>
+</div>
+
+
+<div id="org284c791" class="figure">
+<p><img src="images/lstm-stock-raw.png" alt="lstm-stock-raw.png" width="600" />
+</p>
+<p><span class="figure-number">Figure 4: </span>台積電歷史股價走勢</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org01c6658" class="outline-4">
+<h4 id="org01c6658"><span class="section-number-4">5.3.4.</span> 將資料標準化</h4>
+<div class="outline-text-4" id="text-5-3-4">
+<p>
+神經網路偏好數值範圍在 0~1 之間的資料，所以我們先用 <code>MinMaxScaler</code> 做標準化：
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">scaler</span> = MinMaxScaler(feature_range=(<span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">1</span>))
+<span class="linenr">2: </span><span style="color: #dcaeea;">sc_data</span> = scaler.fit_transform(data.values)
+<span class="linenr">3: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#27161;&#28310;&#21270;&#24460;&#30340;&#21069;5&#31558;: </span>{sc_data[:5].flatten()}<span style="color: #98be65;">"</span>)
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-orgd42b386" class="outline-4">
-<h4 id="orgd42b386"><span class="section-number-4">5.3.5.</span> 建立、分割資料</h4>
+<div id="outline-container-orgf911d62" class="outline-4">
+<h4 id="orgf911d62"><span class="section-number-4">5.3.5.</span> 建立、分割資料</h4>
 <div class="outline-text-4" id="text-5-3-5">
 </div>
-<div id="outline-container-org3fb2021" class="outline-5">
-<h5 id="org3fb2021">建立資料集及標籤</h5>
-<div class="outline-text-5" id="text-org3fb2021">
+<div id="outline-container-orgbce3cd3" class="outline-5">
+<h5 id="orgbce3cd3">建立資料集及標籤</h5>
+<div class="outline-text-5" id="text-orgbce3cd3">
+<p>
+我們用「滑動窗口」的方式建立資料：取連續 10 天的收盤價作為輸入特徵（X），第 11 天的收盤價作為預測目標（Y）。
+</p>
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
-<span class="linenr"> 2: </span>
-<span class="linenr"> 3: </span><span style="color: #dcaeea;">featureDays</span> = <span style="color: #da8548; font-weight: bold;">10</span>
-<span class="linenr"> 4: </span><span style="color: #dcaeea;">x_data</span>, <span style="color: #dcaeea;">y_data</span> = [], []
-<span class="linenr"> 5: </span><span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #c678dd;">len</span>(sc_data) - featureDays):
-<span class="linenr"> 6: </span>  <span style="color: #dcaeea;">x</span> = sc_data[i:i+featureDays]
-<span class="linenr"> 7: </span>  <span style="color: #dcaeea;">y</span> = sc_data[i+featureDays]
-<span class="linenr"> 8: </span>  x_data.append(x)
-<span class="linenr"> 9: </span>  y_data.append(y)
-<span class="linenr">10: </span>
-<span class="linenr">11: </span><span style="color: #dcaeea;">x_data</span>, <span style="color: #dcaeea;">y_data</span> = np.array(x_data), np.array(y_data)
-<span class="linenr">12: </span>
-<span class="linenr">13: </span><span style="color: #c678dd;">print</span>(x_data.shape)
-<span class="linenr">14: </span><span style="color: #c678dd;">print</span>(y_data.shape)
-<span class="linenr">15: </span><span style="color: #c678dd;">print</span>(<span style="color: #c678dd;">len</span>(x_data)) <span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#20840;&#37096;&#36039;&#26009;&#31558;&#25976;</span>
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #dcaeea;">featureDays</span> = <span style="color: #da8548; font-weight: bold;">10</span>
+<span class="linenr"> 2: </span><span style="color: #dcaeea;">x_data</span>, <span style="color: #dcaeea;">y_data</span> = [], []
+<span class="linenr"> 3: </span><span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #c678dd;">len</span>(sc_data) - featureDays):
+<span class="linenr"> 4: </span>    <span style="color: #dcaeea;">x</span> = sc_data[i:i+featureDays]
+<span class="linenr"> 5: </span>    <span style="color: #dcaeea;">y</span> = sc_data[i+featureDays]
+<span class="linenr"> 6: </span>    x_data.append(x)
+<span class="linenr"> 7: </span>    y_data.append(y)
+<span class="linenr"> 8: </span>
+<span class="linenr"> 9: </span><span style="color: #dcaeea;">x_data</span>, <span style="color: #dcaeea;">y_data</span> = np.array(x_data), np.array(y_data)
+<span class="linenr">10: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"X shape: </span>{x_data.shape}<span style="color: #98be65;">"</span>)
+<span class="linenr">11: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"Y shape: </span>{y_data.shape}<span style="color: #98be65;">"</span>)
+<span class="linenr">12: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#20840;&#37096;&#36039;&#26009;&#31558;&#25976;: </span>{<span style="color: #c678dd;">len</span>(x_data)}<span style="color: #98be65;">"</span>)
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-org42c8f02" class="outline-5">
-<h5 id="org42c8f02">分割訓練集與測試集</h5>
-<div class="outline-text-5" id="text-org42c8f02">
+<div id="outline-container-org31c5e8d" class="outline-5">
+<h5 id="org31c5e8d">分割訓練集與測試集</h5>
+<div class="outline-text-5" id="text-org31c5e8d">
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #dcaeea;">ratio</span> = <span style="color: #da8548; font-weight: bold;">0.8</span>
-<span class="linenr"> 2: </span><span style="color: #dcaeea;">train_size</span> = <span style="color: #c678dd;">round</span>(<span style="color: #c678dd;">len</span>(x_data) * ratio)
-<span class="linenr"> 3: </span><span style="color: #c678dd;">print</span>(train_size)
-<span class="linenr"> 4: </span><span style="color: #dcaeea;">x_train</span>, <span style="color: #dcaeea;">y_train</span> = x_data[:train_size], y_data[:train_size]
-<span class="linenr"> 5: </span><span style="color: #dcaeea;">x_test</span>, <span style="color: #dcaeea;">y_test</span> = x_data[train_size:], y_data[train_size:]
-<span class="linenr"> 6: </span>
-<span class="linenr"> 7: </span><span style="color: #c678dd;">print</span>(x_train.shape)
-<span class="linenr"> 8: </span><span style="color: #c678dd;">print</span>(y_train.shape)
-<span class="linenr"> 9: </span><span style="color: #c678dd;">print</span>(x_test.shape)
-<span class="linenr">10: </span><span style="color: #c678dd;">print</span>(y_test.shape)
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">ratio</span> = <span style="color: #da8548; font-weight: bold;">0.8</span>
+<span class="linenr">2: </span><span style="color: #dcaeea;">train_size</span> = <span style="color: #c678dd;">round</span>(<span style="color: #c678dd;">len</span>(x_data) * ratio)
+<span class="linenr">3: </span><span style="color: #dcaeea;">x_train</span>, <span style="color: #dcaeea;">y_train</span> = x_data[:train_size], y_data[:train_size]
+<span class="linenr">4: </span><span style="color: #dcaeea;">x_test</span>, <span style="color: #dcaeea;">y_test</span> = x_data[train_size:], y_data[train_size:]
+<span class="linenr">5: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#35347;&#32244;&#38598;: X=</span>{x_train.shape}<span style="color: #98be65;">, Y=</span>{y_train.shape}<span style="color: #98be65;">"</span>)
+<span class="linenr">6: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#28204;&#35430;&#38598;: X=</span>{x_test.shape}<span style="color: #98be65;">, Y=</span>{y_test.shape}<span style="color: #98be65;">"</span>)
 </pre>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-org735efdc" class="outline-4">
-<h4 id="org735efdc"><span class="section-number-4">5.3.6.</span> 建立、編譯、訓練模型</h4>
+<div id="outline-container-orgbc3ef44" class="outline-4">
+<h4 id="orgbc3ef44"><span class="section-number-4">5.3.6.</span> 建立、編譯、訓練模型</h4>
 <div class="outline-text-4" id="text-5-3-6">
 </div>
-<div id="outline-container-org76d2996" class="outline-5">
-<h5 id="org76d2996">建立模型</h5>
-<div class="outline-text-5" id="text-org76d2996">
+<div id="outline-container-orgbe986b6" class="outline-5">
+<h5 id="orgbe986b6">建立模型</h5>
+<div class="outline-text-5" id="text-orgbe986b6">
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> tensorflow <span style="color: #51afef;">as</span> tf
-<span class="linenr">2: </span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">&#24314;&#27083;LSTM&#27169;&#22411;</span>
-<span class="linenr">3: </span><span style="color: #dcaeea;">model</span> = tf.keras.Sequential()
-<span class="linenr">4: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">LSTM&#23652;</span>
-<span class="linenr">5: </span>model.add(tf.keras.layers.LSTM(units=<span style="color: #da8548; font-weight: bold;">64</span>, unroll = <span style="color: #a9a1e1;">False</span>, input_shape=(featureDays,<span style="color: #da8548; font-weight: bold;">1</span>)))
-<span class="linenr">6: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">Dense&#23652;</span>
-<span class="linenr">7: </span>model.add(tf.keras.layers.Dense(units=<span style="color: #da8548; font-weight: bold;">1</span>))
-</pre>
-</div>
-<div class="org-src-container">
-<pre class="src src-python"><span class="linenr">1: </span>model.summary()
-</pre>
-</div>
-</div>
-</div>
-<div id="outline-container-orgccf4085" class="outline-5">
-<h5 id="orgccf4085">編譯模型</h5>
-<div class="outline-text-5" id="text-orgccf4085">
-<div class="org-src-container">
-<pre class="src src-python"><span class="linenr">1: </span>model.<span style="color: #c678dd;">compile</span>(loss=<span style="color: #98be65;">'mse'</span>, optimizer=<span style="color: #98be65;">'adam'</span>, metrics=[<span style="color: #98be65;">'accuracy'</span>])
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> tensorflow <span style="color: #51afef;">as</span> tf
+<span class="linenr"> 2: </span><span style="color: #51afef;">from</span> tensorflow.keras <span style="color: #51afef;">import</span> layers, models
+<span class="linenr"> 3: </span>
+<span class="linenr"> 4: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24314;&#27083; LSTM &#27169;&#22411;&#65288;Keras 3.x &#23531;&#27861;&#65289;</span>
+<span class="linenr"> 5: </span><span style="color: #dcaeea;">inputs</span> = layers.Input(shape=(featureDays, <span style="color: #da8548; font-weight: bold;">1</span>))
+<span class="linenr"> 6: </span><span style="color: #dcaeea;">x</span> = layers.LSTM(units=<span style="color: #da8548; font-weight: bold;">64</span>)(inputs)
+<span class="linenr"> 7: </span><span style="color: #dcaeea;">outputs</span> = layers.Dense(units=<span style="color: #da8548; font-weight: bold;">1</span>)(x)
+<span class="linenr"> 8: </span>
+<span class="linenr"> 9: </span><span style="color: #dcaeea;">model</span> = models.Model(inputs=inputs, outputs=outputs)
+<span class="linenr">10: </span>model.summary()
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-org3f6ba1c" class="outline-5">
-<h5 id="org3f6ba1c">訓練模型</h5>
-<div class="outline-text-5" id="text-org3f6ba1c">
+<div id="outline-container-orgf43b040" class="outline-5">
+<h5 id="orgf43b040">編譯模型</h5>
+<div class="outline-text-5" id="text-orgf43b040">
+<p>
+注意：股價預測是「迴歸」問題，所以用 <code>mse</code> 作為損失函數，評估指標用 <code>mae</code> （平均絕對誤差），而不是分類問題的 <code>accuracy</code> 。
+</p>
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr">1: </span>model.fit(x_train, y_train,
-<span class="linenr">2: </span>          validation_split=<span style="color: #da8548; font-weight: bold;">0.2</span>,
-<span class="linenr">3: </span>          batch_size=<span style="color: #da8548; font-weight: bold;">200</span>, epochs=<span style="color: #da8548; font-weight: bold;">20</span>)
+<pre class="src src-python"><span class="linenr">1: </span>model.<span style="color: #c678dd;">compile</span>(loss=<span style="color: #98be65;">'mse'</span>, optimizer=<span style="color: #98be65;">'adam'</span>, metrics=[<span style="color: #98be65;">'mae'</span>])
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org6b41e09" class="outline-5">
+<h5 id="org6b41e09">訓練模型</h5>
+<div class="outline-text-5" id="text-org6b41e09">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">history</span> = model.fit(x_train, y_train,
+<span class="linenr">2: </span>                    validation_split=<span style="color: #da8548; font-weight: bold;">0.2</span>,
+<span class="linenr">3: </span>                    batch_size=<span style="color: #da8548; font-weight: bold;">200</span>, epochs=<span style="color: #da8548; font-weight: bold;">20</span>)
 </pre>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-org77f0713" class="outline-4">
-<h4 id="org77f0713"><span class="section-number-4">5.3.7.</span> 性能測試</h4>
+<div id="outline-container-org6fbf115" class="outline-4">
+<h4 id="org6fbf115"><span class="section-number-4">5.3.7.</span> 性能測試</h4>
 <div class="outline-text-4" id="text-5-3-7">
 </div>
-<div id="outline-container-org27d7490" class="outline-5">
-<h5 id="org27d7490">loss</h5>
-<div class="outline-text-5" id="text-org27d7490">
+<div id="outline-container-orgfe64396" class="outline-5">
+<h5 id="orgfe64396">評估模型</h5>
+<div class="outline-text-5" id="text-orgfe64396">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">score</span> = model.evaluate(x_test, y_test)
-<span class="linenr">2: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">'loss:'</span>, score[<span style="color: #da8548; font-weight: bold;">0</span>])
+<span class="linenr">2: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">'Loss (MSE): </span>{score[0]:.6f}<span style="color: #98be65;">'</span>)
+<span class="linenr">3: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">'MAE: </span>{score[1]:.6f}<span style="color: #98be65;">'</span>)
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-orge0e999e" class="outline-5">
-<h5 id="orge0e999e">predict</h5>
-<div class="outline-text-5" id="text-orge0e999e">
+<div id="outline-container-orge66abec" class="outline-5">
+<h5 id="orge66abec">預測並還原股價</h5>
+<div class="outline-text-5" id="text-orge66abec">
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr">1: </span><span style="color: #dcaeea;">predict</span> = model.predict(x_test)
 <span class="linenr">2: </span><span style="color: #dcaeea;">predict</span> = scaler.inverse_transform(predict)
 <span class="linenr">3: </span><span style="color: #dcaeea;">predict</span> = np.reshape(predict, (predict.size,))
 <span class="linenr">4: </span><span style="color: #dcaeea;">ans</span> = scaler.inverse_transform(y_test)
 <span class="linenr">5: </span><span style="color: #dcaeea;">ans</span> = np.reshape(ans, (ans.size,))
-<span class="linenr">6: </span><span style="color: #c678dd;">print</span>(predict[:<span style="color: #da8548; font-weight: bold;">3</span>])
-<span class="linenr">7: </span><span style="color: #c678dd;">print</span>(ans[:<span style="color: #da8548; font-weight: bold;">3</span>])
+<span class="linenr">6: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#38928;&#28204;&#21069;3&#31558;: </span>{predict[:3]}<span style="color: #98be65;">"</span>)
+<span class="linenr">7: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#23526;&#38555;&#21069;3&#31558;: </span>{ans[:3]}<span style="color: #98be65;">"</span>)
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-org278fe48" class="outline-5">
-<h5 id="org278fe48">plot</h5>
-<div class="outline-text-5" id="text-org278fe48">
+<div id="outline-container-org44982c4" class="outline-5">
+<h5 id="org44982c4">繪製預測結果</h5>
+<div class="outline-text-5" id="text-org44982c4">
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr">1: </span>plt.plot(predict)
-<span class="linenr">2: </span>plt.plot(ans)
-<span class="linenr">3: </span>plt.show()
+<pre class="src src-python"><span class="linenr"> 1: </span>plt.figure(figsize=(<span style="color: #da8548; font-weight: bold;">10</span>, <span style="color: #da8548; font-weight: bold;">4</span>))
+<span class="linenr"> 2: </span>plt.plot(predict, label=<span style="color: #98be65;">'Predicted'</span>)
+<span class="linenr"> 3: </span>plt.plot(ans, label=<span style="color: #98be65;">'Actual'</span>)
+<span class="linenr"> 4: </span>plt.title(<span style="color: #98be65;">'LSTM Stock Price Prediction'</span>)
+<span class="linenr"> 5: </span>plt.xlabel(<span style="color: #98be65;">'Days'</span>)
+<span class="linenr"> 6: </span>plt.ylabel(<span style="color: #98be65;">'Close Price (TWD)'</span>)
+<span class="linenr"> 7: </span>plt.legend()
+<span class="linenr"> 8: </span>plt.tight_layout()
+<span class="linenr"> 9: </span>plt.savefig(<span style="color: #98be65;">"images/lstm-stock-predict.png"</span>)
+<span class="linenr">10: </span>plt.close()
 </pre>
 </div>
+
+
+<div id="org9a3e702" class="figure">
+<p><img src="images/lstm-stock-predict.png" alt="lstm-stock-predict.png" width="600" />
+</p>
+<p><span class="figure-number">Figure 5: </span>LSTM 股價預測結果</p>
 </div>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-orgec8ac19" class="outline-2">
-<h2 id="orgec8ac19"><span class="section-number-2">6.</span> GRU</h2>
+</div>
+<div id="outline-container-orgc3d053f" class="outline-2">
+<h2 id="orgc3d053f"><span class="section-number-2">6.</span> GRU</h2>
 <div class="outline-text-2" id="text-6">
 <p>
-GRU（Gated Recurrent Unit）是RNN的一種另一種變體，與LSTM類似，但結構更簡單。GRU將LSTM的三個閘門（遺忘閘、輸入閘、輸出閘）合併為兩個閘門：重置閘（reset gate）和更新閘（update gate）。這使得GRU在某些情況下能夠更快地訓練，並且在某些任務上表現得與LSTM相當。
+GRU（Gated Recurrent Unit）是 RNN 的另一種變體，由 Cho 等人於 2014 年提出。如果說 LSTM 是記憶界的「全套豪華裝備」，那 GRU 就是「輕裝版」——功能差不多，但裝備更精簡。
+</p>
+
+<p>
+GRU 把 LSTM 的三個閘門（遺忘閘、輸入閘、輸出閘）合併為兩個閘門：重置閘（Reset Gate）和更新閘（Update Gate）。同時，GRU 也不再區分「記憶狀態」和「隱藏狀態」，只保留一個隱藏狀態 \(h_t\)。
 </p>
 
 
-<div id="orgb7553bc" class="figure">
+<div id="org0862120" class="figure">
 <p><img src="images/gru.webp" alt="gru.webp" width="600" />
 </p>
-<p><span class="figure-number">Figure 4: </span>GRU架構</p>
+<p><span class="figure-number">Figure 6: </span>GRU架構</p>
+</div>
+</div>
+<div id="outline-container-org1ae41f7" class="outline-3">
+<h3 id="org1ae41f7"><span class="section-number-3">6.1.</span> GRU 的閘門機制</h3>
+<div class="outline-text-3" id="text-6-1">
+<p>
+如圖<a href="#org0862120">6</a>所示，GRU 的兩個閘門分別負責以下功能：
+</p>
+</div>
+<div id="outline-container-orgb162a9d" class="outline-4">
+<h4 id="orgb162a9d"><span class="section-number-4">6.1.1.</span> 重置閘（Reset Gate）</h4>
+<div class="outline-text-4" id="text-6-1-1">
+<p>
+重置閘決定「在生成新的候選隱藏狀態時，要參考多少前一個時間點的資訊」。計算公式為：
+\[
+r_t = \sigma\!\bigl(W_r\,[h_{t-1},\,x_t] + b_r\bigr)
+\]
+</p>
+<ul class="org-ul">
+<li>當 \(r_t\) 接近 0 時：忽略先前的隱藏狀態，像是「從頭開始思考」</li>
+<li>當 \(r_t\) 接近 1 時：保留先前的隱藏狀態，像是「接續之前的想法」</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org4d3e578" class="outline-4">
+<h4 id="org4d3e578"><span class="section-number-4">6.1.2.</span> 更新閘（Update Gate）</h4>
+<div class="outline-text-4" id="text-6-1-2">
+<p>
+更新閘決定「最終的隱藏狀態中，新資訊和舊資訊各佔多少比例」。計算公式為：
+\[
+z_t = \sigma\!\bigl(W_z\,[h_{t-1},\,x_t] + b_z\bigr)
+\]
+這個閘門其實同時扮演了 LSTM 中遺忘閘和輸入閘的角色——\(z_t\) 越大，保留越多舊資訊；\(1-z_t\) 越大，則接受越多新資訊。
+</p>
+</div>
+</div>
+<div id="outline-container-org049621e" class="outline-4">
+<h4 id="org049621e"><span class="section-number-4">6.1.3.</span> 隱藏狀態更新</h4>
+<div class="outline-text-4" id="text-6-1-3">
+<p>
+GRU 的隱藏狀態更新分兩步：
+</p>
+
+<ol class="org-ol">
+<li>先計算候選隱藏狀態（結合重置閘的結果）：</li>
+</ol>
+<p>
+\[
+\tilde{h}_t = \tanh\!\bigl(W_h\,[r_t \odot h_{t-1},\,x_t] + b_h\bigr)
+\]
+</p>
+
+<ol class="org-ol">
+<li>再用更新閘混合新舊資訊：</li>
+</ol>
+<p>
+\[
+h_t = z_t \odot h_{t-1} + (1 - z_t) \odot \tilde{h}_t
+\]
+</p>
+
+<p>
+注意這個公式的巧妙之處：\(z_t\) 和 \(1-z_t\) 加起來剛好等於 1，所以新舊資訊的比例是自動平衡的。這也是 GRU 比 LSTM 少一個閘門的原因——不需要分別用遺忘閘和輸入閘來控制，一個更新閘就搞定了。
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orge81f817" class="outline-3">
+<h3 id="orge81f817"><span class="section-number-3">6.2.</span> LSTM vs GRU 比較</h3>
+<div class="outline-text-3" id="text-6-2">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">比較項目</th>
+<th scope="col" class="org-left">LSTM</th>
+<th scope="col" class="org-left">GRU</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">閘門數量</td>
+<td class="org-left">3 個</td>
+<td class="org-left">2 個</td>
+</tr>
+
+<tr>
+<td class="org-left">記憶機制</td>
+<td class="org-left">記憶狀態 + 隱藏狀態</td>
+<td class="org-left">只有隱藏狀態</td>
+</tr>
+
+<tr>
+<td class="org-left">參數量</td>
+<td class="org-left">較多</td>
+<td class="org-left">較少（約 LSTM 的 75%）</td>
+</tr>
+
+<tr>
+<td class="org-left">訓練速度</td>
+<td class="org-left">較慢</td>
+<td class="org-left">較快</td>
+</tr>
+
+<tr>
+<td class="org-left">長序列表現</td>
+<td class="org-left">通常較好</td>
+<td class="org-left">接近 LSTM</td>
+</tr>
+
+<tr>
+<td class="org-left">適用場景</td>
+<td class="org-left">需要精細記憶控制</td>
+<td class="org-left">資料量較少或需要快速訓練</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+簡單來說：如果你的任務需要處理非常長的序列，或需要精細地控制記憶內容，選 LSTM；如果你的資料集不大、希望訓練快一點，或是想先快速試試效果，選 GRU。在實務上，兩者的表現通常差異不大，所以很多時候是「先用 GRU 試試看，不行再換 LSTM」。
+</p>
+</div>
+</div>
+<div id="outline-container-org8bec753" class="outline-3">
+<h3 id="org8bec753"><span class="section-number-3">6.3.</span> GRU 程式範例</h3>
+<div class="outline-text-3" id="text-6-3">
+<p>
+在 Keras 中使用 GRU 非常簡單，只要把 <code>LSTM</code> 換成 <code>GRU</code> 就好：
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> tensorflow <span style="color: #51afef;">as</span> tf
+<span class="linenr"> 2: </span><span style="color: #51afef;">from</span> tensorflow.keras <span style="color: #51afef;">import</span> layers, models
+<span class="linenr"> 3: </span>
+<span class="linenr"> 4: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">GRU &#27169;&#22411;</span>
+<span class="linenr"> 5: </span><span style="color: #dcaeea;">inputs</span> = layers.Input(shape=(<span style="color: #da8548; font-weight: bold;">10</span>, <span style="color: #da8548; font-weight: bold;">1</span>))
+<span class="linenr"> 6: </span><span style="color: #dcaeea;">x</span> = layers.GRU(units=<span style="color: #da8548; font-weight: bold;">64</span>)(inputs)
+<span class="linenr"> 7: </span><span style="color: #dcaeea;">outputs</span> = layers.Dense(units=<span style="color: #da8548; font-weight: bold;">1</span>)(x)
+<span class="linenr"> 8: </span>
+<span class="linenr"> 9: </span><span style="color: #dcaeea;">model_gru</span> = models.Model(inputs=inputs, outputs=outputs)
+<span class="linenr">10: </span>model_gru.summary()
+</pre>
 </div>
 
 <p>
-如圖<a href="#orgb7553bc">4</a>所示，GRU的兩個閘門分別負責以下功能：
+可以看到 GRU 的參數量比同樣設定的 LSTM 少了約 25%。
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org0641d04" class="outline-2">
+<h2 id="org0641d04"><span class="section-number-2">7.</span> 作業</h2>
+<div class="outline-text-2" id="text-7">
+</div>
+<div id="outline-container-org33ecf3b" class="outline-3">
+<h3 id="org33ecf3b"><span class="section-number-3">7.1.</span> 作業一：LSTM 閘門模擬器</h3>
+<div class="outline-text-3" id="text-7-1">
+<p>
+LSTM 的三個閘門到底在幹嘛？光看公式太無聊了，不如自己動手算一遍！
+</p>
+
+<p>
+以下程式模擬了 LSTM 的一個時間步運算，請執行後觀察結果：
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 2: </span>
+<span class="linenr"> 3: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">sigmoid</span>(x):
+<span class="linenr"> 4: </span>    <span style="color: #51afef;">return</span> <span style="color: #da8548; font-weight: bold;">1</span> / (<span style="color: #da8548; font-weight: bold;">1</span> + np.exp(-x))
+<span class="linenr"> 5: </span>
+<span class="linenr"> 6: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20551;&#35373;&#32173;&#24230;&#28858; 2</span>
+<span class="linenr"> 7: </span>np.random.seed(<span style="color: #da8548; font-weight: bold;">42</span>)
+<span class="linenr"> 8: </span><span style="color: #dcaeea;">h_prev</span> = np.array([<span style="color: #da8548; font-weight: bold;">0.1</span>, -<span style="color: #da8548; font-weight: bold;">0.2</span>])   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21069;&#19968;&#20491;&#38577;&#34255;&#29376;&#24907;</span>
+<span class="linenr"> 9: </span><span style="color: #dcaeea;">c_prev</span> = np.array([<span style="color: #da8548; font-weight: bold;">0.5</span>, <span style="color: #da8548; font-weight: bold;">0.3</span>])    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21069;&#19968;&#20491;&#35352;&#25014;&#29376;&#24907;</span>
+<span class="linenr">10: </span><span style="color: #dcaeea;">x_t</span> = np.array([<span style="color: #da8548; font-weight: bold;">0.8</span>, -<span style="color: #da8548; font-weight: bold;">0.5</span>])      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#30446;&#21069;&#30340;&#36664;&#20837;</span>
+<span class="linenr">11: </span>
+<span class="linenr">12: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20018;&#25509; [h_prev, x_t]</span>
+<span class="linenr">13: </span><span style="color: #dcaeea;">concat</span> = np.concatenate([h_prev, x_t])
+<span class="linenr">14: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#20018;&#25509;&#24460;&#30340;&#21521;&#37327;: </span>{concat}<span style="color: #98be65;">"</span>)
+<span class="linenr">15: </span>
+<span class="linenr">16: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27169;&#25836;&#19977;&#20491;&#38296;&#38272;&#65288;&#29992;&#38568;&#27231;&#27402;&#37325;&#65289;</span>
+<span class="linenr">17: </span><span style="color: #dcaeea;">W_f</span> = np.random.randn(<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">4</span>) * <span style="color: #da8548; font-weight: bold;">0.5</span>
+<span class="linenr">18: </span><span style="color: #dcaeea;">b_f</span> = np.zeros(<span style="color: #da8548; font-weight: bold;">2</span>)
+<span class="linenr">19: </span><span style="color: #dcaeea;">f_t</span> = sigmoid(W_f @ concat + b_f)
+<span class="linenr">20: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">&#36986;&#24536;&#38296; f_t: </span>{f_t}<span style="color: #98be65;">"</span>)
+<span class="linenr">21: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#8594; &#20445;&#30041; </span>{f_t[0]:.1%}<span style="color: #98be65;"> &#21644; </span>{f_t[1]:.1%}<span style="color: #98be65;"> &#30340;&#33290;&#35352;&#25014;"</span>)
+<span class="linenr">22: </span>
+<span class="linenr">23: </span><span style="color: #dcaeea;">W_i</span> = np.random.randn(<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">4</span>) * <span style="color: #da8548; font-weight: bold;">0.5</span>
+<span class="linenr">24: </span><span style="color: #dcaeea;">b_i</span> = np.zeros(<span style="color: #da8548; font-weight: bold;">2</span>)
+<span class="linenr">25: </span><span style="color: #dcaeea;">i_t</span> = sigmoid(W_i @ concat + b_i)
+<span class="linenr">26: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">&#36664;&#20837;&#38296; i_t: </span>{i_t}<span style="color: #98be65;">"</span>)
+<span class="linenr">27: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#8594; &#23531;&#20837; </span>{i_t[0]:.1%}<span style="color: #98be65;"> &#21644; </span>{i_t[1]:.1%}<span style="color: #98be65;"> &#30340;&#26032;&#36039;&#35338;"</span>)
+<span class="linenr">28: </span>
+<span class="linenr">29: </span><span style="color: #dcaeea;">W_c</span> = np.random.randn(<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">4</span>) * <span style="color: #da8548; font-weight: bold;">0.5</span>
+<span class="linenr">30: </span><span style="color: #dcaeea;">b_c</span> = np.zeros(<span style="color: #da8548; font-weight: bold;">2</span>)
+<span class="linenr">31: </span><span style="color: #dcaeea;">c_tilde</span> = np.tanh(W_c @ concat + b_c)
+<span class="linenr">32: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">&#20505;&#36984;&#35352;&#25014; c_tilde: </span>{c_tilde}<span style="color: #98be65;">"</span>)
+<span class="linenr">33: </span>
+<span class="linenr">34: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#26356;&#26032;&#35352;&#25014;&#29376;&#24907;</span>
+<span class="linenr">35: </span><span style="color: #dcaeea;">c_t</span> = f_t * c_prev + i_t * c_tilde
+<span class="linenr">36: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">&#26356;&#26032;&#24460;&#30340;&#35352;&#25014;&#29376;&#24907; c_t: </span>{c_t}<span style="color: #98be65;">"</span>)
+<span class="linenr">37: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#65288;&#33290;&#35352;&#25014;&#20445;&#30041;: </span>{f_t * c_prev}<span style="color: #98be65;">&#65289;"</span>)
+<span class="linenr">38: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#65288;&#26032;&#35352;&#25014;&#23531;&#20837;: </span>{i_t * c_tilde}<span style="color: #98be65;">&#65289;"</span>)
+<span class="linenr">39: </span>
+<span class="linenr">40: </span><span style="color: #dcaeea;">W_o</span> = np.random.randn(<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">4</span>) * <span style="color: #da8548; font-weight: bold;">0.5</span>
+<span class="linenr">41: </span><span style="color: #dcaeea;">b_o</span> = np.zeros(<span style="color: #da8548; font-weight: bold;">2</span>)
+<span class="linenr">42: </span><span style="color: #dcaeea;">o_t</span> = sigmoid(W_o @ concat + b_o)
+<span class="linenr">43: </span><span style="color: #dcaeea;">h_t</span> = o_t * np.tanh(c_t)
+<span class="linenr">44: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">&#36664;&#20986;&#38296; o_t: </span>{o_t}<span style="color: #98be65;">"</span>)
+<span class="linenr">45: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#26368;&#32066;&#38577;&#34255;&#29376;&#24907; h_t: </span>{h_t}<span style="color: #98be65;">"</span>)
+</pre>
+</div>
+</div>
+<div id="outline-container-org15f9a0c" class="outline-5">
+<h5 id="org15f9a0c">你的任務</h5>
+<div class="outline-text-5" id="text-org15f9a0c">
+<p>
+請修改程式，完成以下實驗：
 </p>
 <ol class="org-ol">
-<li>重置閘（reset gate）：決定如何結合新輸入\(x_t)與先前的隱藏狀態(h_{t-1})。當重置閘接近0時，表示忽略先前的隱藏狀態，專注於當前輸入；當接近1時，則保留更多的先前資訊。</li>
-<li>更新閘（update gate）：決定有多少先前的隱藏狀態應該被保留到當前的隱藏狀態中。當更新閘接近1時，表示保留大部分的先前資訊；當接近0時，則更多地依賴於當前的輸入。</li>
+<li>把遺忘閘的輸出強制設為全 0（ <code>f_t = np.array([0.0, 0.0])</code> ），觀察 <code>c_t</code> 會怎麼變化？舊記憶還在嗎？</li>
+<li>把輸入閘的輸出強制設為全 0（ <code>i_t = np.array([0.0, 0.0])</code> ），觀察 <code>c_t</code> 會怎麼變化？新資訊能進來嗎？</li>
+<li>把遺忘閘設為全 1、輸入閘設為全 1，觀察結果和原本有什麼不同？</li>
 </ol>
+</div>
+</div>
+<div id="outline-container-org03fbc13" class="outline-5">
+<h5 id="org03fbc13">預期輸出格式</h5>
+<div class="outline-text-5" id="text-org03fbc13">
+<pre class="example" id="orgad17c56">
+=== 實驗 1: 遺忘閘全關 ===
+c_t = [xxx, xxx]  ← 舊記憶完全消失，只剩新資訊
+
+=== 實驗 2: 輸入閘全關 ===
+c_t = [xxx, xxx]  ← 新資訊進不來，只保留舊記憶
+
+=== 實驗 3: 兩個閘全開 ===
+c_t = [xxx, xxx]  ← 舊記憶全保留 + 新資訊全寫入
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgdcfce77" class="outline-3">
+<h3 id="orgdcfce77"><span class="section-number-3">7.2.</span> 作業二：LSTM vs GRU 股價預測大對決</h3>
+<div class="outline-text-3" id="text-7-2">
+<p>
+剛剛我們用 LSTM 預測了台積電的股價，現在請你用同樣的資料，改用 GRU 來預測，然後比較兩者的表現。
+</p>
 
 <p>
-比起LSTM，GRU的結構更為簡潔，參數更少，這使得它在某些情況下能夠更快地訓練。然而，兩者在不同任務上的表現可能有所差異，選擇使用哪一種架構通常取決於具體的應用場景和資料特性。
+以下是 GRU 版本的模型建構範例：
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25226; stock session &#20013;&#30340; LSTM &#27169;&#22411;&#25913;&#25104; GRU</span>
+<span class="linenr"> 2: </span><span style="color: #dcaeea;">inputs_gru</span> = layers.Input(shape=(featureDays, <span style="color: #da8548; font-weight: bold;">1</span>))
+<span class="linenr"> 3: </span><span style="color: #dcaeea;">x_gru</span> = layers.GRU(units=<span style="color: #da8548; font-weight: bold;">64</span>)(inputs_gru)
+<span class="linenr"> 4: </span><span style="color: #dcaeea;">outputs_gru</span> = layers.Dense(units=<span style="color: #da8548; font-weight: bold;">1</span>)(x_gru)
+<span class="linenr"> 5: </span>
+<span class="linenr"> 6: </span><span style="color: #dcaeea;">model_gru</span> = models.Model(inputs=inputs_gru, outputs=outputs_gru)
+<span class="linenr"> 7: </span>model_gru.<span style="color: #c678dd;">compile</span>(loss=<span style="color: #98be65;">'mse'</span>, optimizer=<span style="color: #98be65;">'adam'</span>, metrics=[<span style="color: #98be65;">'mae'</span>])
+<span class="linenr"> 8: </span>
+<span class="linenr"> 9: </span><span style="color: #dcaeea;">history_gru</span> = model_gru.fit(x_train, y_train,
+<span class="linenr">10: </span>                            validation_split=<span style="color: #da8548; font-weight: bold;">0.2</span>,
+<span class="linenr">11: </span>                            batch_size=<span style="color: #da8548; font-weight: bold;">200</span>, epochs=<span style="color: #da8548; font-weight: bold;">20</span>)
+</pre>
+</div>
+</div>
+<div id="outline-container-orgb9c4c08" class="outline-5">
+<h5 id="orgb9c4c08">你的任務</h5>
+<div class="outline-text-5" id="text-orgb9c4c08">
+<ol class="org-ol">
+<li>用上面的程式碼替換原本的 LSTM 模型，訓練並預測</li>
+<li>將 LSTM 和 GRU 的預測結果畫在同一張圖上</li>
+<li>比較兩者的 Loss（MSE）和 MAE，填入下表：</li>
+</ol>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">模型</th>
+<th scope="col" class="org-left">Loss (MSE)</th>
+<th scope="col" class="org-left">MAE</th>
+<th scope="col" class="org-left">參數量</th>
+<th scope="col" class="org-left">訓練時間（秒）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">LSTM</td>
+<td class="org-left">?</td>
+<td class="org-left">?</td>
+<td class="org-left">?</td>
+<td class="org-left">?</td>
+</tr>
+
+<tr>
+<td class="org-left">GRU</td>
+<td class="org-left">?</td>
+<td class="org-left">?</td>
+<td class="org-left">?</td>
+<td class="org-left">?</td>
+</tr>
+</tbody>
+</table>
+
+<ol class="org-ol">
+<li>根據結果，回答：GRU 是否真的比 LSTM 快？預測準確度有差很多嗎？</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-orgee5ce4f" class="outline-5">
+<h5 id="orgee5ce4f">預期輸出</h5>
+<div class="outline-text-5" id="text-orgee5ce4f">
+<p>
+一張包含 Actual、LSTM Predicted、GRU Predicted 三條線的折線圖，以及填完的比較表格。
 </p>
 </div>
 </div>
-<div id="outline-container-org69d875a" class="outline-2">
-<h2 id="org69d875a"><span class="section-number-2">7.</span> LSTM學習資源</h2>
-<div class="outline-text-2" id="text-7">
+</div>
+<div id="outline-container-org416c024" class="outline-3">
+<h3 id="org416c024"><span class="section-number-3">7.3.</span> 作業三：AI 股市預言家的自白</h3>
+<div class="outline-text-3" id="text-7-3">
+<p>
+你現在是一位「AI 股市預言家」，你用 LSTM 模型做出了看起來很厲害的預測圖。但在向投資人推銷之前，請先誠實地回答以下問題：
+</p>
+
+<ol class="org-ol">
+<li>我們的模型只用了「收盤價」一種特徵來預測。如果你是投資人，你覺得還需要哪些資訊才能做出更好的判斷？列出至少 3 種，並說明原因。</li>
+
+<li>觀察預測圖，LSTM 的預測線看起來像是「跟著實際股價走，但慢了一拍」。為什麼會這樣？（提示：想想 LSTM 的輸入是什麼）</li>
+
+<li>如果有人說「我用 AI 預測股價，準確率 99%」，你會相信他嗎？為什麼？（提示：想想訓練集和測試集的關係，以及「預測明天的股價」和「預測下個月的股價」有什麼不同）</li>
+
+<li>以下哪些說法是正確的？
+<ul class="org-ul">
+<li>A. LSTM 可以完美預測股價</li>
+<li>B. LSTM 比較擅長捕捉短期的股價趨勢</li>
+<li>C. 只要訓練資料夠多，LSTM 就能打敗所有投資人</li>
+<li>D. LSTM 的預測結果只能作為參考，不能直接用來投資</li>
+</ul></li>
+</ol>
+</div>
+</div>
+</div>
+<div id="outline-container-org478ba91" class="outline-2">
+<h2 id="org478ba91"><span class="section-number-2">8.</span> LSTM學習資源</h2>
+<div class="outline-text-2" id="text-8">
 <ul class="org-ul">
 <li><a href="https://www.youtube.com/watch?v=6AW80qmaAOk">10分鐘了解RNN的基本概念 </a></li>
 <li><a href="https://www.youtube.com/watch?v=zXLAeat_b7g">從頭寫出 RNN (PyTorch) 完整介紹 [手寫數字辨識</a>]</li>
 <li><a href="https://www.youtube.com/watch?v=AsNTP8Kwu80">解說的很清楚的RNN教學影片</a></li>
-<li><a href="https://www.youtube.com/watch?v=YCzL96nL7j0">解說旳很詳細的LSTM教學影片</a></li>
+<li><a href="https://www.youtube.com/watch?v=YCzL96nL7j0">解說的很詳細的LSTM教學影片</a></li>
 <li><a href="https://www.youtube.com/watch?v=ubDtr6dh0c8">我的第一支快速利用TensorFlow 2.0利用RNN進行文本分類(第一部分) </a></li>
 <li><a href="https://www.youtube.com/watch?v=SyYIuVJ9BhQ">我的第一支快速利用TensorFlow 2.0利用RNN進行文本分類(第二部分)</a></li>
 </ul>
@@ -973,8 +1358,8 @@ GRU（Gated Recurrent Unit）是RNN的一種另一種變體，與LSTM類似，�
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2025-10-30 Thu 09:15</p>
+<p class="author">Author: 顏永進</p>
+<p class="date">Created: 2026-02-14 Sat 21:36</p>
 </div>
 </body>
 </html>

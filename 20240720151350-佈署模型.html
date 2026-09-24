@@ -3,11 +3,11 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2025-07-15 Tue 15:32 -->
+<!-- 2026-02-14 Sat 21:37 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>佈署模型</title>
-<meta name="author" content="Yung-Chin Yen" />
+<meta name="author" content="顏永進" />
 <meta name="generator" content="Org Mode" />
 <style type="text/css">
   #content { max-width: 60em; margin: auto; }
@@ -194,6 +194,7 @@
   .org-svg { }
 </style>
 <link rel="stylesheet" type="text/css" href="../css/muse.css" />
+<script src="../css/copy_code.js"></script>
 </head>
 <body>
 <div id="content" class="content">
@@ -202,221 +203,924 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgbc17537">1. Streamlit</a></li>
-<li><a href="#org7bd0786">2. 簡易的Streamlit範例</a>
+<li><a href="#org0fa638a">1. 模型訓練完了，然後呢？</a>
 <ul>
-<li><a href="#org148b3b5">2.1. 下載範例程式</a></li>
-<li><a href="#orgd166ce2">2.2. 執行程式的方法</a></li>
-<li><a href="#org79c227e">2.3. 簡易的參考程式</a></li>
+<li><a href="#org73e758d">1.1. 什麼是模型部署？</a></li>
+<li><a href="#org44e426e">1.2. 部署的完整流程</a></li>
 </ul>
 </li>
-<li><a href="#org2d8da71">3. 佈署成果</a></li>
+<li><a href="#org9026e33">2. Streamlit：三行程式碼做出網頁</a>
+<ul>
+<li><a href="#org645a682">2.1. Streamlit 的優點</a></li>
+<li><a href="#org81350d5">2.2. Streamlit 常用元件</a></li>
+</ul>
+</li>
+<li><a href="#org2c168a4">3. 實戰：部署 Fashion MNIST 分類器</a>
+<ul>
+<li><a href="#orga568e58">3.1. 步驟一：訓練並儲存模型</a></li>
+<li><a href="#org1eba3cc">3.2. 步驟二：視覺化訓練結果</a></li>
+<li><a href="#orgbf0b73c">3.3. 步驟三：測試模型預測效果</a></li>
+<li><a href="#org5d5e10c">3.4. 步驟四：建立 Streamlit 網頁應用</a></li>
+<li><a href="#org2a80f77">3.5. 步驟五：執行與測試</a></li>
+</ul>
+</li>
+<li><a href="#org3268336">4. 部署到雲端：讓全世界都能用</a>
+<ul>
+<li><a href="#orga5a341e">4.1. Streamlit Cloud（最簡單）</a></li>
+<li><a href="#org512683f">4.2. 其他部署選項</a></li>
+<li><a href="#orgbc49b84">4.3. Gradio：另一個好選擇</a></li>
+</ul>
+</li>
+<li><a href="#org33efa9b">5. 小結</a></li>
+<li><a href="#orga79f66f">6. 作業</a>
+<ul>
+<li><a href="#org455beeb">6.1. 作業一：我的 AI 小網站</a></li>
+<li><a href="#org83f8125">6.2. 作業二：Streamlit 元件大亂鬥</a></li>
+<li><a href="#orgd24836f">6.3. 作業三：AI 產品企劃書</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
 <a href="https://letranger.github.io/AI/20240720151350-佈署模型.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20240720151350-佈署模型.html.svg"/></a>
-
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-4EJ3V5BG0Z"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-4EJ3V5BG0Z');
-</script>
-<div id="outline-container-orgbc17537" class="outline-2">
-<h2 id="orgbc17537"><span class="section-number-2">1.</span> Streamlit</h2>
+<div id="outline-container-org0fa638a" class="outline-2">
+<h2 id="org0fa638a"><span class="section-number-2">1.</span> 模型訓練完了，然後呢？</h2>
 <div class="outline-text-2" id="text-1">
-
-<div id="orgb9a14a4" class="figure">
-<p><img src="images/Streamlit/2024-07-20_16-19-40_image27_frqkzv.png" alt="2024-07-20_16-19-40_image27_frqkzv.png" width="300" /><br />
+<p>
+你花了好幾個小時訓練出一個 AI 模型，準確率高達 95%——恭喜！但問題來了：*這個模型目前只存在於你的電腦裡*。<br />
 </p>
-<p><span class="figure-number">Figure 1: </span>Streamlit</p>
+
+<p>
+想像你是一位大廚，花了一整天研發出完美的秘密醬汁配方。配方寫在你的筆記本裡，但如果沒有開一家餐廳，其他人永遠吃不到你的料理。<br />
+</p>
+
+<blockquote>
+<p>
+模型訓練 = 研發配方（在廚房裡實驗）<br />
+</p>
+
+<p>
+模型部署 = 開餐廳營業（讓顧客能點餐吃到）<br />
+</p>
+</blockquote>
 </div>
-
+<div id="outline-container-org73e758d" class="outline-3">
+<h3 id="org73e758d"><span class="section-number-3">1.1.</span> 什麼是模型部署？</h3>
+<div class="outline-text-3" id="text-1-1">
 <p>
-<a href="https://streamlit.io/">Streamlit</a> 是一個開源的 Python 框架，讓開發者可以簡單快速地構建和分享資料分析應用程式。無論是機器學習模型的部署、客製化的視覺化儀表板，還是軟體設計的原型展示，Streamlit 都能輕鬆應對。<br />
-</p>
-
-<p>
-Streamlit的優點:<br />
+模型部署（Model Deployment）就是把訓練好的模型包裝成一個*別人可以使用的服務*。通常的做法是建立一個網頁介面，讓使用者可以：<br />
 </p>
 <ol class="org-ol">
-<li>簡單易用：<br />
-只需少量的 Python 代碼，就能創建出功能強大的應用程式。Streamlit 的 API 設計直觀，讓你可以專注於數據和邏輯，而不用擔心前端開發。<br /></li>
-<li>即時預覽：<br />
-在開發過程中，每次保存代碼變更後，應用會自動重新加載，快速看到修改效果。這大大提高了開發效率，讓你能夠即時調整和優化你的應用。<br /></li>
-<li>豐富的元件庫：<br />
-<ul class="org-ul">
-<li>Streamlit 提供了豐富的元件，如圖表、表格、文件上傳、滑動條、選擇框等，讓你可以輕鬆構建各種互動式的用戶界面。<br /></li>
-<li>支持與各種視覺化庫（如 Matplotlib、Plotly、Altair）的集成，讓你能夠創建精美的圖表和數據可視化。<br /></li>
-</ul></li>
-<li>支持機器學習和數據科學：<br />
-<ul class="org-ul">
-<li>Streamlit 非常適合用來展示和部署機器學習模型。你可以輕鬆地將模型輸出嵌入到應用中，並提供交互式的界面來調整參數和查看結果。<br /></li>
-<li>支持各種機器學習框架，如 TensorFlow、PyTorch、Scikit-learn 等，讓你能夠快速將訓練好的模型應用到實際場景中。<br /></li>
-</ul></li>
-<li>客製化儀表板：<br />
-<ul class="org-ul">
-<li>通過 Streamlit，你可以創建高度客製化的數據儀表板，實時顯示和更新數據分析結果，適合用於商業分析、研究報告等多種場景。<br /></li>
-<li>儀表板可以與數據庫或 API 集成，實現數據的實時更新和監控。<br /></li>
-</ul></li>
-<li>輕鬆部署和分享：<br />
-<ul class="org-ul">
-<li>Streamlit 應用可以很方便地部署到本地或雲端服務器，甚至可以使用 Streamlit 提供的分享平台來發佈你的應用，讓全球用戶都能訪問。<br /></li>
-<li>支持 Docker 化部署，讓你可以在不同環境中快速上線應用。<br /></li>
-</ul></li>
-<li>原型設計和展示：<br />
-Streamlit 是展示軟體設計原型的理想工具。你可以快速搭建原型，進行用戶測試和反饋收集，從而加速產品開發流程。<br /></li>
+<li>上傳資料（例如一張圖片）<br /></li>
+<li>模型在背後進行預測<br /></li>
+<li>把結果顯示在網頁上<br /></li>
 </ol>
 </div>
 </div>
-<div id="outline-container-org7bd0786" class="outline-2">
-<h2 id="org7bd0786"><span class="section-number-2">2.</span> 簡易的Streamlit範例</h2>
+<div id="outline-container-org44e426e" class="outline-3">
+<h3 id="org44e426e"><span class="section-number-3">1.2.</span> 部署的完整流程</h3>
+<div class="outline-text-3" id="text-1-2">
+<pre class="example" id="org8982f28">
+訓練模型 → 儲存模型 → 建立網頁介面 → 連接模型與介面 → 上線服務
+</pre>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">步驟</th>
+<th scope="col" class="org-left">做什麼</th>
+<th scope="col" class="org-left">用什麼工具</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">訓練模型</td>
+<td class="org-left">用資料訓練神經網路</td>
+<td class="org-left">TensorFlow / Keras</td>
+</tr>
+
+<tr>
+<td class="org-left">儲存模型</td>
+<td class="org-left">把訓練好的權重存成檔案</td>
+<td class="org-left"><code>model.save()</code></td>
+</tr>
+
+<tr>
+<td class="org-left">建立介面</td>
+<td class="org-left">做一個讓人操作的網頁</td>
+<td class="org-left">Streamlit</td>
+</tr>
+
+<tr>
+<td class="org-left">連接模型</td>
+<td class="org-left">載入模型並處理使用者的輸入</td>
+<td class="org-left">Python</td>
+</tr>
+
+<tr>
+<td class="org-left">上線服務</td>
+<td class="org-left">讓別人能連上你的網頁</td>
+<td class="org-left">localhost / 雲端</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="outline-container-org9026e33" class="outline-2">
+<h2 id="org9026e33"><span class="section-number-2">2.</span> Streamlit：三行程式碼做出網頁</h2>
 <div class="outline-text-2" id="text-2">
+
+<div id="orgc620409" class="figure">
+<p><img src="images/Streamlit/2024-07-20_16-19-40_image27_frqkzv.png" alt="2024-07-20_16-19-40_image27_frqkzv.png" width="300" /><br />
+</p>
+<p><span class="figure-number">Figure 1: </span>Streamlit 官方首頁</p>
 </div>
-<div id="outline-container-org148b3b5" class="outline-3">
-<h3 id="org148b3b5"><span class="section-number-3">2.1.</span> 下載範例程式</h3>
+
+<p>
+<a href="https://streamlit.io/">Streamlit</a> 是一個 Python 框架，專門用來*用最少的程式碼做出互動式網頁*。<br />
+</p>
+
+<p>
+它有多簡單？看看這個：<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> streamlit <span style="color: #51afef;">as</span> st
+<span class="linenr">2: </span>
+<span class="linenr">3: </span>st.title(<span style="color: #98be65;">"&#25105;&#30340;&#31532;&#19968;&#20491; AI &#32178;&#38913;"</span>)
+<span class="linenr">4: </span>st.write(<span style="color: #98be65;">"Hello World!"</span>)
+</pre>
+</div>
+
+<p>
+就這樣，三行程式碼，你就有一個網頁了。執行方式不是 =python main.py=，而是：<br />
+</p>
+
+<pre class="example" id="org7e53024">
+streamlit run main.py
+</pre>
+
+<p>
+瀏覽器會自動打開 =<a href="http://localhost:8501=，你的網頁就在那裡">http://localhost:8501=，你的網頁就在那裡</a>。<br />
+</p>
+</div>
+<div id="outline-container-org645a682" class="outline-3">
+<h3 id="org645a682"><span class="section-number-3">2.1.</span> Streamlit 的優點</h3>
 <div class="outline-text-3" id="text-2-1">
-<ul class="org-ul">
-<li>底下的檔案可以透過以下方式下載(於終端機執行)<br /></li>
-</ul>
-<div class="org-src-container">
-<pre class="src src-shell"><span class="linenr">1: </span><span style="color: #ECBE7B;">git</span> clone <span style="color: #ECBE7B;">git</span>@github.com:letranger/modelDeploy.git
-</pre>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">優點</th>
+<th scope="col" class="org-left">說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">超級簡單</td>
+<td class="org-left">不需要學 HTML/CSS/JavaScript，純 Python 就能做網頁</td>
+</tr>
+
+<tr>
+<td class="org-left">即時預覽</td>
+<td class="org-left">修改程式碼後儲存，網頁自動更新</td>
+</tr>
+
+<tr>
+<td class="org-left">元件豐富</td>
+<td class="org-left">按鈕、滑桿、下拉選單、檔案上傳⋯⋯通通內建</td>
+</tr>
+
+<tr>
+<td class="org-left">支援 AI 框架</td>
+<td class="org-left">可以直接整合 TensorFlow、PyTorch、scikit-learn</td>
+</tr>
+
+<tr>
+<td class="org-left">免費部署</td>
+<td class="org-left">可以用 Streamlit Cloud 免費上線</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
-</div>
-<div id="outline-container-orgd166ce2" class="outline-3">
-<h3 id="orgd166ce2"><span class="section-number-3">2.2.</span> 執行程式的方法</h3>
+<div id="outline-container-org81350d5" class="outline-3">
+<h3 id="org81350d5"><span class="section-number-3">2.2.</span> Streamlit 常用元件</h3>
 <div class="outline-text-3" id="text-2-2">
-<p>
-請依據你所使用的作業系統來執行以下不同的操作<br />
-</p>
-</div>
-<div id="outline-container-orgf43ff2a" class="outline-4">
-<h4 id="orgf43ff2a"><span class="section-number-4">2.2.1.</span> [for mac/linux]建立並使用執行環境</h4>
-<div class="outline-text-4" id="text-2-2-1">
-<p>
-打開終端機，進入你剛下載的資料夾，然後建立一個執行環境，在這個環境下安裝所需套件，然後執行程式<br />
-</p>
 <div class="org-src-container">
-<pre class="src src-python"><span class="linenr">1: </span>cd modelDeploy <span style="color: #5B6268;">#</span>
-<span class="linenr">2: </span>source venv/<span style="color: #c678dd;">bin</span>/activate
-<span class="linenr">3: </span>python3 -m venv venv
-<span class="linenr">4: </span>pip3 install -r requirements.txt
-<span class="linenr">5: </span>streamlit run main.py
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> streamlit <span style="color: #51afef;">as</span> st
+<span class="linenr"> 2: </span>
+<span class="linenr"> 3: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27161;&#38988;&#33287;&#25991;&#23383;</span>
+<span class="linenr"> 4: </span>st.title(<span style="color: #98be65;">"&#22823;&#27161;&#38988;"</span>)
+<span class="linenr"> 5: </span>st.header(<span style="color: #98be65;">"&#20013;&#27161;&#38988;"</span>)
+<span class="linenr"> 6: </span>st.write(<span style="color: #98be65;">"&#19968;&#33324;&#25991;&#23383;&#65292;&#25903;&#25588; **Markdown**"</span>)
+<span class="linenr"> 7: </span>
+<span class="linenr"> 8: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20114;&#21205;&#20803;&#20214;</span>
+<span class="linenr"> 9: </span><span style="color: #dcaeea;">name</span> = st.text_input(<span style="color: #98be65;">"&#20320;&#21483;&#20160;&#40636;&#21517;&#23383;&#65311;"</span>)
+<span class="linenr">10: </span><span style="color: #dcaeea;">age</span> = st.slider(<span style="color: #98be65;">"&#20320;&#24190;&#27506;&#65311;"</span>, <span style="color: #da8548; font-weight: bold;">0</span>, <span style="color: #da8548; font-weight: bold;">100</span>, <span style="color: #da8548; font-weight: bold;">16</span>)
+<span class="linenr">11: </span><span style="color: #dcaeea;">agree</span> = st.checkbox(<span style="color: #98be65;">"&#25105;&#21516;&#24847;&#20351;&#29992;&#26781;&#27454;"</span>)
+<span class="linenr">12: </span><span style="color: #dcaeea;">option</span> = st.selectbox(<span style="color: #98be65;">"&#36984;&#25799;&#20320;&#30340;&#29677;&#32026;"</span>, [<span style="color: #98be65;">"&#19968;&#24180;&#19968;&#29677;"</span>, <span style="color: #98be65;">"&#19968;&#24180;&#20108;&#29677;"</span>, <span style="color: #98be65;">"&#19968;&#24180;&#19977;&#29677;"</span>])
+<span class="linenr">13: </span>
+<span class="linenr">14: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39023;&#31034;&#32080;&#26524;</span>
+<span class="linenr">15: </span><span style="color: #51afef;">if</span> name:
+<span class="linenr">16: </span>    st.write(f<span style="color: #98be65;">"&#21704;&#22217; </span>{name}<span style="color: #98be65;">&#65281;&#20320; </span>{age}<span style="color: #98be65;"> &#27506;&#65292;&#20358;&#33258; </span>{option}<span style="color: #98be65;">"</span>)
+<span class="linenr">17: </span>
+<span class="linenr">18: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27284;&#26696;&#19978;&#20659;</span>
+<span class="linenr">19: </span><span style="color: #dcaeea;">uploaded</span> = st.file_uploader(<span style="color: #98be65;">"&#19978;&#20659;&#22294;&#29255;"</span>, <span style="color: #c678dd;">type</span>=[<span style="color: #98be65;">"jpg"</span>, <span style="color: #98be65;">"png"</span>])
+<span class="linenr">20: </span><span style="color: #51afef;">if</span> uploaded:
+<span class="linenr">21: </span>    st.image(uploaded, caption=<span style="color: #98be65;">"&#20320;&#19978;&#20659;&#30340;&#22294;&#29255;"</span>)
 </pre>
 </div>
-</div>
-</div>
-<div id="outline-container-org82fefcc" class="outline-4">
-<h4 id="org82fefcc"><span class="section-number-4">2.2.2.</span> [for windows]建立並使用執行環境</h4>
-<div class="outline-text-4" id="text-2-2-2">
+
 <p>
-打開終端機，進入你剛下載的資料夾，然後建立一個執行環境，在這個環境下安裝所需套件，然後執行程式<br />
+存成 <code>demo.py</code> 後執行 <code>streamlit run demo.py</code> 就能看到效果。<br />
 </p>
-<div class="org-src-container">
-<pre class="src src-python"><span class="linenr">1: </span>cd modelDeploy <span style="color: #5B6268;">#</span>
-<span class="linenr">2: </span>venv\Scripts\activate.bat
-<span class="linenr">3: </span>python3 -m venv venv
-<span class="linenr">4: </span>pip3 install -r requirements.txt
-<span class="linenr">5: </span>streamlit run \main.py
-</pre>
 </div>
 </div>
 </div>
+<div id="outline-container-org2c168a4" class="outline-2">
+<h2 id="org2c168a4"><span class="section-number-2">3.</span> 實戰：部署 Fashion MNIST 分類器</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+接下來我們要做一個完整的專案：訓練一個能辨識衣服種類的模型，然後部署成網頁讓使用者上傳圖片來辨識。<br />
+</p>
 </div>
-<div id="outline-container-org79c227e" class="outline-3">
-<h3 id="org79c227e"><span class="section-number-3">2.3.</span> 簡易的參考程式</h3>
-<div class="outline-text-3" id="text-2-3">
+<div id="outline-container-orga568e58" class="outline-3">
+<h3 id="orga568e58"><span class="section-number-3">3.1.</span> 步驟一：訓練並儲存模型</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+先在 Python 中訓練模型並存檔。這段程式碼可以在 Jupyter Notebook 或 org-mode 中執行：<br />
+</p>
+
 <div class="org-src-container">
 <pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> tensorflow <span style="color: #51afef;">as</span> tf
-<span class="linenr"> 2: </span><span style="color: #51afef;">from</span> tensorflow.keras.models <span style="color: #51afef;">import</span> Sequential
-<span class="linenr"> 3: </span><span style="color: #51afef;">from</span> tensorflow.keras.layers <span style="color: #51afef;">import</span> Conv2D, MaxPooling2D, Flatten, Dense
-<span class="linenr"> 4: </span><span style="color: #51afef;">import</span> streamlit <span style="color: #51afef;">as</span> st
-<span class="linenr"> 5: </span><span style="color: #51afef;">from</span> PIL <span style="color: #51afef;">import</span> Image, ImageOps
+<span class="linenr"> 2: </span><span style="color: #51afef;">from</span> tensorflow <span style="color: #51afef;">import</span> keras
+<span class="linenr"> 3: </span><span style="color: #51afef;">from</span> keras <span style="color: #51afef;">import</span> layers
+<span class="linenr"> 4: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 5: </span>
+<span class="linenr"> 6: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">1. &#36617;&#20837; Fashion MNIST &#36039;&#26009;&#38598;</span>
+<span class="linenr"> 7: </span>(x_train, y_train), (<span style="color: #dcaeea;">x_test</span>, <span style="color: #dcaeea;">y_test</span>) = keras.datasets.fashion_mnist.load_data()
+<span class="linenr"> 8: </span>
+<span class="linenr"> 9: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">2. &#36039;&#26009;&#38928;&#34389;&#29702;</span>
+<span class="linenr">10: </span><span style="color: #dcaeea;">x_train</span> = x_train.reshape(-<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">28</span>, <span style="color: #da8548; font-weight: bold;">28</span>, <span style="color: #da8548; font-weight: bold;">1</span>).astype(<span style="color: #98be65;">"float32"</span>) / <span style="color: #da8548; font-weight: bold;">255.0</span>
+<span class="linenr">11: </span><span style="color: #dcaeea;">x_test</span> = x_test.reshape(-<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">28</span>, <span style="color: #da8548; font-weight: bold;">28</span>, <span style="color: #da8548; font-weight: bold;">1</span>).astype(<span style="color: #98be65;">"float32"</span>) / <span style="color: #da8548; font-weight: bold;">255.0</span>
+<span class="linenr">12: </span>
+<span class="linenr">13: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">3. &#24314;&#31435;&#27169;&#22411;&#65288;Keras 3.x &#23531;&#27861;&#65289;</span>
+<span class="linenr">14: </span><span style="color: #dcaeea;">inputs</span> = layers.Input(shape=(<span style="color: #da8548; font-weight: bold;">28</span>, <span style="color: #da8548; font-weight: bold;">28</span>, <span style="color: #da8548; font-weight: bold;">1</span>))
+<span class="linenr">15: </span><span style="color: #dcaeea;">x</span> = layers.Conv2D(<span style="color: #da8548; font-weight: bold;">32</span>, kernel_size=<span style="color: #da8548; font-weight: bold;">3</span>, activation=<span style="color: #98be65;">"relu"</span>)(inputs)
+<span class="linenr">16: </span><span style="color: #dcaeea;">x</span> = layers.MaxPooling2D(pool_size=<span style="color: #da8548; font-weight: bold;">2</span>)(x)
+<span class="linenr">17: </span><span style="color: #dcaeea;">x</span> = layers.Conv2D(<span style="color: #da8548; font-weight: bold;">64</span>, kernel_size=<span style="color: #da8548; font-weight: bold;">3</span>, activation=<span style="color: #98be65;">"relu"</span>)(x)
+<span class="linenr">18: </span><span style="color: #dcaeea;">x</span> = layers.MaxPooling2D(pool_size=<span style="color: #da8548; font-weight: bold;">2</span>)(x)
+<span class="linenr">19: </span><span style="color: #dcaeea;">x</span> = layers.Flatten()(x)
+<span class="linenr">20: </span><span style="color: #dcaeea;">x</span> = layers.Dense(<span style="color: #da8548; font-weight: bold;">128</span>, activation=<span style="color: #98be65;">"relu"</span>)(x)
+<span class="linenr">21: </span><span style="color: #dcaeea;">outputs</span> = layers.Dense(<span style="color: #da8548; font-weight: bold;">10</span>, activation=<span style="color: #98be65;">"softmax"</span>)(x)
+<span class="linenr">22: </span><span style="color: #dcaeea;">model</span> = keras.Model(inputs, outputs)
+<span class="linenr">23: </span>
+<span class="linenr">24: </span>model.<span style="color: #c678dd;">compile</span>(
+<span class="linenr">25: </span>    optimizer=<span style="color: #98be65;">"adam"</span>,
+<span class="linenr">26: </span>    loss=<span style="color: #98be65;">"sparse_categorical_crossentropy"</span>,
+<span class="linenr">27: </span>    metrics=[<span style="color: #98be65;">"accuracy"</span>]
+<span class="linenr">28: </span>)
+<span class="linenr">29: </span>
+<span class="linenr">30: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#27169;&#22411;&#26550;&#27083;&#65306;"</span>)
+<span class="linenr">31: </span>model.summary()
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">4. &#35347;&#32244;&#27169;&#22411;</span>
+<span class="linenr">2: </span><span style="color: #dcaeea;">history</span> = model.fit(x_train, y_train, epochs=<span style="color: #da8548; font-weight: bold;">5</span>, batch_size=<span style="color: #da8548; font-weight: bold;">64</span>,
+<span class="linenr">3: </span>                    validation_split=<span style="color: #da8548; font-weight: bold;">0.1</span>, verbose=<span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr">4: </span>
+<span class="linenr">5: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">5. &#35413;&#20272;&#27169;&#22411;</span>
+<span class="linenr">6: </span><span style="color: #dcaeea;">test_loss</span>, <span style="color: #dcaeea;">test_acc</span> = model.evaluate(x_test, y_test, verbose=<span style="color: #da8548; font-weight: bold;">0</span>)
+<span class="linenr">7: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"</span><span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">&#28204;&#35430;&#28310;&#30906;&#29575;&#65306;</span>{test_acc:.4f}<span style="color: #98be65;">"</span>)
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">6. &#20786;&#23384;&#27169;&#22411;</span>
+<span class="linenr">2: </span>model.save(<span style="color: #98be65;">"fashion_mnist_model.keras"</span>)
+<span class="linenr">3: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#27169;&#22411;&#24050;&#20786;&#23384;&#28858; fashion_mnist_model.keras"</span>)
+<span class="linenr">4: </span>
+<span class="linenr">5: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39511;&#35657;&#27169;&#22411;&#21487;&#20197;&#34987;&#36617;&#20837;</span>
+<span class="linenr">6: </span><span style="color: #dcaeea;">loaded_model</span> = keras.models.load_model(<span style="color: #98be65;">"fashion_mnist_model.keras"</span>)
+<span class="linenr">7: </span><span style="color: #dcaeea;">test_loss</span>, <span style="color: #dcaeea;">test_acc</span> = loaded_model.evaluate(x_test, y_test, verbose=<span style="color: #da8548; font-weight: bold;">0</span>)
+<span class="linenr">8: </span><span style="color: #c678dd;">print</span>(f<span style="color: #98be65;">"&#36617;&#20837;&#24460;&#30340;&#28204;&#35430;&#28310;&#30906;&#29575;&#65306;</span>{test_acc:.4f}<span style="color: #98be65;">&#65288;&#25033;&#35442;&#36319;&#19978;&#38754;&#19968;&#27171;&#65289;"</span>)
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org1eba3cc" class="outline-3">
+<h3 id="org1eba3cc"><span class="section-number-3">3.2.</span> 步驟二：視覺化訓練結果</h3>
+<div class="outline-text-3" id="text-3-2">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
+<span class="linenr"> 2: </span><span style="color: #51afef;">import</span> matplotlib
+<span class="linenr"> 3: </span>matplotlib.rc(<span style="color: #98be65;">'font'</span>, family=<span style="color: #98be65;">'Arial Unicode MS'</span>)
+<span class="linenr"> 4: </span>
+<span class="linenr"> 5: </span>fig, (<span style="color: #dcaeea;">ax1</span>, <span style="color: #dcaeea;">ax2</span>) = plt.subplots(<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">2</span>, figsize=(<span style="color: #da8548; font-weight: bold;">12</span>, <span style="color: #da8548; font-weight: bold;">4</span>))
+<span class="linenr"> 6: </span>
+<span class="linenr"> 7: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#28310;&#30906;&#29575;</span>
+<span class="linenr"> 8: </span><span style="color: #dcaeea;">epochs</span> = <span style="color: #c678dd;">range</span>(<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #c678dd;">len</span>(history.history[<span style="color: #98be65;">'accuracy'</span>]) + <span style="color: #da8548; font-weight: bold;">1</span>)
+<span class="linenr"> 9: </span>ax1.plot(epochs, history.history[<span style="color: #98be65;">'accuracy'</span>], <span style="color: #98be65;">'bo-'</span>, label=<span style="color: #98be65;">'&#35347;&#32244;'</span>)
+<span class="linenr">10: </span>ax1.plot(epochs, history.history[<span style="color: #98be65;">'val_accuracy'</span>], <span style="color: #98be65;">'ro-'</span>, label=<span style="color: #98be65;">'&#39511;&#35657;'</span>)
+<span class="linenr">11: </span>ax1.set_title(<span style="color: #98be65;">'&#28310;&#30906;&#29575;'</span>)
+<span class="linenr">12: </span>ax1.set_xlabel(<span style="color: #98be65;">'Epoch'</span>)
+<span class="linenr">13: </span>ax1.set_ylabel(<span style="color: #98be65;">'Accuracy'</span>)
+<span class="linenr">14: </span>ax1.legend()
+<span class="linenr">15: </span>
+<span class="linenr">16: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#25613;&#22833;&#20540;</span>
+<span class="linenr">17: </span>ax2.plot(epochs, history.history[<span style="color: #98be65;">'loss'</span>], <span style="color: #98be65;">'bo-'</span>, label=<span style="color: #98be65;">'&#35347;&#32244;'</span>)
+<span class="linenr">18: </span>ax2.plot(epochs, history.history[<span style="color: #98be65;">'val_loss'</span>], <span style="color: #98be65;">'ro-'</span>, label=<span style="color: #98be65;">'&#39511;&#35657;'</span>)
+<span class="linenr">19: </span>ax2.set_title(<span style="color: #98be65;">'&#25613;&#22833;&#20540;'</span>)
+<span class="linenr">20: </span>ax2.set_xlabel(<span style="color: #98be65;">'Epoch'</span>)
+<span class="linenr">21: </span>ax2.set_ylabel(<span style="color: #98be65;">'Loss'</span>)
+<span class="linenr">22: </span>ax2.legend()
+<span class="linenr">23: </span>
+<span class="linenr">24: </span>plt.tight_layout()
+<span class="linenr">25: </span>plt.savefig(<span style="color: #98be65;">"images/deploy-training-history.png"</span>, dpi=<span style="color: #da8548; font-weight: bold;">150</span>, bbox_inches=<span style="color: #98be65;">'tight'</span>)
+<span class="linenr">26: </span>plt.close()
+<span class="linenr">27: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#35347;&#32244;&#27511;&#31243;&#22294;&#24050;&#20786;&#23384;"</span>)
+</pre>
+</div>
+
+
+<div id="org3227ab6" class="figure">
+<p><img src="images/deploy-training-history.png" alt="deploy-training-history.png" width="600" /><br />
+</p>
+<p><span class="figure-number">Figure 2: </span>Fashion MNIST 訓練歷程</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgbf0b73c" class="outline-3">
+<h3 id="orgbf0b73c"><span class="section-number-3">3.3.</span> 步驟三：測試模型預測效果</h3>
+<div class="outline-text-3" id="text-3-3">
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39006;&#21029;&#27161;&#31844;</span>
+<span class="linenr"> 2: </span><span style="color: #dcaeea;">class_labels</span> = [
+<span class="linenr"> 3: </span>    <span style="color: #98be65;">'T-shirt/top'</span>, <span style="color: #98be65;">'Trouser'</span>, <span style="color: #98be65;">'Pullover'</span>, <span style="color: #98be65;">'Dress'</span>, <span style="color: #98be65;">'Coat'</span>,
+<span class="linenr"> 4: </span>    <span style="color: #98be65;">'Sandal'</span>, <span style="color: #98be65;">'Shirt'</span>, <span style="color: #98be65;">'Sneaker'</span>, <span style="color: #98be65;">'Bag'</span>, <span style="color: #98be65;">'Ankle boot'</span>
+<span class="linenr"> 5: </span>]
+<span class="linenr"> 6: </span>
+<span class="linenr"> 7: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#38568;&#27231;&#25361;&#24190;&#24373;&#28204;&#35430;&#22294;&#29255;&#20358;&#38928;&#28204;</span>
+<span class="linenr"> 8: </span><span style="color: #dcaeea;">fig</span>, <span style="color: #dcaeea;">axes</span> = plt.subplots(<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">5</span>, figsize=(<span style="color: #da8548; font-weight: bold;">14</span>, <span style="color: #da8548; font-weight: bold;">6</span>))
+<span class="linenr"> 9: </span><span style="color: #dcaeea;">indices</span> = np.random.choice(<span style="color: #c678dd;">len</span>(x_test), <span style="color: #da8548; font-weight: bold;">10</span>, replace=<span style="color: #a9a1e1;">False</span>)
+<span class="linenr">10: </span>
+<span class="linenr">11: </span><span style="color: #51afef;">for</span> i, idx <span style="color: #51afef;">in</span> <span style="color: #c678dd;">enumerate</span>(indices):
+<span class="linenr">12: </span>    <span style="color: #dcaeea;">ax</span> = axes[i // <span style="color: #da8548; font-weight: bold;">5</span>][i % <span style="color: #da8548; font-weight: bold;">5</span>]
+<span class="linenr">13: </span>    ax.imshow(x_test[idx].reshape(<span style="color: #da8548; font-weight: bold;">28</span>, <span style="color: #da8548; font-weight: bold;">28</span>), cmap=<span style="color: #98be65;">'gray'</span>)
+<span class="linenr">14: </span>
+<span class="linenr">15: </span>    <span style="color: #dcaeea;">pred</span> = loaded_model.predict(x_test[idx:idx+<span style="color: #da8548; font-weight: bold;">1</span>], verbose=<span style="color: #da8548; font-weight: bold;">0</span>)
+<span class="linenr">16: </span>    <span style="color: #dcaeea;">pred_label</span> = class_labels[np.argmax(pred)]
+<span class="linenr">17: </span>    <span style="color: #dcaeea;">true_label</span> = class_labels[y_test[idx]]
+<span class="linenr">18: </span>
+<span class="linenr">19: </span>    <span style="color: #dcaeea;">color</span> = <span style="color: #98be65;">'green'</span> <span style="color: #51afef;">if</span> pred_label == true_label <span style="color: #51afef;">else</span> <span style="color: #98be65;">'red'</span>
+<span class="linenr">20: </span>    ax.set_title(f<span style="color: #98be65;">"&#38928;&#28204;: </span>{pred_label}<span style="color: #a9a1e1;">\n</span><span style="color: #98be65;">&#23526;&#38555;: </span>{true_label}<span style="color: #98be65;">"</span>,
+<span class="linenr">21: </span>                 fontsize=<span style="color: #da8548; font-weight: bold;">9</span>, color=color)
+<span class="linenr">22: </span>    ax.axis(<span style="color: #98be65;">'off'</span>)
+<span class="linenr">23: </span>
+<span class="linenr">24: </span>plt.suptitle(<span style="color: #98be65;">'&#27169;&#22411;&#38928;&#28204;&#32080;&#26524;&#65288;&#32160;&#33394;=&#27491;&#30906;&#65292;&#32005;&#33394;=&#37679;&#35492;&#65289;'</span>, fontsize=<span style="color: #da8548; font-weight: bold;">13</span>)
+<span class="linenr">25: </span>plt.tight_layout()
+<span class="linenr">26: </span>plt.savefig(<span style="color: #98be65;">"images/deploy-prediction-samples.png"</span>, dpi=<span style="color: #da8548; font-weight: bold;">150</span>, bbox_inches=<span style="color: #98be65;">'tight'</span>)
+<span class="linenr">27: </span>plt.close()
+<span class="linenr">28: </span><span style="color: #c678dd;">print</span>(<span style="color: #98be65;">"&#38928;&#28204;&#32080;&#26524;&#22294;&#24050;&#20786;&#23384;"</span>)
+</pre>
+</div>
+
+
+<div id="orga91ca3d" class="figure">
+<p><img src="images/deploy-prediction-samples.png" alt="deploy-prediction-samples.png" width="600" /><br />
+</p>
+<p><span class="figure-number">Figure 3: </span>模型預測結果範例</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org5d5e10c" class="outline-3">
+<h3 id="org5d5e10c"><span class="section-number-3">3.4.</span> 步驟四：建立 Streamlit 網頁應用</h3>
+<div class="outline-text-3" id="text-3-4">
+<p>
+現在模型訓練好了，我們來寫 Streamlit 應用程式。將以下程式碼存成 =app.py=：<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27284;&#26696;&#21517;&#31281;&#65306;app.py</span>
+<span class="linenr"> 2: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#22519;&#34892;&#26041;&#24335;&#65306;streamlit run app.py</span>
+<span class="linenr"> 3: </span><span style="color: #51afef;">import</span> tensorflow <span style="color: #51afef;">as</span> tf
+<span class="linenr"> 4: </span><span style="color: #51afef;">from</span> tensorflow <span style="color: #51afef;">import</span> keras
+<span class="linenr"> 5: </span><span style="color: #51afef;">import</span> streamlit <span style="color: #51afef;">as</span> st
+<span class="linenr"> 6: </span><span style="color: #51afef;">from</span> PIL <span style="color: #51afef;">import</span> Image, ImageOps
+<span class="linenr"> 7: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span class="linenr"> 8: </span>
+<span class="linenr"> 9: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39006;&#21029;&#27161;&#31844;</span>
+<span class="linenr">10: </span><span style="color: #dcaeea;">class_labels</span> = [
+<span class="linenr">11: </span>    <span style="color: #98be65;">'T-shirt/top'</span>, <span style="color: #98be65;">'Trouser'</span>, <span style="color: #98be65;">'Pullover'</span>, <span style="color: #98be65;">'Dress'</span>, <span style="color: #98be65;">'Coat'</span>,
+<span class="linenr">12: </span>    <span style="color: #98be65;">'Sandal'</span>, <span style="color: #98be65;">'Shirt'</span>, <span style="color: #98be65;">'Sneaker'</span>, <span style="color: #98be65;">'Bag'</span>, <span style="color: #98be65;">'Ankle boot'</span>
+<span class="linenr">13: </span>]
+<span class="linenr">14: </span>
+<span class="linenr">15: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36617;&#20837;&#24050;&#35347;&#32244;&#22909;&#30340;&#27169;&#22411;&#65288;&#27493;&#39519;&#19968;&#20786;&#23384;&#30340;&#27284;&#26696;&#65289;</span>
+<span class="linenr">16: </span><span style="color: #ECBE7B;">@st.cache_resource</span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#24555;&#21462;&#27169;&#22411;&#65292;&#36991;&#20813;&#27599;&#27425;&#37325;&#26032;&#36617;&#20837;</span>
+<span class="linenr">17: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">load_model</span>():
+<span class="linenr">18: </span>    <span style="color: #51afef;">return</span> keras.models.load_model(<span style="color: #98be65;">"fashion_mnist_model.keras"</span>)
+<span class="linenr">19: </span>
+<span class="linenr">20: </span><span style="color: #dcaeea;">model</span> = load_model()
+<span class="linenr">21: </span>
+<span class="linenr">22: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">=== &#32178;&#38913;&#20171;&#38754; ===</span>
+<span class="linenr">23: </span>st.title(<span style="color: #98be65;">"Fashion MNIST &#22294;&#20687;&#20998;&#39006;&#22120;"</span>)
+<span class="linenr">24: </span>st.write(<span style="color: #98be65;">"&#19978;&#20659;&#19968;&#24373;&#34915;&#26381;&#12289;&#38795;&#23376;&#25110;&#21253;&#21253;&#30340;&#22294;&#29255;&#65292;AI &#26371;&#21578;&#35380;&#20320;&#23427;&#26159;&#20160;&#40636;&#65281;"</span>)
+<span class="linenr">25: </span>
+<span class="linenr">26: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27284;&#26696;&#19978;&#20659;&#20803;&#20214;</span>
+<span class="linenr">27: </span><span style="color: #dcaeea;">uploaded_file</span> = st.file_uploader(<span style="color: #98be65;">"&#36984;&#25799;&#19968;&#24373;&#22294;&#29255;"</span>, <span style="color: #c678dd;">type</span>=[<span style="color: #98be65;">"jpg"</span>, <span style="color: #98be65;">"jpeg"</span>, <span style="color: #98be65;">"png"</span>])
+<span class="linenr">28: </span>
+<span class="linenr">29: </span><span style="color: #51afef;">if</span> uploaded_file <span style="color: #51afef;">is</span> <span style="color: #51afef;">not</span> <span style="color: #a9a1e1;">None</span>:
+<span class="linenr">30: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39023;&#31034;&#21407;&#22987;&#22294;&#29255;</span>
+<span class="linenr">31: </span>    <span style="color: #dcaeea;">image</span> = Image.<span style="color: #c678dd;">open</span>(uploaded_file)
+<span class="linenr">32: </span>    st.image(image, caption=<span style="color: #98be65;">"&#20320;&#19978;&#20659;&#30340;&#22294;&#29255;"</span>, width=<span style="color: #da8548; font-weight: bold;">300</span>)
+<span class="linenr">33: </span>
+<span class="linenr">34: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">=== &#22294;&#29255;&#38928;&#34389;&#29702; ===</span>
+<span class="linenr">35: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Fashion MNIST &#30340;&#36664;&#20837;&#26684;&#24335;&#65306;28x28 &#28784;&#38542;&#22294;&#29255;&#65292;&#20687;&#32032;&#20540; 0~1</span>
+<span class="linenr">36: </span>    <span style="color: #dcaeea;">gray_image</span> = ImageOps.grayscale(image)      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36681;&#28784;&#38542;</span>
+<span class="linenr">37: </span>    <span style="color: #dcaeea;">resized</span> = gray_image.resize((<span style="color: #da8548; font-weight: bold;">28</span>, <span style="color: #da8548; font-weight: bold;">28</span>))        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#32302;&#25918;&#21040; 28x28</span>
+<span class="linenr">38: </span>    <span style="color: #dcaeea;">img_array</span> = np.array(resized) / <span style="color: #da8548; font-weight: bold;">255.0</span>        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27491;&#35215;&#21270;</span>
+<span class="linenr">39: </span>    <span style="color: #dcaeea;">img_array</span> = img_array.reshape(<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">28</span>, <span style="color: #da8548; font-weight: bold;">28</span>, <span style="color: #da8548; font-weight: bold;">1</span>)  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35519;&#25972;&#24418;&#29376;</span>
+<span class="linenr">40: </span>
+<span class="linenr">41: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39023;&#31034;&#34389;&#29702;&#24460;&#30340;&#22294;&#29255;</span>
+<span class="linenr">42: </span>    <span style="color: #dcaeea;">col1</span>, <span style="color: #dcaeea;">col2</span> = st.columns(<span style="color: #da8548; font-weight: bold;">2</span>)
+<span class="linenr">43: </span>    <span style="color: #51afef;">with</span> col1:
+<span class="linenr">44: </span>        st.image(gray_image, caption=<span style="color: #98be65;">"&#28784;&#38542;&#22294;&#29255;"</span>, width=<span style="color: #da8548; font-weight: bold;">200</span>)
+<span class="linenr">45: </span>    <span style="color: #51afef;">with</span> col2:
+<span class="linenr">46: </span>        st.image(resized, caption=<span style="color: #98be65;">"&#32302;&#25918;&#33267; 28x28"</span>, width=<span style="color: #da8548; font-weight: bold;">200</span>)
+<span class="linenr">47: </span>
+<span class="linenr">48: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">=== &#38928;&#28204; ===</span>
+<span class="linenr">49: </span>    <span style="color: #dcaeea;">predictions</span> = model.predict(img_array)
+<span class="linenr">50: </span>    <span style="color: #dcaeea;">predicted_class</span> = np.argmax(predictions)
+<span class="linenr">51: </span>    <span style="color: #dcaeea;">confidence</span> = predictions[<span style="color: #da8548; font-weight: bold;">0</span>][predicted_class] * <span style="color: #da8548; font-weight: bold;">100</span>
+<span class="linenr">52: </span>
+<span class="linenr">53: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39023;&#31034;&#32080;&#26524;</span>
+<span class="linenr">54: </span>    st.success(f<span style="color: #98be65;">"&#38928;&#28204;&#32080;&#26524;&#65306;**</span>{class_labels[predicted_class]}<span style="color: #98be65;">**&#65288;&#20449;&#24515;&#24230; </span>{confidence:.1f}<span style="color: #98be65;">%&#65289;"</span>)
+<span class="linenr">55: </span>
+<span class="linenr">56: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#39023;&#31034;&#25152;&#26377;&#39006;&#21029;&#30340;&#27231;&#29575;</span>
+<span class="linenr">57: </span>    st.bar_chart(
+<span class="linenr">58: </span>        data=<span style="color: #c678dd;">dict</span>(<span style="color: #c678dd;">zip</span>(class_labels, predictions[<span style="color: #da8548; font-weight: bold;">0</span>])),
+<span class="linenr">59: </span>    )
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org2a80f77" class="outline-3">
+<h3 id="org2a80f77"><span class="section-number-3">3.5.</span> 步驟五：執行與測試</h3>
+<div class="outline-text-3" id="text-3-5">
+<p>
+在終端機中執行：<br />
+</p>
+
+<pre class="example" id="orgb44d493">
+# 1. 確保模型檔案 fashion_mnist_model.keras 和 app.py 在同一個資料夾
+# 2. 安裝必要套件
+pip install streamlit tensorflow pillow numpy
+
+# 3. 啟動應用
+streamlit run app.py
+</pre>
+
+<p>
+瀏覽器會自動開啟 =<a href="http://localhost:8501=，你就能上傳圖片來測試了">http://localhost:8501=，你就能上傳圖片來測試了</a>！<br />
+</p>
+
+
+<div id="org6086738" class="figure">
+<p><img src="images/簡易的Streamlit範例/2024-07-20_16-34-04_2024-07-20_16-32-37.gif" alt="2024-07-20_16-34-04_2024-07-20_16-32-37.gif" width="800" /><br />
+</p>
+<p><span class="figure-number">Figure 4: </span>Fashion MNIST 分類器部署成果</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org3268336" class="outline-2">
+<h2 id="org3268336"><span class="section-number-2">4.</span> 部署到雲端：讓全世界都能用</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+目前我們的應用只跑在自己的電腦上（localhost），只有你自己能用。如果想讓別人也能連上，有幾種做法：<br />
+</p>
+</div>
+<div id="outline-container-orga5a341e" class="outline-3">
+<h3 id="orga5a341e"><span class="section-number-3">4.1.</span> Streamlit Cloud（最簡單）</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+Streamlit 官方提供免費的雲端部署服務：<br />
+</p>
+<ol class="org-ol">
+<li>把程式碼推到 GitHub<br /></li>
+<li>到 <a href="https://share.streamlit.io/">share.streamlit.io</a> 登入<br /></li>
+<li>選擇你的 GitHub repo，點「Deploy」<br /></li>
+<li>完成！你會得到一個公開的網址<br /></li>
+</ol>
+
+<p>
+需要在 GitHub repo 中準備：<br />
+</p>
+<pre class="example" id="orge6c7619">
+your-repo/
+├── app.py                        # Streamlit 主程式
+├── fashion_mnist_model.keras      # 模型檔案
+└── requirements.txt               # 套件清單
+</pre>
+
+<p>
+<code>requirements.txt</code> 的內容：<br />
+</p>
+<pre class="example" id="org6c52a84">
+streamlit
+tensorflow
+pillow
+numpy
+</pre>
+</div>
+</div>
+<div id="outline-container-org512683f" class="outline-3">
+<h3 id="org512683f"><span class="section-number-3">4.2.</span> 其他部署選項</h3>
+<div class="outline-text-3" id="text-4-2">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">平台</th>
+<th scope="col" class="org-left">難度</th>
+<th scope="col" class="org-left">費用</th>
+<th scope="col" class="org-left">特色</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">Streamlit Cloud</td>
+<td class="org-left">低</td>
+<td class="org-left">免費</td>
+<td class="org-left">專為 Streamlit 設計，最簡單</td>
+</tr>
+
+<tr>
+<td class="org-left">Hugging Face</td>
+<td class="org-left">低</td>
+<td class="org-left">免費</td>
+<td class="org-left">AI 社群平台，適合展示模型</td>
+</tr>
+
+<tr>
+<td class="org-left">Render</td>
+<td class="org-left">中</td>
+<td class="org-left">免費方案</td>
+<td class="org-left">支援多種框架</td>
+</tr>
+
+<tr>
+<td class="org-left">Google Cloud</td>
+<td class="org-left">高</td>
+<td class="org-left">付費</td>
+<td class="org-left">企業級，適合正式服務</td>
+</tr>
+
+<tr>
+<td class="org-left">AWS</td>
+<td class="org-left">高</td>
+<td class="org-left">付費</td>
+<td class="org-left">最完整的雲端服務</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-orgbc49b84" class="outline-3">
+<h3 id="orgbc49b84"><span class="section-number-3">4.3.</span> Gradio：另一個好選擇</h3>
+<div class="outline-text-3" id="text-4-3">
+<p>
+除了 Streamlit，<a href="https://gradio.app/">Gradio</a> 也是很受歡迎的 AI 部署框架，語法更簡潔：<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr"> 1: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#29992; Gradio &#37096;&#32626;&#21516;&#19968;&#20491;&#27169;&#22411;&#65288;&#23384;&#25104; gradio_app.py&#65289;</span>
+<span class="linenr"> 2: </span><span style="color: #51afef;">import</span> gradio <span style="color: #51afef;">as</span> gr
+<span class="linenr"> 3: </span><span style="color: #51afef;">import</span> tensorflow <span style="color: #51afef;">as</span> tf
+<span class="linenr"> 4: </span><span style="color: #51afef;">from</span> tensorflow <span style="color: #51afef;">import</span> keras
+<span class="linenr"> 5: </span><span style="color: #51afef;">from</span> PIL <span style="color: #51afef;">import</span> ImageOps
 <span class="linenr"> 6: </span><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
 <span class="linenr"> 7: </span>
-<span class="linenr"> 8: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23450;&#32681;&#39006;&#21029;&#27161;&#31844;</span>
+<span class="linenr"> 8: </span><span style="color: #dcaeea;">model</span> = keras.models.load_model(<span style="color: #98be65;">"fashion_mnist_model.keras"</span>)
 <span class="linenr"> 9: </span><span style="color: #dcaeea;">class_labels</span> = [
 <span class="linenr">10: </span>    <span style="color: #98be65;">'T-shirt/top'</span>, <span style="color: #98be65;">'Trouser'</span>, <span style="color: #98be65;">'Pullover'</span>, <span style="color: #98be65;">'Dress'</span>, <span style="color: #98be65;">'Coat'</span>,
 <span class="linenr">11: </span>    <span style="color: #98be65;">'Sandal'</span>, <span style="color: #98be65;">'Shirt'</span>, <span style="color: #98be65;">'Sneaker'</span>, <span style="color: #98be65;">'Bag'</span>, <span style="color: #98be65;">'Ankle boot'</span>
 <span class="linenr">12: </span>]
 <span class="linenr">13: </span>
-<span class="linenr">14: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#37325;&#24314;&#27169;&#22411;&#26550;&#27083;</span>
-<span class="linenr">15: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">build_model</span>():
-<span class="linenr">16: </span>    <span style="color: #dcaeea;">model</span> = Sequential()
-<span class="linenr">17: </span>    model.add(Conv2D(filters=<span style="color: #da8548; font-weight: bold;">32</span>, kernel_size=<span style="color: #da8548; font-weight: bold;">2</span>, activation=<span style="color: #98be65;">'relu'</span>, input_shape=(<span style="color: #da8548; font-weight: bold;">28</span>,<span style="color: #da8548; font-weight: bold;">28</span>,<span style="color: #da8548; font-weight: bold;">1</span>)))
-<span class="linenr">18: </span>    model.add(MaxPooling2D(pool_size=<span style="color: #da8548; font-weight: bold;">2</span>))
-<span class="linenr">19: </span>    model.add(Flatten())
-<span class="linenr">20: </span>    model.add(Dense(<span style="color: #da8548; font-weight: bold;">10</span>, activation=<span style="color: #98be65;">'softmax'</span>))
-<span class="linenr">21: </span>    <span style="color: #51afef;">return</span> model
-<span class="linenr">22: </span>
-<span class="linenr">23: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#21109;&#24314;&#20006;&#21152;&#36617;&#27402;&#37325;</span>
-<span class="linenr">24: </span><span style="color: #dcaeea;">model</span> = tf.keras.models.load_model(<span style="color: #98be65;">'/Users/letranger/Downloads/fm_model.h5'</span>)
-<span class="linenr">25: </span>model.<span style="color: #c678dd;">compile</span>(optimizer=<span style="color: #98be65;">'adam'</span>, loss=<span style="color: #98be65;">'sparse_categorical_crossentropy'</span>, metrics=[<span style="color: #98be65;">'accuracy'</span>])
-<span class="linenr">26: </span>
-<span class="linenr">27: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23450;&#32681;&#22294;&#20687;&#38928;&#34389;&#29702;&#21644;&#38928;&#28204;&#20989;&#25976;</span>
-<span class="linenr">28: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">preprocess_and_predict</span>(image):
-<span class="linenr">29: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#36681;&#25563;&#22294;&#20687;&#28858;&#28784;&#24230;&#22294;</span>
-<span class="linenr">30: </span>    <span style="color: #dcaeea;">gray_image</span> = ImageOps.grayscale(image)
-<span class="linenr">31: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#35519;&#25972;&#22294;&#20687;&#22823;&#23567;&#28858; 28x28</span>
-<span class="linenr">32: </span>    <span style="color: #dcaeea;">resized_image</span> = gray_image.resize((<span style="color: #da8548; font-weight: bold;">28</span>, <span style="color: #da8548; font-weight: bold;">28</span>))
-<span class="linenr">33: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#23559;&#22294;&#20687;&#36681;&#25563;&#28858;&#25976;&#32068;</span>
-<span class="linenr">34: </span>    <span style="color: #dcaeea;">image_array</span> = np.array(resized_image)
-<span class="linenr">35: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#27491;&#35215;&#21270;&#20687;&#32032;&#20540;</span>
-<span class="linenr">36: </span>    <span style="color: #dcaeea;">image_array</span> = image_array / <span style="color: #da8548; font-weight: bold;">255.0</span>
-<span class="linenr">37: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#28155;&#21152;&#25209;&#27425;&#32173;&#24230;</span>
-<span class="linenr">38: </span>    <span style="color: #dcaeea;">image_array</span> = np.expand_dims(image_array, axis=<span style="color: #da8548; font-weight: bold;">0</span>)
-<span class="linenr">39: </span>    <span style="color: #dcaeea;">image_array</span> = np.expand_dims(image_array, axis=-<span style="color: #da8548; font-weight: bold;">1</span>)
-<span class="linenr">40: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#20351;&#29992;&#27169;&#22411;&#36914;&#34892;&#38928;&#28204;</span>
-<span class="linenr">41: </span>    <span style="color: #dcaeea;">predictions</span> = model.predict(image_array)
-<span class="linenr">42: </span>    <span style="color: #dcaeea;">predicted_class</span> = np.argmax(predictions, axis=<span style="color: #da8548; font-weight: bold;">1</span>)
-<span class="linenr">43: </span>    <span style="color: #51afef;">return</span> class_labels[predicted_class[<span style="color: #da8548; font-weight: bold;">0</span>]], gray_image, resized_image
-<span class="linenr">44: </span>
-<span class="linenr">45: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">Streamlit &#25033;&#29992;</span>
-<span class="linenr">46: </span>st.title(<span style="color: #98be65;">'Fashion MNIST &#22294;&#20687;&#20998;&#39006;'</span>)
-<span class="linenr">47: </span>st.write(<span style="color: #98be65;">'&#19978;&#20659;&#19968;&#24373;&#22294;&#29255;&#65292;&#27169;&#22411;&#23559;&#38928;&#28204;&#22294;&#29255;&#30340;&#39006;&#22411;'</span>)
-<span class="linenr">48: </span>
-<span class="linenr">49: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#19978;&#20659;&#22294;&#29255;</span>
-<span class="linenr">50: </span><span style="color: #dcaeea;">uploaded_file</span> = st.file_uploader(<span style="color: #98be65;">"&#36984;&#25799;&#19968;&#24373;&#22294;&#29255;..."</span>, <span style="color: #c678dd;">type</span>=[<span style="color: #98be65;">"jpg"</span>, <span style="color: #98be65;">"jpeg"</span>, <span style="color: #98be65;">"png"</span>])
-<span class="linenr">51: </span>
-<span class="linenr">52: </span><span style="color: #51afef;">if</span> uploaded_file <span style="color: #51afef;">is</span> <span style="color: #51afef;">not</span> <span style="color: #a9a1e1;">None</span>:
-<span class="linenr">53: </span>    <span style="color: #dcaeea;">image</span> = Image.<span style="color: #c678dd;">open</span>(uploaded_file)
-<span class="linenr">54: </span>    st.image(image, caption=<span style="color: #98be65;">'&#19978;&#20659;&#30340;&#22294;&#29255;'</span>, use_column_width=<span style="color: #a9a1e1;">True</span>)
-<span class="linenr">55: </span>    st.write(<span style="color: #98be65;">""</span>)
-<span class="linenr">56: </span>
-<span class="linenr">57: </span>    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#22294;&#20687;&#38928;&#34389;&#29702;&#21644;&#38928;&#28204;</span>
-<span class="linenr">58: </span>    <span style="color: #dcaeea;">label</span>, <span style="color: #dcaeea;">gray_image</span>, <span style="color: #dcaeea;">resized_image</span> = preprocess_and_predict(image)
-<span class="linenr">59: </span>
-<span class="linenr">60: </span>    st.write(<span style="color: #98be65;">"&#28784;&#38542;&#22294;&#20687;:"</span>)
-<span class="linenr">61: </span>    st.image(gray_image, caption=<span style="color: #98be65;">'&#28784;&#38542;&#22294;&#20687;'</span>, use_column_width=<span style="color: #a9a1e1;">True</span>)
-<span class="linenr">62: </span>
-<span class="linenr">63: </span>    st.write(<span style="color: #98be65;">"&#35519;&#25972;&#22823;&#23567;&#30340;&#22294;&#20687; (28x28):"</span>)
-<span class="linenr">64: </span>    st.image(resized_image, caption=<span style="color: #98be65;">'&#35519;&#25972;&#22823;&#23567;&#30340;&#22294;&#20687;'</span>, use_column_width=<span style="color: #a9a1e1;">False</span>)
-<span class="linenr">65: </span>
-<span class="linenr">66: </span>    st.write(f<span style="color: #98be65;">'&#38928;&#28204;&#32080;&#26524;: </span>{label}<span style="color: #98be65;">'</span>)
+<span class="linenr">14: </span><span style="color: #51afef;">def</span> <span style="color: #c678dd;">predict</span>(image):
+<span class="linenr">15: </span>    <span style="color: #dcaeea;">gray</span> = ImageOps.grayscale(image)
+<span class="linenr">16: </span>    <span style="color: #dcaeea;">resized</span> = gray.resize((<span style="color: #da8548; font-weight: bold;">28</span>, <span style="color: #da8548; font-weight: bold;">28</span>))
+<span class="linenr">17: </span>    <span style="color: #dcaeea;">img_array</span> = np.array(resized).reshape(<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">28</span>, <span style="color: #da8548; font-weight: bold;">28</span>, <span style="color: #da8548; font-weight: bold;">1</span>) / <span style="color: #da8548; font-weight: bold;">255.0</span>
+<span class="linenr">18: </span>    <span style="color: #dcaeea;">pred</span> = model.predict(img_array)[<span style="color: #da8548; font-weight: bold;">0</span>]
+<span class="linenr">19: </span>    <span style="color: #51afef;">return</span> {class_labels[i]: <span style="color: #c678dd;">float</span>(pred[i]) <span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #da8548; font-weight: bold;">10</span>)}
+<span class="linenr">20: </span>
+<span class="linenr">21: </span><span style="color: #dcaeea;">demo</span> = gr.Interface(
+<span class="linenr">22: </span>    fn=predict,
+<span class="linenr">23: </span>    inputs=gr.Image(<span style="color: #c678dd;">type</span>=<span style="color: #98be65;">"pil"</span>),
+<span class="linenr">24: </span>    outputs=gr.Label(num_top_classes=<span style="color: #da8548; font-weight: bold;">5</span>),
+<span class="linenr">25: </span>    title=<span style="color: #98be65;">"Fashion MNIST &#20998;&#39006;&#22120;"</span>,
+<span class="linenr">26: </span>    description=<span style="color: #98be65;">"&#19978;&#20659;&#34915;&#26381;/&#38795;&#23376;/&#21253;&#21253;&#30340;&#22294;&#29255;&#65292;AI &#26371;&#36776;&#35672;&#23427;&#26159;&#20160;&#40636;"</span>,
+<span class="linenr">27: </span>)
+<span class="linenr">28: </span>demo.launch()
+</pre>
+</div>
+
+<p>
+Streamlit vs Gradio：<br />
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">比較</th>
+<th scope="col" class="org-left">Streamlit</th>
+<th scope="col" class="org-left">Gradio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">適合場景</td>
+<td class="org-left">完整的資料儀表板</td>
+<td class="org-left">快速展示 AI 模型</td>
+</tr>
+
+<tr>
+<td class="org-left">程式碼量</td>
+<td class="org-left">較多，但彈性高</td>
+<td class="org-left">極少，幾行搞定</td>
+</tr>
+
+<tr>
+<td class="org-left">外觀客製化</td>
+<td class="org-left">高</td>
+<td class="org-left">中</td>
+</tr>
+
+<tr>
+<td class="org-left">部署平台</td>
+<td class="org-left">Streamlit Cloud</td>
+<td class="org-left">Hugging Face Spaces</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="outline-container-org33efa9b" class="outline-2">
+<h2 id="org33efa9b"><span class="section-number-2">5.</span> 小結</h2>
+<div class="outline-text-2" id="text-5">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">概念</th>
+<th scope="col" class="org-left">說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">模型部署</td>
+<td class="org-left">把訓練好的模型包裝成別人可以使用的服務</td>
+</tr>
+
+<tr>
+<td class="org-left">Streamlit</td>
+<td class="org-left">Python 框架，用最少程式碼做出互動式網頁</td>
+</tr>
+
+<tr>
+<td class="org-left">模型儲存</td>
+<td class="org-left"><code>model.save()</code> 把權重存成檔案</td>
+</tr>
+
+<tr>
+<td class="org-left">模型載入</td>
+<td class="org-left"><code>keras.models.load_model()</code> 讀回模型</td>
+</tr>
+
+<tr>
+<td class="org-left">圖片預處理</td>
+<td class="org-left">灰階 → 縮放 → 正規化 → 調整形狀</td>
+</tr>
+
+<tr>
+<td class="org-left">雲端部署</td>
+<td class="org-left">讓全世界都能連上你的 AI 服務</td>
+</tr>
+
+<tr>
+<td class="org-left">Gradio</td>
+<td class="org-left">另一個 AI 部署框架，語法更簡潔</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+部署是 AI 開發的「最後一哩路」。再厲害的模型，如果只躺在你的電腦裡，就像一道沒人吃過的菜——有了部署，你的 AI 才真正有用。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orga79f66f" class="outline-2">
+<h2 id="orga79f66f"><span class="section-number-2">6.</span> 作業</h2>
+<div class="outline-text-2" id="text-6">
+</div>
+<div id="outline-container-org455beeb" class="outline-3">
+<h3 id="org455beeb"><span class="section-number-3">6.1.</span> 作業一：我的 AI 小網站</h3>
+<div class="outline-text-3" id="text-6-1">
+<p>
+請完成以下步驟，將 Fashion MNIST 分類器部署到你自己的電腦上：<br />
+</p>
+
+<ol class="org-ol">
+<li>執行步驟一的訓練程式，儲存模型為 <code>fashion_mnist_model.keras</code><br /></li>
+<li>將步驟四的程式碼存成 <code>app.py</code><br /></li>
+<li>在終端機執行 <code>streamlit run app.py</code><br /></li>
+<li>從網路上找 3 張不同類別的衣物圖片，上傳測試<br /></li>
+</ol>
+
+<p>
+<b>你的任務：</b><br />
+</p>
+<ul class="org-ul">
+<li>截圖 3 次預測結果（包含上傳的圖片和預測結果）<br /></li>
+<li>記錄每次的預測類別和信心度<br /></li>
+<li>有沒有預測錯誤的情況？如果有，猜猜看為什麼<br /></li>
+</ul>
+
+<p>
+<b>預期輸出格式：</b><br />
+</p>
+<pre class="example" id="orga30129d">
+測試 1：
+  上傳圖片：一件白色 T-shirt
+  預測結果：T-shirt/top（信心度 92.3%）
+  判斷：正確
+
+測試 2：
+  上傳圖片：一雙運動鞋
+  預測結果：Sneaker（信心度 87.1%）
+  判斷：正確
+
+測試 3：
+  上傳圖片：一件格子襯衫
+  預測結果：Shirt（信心度 45.2%）/ Coat（信心度 30.1%）
+  判斷：正確，但信心度不高，可能因為格子花紋讓模型混淆
+
+分析：真實照片比 Fashion MNIST 的訓練圖片複雜很多（有背景、有顏色、
+解析度不同），所以模型的信心度可能不如在測試集上那麼高。
+</pre>
+</div>
+</div>
+<div id="outline-container-org83f8125" class="outline-3">
+<h3 id="org83f8125"><span class="section-number-3">6.2.</span> 作業二：Streamlit 元件大亂鬥</h3>
+<div class="outline-text-3" id="text-6-2">
+<p>
+用 Streamlit 做一個「AI 模型設定面板」，讓使用者可以透過網頁介面調整參數。<br />
+</p>
+
+<p>
+<b>起始程式碼（存成 =panel.py=，執行 =streamlit run panel.py=）：</b><br />
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span class="linenr">1: </span><span style="color: #51afef;">import</span> streamlit <span style="color: #51afef;">as</span> st
+<span class="linenr">2: </span>
+<span class="linenr">3: </span>st.title(<span style="color: #98be65;">"AI &#27169;&#22411;&#35373;&#23450;&#38754;&#26495;"</span>)
+<span class="linenr">4: </span>
+<span class="linenr">5: </span><span style="color: #5B6268;"># </span><span style="color: #5B6268;">&#31684;&#20363;&#65306;&#29992;&#28369;&#26751;&#35519;&#25972; epochs</span>
+<span class="linenr">6: </span><span style="color: #dcaeea;">epochs</span> = st.slider(<span style="color: #98be65;">"&#35347;&#32244;&#36650;&#25976; (Epochs)"</span>, min_value=<span style="color: #da8548; font-weight: bold;">1</span>, max_value=<span style="color: #da8548; font-weight: bold;">50</span>, value=<span style="color: #da8548; font-weight: bold;">10</span>)
+<span class="linenr">7: </span>st.write(f<span style="color: #98be65;">"&#20320;&#36984;&#25799;&#20102; </span>{epochs}<span style="color: #98be65;"> &#20491; epochs"</span>)
+</pre>
+</div>
+
+<p>
+<b>你的任務：</b><br />
+</p>
+
+<p>
+在這個面板中加入以下元件（至少完成 4 個）：<br />
+</p>
+<ol class="org-ol">
+<li>用 <code>st.selectbox</code> 讓使用者選擇優化器（Adam / SGD / RMSprop）<br /></li>
+<li>用 <code>st.slider</code> 讓使用者調整 learning rate（0.0001 ~ 0.1）<br /></li>
+<li>用 <code>st.number_input</code> 讓使用者輸入 batch size（16 / 32 / 64 / 128）<br /></li>
+<li>用 <code>st.radio</code> 讓使用者選擇模型架構（簡單 CNN / 深層 CNN / MLP）<br /></li>
+<li>用 <code>st.checkbox</code> 讓使用者決定是否使用 Data Augmentation<br /></li>
+<li>加入一個 =st.button(&ldquo;開始訓練&rdquo;)=，按下後顯示所有設定的摘要<br /></li>
+</ol>
+
+<p>
+<b>預期成果：</b> 一個網頁面板，使用者可以調整各種參數，按下按鈕後看到設定摘要。<br />
+</p>
+
+<p>
+<b>預期輸出（按下按鈕後）：</b><br />
+</p>
+<pre class="example" id="org6d1f7ab">
+=== 訓練設定摘要 ===
+- 訓練輪數：10
+- 優化器：Adam
+- Learning Rate：0.001
+- Batch Size：32
+- 模型架構：簡單 CNN
+- Data Augmentation：否
+</pre>
+</div>
+</div>
+<div id="outline-container-orgd24836f" class="outline-3">
+<h3 id="orgd24836f"><span class="section-number-3">6.3.</span> 作業三：AI 產品企劃書</h3>
+<div class="outline-text-3" id="text-6-3">
+<p>
+假設你要用 AI 做一個產品，請寫一份簡短的企劃書。<br />
+</p>
+
+<p>
+<b>背景：</b> 你的學校想要一個 AI 系統來解決某個問題（自行選擇），例如：<br />
+</p>
+<ul class="org-ul">
+<li>自動辨識營養午餐的菜色並計算熱量<br /></li>
+<li>辨識校園植物種類<br /></li>
+<li>預測段考成績（根據平時成績和出席率）<br /></li>
+<li>自動分類學生的心情（從週記文字分析）<br /></li>
+<li>其他你想到的任何點子<br /></li>
+</ul>
+
+<p>
+<b>企劃書格式：</b><br />
+</p>
+<pre class="example" id="org4e88f99">
+=== AI 產品企劃書 ===
+
+1. 產品名稱：[取一個帥氣的名字]
+
+2. 要解決的問題：
+   [描述這個問題，為什麼需要 AI 來解決？]
+
+3. 使用的 AI 技術：
+   - 模型類型：[CNN / RNN / 分類器 / 其他]
+   - 訓練資料來源：[從哪裡取得資料？需要多少資料？]
+   - 預期準確率：[你覺得合理的準確率是多少？]
+
+4. 部署方式：
+   - 使用者介面：[Streamlit / Gradio / LINE Bot / 手機 App]
+   - 部署平台：[本機 / Streamlit Cloud / Hugging Face / 其他]
+   - 使用者如何操作：[描述使用流程]
+
+5. 可能遇到的困難：
+   [至少列出 2 個挑戰，例如資料不足、模型不準、隱私問題等]
+
+6. 為什麼這個產品很酷：
+   [用一句話說服校長買單]
 </pre>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-org2d8da71" class="outline-2">
-<h2 id="org2d8da71"><span class="section-number-2">3.</span> 佈署成果</h2>
-<div class="outline-text-2" id="text-3">
-
-<div id="orgf750e7b" class="figure">
-<p><img src="images/簡易的Streamlit範例/2024-07-20_16-34-04_2024-07-20_16-32-37.gif" alt="2024-07-20_16-34-04_2024-07-20_16-32-37.gif" width="800" /><br />
-</p>
-<p><span class="figure-number">Figure 2: </span>超廢圖像分類系統</p>
-</div>
-</div>
-</div>
-</div>
 <div id="postamble" class="status">
-<p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2025-07-15 Tue 15:32</p>
+<p class="author">Author: 顏永進</p>
+<p class="date">Created: 2026-02-14 Sat 21:37</p>
 </div>
 </body>
 </html>

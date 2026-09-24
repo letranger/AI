@@ -2,476 +2,697 @@
 :ID:       d4d6ea8c-6848-49ee-956a-986249f90adf
 :END:
 #+title: AI與資安
-
-* 釣魚網站偵測實戰
-
-[[https://github.com/PacktPublishing/Mastering-Machine-Learning-for-Penetration-Testing/tree/master/Chapter02][github data]]
-
-** 資料集
-UCI Machine Learning Repository (Phishing Websites Data Set).
-https://archive.ics.uci.edu/ml/datasets/Phishing+Websites
-
-The dataset is provided as an arff file
-
-處理過的資料集:
-{30 Attributes (having_IP_Address URL_Length, abnormal_URL and so on)}+ {1 Attribute (Result)}
-
--1,1,1,1,-1,-1,-1,-1,-1,1,1,-1,1,-1,1,-1,-1,-1,0,1,1,1,1,-1,-1,-1,-1,1,1,-1,-1
-
-真正要能上線跑的演算法不多，因為會面臨資料量太大(流量)的問題，會導致記憶體不足....
-
-** papers
-
-- Mohammad, Rami, McCluskey, T.L. and Thabtah, Fadi (2012). An Assessment of Features Related to Phishing Websites using an Automated Technique. In: International Conferece For Internet Technology And Secured Transactions. ICITST 2012 . IEEE, London, UK, pp. 492-497. ISBN 978-1-4673-5325-0
-- Mohammad, Rami, Thabtah, Fadi Abdeljaber and McCluskey, T.L. (2014). Predicting phishing websites based on self-structuring neural network. Neural Computing and Applications, 25 (2). pp. 443-458. ISSN 0941-0643
-- Mohammad, Rami, McCluskey, T.L. and Thabtah, Fadi Abdeljaber (2014). Intelligent Rule based Phishing Websites Classification. IET Information Security, 8 (3). pp. 153-160. ISSN 1751-8709
-
-** 使用 LogisticRegression
-
-#+BEGIN_SRC python -r -n :results output :exports both :eval no
-  import numpy as np
-  from sklearn import *
-  from sklearn.linear_model import LogisticRegression
-  from sklearn.metrics import accuracy_score
-
-  training_data = np.genfromtxt('dataset.csv', delimiter=',', dtype=np.int32)
-  inputs = training_data[:,:-1]
-  outputs = training_data[:, -1]
-
-  training_inputs = inputs[:2000]
-  training_outputs = outputs[:2000]
-  testing_inputs = inputs[2000:]
-  testing_outputs = outputs[2000:]
-
-  classifier = LogisticRegression()
-  classifier.fit(training_inputs, training_outputs)
-  predictions = classifier.predict(testing_inputs)
-  accuracy = 100.0 * accuracy_score(testing_outputs, predictions)
-  print ("The accuracy of your Logistic Regression on testing data is: " + str(accuracy))
-#+END_SRC
-
-** 使用 DecisionTreeClassifier
-
-#+BEGIN_SRC python -r -n :results output :exports both :eval no
-  from sklearn import tree
-  from sklearn.metrics import accuracy_score
-  import numpy as np
-
-  training_data = np.genfromtxt('dataset.csv', delimiter=',', dtype=np.int32)
-  inputs = training_data[:,:-1]
-  outputs = training_data[:, -1]
-
-  training_inputs = inputs[:2000]
-  training_outputs = outputs[:2000]
-  testing_inputs = inputs[2000:]
-  testing_outputs = outputs[2000:]
-
-  classifier = tree.DecisionTreeClassifier()
-  classifier.fit(training_inputs, training_outputs)
-  predictions = classifier.predict(testing_inputs)
-  accuracy = 100.0 * accuracy_score(testing_outputs, predictions)
-  print ("The accuracy of your decision tree on testing data is: " + str(accuracy))
-#+END_SRC
-
-* Text Classification
-
-[[https://github.com/MyDearGreatTeacher/TensorSecurity/blob/master/code/AI_security/3_TextClassification%E8%88%87%E5%9E%83%E5%9C%BE%E7%9F%AD%E4%BF%A1%E9%A0%90%E6%B8%AC.md][Text classification github]]
-
-二元分類: binary classification
-
-spam detection[email, SMS]
-
-** papers
-
-- MS Spam Collection Dataset, Collection of SMS messages tagged as spam or legitimate, https://www.kaggle.com/uciml/sms-spam-collection-dataset/data
-- The SMS Spam Collection is a set of SMS tagged messages that have been collected for SMS Spam research. It contains one set of SMS messages in English of 5,574 messages, tagged acording being ham (legitimate) or spam.
-- 2009 年博士論文, A CORPUS LINGUISTICS STUDY OF SMS TEXT MESSAGING, CAROLINE TAGG, https://etheses.bham.ac.uk/id/eprint/253/1/Tagg09PhD.pdf
-
-** 資料集
-
-https://github.com/CorkyMaigre/sms-spam-ml/blob/master/dataset/SMSSpamCollection
-
-#+BEGIN_SRC sh
-  ham	Go until jurong point, crazy.. Available only in bugis n great world la e buffet... Cine there got amore wat...
-  ham	Ok lar... Joking wif u oni...
-  spam	Free entry in 2 a wkly comp to win FA Cup final tkts 21st May 2005. Text FA to 87121 to receive entry question(std txt rate)T&C's apply 08452810075over18's
-  ham	U dun say so early hor... U c already then say...
-  ham	Nah I don't think he goes to usf, he lives around here though
-  spam	FreeMsg Hey there darling it's been 3 week's now and no word back! I'd like some fun you up for it still? Tb ok! XxX std chgs to send, £1.50 to rcv
-  ham	Even my brother is not like to speak with me. They treat me like aids patent.
-  ham	As per your request 'Melle Melle (Oru Minnaminunginte Nurungu Vettam)' has been set as your callertune for all Callers. Press *9 to copy your friends Callertune
-  spam	WINNER!! As a valued network customer you have been selected to receivea £900 prize reward! To claim call 09061701461. Claim code KL341. Valid 12 hours only.
-  spam	Had your mobile 11 months or more? U R entitled to Update to the latest colour mobiles with camera for Free! Call The Mobile Update Co FREE on 08002986030
-  ham	I'm gonna be home soon and i don't want to talk about this stuff anymore tonight, k? I've cried enough today.
-  spam	SIX chances to win CASH! From 100 to 20,000 pounds txt> CSH11 and send to 87575. Cost 150p/day, 6days, 16+ TsandCs apply Reply HL 4 info
-  spam	URGENT! You have won a 1 week FREE membership in our £100,000 Prize Jackpot! Txt the word: CLAIM to No: 81010 T&C www.dbuk.net LCCLTD POBOX 4403LDNW1A7RW18
-  ham	I've been searching for the right words to thank you for this breather. I promise i wont take your help for granted and will fulfil my promise. You have been wonderful and a blessing at all times.
-  ham	I HAVE A DATE ON SUNDAY WITH WILL!!
-  spam	XXXMobileMovieClub: To use your credit, click the WAP link in the next txt message or click here>> http://wap. xxxmobilemovieclub.com?n=QJKGIGHJJGCBL
-  ham	Oh k...i'm watching here:)
-  ham	Eh u remember how 2 spell his name... Yes i did. He v naughty make until i v wet.
-  ham	Fine if that�s the way u feel. That�s the way its gota b
-  spam	England v Macedonia - dont miss the goals/team news. Txt ur national team to 87077 eg ENGLAND to 87077 Try:WALES, SCOTLAND 4txt/ú1.20 POBOXox36504W45WQ 16+
-  ham	Is that seriously how you spell his name?
-  ham	I‘m going to try for 2 months ha ha only joking
-  ham	So ü pay first lar... Then when is da stock comin...
-  ham	Aft i finish my lunch then i go str down lor. Ard 3 smth lor. U finish ur lunch already?
-  ham	Ffffffffff. Alright no way I can meet up with you sooner?
-  ham	Just forced myself to eat a slice. I'm really not hungry tho. This sucks. Mark is getting worried. He knows I'm sick when I turn down pizza. Lol
-  ham	Lol your always so convincing.
-  ham	Did you catch the bus ? Are you frying an egg ? Did you make a tea? Are you eating your mom's left over dinner ? Do you feel my Love ?
-  ham	I'm back &amp; we're packing the car now, I'll let you know if there's room
-  ham	Ahhh. Work. I vaguely remember that! What does it feel like? Lol
-  ham	Wait that's still not all that clear, were you not sure about me being sarcastic or that that's why x doesn't want to live with us
-  ham	Yeah he got in at 2 and was v apologetic. n had fallen out and she was actin like spoilt child and he got caught up in that. Till 2! But we won't go there! Not doing too badly cheers. You?
-
-#+END_SRC
-
-** 使用 LogisticRegression
-
-- Hands-on-Machine-Learning-for-Cyber-Security/Chapter05/sms_spam.py /
-- https://github.com/PacktPublishing/Hands-on-Machine-Learning-for-Cyber-Security/blob/master/Chapter05/sms_spam.py
-
-#+BEGIN_SRC python -r -n :results output :exports both :eval no
-  import pandas as pd
-  import numpy as np
-  from sklearn.feature_extraction.text import TfidfVectorizer
-  from sklearn.linear_model.logistic import LogisticRegression
-  from sklearn.model_selection import train_test_split, cross_val_score
-
-  dataframe = pd.read_csv('SMSSpamCollectionDataSet', delimiter='\t',header=None)
-
-  X_train_dataset, X_test_dataset, y_train_dataset, y_test_dataset = train_test_split(dataframe[1],dataframe[0])
-
-  vectorizer = TfidfVectorizer()
-  X_train_dataset = vectorizer.fit_transform(X_train_dataset)
-
-  classifier_log = LogisticRegression()
-  classifier_log.fit(X_train_dataset, y_train_dataset)
-
-  X_test_dataset = vectorizer.transform( ['URGENT! Your Mobile No 1234 was awarded a Prize', 'Hey honey, whats up?'] )
-
-  predictions_logistic = classifier.predict(X_test_dataset)
-  print(predictions)
-#+END_SRC
-
-** TensorFlow_RNN for 垃圾短信預測
-
-TensorFlow 機器學習實戰指南 (美)尼克‧麥克盧爾
- 9.2 用 TensorFlow 實現 RNN 模型進行垃圾短信預測
- https://github.com/PacktPublishing/TensorFlow-Machine-Learning-Cookbook-Second-Edition
-
-
-#+BEGIN_SRC python -r -n :results output :exports both :eval no
-  import os
-  import re
-  import io
-  import requests
-  import numpy as np
-  import matplotlib.pyplot as plt
-  import tensorflow as tf
-  from zipfile import ZipFile
-  from tensorflow.python.framework import ops
-  ops.reset_default_graph()
-
-  # Start a graph
-  sess = tf.Session()
-
-  # Set RNN parameters
-  epochs = 20
-  batch_size = 250
-  max_sequence_length = 25
-  rnn_size = 10
-  embedding_size = 50
-  min_word_frequency = 10
-  learning_rate = 0.0005
-  dropout_keep_prob = tf.placeholder(tf.float32)
-
-
-  # Download or open data
-  data_dir = 'temp'
-  data_file = 'text_data.txt'
-  if not os.path.exists(data_dir):
-      os.makedirs(data_dir)
-
-  if not os.path.isfile(os.path.join(data_dir, data_file)):
-      zip_url = 'http://archive.ics.uci.edu/ml/machine-learning-databases/00228/smsspamcollection.zip'
-      r = requests.get(zip_url)
-      z = ZipFile(io.BytesIO(r.content))
-      file = z.read('SMSSpamCollection')
-      # Format Data
-      text_data = file.decode()
-      text_data = text_data.encode('ascii', errors='ignore')
-      text_data = text_data.decode().split('\n')
-
-      # Save data to text file
-      with open(os.path.join(data_dir, data_file), 'w') as file_conn:
-          for text in text_data:
-              file_conn.write("{}\n".format(text))
-  else:
-      # Open data from text file
-      text_data = []
-      with open(os.path.join(data_dir, data_file), 'r') as file_conn:
-          for row in file_conn:
-              text_data.append(row)
-      text_data = text_data[:-1]
-
-  text_data = [x.split('\t') for x in text_data if len(x) >= 1]
-  [text_data_target, text_data_train] = [list(x) for x in zip(*text_data)]
-
-
-  # Create a text cleaning function
-  def clean_text(text_string):
-      text_string = re.sub(r'([^\s\w]|_|[0-9])+', '', text_string)
-      text_string = " ".join(text_string.split())
-      text_string = text_string.lower()
-      return text_string
-
-
-  # Clean texts
-  text_data_train = [clean_text(x) for x in text_data_train]
-
-  # Change texts into numeric vectors
-  vocab_processor = tf.contrib.learn.preprocessing.VocabularyProcessor(max_sequence_length,
-                                                                       min_frequency=min_word_frequency)
-  text_processed = np.array(list(vocab_processor.fit_transform(text_data_train)))
-
-  # Shuffle and split data
-  text_processed = np.array(text_processed)
-  text_data_target = np.array([1 if x == 'ham' else 0 for x in text_data_target])
-  shuffled_ix = np.random.permutation(np.arange(len(text_data_target)))
-  x_shuffled = text_processed[shuffled_ix]
-  y_shuffled = text_data_target[shuffled_ix]
-
-  # Split train/test set
-  ix_cutoff = int(len(y_shuffled)*0.80)
-  x_train, x_test = x_shuffled[:ix_cutoff], x_shuffled[ix_cutoff:]
-  y_train, y_test = y_shuffled[:ix_cutoff], y_shuffled[ix_cutoff:]
-  vocab_size = len(vocab_processor.vocabulary_)
-  print("Vocabulary Size: {:d}".format(vocab_size))
-  print("80-20 Train Test split: {:d} -- {:d}".format(len(y_train), len(y_test)))
-
-  # Create placeholders
-  x_data = tf.placeholder(tf.int32, [None, max_sequence_length])
-  y_output = tf.placeholder(tf.int32, [None])
-
-  # Create embedding
-  embedding_mat = tf.Variable(tf.random_uniform([vocab_size, embedding_size], -1.0, 1.0))
-  embedding_output = tf.nn.embedding_lookup(embedding_mat, x_data)
-
-  # Define the RNN cell
-  # tensorflow change >= 1.0, rnn is put into tensorflow.contrib directory. Prior version not test.
-  if tf.__version__[0] >= '1':
-      cell = tf.contrib.rnn.BasicRNNCell(num_units=rnn_size)
-  else:
-      cell = tf.nn.rnn_cell.BasicRNNCell(num_units=rnn_size)
-
-  output, state = tf.nn.dynamic_rnn(cell, embedding_output, dtype=tf.float32)
-  output = tf.nn.dropout(output, dropout_keep_prob)
-
-  # Get output of RNN sequence
-  output = tf.transpose(output, [1, 0, 2])
-  last = tf.gather(output, int(output.get_shape()[0]) - 1)
-
-  weight = tf.Variable(tf.truncated_normal([rnn_size, 2], stddev=0.1))
-  bias = tf.Variable(tf.constant(0.1, shape=[2]))
-  logits_out = tf.matmul(last, weight) + bias
-
-  # Loss function
-  losses = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits_out, labels=y_output)
-  loss = tf.reduce_mean(losses)
-
-  accuracy = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(logits_out, 1), tf.cast(y_output, tf.int64)), tf.float32))
-
-  optimizer = tf.train.RMSPropOptimizer(learning_rate)
-  train_step = optimizer.minimize(loss)
-
-  init = tf.global_variables_initializer()
-  sess.run(init)
-
-  train_loss = []
-  test_loss = []
-  train_accuracy = []
-  test_accuracy = []
-  # Start training
-  for epoch in range(epochs):
-
-      # Shuffle training data
-      shuffled_ix = np.random.permutation(np.arange(len(x_train)))
-      x_train = x_train[shuffled_ix]
-      y_train = y_train[shuffled_ix]
-      num_batches = int(len(x_train)/batch_size) + 1
-      # TO DO CALCULATE GENERATIONS ExACTLY
-      for i in range(num_batches):
-          # Select train data
-          min_ix = i * batch_size
-          max_ix = np.min([len(x_train), ((i+1) * batch_size)])
-          x_train_batch = x_train[min_ix:max_ix]
-          y_train_batch = y_train[min_ix:max_ix]
-
-          # Run train step
-          train_dict = {x_data: x_train_batch, y_output: y_train_batch, dropout_keep_prob:0.5}
-          sess.run(train_step, feed_dict=train_dict)
-
-      # Run loss and accuracy for training
-      temp_train_loss, temp_train_acc = sess.run([loss, accuracy], feed_dict=train_dict)
-      train_loss.append(temp_train_loss)
-      train_accuracy.append(temp_train_acc)
-
-      # Run Eval Step
-      test_dict = {x_data: x_test, y_output: y_test, dropout_keep_prob:1.0}
-      temp_test_loss, temp_test_acc = sess.run([loss, accuracy], feed_dict=test_dict)
-      test_loss.append(temp_test_loss)
-      test_accuracy.append(temp_test_acc)
-      print('Epoch: {}, Test Loss: {:.2}, Test Acc: {:.2}'.format(epoch+1, temp_test_loss, temp_test_acc))
-
-  # Plot loss over time
-  epoch_seq = np.arange(1, epochs+1)
-  plt.plot(epoch_seq, train_loss, 'k--', label='Train Set')
-  plt.plot(epoch_seq, test_loss, 'r-', label='Test Set')
-  plt.title('Softmax Loss')
-  plt.xlabel('Epochs')
-  plt.ylabel('Softmax Loss')
-  plt.legend(loc='upper left')
-  plt.show()
-
-  # Plot accuracy over time
-  plt.plot(epoch_seq, train_accuracy, 'k--', label='Train Set')
-  plt.plot(epoch_seq, test_accuracy, 'r-', label='Test Set')
-  plt.title('Test Accuracy')
-  plt.xlabel('Epochs')
-  plt.ylabel('Accuracy')
-  plt.legend(loc='upper left')
-  plt.show()
-#+END_SRC
-
-* AI and Botnet Detection
-
-[[https://github.com/MyDearGreatTeacher/TensorSecurity/tree/master/code/AI_security/%E7%99%BC%E5%B1%95%E8%B6%A8%E5%8B%A2/Botnet][Botnet github]]
-IOT honey pot
-
-** 案例分析
-
-Hands-On Artificial Intelligence for Cybersecurity
-Alessandro Parisi
-
-** 資料集
-
-https://github.com/MyDearGreatTeacher/AI201909/blob/master/data/network-logs.csv
-
-!wget https://raw.githubusercontent.com/MyDearGreatTeacher/AI201909/master/data/network-logs.csv
-
-
-
-#+BEGIN_SRC csv
-  REMOTE_PORT	LATENCY	THROUGHPUT	ANOMALY
-  21	15.94287532	16.20299807	0
-  20	12.66645095	15.89908374	1
-  80	13.89454962	12.95800822	0
-  21	13.62081292	15.45947525	0
-  21	15.70548485	15.33956527	0
-  23	15.59318973	15.61238106	0
-  21	15.48906755	15.64087368	0
-  80	15.52704801	15.63568031	0
-  21	14.07506707	15.76531533	0
-  ......
-#+END_SRC
-
-#+BEGIN_SRC csv
-  延遲（Latency）：一個封包從來源端送出後，到目的端接收到這個封包，中間所花的時間。
-  頻寬（Bandwidth）：傳輸媒介的最大吞吐量（throughput）。
-
-  https://blog.gtwang.org/web-development/network-lantency-and-bandwidth/
-#+END_SRC
-
-** 基本統計分析
-#+BEGIN_SRC python -r -n :results output :exports both :eval no
-  !wget https://raw.githubusercontent.com/MyDearGreatTeacher/AI201909/master/data/network-logs.csv
-
-  import numpy as np
-  import pandas as pd
-  import matplotlib.pyplot as plt
-  %matplotlib inline
-
-  dataset = pd.read_csv('network-logs.csv')
-  hist_dist = dataset[['LATENCY', 'THROUGHPUT']].hist(grid=False, figsize=(10,4))
-
-  data = dataset[['LATENCY', 'THROUGHPUT']].values
-
-  plt.scatter(data[:, 0], data[:, 1], alpha=0.6)
-  plt.xlabel('LATENCY')
-  plt.ylabel('THROUGHPUT')
-  plt.title('DATA FLOW')
-  plt.show()
-#+END_SRC
-
-** 機器學習
-#+BEGIN_SRC python -r -n :results output :exports both :eval no
-  import numpy as np
-  import pandas as pd
-
-  from sklearn.linear_model import *
-  from sklearn.tree import *
-  from sklearn.naive_bayes import *
-  from sklearn.neighbors import *
-  from sklearn.metrics import accuracy_score
-
-  from sklearn.model_selection import train_test_split
-
-  import matplotlib.pyplot as plt
-  %matplotlib inline
-
-  # Load the data.
-  dataset = pd.read_csv('network-logs.csv')
-
-
-  samples = dataset.iloc[:, [1, 2]].values #只取第1、2欄的資料當features
-  targets = dataset['ANOMALY'].values
-
-  training_samples, testing_samples, training_targets, testing_targets = train_test_split(
-           samples, targets, test_size=0.3, random_state=0)
-
-#+END_SRC
-
-接下來就可以套用各種分類演算法
-
-*** 使用 k-Nearest Neighbors model
-
-#+BEGIN_SRC python -r -n :results output :exports both :eval no
-  knc = KNeighborsClassifier(n_neighbors=2)
-  knc.fit(training_samples,training_targets)
-  knc_prediction = knc.predict(testing_samples)
-  knc_accuracy = 100.0 * accuracy_score(testing_targets, knc_prediction)
-  print ("K-Nearest Neighbours accuracy: " + str(knc_accuracy))
-
-
-#+END_SRC
-
-*** 使用 Decision tree model
-
-#+BEGIN_SRC python -r -n :results output :exports both :eval no
-  dtc = DecisionTreeClassifier(random_state=0)
-  dtc.fit(training_samples,training_targets)
-  dtc_prediction = dtc.predict(testing_samples)
-  dtc_accuracy = 100.0 * accuracy_score(testing_targets, dtc_prediction)
-  print ("Decision Tree accuracy: " + str(dtc_accuracy))
-#+END_SRC
-
-*** 使用 Gaussian Naive Bayes model
-
-#+BEGIN_SRC python -r -n :results output :exports both :eval no
-  gnb = GaussianNB()
-  gnb.fit(training_samples,training_targets)
-  gnb_prediction = gnb.predict(testing_samples)
-  gnb_accuracy = 100.0 * accuracy_score(testing_targets, gnb_prediction)
-  print ("Gaussian Naive Bayes accuracy: " + str(gnb_accuracy))
-
-#+END_SRC
-
-** 結果
-
-- K-Nearest Neighbours accuracy: 95.90163934426229
-- Decision Tree accuracy: 96.72131147540983
-- Gaussian Naive Bayes accuracy: 98.36065573770492
-
+#+AUTHOR: 顏永進
+
+#+TAGS: AI
+#+INCLUDE: ../pdf.org
+#+OPTIONS: toc:2 ^:nil num:5
+#+PROPERTY: header-args :python :python "/Users/letranger/Dropbox/notes/roam/venv/bin/python3" :eval never-export
+#+EXCLUDE_TAGS: noexport
 #+latex:\newpage
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/muse.css" />
+#+HTML_HEAD_EXTRA: <script src="../css/copy_code.js"></script>
+
+#+begin_export html
+<a href="https://letranger.github.io/AI/20231129151843-ai與資安.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20231129151843-ai與資安.html.svg"/></a>
+#+end_export
+
+* AI 與資安：當駭客遇上機器學習
+
+你每天都在跟資安問題打交道，只是你可能不知道：
+- 你的信箱自動幫你擋掉的垃圾信？那是 AI 在幫你過濾。
+- 你點連結時瀏覽器跳出「這個網站可能是釣魚網站」的警告？也是 AI 在保護你。
+- 銀行偵測到你的信用卡被盜刷，立刻打電話來確認？還是 AI。
+
+這堂課我們要用機器學習來扮演「資安守門員」，學會怎麼讓電腦自動辨別：
+1. 這封簡訊是正常的還是詐騙的？（垃圾簡訊偵測）
+2. 這個網站是正常的還是釣魚的？（釣魚網站偵測）
+3. 這筆網路流量是正常的還是異常的？（網路異常偵測）
+
+* 實戰一：垃圾簡訊偵測
+
+** 問題背景
+
+你一定收過這種簡訊：
+
+#+begin_example
+「恭喜您中獎了！請點擊連結領取 100 萬元獎金 → http://scam.xyz」
+「您的包裹無法投遞，請確認地址 → http://fake-post.com」
+#+end_example
+
+這種就是垃圾簡訊（spam）。正常簡訊（ham）長這樣：
+
+#+begin_example
+「今天晚上要不要一起吃飯？」
+「明天的報告記得帶來喔」
+#+end_example
+
+人類一眼就能分辨，但如果每天有幾百萬封簡訊要過濾，靠人力根本不可能。這時候就需要 AI 出場了。
+
+** 思路：把文字變成數字
+
+機器學習模型只認得數字，不認得文字。所以第一步是把簡訊 *轉換成數字*。
+
+最常用的方法是 *TF-IDF*（Term Frequency - Inverse Document Frequency）：
+- *TF（詞頻）*：一個詞在這封簡訊中出現的頻率。「FREE」出現 3 次？那 TF 就很高。
+- *IDF（逆文件頻率）*：一個詞在所有簡訊中有多罕見。「the」到處都有，IDF 很低；「WINNER」只在垃圾簡訊出現，IDF 很高。
+- TF-IDF = TF × IDF：同時考慮「這個詞在這封信中重要嗎」和「這個詞能區分不同類型的信嗎」
+
+#+begin_quote
+簡單來說：如果一個詞在某封簡訊中頻繁出現，但在大多數正常簡訊中很少見，那這個詞就很可能是垃圾簡訊的「指紋」。像是 FREE、WINNER、PRIZE、CLICK 這些字。
+#+end_quote
+
+** 資料集：SMS Spam Collection
+
+我們使用 UCI Machine Learning Repository 的 SMS Spam Collection 資料集，包含 5,574 封英文簡訊，已標註為 ham（正常）或 spam（垃圾）。
+
+#+begin_src python -r -n :results output :exports both :session sec
+import pandas as pd
+import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report
+
+# 讀取 SMS Spam Collection 資料集
+url = "https://raw.githubusercontent.com/justmarkham/pycon-2016-tutorial/master/data/sms.tsv"
+df = pd.read_csv(url, sep='\t', header=None, names=['label', 'message'])
+
+print(f"資料集大小：{len(df)} 封簡訊")
+print(f"\n各類別數量：")
+print(df['label'].value_counts())
+print(f"\n垃圾簡訊比例：{df['label'].value_counts()['spam'] / len(df) * 100:.1f}%")
+#+end_src
+
+來看看垃圾簡訊和正常簡訊長什麼樣子：
+
+#+begin_src python -r -n :results output :exports both :session sec
+print("=== 垃圾簡訊範例 ===")
+for msg in df[df['label'] == 'spam']['message'].head(3):
+    print(f"  → {msg[:80]}...")
+print()
+print("=== 正常簡訊範例 ===")
+for msg in df[df['label'] == 'ham']['message'].head(3):
+    print(f"  → {msg[:80]}")
+#+end_src
+
+你有沒有發現？垃圾簡訊的特徵很明顯：大寫字母多、會出現 FREE、WINNER、PRIZE 這類「太好了吧」的字眼，還會附上可疑的電話號碼或網址。
+
+** 訓練模型
+
+#+begin_src python -r -n :results output :exports both :session sec
+# 1. 把文字標籤轉成數字：ham=0, spam=1
+df['label_num'] = (df['label'] == 'spam').astype(int)
+
+# 2. 切分訓練集和測試集（80% 訓練，20% 測試）
+X_train, X_test, y_train, y_test = train_test_split(
+    df['message'], df['label_num'], test_size=0.2, random_state=42
+)
+print(f"訓練集：{len(X_train)} 封")
+print(f"測試集：{len(X_test)} 封")
+
+# 3. 用 TF-IDF 把文字轉成數字向量
+vectorizer = TfidfVectorizer(stop_words='english', max_features=3000)
+X_train_tfidf = vectorizer.fit_transform(X_train)
+X_test_tfidf = vectorizer.transform(X_test)
+
+print(f"\nTF-IDF 特徵數量：{X_train_tfidf.shape[1]} 個詞彙")
+
+# 4. 用 Logistic Regression 訓練分類器
+model = LogisticRegression(max_iter=1000)
+model.fit(X_train_tfidf, y_train)
+
+# 5. 在測試集上評估
+y_pred = model.predict(X_test_tfidf)
+accuracy = accuracy_score(y_test, y_pred)
+print(f"\n模型準確度：{accuracy * 100:.2f}%")
+print(f"\n詳細報告：")
+print(classification_report(y_test, y_pred, target_names=['正常(ham)', '垃圾(spam)']))
+#+end_src
+
+** 來看看模型學到了什麼
+
+哪些詞最能代表「垃圾簡訊」？哪些詞最能代表「正常簡訊」？
+
+#+begin_src python -r -n :results output :exports both :session sec
+# 找出模型認為最「垃圾」和最「正常」的詞
+feature_names = vectorizer.get_feature_names_out()
+coefs = model.coef_[0]
+
+# 最像垃圾簡訊的 10 個詞
+spam_indices = np.argsort(coefs)[-10:]
+print("=== 最像垃圾簡訊的 10 個關鍵詞 ===")
+for i in reversed(spam_indices):
+    print(f"  {feature_names[i]:15s} (權重: {coefs[i]:.2f})")
+
+print()
+
+# 最像正常簡訊的 10 個詞
+ham_indices = np.argsort(coefs)[:10]
+print("=== 最像正常簡訊的 10 個關鍵詞 ===")
+for i in ham_indices:
+    print(f"  {feature_names[i]:15s} (權重: {coefs[i]:.2f})")
+#+end_src
+
+** 實際測試：來判斷新簡訊！
+
+#+begin_src python -r -n :results output :exports both :session sec
+test_messages = [
+    "URGENT! You have won a prize of $1000! Call now!",
+    "Hey, are you coming to the party tonight?",
+    "FREE entry to win a brand new iPhone! Text WIN to 12345",
+    "Can you pick up some milk on your way home?",
+    "Congratulations! You've been selected for a cash prize!",
+    "I'll be late for dinner, stuck in traffic",
+]
+
+test_tfidf = vectorizer.transform(test_messages)
+predictions = model.predict(test_tfidf)
+probabilities = model.predict_proba(test_tfidf)
+
+print("=== 新簡訊判斷結果 ===")
+for msg, pred, prob in zip(test_messages, predictions, probabilities):
+    label = "垃圾" if pred == 1 else "正常"
+    confidence = max(prob) * 100
+    emoji = "🚫" if pred == 1 else "✅"
+    print(f"\n{emoji} [{label}] (信心度: {confidence:.1f}%)")
+    print(f"   \"{msg}\"")
+#+end_src
+
+* 實戰二：釣魚網站偵測
+
+** 問題背景
+
+釣魚網站（Phishing Website）就是假裝成正版網站來騙你輸入帳號密碼的假網站。它可能長得跟真的 Google 登入頁面一模一樣，但網址卻是 =g00gle-login.xyz= 這種奇怪的東西。
+
+資安研究者發現，釣魚網站通常有一些可以量化的特徵：
+- URL 中有沒有 IP 位址？（正常網站用域名，釣魚網站常直接用 IP）
+- URL 長度是否異常？（釣魚網站的 URL 通常很長）
+- 有沒有使用 HTTPS？（正常網站通常有，釣魚網站常常沒有）
+- 網域註冊時間多久？（釣魚網站通常是剛註冊的）
+- 有沒有異常的重定向？
+
+** 資料集
+
+我們使用 UCI Machine Learning Repository 的 Phishing Websites 資料集。資料已經幫我們把網站的各種特徵轉換成數字了（每個特徵的值為 -1、0 或 1）。最後一欄是標籤：1 代表正常網站，-1 代表釣魚網站。
+
+由於原始資料集需要另外下載，我們用模擬資料來展示分類流程：
+
+#+begin_src python -r -n :results output :exports both :session sec
+from sklearn.datasets import make_classification
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+import numpy as np
+
+# 模擬釣魚網站資料集（30 個特徵，類似真實資料集）
+np.random.seed(42)
+X, y = make_classification(
+    n_samples=2000,       # 2000 個網站
+    n_features=30,        # 30 個特徵
+    n_informative=15,     # 其中 15 個是有用的特徵
+    n_redundant=5,        # 5 個是冗餘的
+    n_classes=2,          # 二分類：正常 vs 釣魚
+    flip_y=0.05,          # 5% 的標籤有噪音（模擬真實世界的不確定性）
+    random_state=42
+)
+
+# 特徵名稱（模擬真實資料集的 30 個特徵）
+feature_names = [
+    'having_IP', 'URL_Length', 'Shortining_Service', 'having_At_Symbol',
+    'double_slash', 'Prefix_Suffix', 'having_Sub_Domain', 'SSLfinal_State',
+    'Domain_registeration_length', 'Favicon', 'port', 'HTTPS_token',
+    'Request_URL', 'URL_of_Anchor', 'Links_in_tags', 'SFH',
+    'Submitting_to_email', 'Abnormal_URL', 'Redirect', 'on_mouseover',
+    'RightClick', 'popUpWidnow', 'Iframe', 'age_of_domain',
+    'DNSRecord', 'web_traffic', 'Page_Rank', 'Google_Index',
+    'Links_pointing', 'Statistical_report'
+]
+
+print(f"資料集大小：{X.shape[0]} 個網站，{X.shape[1]} 個特徵")
+print(f"正常網站：{sum(y == 1)} 個")
+print(f"釣魚網站：{sum(y == 0)} 個")
+#+end_src
+
+** 比較不同演算法
+
+接下來我們用三種不同的分類演算法來偵測釣魚網站，看看誰最厲害：
+
+#+begin_src python -r -n :results output :exports both :session sec
+# 切分訓練集和測試集
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, random_state=42
+)
+
+# 三種分類器
+classifiers = {
+    "Logistic Regression（邏輯迴歸）": LogisticRegression(max_iter=1000),
+    "Decision Tree（決策樹）": DecisionTreeClassifier(random_state=42),
+    "Random Forest（隨機森林）": RandomForestClassifier(n_estimators=100, random_state=42),
+}
+
+print("=== 釣魚網站偵測：三大演算法比武大會 ===\n")
+results = {}
+for name, clf in classifiers.items():
+    clf.fit(X_train, y_train)
+    pred = clf.predict(X_test)
+    acc = accuracy_score(y_test, pred) * 100
+    results[name] = acc
+    print(f"{name}: {acc:.2f}%")
+
+winner = max(results, key=results.get)
+print(f"\n冠軍：{winner}！")
+#+end_src
+
+** 哪些特徵最重要？
+
+隨機森林不只能分類，還能告訴我們哪些特徵對判斷「是不是釣魚網站」最有用：
+
+#+begin_src python -r -n :results output :exports both :session sec
+import matplotlib.pyplot as plt
+
+# 用隨機森林的 feature importance
+rf = classifiers["Random Forest（隨機森林）"]
+importances = rf.feature_importances_
+indices = np.argsort(importances)[-10:]  # 取前 10 重要的特徵
+
+print("=== 判斷釣魚網站最重要的 10 個特徵 ===\n")
+for i in reversed(indices):
+    print(f"  {feature_names[i]:30s} 重要度: {importances[i]:.4f}")
+
+# 繪圖
+plt.figure(figsize=(10, 5))
+plt.barh(range(len(indices)), importances[indices])
+plt.yticks(range(len(indices)), [feature_names[i] for i in indices])
+plt.xlabel('Feature Importance')
+plt.title('Top 10 Features for Phishing Detection')
+plt.tight_layout()
+plt.savefig("images/phishing-feature-importance.png", dpi=100)
+plt.close()
+print("\n圖表已儲存至 images/phishing-feature-importance.png")
+#+end_src
+
+* 實戰三：網路異常流量偵測
+
+** 問題背景
+
+想像你是一個網管人員，負責監控學校的網路流量。正常情況下，學生上網查資料、看影片，流量模式是有規律的。但如果某台電腦被植入殭屍程式（botnet），它會偷偷地跟駭客的伺服器通訊，流量模式就會變得不一樣。
+
+我們的任務是：根據網路流量的特徵（連接埠、延遲、吞吐量），判斷這筆流量是正常的還是異常的。
+
+常見的流量特徵：
+- *Remote Port（遠端連接埠）*：連到哪個 port？80 是網頁、443 是加密網頁、21 是 FTP、奇怪的 port 可能有問題
+- *Latency（延遲）*：封包往返花多少時間？異常高的延遲可能代表資料正在被中繼轉發
+- *Throughput（吞吐量）*：單位時間傳了多少資料？突然爆量可能是資料正在被偷
+
+** 建立模擬資料
+
+#+begin_src python -r -n :results output :exports both :session sec
+import numpy as np
+import pandas as pd
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report
+import matplotlib.pyplot as plt
+
+# 模擬網路流量資料
+np.random.seed(42)
+n_normal = 900
+n_anomaly = 100
+
+# 正常流量：port 集中在 80/443，延遲和吞吐量在正常範圍
+normal_ports = np.random.choice([80, 443, 21, 22, 23], size=n_normal, p=[0.4, 0.35, 0.1, 0.1, 0.05])
+normal_latency = np.random.normal(15, 1.5, n_normal)
+normal_throughput = np.random.normal(15, 1.5, n_normal)
+
+# 異常流量：port 偏向奇怪的埠號，延遲和吞吐量異常
+anomaly_ports = np.random.choice([4444, 8080, 31337, 6667, 9999], size=n_anomaly)
+anomaly_latency = np.random.normal(25, 5, n_anomaly)
+anomaly_throughput = np.random.normal(8, 3, n_anomaly)
+
+# 合併資料
+ports = np.concatenate([normal_ports, anomaly_ports])
+latency = np.concatenate([normal_latency, anomaly_latency])
+throughput = np.concatenate([normal_throughput, anomaly_throughput])
+labels = np.array([0] * n_normal + [1] * n_anomaly)  # 0=正常, 1=異常
+
+dataset = pd.DataFrame({
+    'REMOTE_PORT': ports,
+    'LATENCY': latency,
+    'THROUGHPUT': throughput,
+    'ANOMALY': labels
+})
+
+print(f"資料集大小：{len(dataset)} 筆流量記錄")
+print(f"正常流量：{n_normal} 筆 ({n_normal/len(dataset)*100:.0f}%)")
+print(f"異常流量：{n_anomaly} 筆 ({n_anomaly/len(dataset)*100:.0f}%)")
+print(f"\n資料前 5 筆：")
+print(dataset.head().to_string(index=False))
+#+end_src
+
+** 資料視覺化
+
+先用散佈圖看看正常流量和異常流量的分佈：
+
+#+begin_src python -r -n :results output :exports both :session sec
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+# 散佈圖：延遲 vs 吞吐量
+normal = dataset[dataset['ANOMALY'] == 0]
+anomaly = dataset[dataset['ANOMALY'] == 1]
+
+axes[0].scatter(normal['LATENCY'], normal['THROUGHPUT'], alpha=0.5, label='Normal', c='blue', s=20)
+axes[0].scatter(anomaly['LATENCY'], anomaly['THROUGHPUT'], alpha=0.7, label='Anomaly', c='red', s=40, marker='x')
+axes[0].set_xlabel('Latency (ms)')
+axes[0].set_ylabel('Throughput (Mbps)')
+axes[0].set_title('Network Traffic: Latency vs Throughput')
+axes[0].legend()
+
+# 直方圖：延遲分佈
+axes[1].hist(normal['LATENCY'], bins=30, alpha=0.5, label='Normal', color='blue')
+axes[1].hist(anomaly['LATENCY'], bins=30, alpha=0.5, label='Anomaly', color='red')
+axes[1].set_xlabel('Latency (ms)')
+axes[1].set_ylabel('Count')
+axes[1].set_title('Latency Distribution')
+axes[1].legend()
+
+plt.tight_layout()
+plt.savefig("images/network-traffic-analysis.png", dpi=100)
+plt.close()
+print("圖表已儲存至 images/network-traffic-analysis.png")
+#+end_src
+
+從圖中可以清楚看到：異常流量（紅色）的延遲偏高、吞吐量偏低，跟正常流量（藍色）形成明顯的兩群。這就是為什麼機器學習能有效偵測異常——它能在高維空間中找到這些「群聚」的模式。
+
+** 三大演算法比武
+
+#+begin_src python -r -n :results output :exports both :session sec
+# 準備特徵和標籤
+features = dataset[['LATENCY', 'THROUGHPUT']].values
+targets = dataset['ANOMALY'].values
+
+# 切分訓練集和測試集
+X_train, X_test, y_train, y_test = train_test_split(
+    features, targets, test_size=0.3, random_state=42
+)
+
+# 三種分類器
+models = {
+    "K-Nearest Neighbors（K近鄰）": KNeighborsClassifier(n_neighbors=3),
+    "Decision Tree（決策樹）": DecisionTreeClassifier(random_state=42),
+    "Gaussian Naive Bayes（高斯貝氏）": GaussianNB(),
+}
+
+print("=== 網路異常偵測：三大演算法比武大會 ===\n")
+for name, clf in models.items():
+    clf.fit(X_train, y_train)
+    pred = clf.predict(X_test)
+    acc = accuracy_score(y_test, pred) * 100
+    print(f"{name}: {acc:.2f}%")
+
+print("\n--- 最佳模型的詳細報告 ---")
+# 用 GaussianNB 的結果做詳細報告
+gnb = models["Gaussian Naive Bayes（高斯貝氏）"]
+pred = gnb.predict(X_test)
+print(classification_report(y_test, pred, target_names=['正常', '異常']))
+#+end_src
+
+** 小結：三種資安應用的比較
+
+| 應用場景 | 輸入資料 | 特徵類型 | 適合的演算法 |
+|----------+----------+----------+--------------|
+| 垃圾簡訊偵測 | 簡訊文字 | TF-IDF 文字特徵 | Logistic Regression |
+| 釣魚網站偵測 | 網站屬性 | URL/域名/憑證特徵 | Random Forest |
+| 網路異常偵測 | 流量數據 | 延遲/吞吐量/port | Naive Bayes、KNN |
+
+共同點：都是 *二元分類* 問題——要嘛正常，要嘛異常。機器學習特別擅長處理這種「在大量資料中找出少數壞蛋」的任務。
+
+* AI 資安的真實世界挑戰
+
+在教室裡跑模型很開心，但真實世界的資安 AI 面臨更多挑戰：
+
+1. *資料不平衡*：真實世界中，99.9% 的流量都是正常的，只有 0.1% 是攻擊。模型如果直接全猜「正常」就能有 99.9% 的準確率，但一筆攻擊都抓不到。
+2. *攻擊者也在進化*：駭客知道你用 AI 偵測，所以他們會想辦法讓攻擊看起來更像正常行為（對抗式攻擊，Adversarial Attack）。
+3. *即時性要求*：網路攻擊是即時發生的，模型必須在毫秒內做出判斷，不能慢慢算。
+4. *誤報成本高*：把正常用戶標記為駭客（False Positive）會造成很大的困擾；但漏掉真正的駭客（False Negative）又可能造成損失。
+
+#+begin_quote
+資安 AI 就像是機場的安檢系統：太鬆了會讓危險物品通過，太嚴了會讓每個旅客都被攔下來。找到恰好的平衡點，才是真正的挑戰。
+#+end_quote
+
+* 作業
+** 作業一：垃圾簡訊剋星進化版
+
+你已經學會用 Logistic Regression 來偵測垃圾簡訊了。現在來挑戰不同的演算法！
+
+*** 任務說明
+
+修改垃圾簡訊偵測的程式碼，把 =LogisticRegression= 換成以下兩種演算法，比較三者的準確度：
+
+1. =MultinomialNB=（多項式貝氏分類器）
+2. =RandomForestClassifier=（隨機森林）
+
+*步驟：*
+1. 在原本的程式碼中，import 新的分類器：
+   #+begin_example
+   from sklearn.naive_bayes import MultinomialNB
+   from sklearn.ensemble import RandomForestClassifier
+   #+end_example
+2. 分別用三種演算法訓練和測試
+3. 比較準確度，找出冠軍
+4. 用冠軍模型測試以下 3 封簡訊，記錄結果：
+   #+begin_example
+   "You have been selected to receive a free vacation! Call now!"
+   "Hey, can we reschedule our meeting to 3pm tomorrow?"
+   "WINNER!! Claim your $500 gift card by clicking this link"
+   #+end_example
+
+*** 預期輸出格式
+#+begin_example
+=== 三大演算法準確度比較 ===
+Logistic Regression:   XX.XX%
+Multinomial NB:        XX.XX%
+Random Forest:         XX.XX%
+
+冠軍：XXXXX
+
+=== 冠軍模型測試結果 ===
+"You have been selected..." → 垃圾 (信心度: XX.X%)
+"Hey, can we reschedule..." → 正常 (信心度: XX.X%)
+"WINNER!! Claim your..."    → 垃圾 (信心度: XX.X%)
+#+end_example
+
+** 作業二：自製釣魚偵測器
+
+你能不能設計一個「釣魚網址評分系統」？不需要機器學習，純粹用規則判斷。
+
+*** 任務說明
+
+寫一個 Python 函數 =phishing_score(url)=，根據以下規則給網址打分（分數越高越可疑）：
+
+| 規則 | 加分 | 說明 |
+|------+------+------|
+| URL 長度超過 54 個字元 | +1 | 釣魚網址通常很長 |
+| 包含 IP 位址（如 192.168.1.1） | +2 | 正常網站用域名不用 IP |
+| 包含 =@= 符號 | +2 | 用來混淆真實網址 |
+| 使用 HTTP 而非 HTTPS | +1 | 缺乏加密 |
+| 包含「login」「verify」「secure」「account」「update」任一關鍵詞 | +1 | 釣魚網站愛用的詞 |
+| 子域名超過 3 層（數 =.= 的數量） | +1 | 如 =a.b.c.evil.com= |
+
+評分標準：0-1 分=安全，2-3 分=注意，4 分以上=危險！
+
+*** 範例程式碼（修改 =phishing_score= 函數的內容）
+
+#+begin_src python -r -n :results output :exports both :eval no
+import re
+
+def phishing_score(url):
+    score = 0
+    # 在這裡實作各項規則
+    # ...
+    return score
+
+# 測試用的網址
+test_urls = [
+    "https://www.google.com",
+    "http://192.168.1.1/login/verify-account.html",
+    "https://secure-login.google.com.evil-site.xyz/account/update",
+    "https://www.youtube.com/watch?v=abc123",
+    "http://bit.ly/free-iphone-winner@redirect.com",
+]
+
+for url in test_urls:
+    s = phishing_score(url)
+    if s <= 1:
+        level = "安全"
+    elif s <= 3:
+        level = "注意"
+    else:
+        level = "危險！"
+    print(f"[{level}] 分數={s}  {url}")
+#+end_src
+
+*** 預期正確輸出
+#+begin_example
+[安全] 分數=0  https://www.google.com
+[危險！] 分數=6  http://192.168.1.1/login/verify-account.html
+[危險！] 分數=5  https://secure-login.google.com.evil-site.xyz/account/update
+[安全] 分數=0  https://www.youtube.com/watch?v=abc123
+[危險！] 分數=5  http://bit.ly/free-iphone-winner@redirect.com
+#+end_example
+
+** 作業三：資安新聞偵探
+
+AI 在資安領域的應用每天都在進化。請你找一則最近一年內的 AI 資安相關新聞，並完成分析報告。
+
+*** 任務說明
+
+1. 搜尋並選擇一則 AI 與資安相關的新聞（中英文皆可）
+2. 撰寫一份 200-300 字的分析報告，包含：
+   - 新聞摘要（用自己的話，不要複製貼上）
+   - 這個案例中 AI 扮演什麼角色？（攻擊方？防守方？兩者都有？）
+   - 如果你是資安工程師，你會如何應對這個威脅？
+   - 這個事件對一般使用者有什麼啟示？
+
+*** 繳交內容
+1. 新聞標題、來源、日期
+2. 200-300 字的分析報告
+3. 你個人的一句話心得（例如：「原來 AI 不只會寫作業，還會寫病毒...」）
+
+** 作業參考解答                                                    :noexport:
+*** 作業一參考解答
+#+begin_src python -r -n :results output :exports both :eval no
+import pandas as pd
+import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+
+url = "https://raw.githubusercontent.com/justmarkham/pycon-2016-tutorial/master/data/sms.tsv"
+df = pd.read_csv(url, sep='\t', header=None, names=['label', 'message'])
+df['label_num'] = (df['label'] == 'spam').astype(int)
+
+X_train, X_test, y_train, y_test = train_test_split(
+    df['message'], df['label_num'], test_size=0.2, random_state=42
+)
+
+vectorizer = TfidfVectorizer(stop_words='english', max_features=3000)
+X_train_tfidf = vectorizer.fit_transform(X_train)
+X_test_tfidf = vectorizer.transform(X_test)
+
+models = {
+    "Logistic Regression": LogisticRegression(max_iter=1000),
+    "Multinomial NB": MultinomialNB(),
+    "Random Forest": RandomForestClassifier(n_estimators=100, random_state=42),
+}
+
+print("=== 三大演算法準確度比較 ===")
+best_name, best_acc, best_model = "", 0, None
+for name, clf in models.items():
+    clf.fit(X_train_tfidf, y_train)
+    pred = clf.predict(X_test_tfidf)
+    acc = accuracy_score(y_test, pred) * 100
+    print(f"{name:25s}: {acc:.2f}%")
+    if acc > best_acc:
+        best_name, best_acc, best_model = name, acc, clf
+
+print(f"\n冠軍：{best_name}")
+
+# 測試新簡訊
+test_msgs = [
+    "You have been selected to receive a free vacation! Call now!",
+    "Hey, can we reschedule our meeting to 3pm tomorrow?",
+    "WINNER!! Claim your $500 gift card by clicking this link",
+]
+
+test_tfidf = vectorizer.transform(test_msgs)
+preds = best_model.predict(test_tfidf)
+probs = best_model.predict_proba(test_tfidf)
+
+print(f"\n=== 冠軍模型測試結果 ===")
+for msg, pred, prob in zip(test_msgs, preds, probs):
+    label = "垃圾" if pred == 1 else "正常"
+    conf = max(prob) * 100
+    print(f"\"{msg[:40]}...\" → {label} (信心度: {conf:.1f}%)")
+#+end_src
+
+通常 Logistic Regression 和 Multinomial NB 在此資料集上表現最好（約 96-98%），Random Forest 稍差一些是因為 TF-IDF 特徵是稀疏矩陣，森林模型處理稀疏特徵不是最擅長的。
+
+*** 作業二參考解答
+#+begin_src python -r -n :results output :exports both :eval no
+import re
+
+def phishing_score(url):
+    score = 0
+    # 規則 1：URL 長度超過 54 個字元
+    if len(url) > 54:
+        score += 1
+    # 規則 2：包含 IP 位址
+    if re.search(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', url):
+        score += 2
+    # 規則 3：包含 @ 符號
+    if '@' in url:
+        score += 2
+    # 規則 4：使用 HTTP 而非 HTTPS
+    if url.startswith('http://'):
+        score += 1
+    # 規則 5：包含可疑關鍵詞
+    suspicious_words = ['login', 'verify', 'secure', 'account', 'update']
+    url_lower = url.lower()
+    for word in suspicious_words:
+        if word in url_lower:
+            score += 1
+            break  # 只加一次
+    # 規則 6：子域名超過 3 層
+    try:
+        domain = url.split('//')[1].split('/')[0].split('@')[-1]
+        if domain.count('.') > 3:
+            score += 1
+    except IndexError:
+        pass
+    return score
+
+test_urls = [
+    "https://www.google.com",
+    "http://192.168.1.1/login/verify-account.html",
+    "https://secure-login.google.com.evil-site.xyz/account/update",
+    "https://www.youtube.com/watch?v=abc123",
+    "http://bit.ly/free-iphone-winner@redirect.com",
+]
+
+for url in test_urls:
+    s = phishing_score(url)
+    if s <= 1:
+        level = "安全"
+    elif s <= 3:
+        level = "注意"
+    else:
+        level = "危險！"
+    print(f"[{level}] 分數={s}  {url}")
+#+end_src
+
+*** 作業三參考解答
+這是開放性作業，評分重點：
+- 新聞是否為近一年內的真實事件
+- 摘要是否用自己的話寫（不是複製貼上）
+- 是否正確辨識 AI 在攻防中的角色
+- 應對方案是否合理
+- 一句話心得是否反映思考
+
+常見的 AI 資安新聞主題：
+- AI 生成的釣魚郵件（用 ChatGPT 寫出幾乎完美的釣魚信）
+- Deepfake 語音詐騙（模仿老闆聲音要求匯款）
+- AI 輔助的漏洞掃描（自動化發現軟體漏洞）
+- 對抗式攻擊（在圖片中加入人眼看不到的干擾，讓 AI 模型判斷錯誤）
+
+* 學習資源
+- [[https://github.com/PacktPublishing/Mastering-Machine-Learning-for-Penetration-Testing][Mastering Machine Learning for Penetration Testing (GitHub)]]
+- [[https://github.com/PacktPublishing/Hands-on-Machine-Learning-for-Cyber-Security][Hands-on Machine Learning for Cyber Security (GitHub)]]
+- [[https://archive.ics.uci.edu/ml/datasets/Phishing+Websites][UCI Phishing Websites Dataset]]

@@ -2,13 +2,15 @@
 :ID:       20221023T101414.457264
 :ROAM_ALIASES: CNN
 :END:
-#+title: 卷積神經網路
+#+title: CNN/卷積神經網路
+#+AUTHOR: 顏永進
 #+INCLUDE: ../pdf.org
 #+TAGS: AI, Machine Learning
 #+OPTIONS: toc:2 ^:nil num:5
 #+OPTIONS: H:4
-#+PROPERTY: header-args :eval never-export
+#+PROPERTY: header-args :python :python "/Users/letranger/Dropbox/notes/roam/venv/bin/python3" :eval never-export
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/muse.css" />
+#+HTML_HEAD_EXTRA: <script src="../css/copy_code.js"></script>
 #+EXCLUDE_TAGS: noexport
 # -*- org-export-babel-evaluate: nil -*-
 
@@ -16,31 +18,37 @@
 <a href="https://letranger.github.io/AI/20221023101414-卷積神經網路.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20221023101414-卷積神經網路.html.svg"/></a>
 #+end_export
 
-* CNN 卷積神經網路
-卷積神經網路(CNN)由Yann LeCun(法國電腦科學家，2018年圖靈獎得主)所提出，此人在機器學習、計算機視覺、計算機神經科學等領域都有很多貢獻。
+* CNN v.s. Yann LeCun
+卷積神經網路(CNN)由Yann LeCun(法國電腦科學家，2018年圖靈獎得主)所提出，此人在機器學習、計算機視覺、計算機神經科學等領域都有極大貢獻。部份網路文獻中常將他的名字譯為「楊立昆」，但這傢伙其實是個法國人。
 
 #+CAPTION: Yann LeCun
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:YannLeCun
+#+name: fig:YannLeCun
 #+ATTR_LATEX: :width 100
 #+ATTR_ORG: :width 100
 #+ATTR_HTML: :width 300
 [[file:images/AI的發展沿革/2024-01-29_14-26-12_2024-01-29_14-21-23.png]]
 
-CNN的想法源自於對人類大腦認知方式的模仿，當我們辨識一個圖像，會先注意到顏色鮮明的點、線、面，之後將它們構成一個個不同的形狀(眼睛、鼻子、嘴巴 ...)，這種抽象化的過程就是 CNN 演算法建立模型的方式。卷積層(Convolution Layer) 就是由點的比對轉成局部的比對，透過一塊塊的特徵研判，逐步堆疊綜合比對結果，就可以得到比較好的辨識結果，過程如下圖[fn:1]。
+講到Yann LeCun，就不得不提到他在1989年發表的卷積神經網路論文，成功將CNN應用於手寫郵遞區號辨識。隨後他在1998年正式發表了LeNet-5模型，這是第一個被大規模應用於手寫數字識別的卷積神經網路模型，LeNet-5在當時的MNIST手寫數字識別競賽中取得了優異的成績，並且成為後來深度學習和計算機視覺領域的重要基礎。
+
+Yann LeCun對於生成式AI的看法與一般人不同，他認為AI 模型雖然有用處，但無法與寵物的智力相比，更比不上人類。被問到人類是否應該擔心 AI 變得越來越強大，甚至構成威脅，他說這完全是胡說八道[fn:1]。
+
+但是他這種看法則遭到其他AI專家的反駁，例如他的博士後(postdoc)指導教授、AI教父Geoffrey Hinton就認為，AI的發展速度遠超過人們的預期，未來有可能會出現超越人類智慧的AI系統，因此人類應該對此保持警惕。而且還順便背刺了學生一下，叫大家別聽他胡扯...XD[fn:2]。
+
+* CNN卷積神經網路概念
+CNN的想法源自於對人類大腦認知方式的模仿，當我們辨識一個圖像，會先注意到顏色鮮明的點、線、面，之後將它們構成一個個不同的形狀(眼睛、鼻子、嘴巴 ...)，這種抽象化的過程就是 CNN 演算法建立模型的方式。卷積層(Convolution Layer) 就是由點的比對轉成局部的比對，透過一塊塊的特徵研判，逐步堆疊綜合比對結果，就可以得到比較好的辨識結果，過程如下圖[fn:3]。
 
 #+CAPTION: CNN 概念
 #+name: fig:CNN-1
 #+ATTR_LATEX: :width 500
 #+ATTR_ORG: :width 500
 #+ATTR_HTML: :width 500
-#+RESULTS:
 [[file:images/CNN-1.png]]
 
 那麼，CNN與之前我們介紹的神經網路(DNN)有什麼差異呢？
 
 ** CNN v.s. MLP
-CNN 與[[id:d6daa102-05bb-475d-b619-db8b61e86030][神經網路]]所提及之DNN(或是MLP, Multilayer Perceptron, 多層感知器) 的主要差異可由下圖看出，即，CNN 在輪入層中多了卷積層與池化層，而DNN中的每一層都是Dense Layer，也就是Fully Connected Layer。
+CNN 與[[id:d6daa102-05bb-475d-b619-db8b61e86030][神經網路]]所提及之DNN(或是MLP, Multilayer Perceptron, 多層感知器) 的主要差異可由下圖看出，即，CNN 在輸入層中多了卷積層與池化層，而DNN中的每一層都是Dense Layer，也就是Fully Connected Layer。
 #+BEGIN_SRC ditaa :file images/cnnmlp.png
          DNN                   CNN
 
@@ -85,8 +93,8 @@ CNN 與[[id:d6daa102-05bb-475d-b619-db8b61e86030][神經網路]]所提及之DNN(
 更進一步來看MPL與CNN的架構差異，我們同樣以圖形識別為例，在讀入一張圖片後，MLP的做法如下：
 
 #+CAPTION: DNN原理
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:DNN-principle
+#+name: fig:DNN-principle
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 400
@@ -104,14 +112,14 @@ CNN 與[[id:d6daa102-05bb-475d-b619-db8b61e86030][神經網路]]所提及之DNN(
 
 而CNN則是透過卷積核(kernel, 即圖[[fig:CNN-arch]]中的filter)對整張圖做卷積，部份的保留了圖片的空間特徵，同時也減少了參數數量。
 
-由此看來，較之CNN，DNN有兩個缺點[fn:2][fn:3]：
+由此看來，較之CNN，DNN有兩個缺點[fn:4][fn:5]：
 1. 需要大量記憶體:
    在處理 256x256 大小的彩色圖片時，會需要用到 256 * 256 * 3 =196,608 個 Input Neuron，如果中間的隱藏層有 1000 個 Neuron，每個神經元需要一個浮點數的權重值 (8 bytes)，那麼總共需要 196,608 * 1001 * 8 = 1.47 GB 的記憶體才夠。更何況這還只是個簡單的模型。
 2. 多層感知器只針對圖片中每個單一像素去作判斷，完全捨棄重要的影像特徵。人類在判斷所看到的物體時，會從不同部位的特徵先作個別判斷，例如當你看到一架飛機，會先從機翼、機鼻、機艙體等這些特徵，再跟記憶中的印象來判斷是否為一架飛機，甚至再進一步判斷為客機還是戰鬥機。但是多層感知器沒有利用這些特徵，所以在影像的判讀上準確率就沒有接下來要討論的 CNN 來得好。
 
 #+CAPTION: DNN神經網路架構
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:DNN-architecture
+#+name: fig:DNN-architecture
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -123,14 +131,13 @@ CNN 與[[id:d6daa102-05bb-475d-b619-db8b61e86030][神經網路]]所提及之DNN(
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
-#+RESULTS:
 [[file:images/CNN-arch-1.jpg]]
 
-與 DNN 相比，CNN多了卷積層與池化層，卷積層用來強調圖案(資料)特徵，池化層則可以縮減取樣，減少 overfitting 問題。二者的比較如下圖[fn:4]所示：
+與 DNN 相比，CNN多了卷積層與池化層，卷積層用來強調圖案(資料)特徵，池化層則可以縮減取樣，減少 overfitting 問題。二者的比較如下圖[fn:6]所示：
 
 #+CAPTION: DNN v.s. CNN
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:DNN-vs-CNN
+#+name: fig:DNN-vs-CNN
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -142,8 +149,8 @@ CNN 與[[id:d6daa102-05bb-475d-b619-db8b61e86030][神經網路]]所提及之DNN(
 在[[id:d6daa102-05bb-475d-b619-db8b61e86030][神經網路]]中，我們曾經提出如下的卷積運算例子：
 #+begin_quote
 經由如下的矩陣計算，我們可以初步擬定一條分類規則：若是運算所得值大於0，則此圖像為＼；若是運算所得值小於0，則判定為／。
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:conv-example
+#+name: fig:conv-example
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -156,7 +163,7 @@ CNN 與[[id:d6daa102-05bb-475d-b619-db8b61e86030][神經網路]]所提及之DNN(
 
 以全連接層來處理神經網路的問題在於：全連接層會忽略資料的「形狀」。例如，假設輸入資料為影像，則通常會包含水平、垂直、色版方向的三維形狀，然而當這些資料輸入全連接層時，三維資料就必須變為平面（一維資料），如前述的 MNist 資料集，輸入為(1, 28, 28)，即，一種顏色、28*28 像素，輸入全連接層後會變成一行的 784 個資料。
 
-三維形狀的影像包含了許多重要的空間資料，例如，類似的空間有著相似的象素值、RGB 各色版間有緊密連接的關連性，距離較遠的像素彼此沒有關連...等特質，這些特質會在全連接層中被忽略掉。卷積層（Convolution layer）則能維持這些形狀，我們把 CNN 的卷積層輸出入資料稱作特徵圖（input / output feature map），而在卷積層中執行的處理則稱為卷積運算，若以影像處理來比喻卷積運算，則相當於「濾鏡效果」。卷積層的意義即是將原本一個影像經由卷積運算產生多個影像，每個影像均代表不同特徵。卷積運算方式如下：
+三維形狀的影像包含了許多重要的空間資料，例如，類似的空間有著相似的像素值、RGB 各色版間有緊密連接的關連性，距離較遠的像素彼此沒有關連...等特質，這些特質會在全連接層中被忽略掉。卷積層（Convolution layer）則能維持這些形狀，我們把 CNN 的卷積層輸出入資料稱作特徵圖（input / output feature map），而在卷積層中執行的處理則稱為卷積運算，若以影像處理來比喻卷積運算，則相當於「濾鏡效果」。卷積層的意義即是將原本一個影像經由卷積運算產生多個影像，每個影像均代表不同特徵。卷積運算方式如下：
 
 典型的卷積運算如圖[[fig:CNN-struct1]]，此處特徵圖為(4,4)，濾鏡為(3,3)，輸出為(2,2)，這裡所謂的濾鏡就是CNN中的卷積核(convolution kernel)，其初始值由隨機方式產生。此外，在全連接網路層中，除了權重參數(weight)之外，還有偏權值(bias)，其結果如圖[[fig:CNN-struct2]]。
 #+BEGIN_SRC dot :file images/CNN-struc1.png :cmdline -Kdot -Tpng
@@ -207,7 +214,7 @@ digraph structs {
 #+RESULTS:
 [[file:images/CNN-struc2.png]]
 
-由圖[[fig:CNN-struct1]]、[[fig:CNN-struct2]]的卷積運算可以看出，輸入特徵值在經過運算後，其大小會縮小，可以預見的結果是，在經過多層神經網路反複進行卷積運算後，輸出特徵值大小很快就會縮小為 1，而無法再進行卷積運算。為了避免這種情況發生，在進行卷積運算前，可以針對輸入資料周圍補上一圈固定的資料（例如 0），這個動作稱為填補(padding)，如果我們對在卷積運算前對於圖[[fig:CNN-struct1]]中的輸入特徵值進行寬度 1 的填補，則其結果如圖[[fig:CNN-struct3]]所示。
+由圖[[fig:CNN-struct1]]、[[fig:CNN-struct2]]的卷積運算可以看出，輸入特徵值在經過運算後，其大小會縮小，可以預見的結果是，在經過多層神經網路反覆進行卷積運算後，輸出特徵值大小很快就會縮小為 1，而無法再進行卷積運算。為了避免這種情況發生，在進行卷積運算前，可以針對輸入資料周圍補上一圈固定的資料（例如 0），這個動作稱為填補(padding)，如果我們對在卷積運算前對於圖[[fig:CNN-struct1]]中的輸入特徵值進行寬度 1 的填補，則其結果如圖[[fig:CNN-struct3]]所示。
 
 #+BEGIN_SRC dot :file images/CNN-struc3.png :cmdline -Kdot -Tpng
 digraph structs {
@@ -232,7 +239,7 @@ digraph structs {
 
 進行上述卷積運算時，每次自左而右、自上而下，自輸入特徵值取出一個與核大小相同的子矩陣與核進行運算，而每個取出的子矩陣的間隔稱為步幅(stride)，上述範例中的stride均為 1，若 stride 設為 2，則一個(7,7)的輸入特徵值與一個(3,3)的核進行運算後，其輸出特徵值大小只剩(3,3)。
 
-上述範例中的特徵值均為二維矩陣，亦即，僅能表示水平與垂直方向的單色點陣圖，若輸入中包含色彩資料(RGB)，則輸入特徵圖將升及為三維矩陣（三層二維矩陣，每層表示一種 RGB 值），核的結構也是三維矩陣，但輸出特徵值則為二維矩陣。 以 MNist 資料集為例，將數字 7 的 28*28 影像以隨機產生的 5*5 濾鏡(或稱 filter weight、kernel)對其進行卷積，其結果如圖[[fig:CNN-FW-1]]所示，這種效果有助於提取輸入影像的不同特徵，例如邊緣、線條...等。
+上述範例中的特徵值均為二維矩陣，亦即，僅能表示水平與垂直方向的單色點陣圖，若輸入中包含色彩資料(RGB)，則輸入特徵圖將升級為三維矩陣（三層二維矩陣，每層表示一種 RGB 值），核的結構也是三維矩陣，但輸出特徵值則為二維矩陣。 以 MNist 資料集為例，將數字 7 的 28*28 影像以隨機產生的 5*5 濾鏡(或稱 filter weight、kernel)對其進行卷積，其結果如圖[[fig:CNN-FW-1]]所示，這種效果有助於提取輸入影像的不同特徵，例如邊緣、線條...等。
 #+CAPTION: 卷積運算 4
 #+LABEL:fig:CNN-FW-1
 #+name: fig:CNN-FW-1
@@ -242,7 +249,7 @@ digraph structs {
 #+RESULTS:
 [[file:images/CNN-FW-1.jpg]]
 
-實際建構模型時，不會只進行單一 kenrel 的卷積，圖[[fig:CNN-FW-2]]即是隨機產生 16 個 kernel 對輸入影像提取不同特徵。
+實際建構模型時，不會只進行單一 kernel 的卷積，圖[[fig:CNN-FW-2]]即是隨機產生 16 個 kernel 對輸入影像提取不同特徵。
 #+CAPTION: 卷積運算 5
 #+LABEL:fig:CNN-FW-2
 #+name: fig:CNN-FW-2
@@ -254,13 +261,13 @@ digraph structs {
 
 全連接層(又稱密集層, dense layer)和卷積層之間的根本區別在於：全連接層會由輸入的特徵空間中學習全域的 pattern，而卷積層則是學習局部的 pattern。以影像辨識為例，卷積層會把輸入分解成小小的 2D 窗格，然後從中找出 pattern。這個關鍵特性為 CNN 提供了兩個有趣的特質：
 
-- 學習到的 pattern 具平移不變性(translation invariant)：在影像的右下角學習到的某個 pattern，CNN 可以在任何位置識別這樣的 pattern(如左上角)，相對的，當全連接層連接神經網路看到 pattern 出現在新位置時，就必須重新學習，這使的 CNN 可以更有效率地處理影像資料。
+- 學習到的 pattern 具平移不變性(translation invariant)：在影像的右下角學習到的某個 pattern，CNN 可以在任何位置識別這樣的 pattern(如左上角)，相對的，當全連接層連接神經網路看到 pattern 出現在新位置時，就必須重新學習，這使得 CNN 可以更有效率地處理影像資料。
 - 學習到 pattern 的空間層次結構(spatial hierarchies of patterns)：第一層卷積層會學習到諸如邊邊角角的小局部圖案，第二層卷積層則會基於第一層學到的特徵(小圖案)來學習較大的圖案，這使得 CNN 能夠有效地學習越來越複雜和抽象的視覺概念。
 
 CNN 所運算的 3D 張量稱為特徵映射圖(feature maps，簡稱特徵圖)，特徵圖有 2 個空間軸(height, width)以及 1 個色深度軸(depth / channel)，對於 RGB 影像來說，depth 值為 3。卷積運算會從輸入特徵中萃取出各種小區塊 pattern，當它對整張影像都做完萃取之後，就會產生輸出特徵映射圖(output feature map)。輸出特徵映射圖仍是 3D 張量，具有寬度和高度，但此時其深度軸已不再代表 RGB 顏色值，此時它代表過濾器(filter)，每一種 filter 會對輸入資料進行特定面向的編碼、萃取出結果，例如，filter 可以萃取到「在輸入資料中出現一張臉」這種高階抽象的概念，將不是臉的都過濾掉。
 
 ** 池化層(Pooling Layer)
-卷積層之間通常會加一個池化層(Pooling Layer)，它是一個壓縮圖片並保留重要資訊的方法，取樣的方法一樣是採滑動視窗，但是通常取最大值(Max-Pooling)，而非加權總和，若滑動視窗大小設為 2，『滑動步長』(Stride) 也為 2，則資料量就降為原本的四分之一，但因為取最大值，它還是保留局部範圍比對的最大可能性。也就是說，池化後的資訊更專注於圖片中是否存在相符的特徵，而非圖片中『哪裡』存在這些特徵，幫助 CNN 判斷圖片中是否包含某項特徵，而不必關心特徵所在的位置，這樣圖像偏移，一樣可以辨識出來。其架構如圖[[fig:CNN-Pooling-1]]所示。[fn:5]
+卷積層之間通常會加一個池化層(Pooling Layer)，它是一個壓縮圖片並保留重要資訊的方法，取樣的方法一樣是採滑動視窗，但是通常取最大值(Max-Pooling)，而非加權總和，若滑動視窗大小設為 2，『滑動步長』(Stride) 也為 2，則資料量就降為原本的四分之一，但因為取最大值，它還是保留局部範圍比對的最大可能性。也就是說，池化後的資訊更專注於圖片中是否存在相符的特徵，而非圖片中『哪裡』存在這些特徵，幫助 CNN 判斷圖片中是否包含某項特徵，而不必關心特徵所在的位置，這樣圖像偏移，一樣可以辨識出來。其架構如圖[[fig:CNN-Pooling-1]]所示。[fn:7]
 #+CAPTION: CNN 之池化層
 #+LABEL:fig:CNN-Pooling-1
 #+name: fig:CNN-Pooling-1
@@ -271,8 +278,8 @@ CNN 所運算的 3D 張量稱為特徵映射圖(feature maps，簡稱特徵圖)�
 
 池化層以縮減取樣(downsampling)的方式縮小影像可以帶來以下優點：
 1. 減少需要處理的資料點：減少後續運算所需時間。
-1. 讓影像位置差異變小：影像要辨識的目標（如 MNist 資料集的數字）可能因為在影像中的位置不同而影響辦識，減小影像可以讓數字的位置差異變小。
-1. 參數的數量程計算量下降：同時也能控制 overfitting。
+1. 讓影像位置差異變小：影像要辨識的目標（如 MNist 資料集的數字）可能因為在影像中的位置不同而影響辨識，減小影像可以讓數字的位置差異變小。
+1. 參數的數量及計算量下降：同時也能控制 overfitting。
 
 圖[[fig:CNN-PL-1]]即為使用 Max-Pool 對 16 個卷積影像進行縮減取樣(downsampling)的效果，將 16 個 28*28 個影像縮小為 16 個 14*14 的影像，但仍保持其特徵。MaxPooling 主要是由輸入特徵圖中做採樣並輸出樣本的最大值，它在概念上類似於卷積層操作，但並不是用卷積核(convolution kernel)張量積的方式來轉換局部區塊，而是經由手動編碼的 max 張量操作進行轉換。與卷積層操作的很大區別是 MaxPooling 通常用 2\times2 窗格和步長(strides)2 來完成，以便將特徵圖每一軸的採樣減少到原來的 1/2，而卷積層操作通常使用 3\times3 窗格且不指定步長(即使用預設步長 1)。
 
@@ -288,17 +295,96 @@ CNN 所運算的 3D 張量稱為特徵映射圖(feature maps，簡稱特徵圖)�
 為什麼要採用這種方式來縮小採樣特徵圖而不用原來的特徵圖尺寸一路執行下去？假設一個有不加入 MaxPooling 而是以全卷積層的模型設計如下：
 #+BEGIN_SRC python -r -n :results output :exports both :eval no
 model_no_max_pool = models.Sequential()
-model_no_max_pool.add(layers.Conv2D(32, (3, 3), activation='relu'),
-                      input_shape=(28, 28, 1))
-model_no_max_pool.add(layers.Conv2D(64, (3, 3), activation='relu'),)
-model_no_max_pool.add(layers.Conv2D(64, (3, 3), activation='relu'),)
+model_no_max_pool.add(layers.Conv2D(32, (3, 3), activation='relu',
+                                    input_shape=(28, 28, 1)))
+model_no_max_pool.add(layers.Conv2D(64, (3, 3), activation='relu'))
+model_no_max_pool.add(layers.Conv2D(64, (3, 3), activation='relu'))
 #+END_SRC
 
-上述設計的問題可以從以下兩個面向來看：[fn:6]
-- 不利於學習特徵的空間層次結構。當 strides=1，第二層的 3\times3 窗格要走過 5\times5 的區域才能包含第一層的 7\times7 區城，進而生成下一層的完整 3\times3 區域，依此類推，第三層的 3\times3 窗格也要走過 5\times5 的區域才能包含第二層的 5\times5 區域。也就是說，第三層的 3\times3 窗格實際上僅包含來自原始輸入的 7\times7 區城的資訊。相對於初始輸入，由卷積神經網路學習的高階 pattern 仍然進展很小，不足以學習分類數字。我們希望的是：最後一個卷積層的輸出特徵已經能提供有關輸入資料的總體訊息。
-- 最終特徵圖的每個樣本總係數為 22\times22\times64=3-976，這是相當巨大的 model，如果要將其展平以在頂部連接大小為 512 的 Dense 層，則該層將會有 1580 萬個參數，這對小 model 而言實在是太大，而且會導致 overfitting。
+上述設計的問題可以從以下兩個面向來看：[fn:8]
+- 不利於學習特徵的空間層次結構。當 strides=1，第二層的 3\times3 窗格要走過 5\times5 的區域才能包含第一層的 7\times7 區域，進而生成下一層的完整 3\times3 區域，依此類推，第三層的 3\times3 窗格也要走過 5\times5 的區域才能包含第二層的 5\times5 區域。也就是說，第三層的 3\times3 窗格實際上僅包含來自原始輸入的 7\times7 區域的資訊。相對於初始輸入，由卷積神經網路學習的高階 pattern 仍然進展很小，不足以學習分類數字。我們希望的是：最後一個卷積層的輸出特徵已經能提供有關輸入資料的總體訊息。
+- 最終特徵圖的每個樣本總係數為 22\times22\times64=30976，這是相當巨大的 model，如果要將其展平以在頂部連接大小為 512 的 Dense 層，則該層將會有 1580 萬個參數，這對小 model 而言實在是太大，而且會導致 overfitting。
 
-雖然 MaxPooling 並不是縮小探樣特徵圖的唯一方法（也可以透過卷積層的 strides 來調整，或是使用平均池化而非 MaxPooling）,不過就經驗來看，MaxPooling 往往比這些方案好。主要原因是：特徵通常是源自於空間某些有特色的 pattern，因此要取其最大值才更具訊息性，若採用平均值，則特色就被掩蓋了。
+雖然 MaxPooling 並不是縮小採樣特徵圖的唯一方法（也可以透過卷積層的 strides 來調整，或是使用平均池化而非 MaxPooling）,不過就經驗來看，MaxPooling 往往比這些方案好。主要原因是：特徵通常是源自於空間某些有特色的 pattern，因此要取其最大值才更具訊息性，若採用平均值，則特色就被掩蓋了。
+
+** 進階卷積技巧
+
+*** 1\times1 卷積 (Pointwise Convolution)
+1\times1 卷積看起來違反直覺——一個 1\times1 的 kernel 能做什麼？事實上，1\times1 卷積的作用並不在於擷取空間特徵，而是在 *channel 維度* 上進行線性組合。假設輸入特徵圖的 shape 為 (H, W, C_{in})，經過 N 個 1\times1 的 kernel 後，輸出為 (H, W, N)，等同於對每個像素位置的 C_{in} 個 channel 做一次全連接運算。
+
+主要用途：
+- *降維 / 升維*：GoogLeNet (Inception) 在進行 3\times3 或 5\times5 卷積之前，先用 1\times1 卷積將 channel 數降低，大幅減少計算量。例如，將 256 個 channel 先壓縮為 64 個，再進行 3\times3 卷積，參數量可降至原來的 1/4。
+- *跨 channel 特徵融合*：不同 channel 的特徵可以透過 1\times1 卷積進行重新組合。
+- *增加非線性*：搭配 ReLU 等啟動函數，即使不改變 channel 數，也能在不增加空間參數的情況下提升 model 的表達能力。
+
+#+BEGIN_SRC python -r -n :results output :exports both :eval no
+# 1x1 卷積範例：將 256 channel 降至 64 channel
+model.add(layers.Conv2D(64, (1, 1), activation='relu'))  # Pointwise convolution
+model.add(layers.Conv2D(64, (3, 3), activation='relu', padding='same'))
+#+END_SRC
+
+*** Global Average Pooling (GAP)
+在傳統 CNN 架構中，卷積層的輸出通常透過 =Flatten= 攤平為一維向量後接 Dense 層進行分類。然而 Flatten + Dense 會產生大量參數，容易導致 overfitting。
+
+Global Average Pooling (GAP) 提供了一個更簡潔的替代方案：對每個 channel 取整張特徵圖的平均值。假設最後一層卷積的輸出為 (H, W, C)，經過 GAP 後直接壓縮為 (C,) 的向量，不需任何可訓練參數。
+
+#+BEGIN_SRC python -r -n :results output :exports both :eval no
+from keras import layers
+
+# 傳統做法：Flatten + Dense（參數量龐大）
+model.add(layers.Flatten())           # (7, 7, 512) → (25088,)
+model.add(layers.Dense(512))          # 25088 × 512 = 12,845,056 參數
+
+# 現代做法：GAP（零參數）
+model.add(layers.GlobalAveragePooling2D())  # (7, 7, 512) → (512,)
+model.add(layers.Dense(10, activation='softmax'))
+#+END_SRC
+
+GAP 的優點：
+- 大幅減少參數量，降低 overfitting 風險
+- 強化了特徵圖與類別之間的對應關係
+- ResNet、EfficientNet 等現代架構均採用 GAP
+
+*** Batch Normalization
+Batch Normalization (BN) 是 2015 年由 Ioffe 與 Szegedy 提出的技巧，目的是解決深層神經網路訓練時的內部協變數偏移(internal covariate shift)問題。BN 在每一層的輸出上對每個 mini-batch 進行正規化，使其均值接近 0、標準差接近 1，再透過可學習的縮放參數 (\gamma) 與位移參數 (\beta) 還原表達能力。
+
+主要優點：
+- *加速訓練收斂*：正規化後的分佈更穩定，允許使用較大的 learning rate
+- *降低對初始化的敏感度*：權重初始值的選擇不再那麼關鍵
+- *具有輕微的正則化效果*：因為每個 mini-batch 的統計量不同，帶有雜訊，類似 Dropout 的效果
+
+#+BEGIN_SRC python -r -n :results output :exports both :eval no
+from keras import layers
+
+# 典型用法：Conv → BN → ReLU
+model.add(layers.Conv2D(64, (3, 3), padding='same'))
+model.add(layers.BatchNormalization())
+model.add(layers.Activation('relu'))
+model.add(layers.MaxPooling2D((2, 2)))
+#+END_SRC
+
+#+begin_quote
+*注意：* BN 層在訓練與推論時的行為不同——訓練時使用 mini-batch 的統計量，推論時使用訓練期間累積的移動平均值。這就是為什麼在 Keras 中呼叫 =model.evaluate()= 或 =model.predict()= 時，BN 會自動切換為推論模式。
+#+end_quote
+
+** CNN 經典架構演進
+
+自 2012 年 AlexNet 在 ImageNet 大賽奪冠以來，CNN 架構不斷演進。以下是幾個重要的里程碑：
+
+| 年份 | 架構 | 核心創新 | ImageNet Top-5 錯誤率 |
+|------+------------------+------------------------------------------+----------------------|
+| 2012 | AlexNet | 首次大規模使用 GPU 訓練 CNN、引入 ReLU 與 Dropout | 16.4% |
+| 2014 | VGGNet | 以重複堆疊 3\times3 小卷積核取代大卷積核 | 7.3% |
+| 2014 | GoogLeNet | Inception 模組、1\times1 卷積降維 | 6.7% |
+| 2015 | ResNet | 殘差連接(skip connection)解決梯度消失 | 3.6% |
+| 2017 | DenseNet | 密集連接，每層與前面所有層相連 | -- |
+| 2019 | EfficientNet | 複合縮放(寬度/深度/解析度同時調整) | 2.9% |
+| 2020 | Vision Transformer | 將 Transformer 的 Self-Attention 引入視覺 | -- |
+
+幾個關鍵觀察：
+- *越來越深*：從 AlexNet 的 8 層到 ResNet 的 152 層，深度是提升效能的重要因素，但前提是解決梯度消失問題（透過殘差連接或 BN）。
+- *越來越有效率*：從 VGG 的 1.38 億參數到 EfficientNet-B0 的 530 萬參數，後者準確率反而更高，說明聰明的架構設計比盲目加大更重要。
+- *從 CNN 到 Transformer*：2020 年 Google 提出的 Vision Transformer (ViT) 證明了 Transformer 架構在視覺任務上也能與 CNN 匹敵甚至超越，開啟了計算機視覺的新方向。
 
 * 神經網路解題步驟
 使用神經網路解決問題可大致分為兩個步驟：「學習」與「推論」。
@@ -324,7 +410,7 @@ model_no_max_pool.add(layers.Conv2D(64, (3, 3), activation='relu'),)
 ***** MNIST
 資料集由 0~9 的數字影像構成(如圖[[fig:MNIST-set]])，共計 60000 張訓練影像、10000 張測試影像。
 #+CAPTION: MNIST 資料集內容範例
-#+LABEL:fig:Labl
+#+LABEL:fig:MNIST-set
 #+name: fig:MNIST-set
 #+ATTR_LATEX: :width 200
 #+ATTR_ORG: :width 300
@@ -332,8 +418,12 @@ model_no_max_pool.add(layers.Conv2D(64, (3, 3), activation='relu'),)
 [[file:images/MNIST.jpg]]
 ***** Boston housing
 Boston Housing數據集包含有關波士頓不同房屋的數據(數據，如年份、面積)，本資料集中有506個樣本和13個特徵變量，目標是使用給定的特徵預測房屋價格的價值。
+
+#+begin_quote
+*倫理註記：* 此資料集中的 =B= 變數（依種族比例計算）存在倫理爭議，scikit-learn 自 1.2 版起已將其移除。教學上仍可作為迴歸範例使用，但應留意其歷史背景。
+#+end_quote
 ***** Iris
-鳶尾花資料集是非常著名的生物資訊資料集之一，由英國統計學家 Ronald Fisher 在1936年時，對加斯帕半島上的鳶尾屬花朵所提取的花瓣花萼的長寬數據資料，依照山鳶尾，變色鳶尾，維吉尼亞鳶尾三類進行標示，共150筆資料[fn:7]。每筆資料有五個欄位：花萼長度(Sepal Length)、花萼寬度(Sepal Width)、花瓣長度(Petal Length) 、花瓣寬度(Petal Width)、類別(Class)，其中類有Setosa，Versicolor和Virginica三個品種。
+鳶尾花資料集是非常著名的生物資訊資料集之一，由英國統計學家 Ronald Fisher 在1936年時，對加斯帕半島上的鳶尾屬花朵所提取的花瓣花萼的長寬數據資料，依照山鳶尾，變色鳶尾，維吉尼亞鳶尾三類進行標示，共150筆資料[fn:9]。每筆資料有五個欄位：花萼長度(Sepal Length)、花萼寬度(Sepal Width)、花瓣長度(Petal Length) 、花瓣寬度(Petal Width)、類別(Class)，其中類有Setosa，Versicolor和Virginica三個品種。
 #+CAPTION: Iris資料集
 #+LABEL:fig:Iris
 #+name: fig:Iris
@@ -342,7 +432,7 @@ Boston Housing數據集包含有關波士頓不同房屋的數據(數據，如�
 #+ATTR_HTML: :width 500
 [[file:images/cqy409dEexm96zavyuw.png]]
 ***** Cifar-10
-由深度學習大師 Geoffrey Hinton 教授與其在加拿大多倫多大學的學生 Alex Krixhevsky 與 Vinoid Nair 所整理之影像資料集, 包含 6 萬筆 32*32 低解析度之彩色圖片, 其中 5 萬筆為訓練集; 1 萬筆為測試集, 是機器學習中常用的圖片辨識資料集
+由深度學習大師 Geoffrey Hinton 教授與其在加拿大多倫多大學的學生 Alex Krizhevsky 與 Vinod Nair 所整理之影像資料集, 包含 6 萬筆 32*32 低解析度之彩色圖片, 其中 5 萬筆為訓練集; 1 萬筆為測試集, 是機器學習中常用的圖片辨識資料集
 #+CAPTION: Cifar-10
 #+LABEL:fig:Cifar10
 #+name: fig:Cifar10
@@ -360,7 +450,7 @@ from keras.datasets import mnist
 #+RESULTS:
 
 ** 準備數據
-當我們在比較分析兩組數據資料時，可能會遭遇因單位的不同(例如：身高與體重)，或數字大小的代表性不同(例如：粉專1萬人與滿足感0.8)，造成各自變化的程度不一，進而影響統計分析的結果[fn:8]，即：那些變化量最大的因素（特徵）會主導分析結果。
+當我們在比較分析兩組數據資料時，可能會遭遇因單位的不同(例如：身高與體重)，或數字大小的代表性不同(例如：粉專1萬人與滿足感0.8)，造成各自變化的程度不一，進而影響統計分析的結果[fn:10]，即：那些變化量最大的因素（特徵）會主導分析結果。
 
 正式將資料送至模型訓練前，資料應進行相應的缺漏值處理以及資料正規化，詳細處理方式可參考[[id:82e219c3-6ca0-43b0-bb11-e3a8454f089d][資料預處理]]。
 *** DEMO範例
@@ -395,7 +485,7 @@ model.add(Dense(units=128,
                 input_dim=784,
                 kernel_initializer='normal',
                 activation='relu'))
-model.add(Dense(64, activation='relu')
+model.add(Dense(64, activation='relu'))
 model.add(Dense(units=10,
                 kernel_initializer='normal',
                 activation='softmax'))
@@ -443,24 +533,24 @@ model.fit(x=x_Train,
 
 **** LSTM
 #+begin_src python -r -n :results output :exports both :noeval
-# ptimizer, loss function
-model.compile(optimizer=Adam(lr=0.001),
+# optimizer, loss function
+model.compile(optimizer=Adam(learning_rate=0.001),
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
 model.fit(x_train, y_train,
-          e pochs=3,
+          epochs=3,
           validation_data=(x_test, y_test))
 #+end_src
 
 ** 評估分析
-當模型訓練完成後，接下來就是判斷該模型是否有過度擬合(overfitting)，這裡就是帶入測試集的資料進行評估，也可以嘗試利用交叉驗證的方式進行模型的擬合性判斷，以及利用RESM、MSE等統計計算來判斷模型的準確度
+當模型訓練完成後，接下來就是判斷該模型是否有過度擬合(overfitting)，這裡就是帶入測試集的資料進行評估，也可以嘗試利用交叉驗證的方式進行模型的擬合性判斷，以及利用RMSE、MSE等統計計算來判斷模型的準確度
 #+begin_src python -r -n :results output :exports both :noeval
-scores = model.evaluate(x_Train, y_TestOneHot)
+scores = model.evaluate(x_Test, y_TestOneHot)
 #+end_src
 
 ** 調整參數
-到這大致上模型已經完成了50%，最後的一步就是進行參數的微調，我們也稱為「超參數 (Hyperparamters)」，讓整個模型更加的精準，但也不能過度的調整，因為會造成overfitting的結果，這個取捨就只能依照無窮盡的反覆迭帶去尋找了，這部分也是相對較耗時間的地方
+到這大致上模型已經完成了50%，最後的一步就是進行參數的微調，我們也稱為「超參數 (Hyperparameters)」，讓整個模型更加的精準，但也不能過度的調整，因為會造成overfitting的結果，這個取捨就只能依照無窮盡的反覆迭代去尋找了，這部分也是相對較耗時間的地方
 *** model參數
 - 調整model架構: [[https://medium.com/%E9%9B%9E%E9%9B%9E%E8%88%87%E5%85%94%E5%85%94%E7%9A%84%E5%B7%A5%E7%A8%8B%E4%B8%96%E7%95%8C/%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92-ml-note-cnn%E6%BC%94%E5%8C%96%E5%8F%B2-alexnet-vgg-inception-resnet-keras-coding-668f74879306][[機器學習 ML NOTE] CNN演化史(AlexNet、VGG、Inception、ResNet)+Keras Coding]]
 - loss function: https://keras.io/api/losses/
@@ -468,12 +558,13 @@ scores = model.evaluate(x_Train, y_TestOneHot)
 *** Hyperparameters
 - batch size：一次迭代放入進行訓練或測試的影像數量。
 - epoch：一種單位，所有影像皆被計算過1次後即為1 epoch
-- [[http://elmer-storage.blogspot.com/2018/06/cnn-hyperparamters.html][CNN筆記 - 超參數 (Hyperparamters) ]]
+- [[http://elmer-storage.blogspot.com/2018/06/cnn-hyperparamters.html][CNN筆記 - 超參數 (Hyperparameters) ]]
 
 ** 預測推論
 到此，模型已經正式完成。那，怎麼知道這個模型夠不夠優秀？能不能正常運作？最簡單的評估方式是以一筆新的資料來測試。
 #+begin_src python -r -n :results output :exports both
-prediction = model.predict_classes(x_Test4D_normalize)
+import numpy as np
+prediction = np.argmax(model.predict(x_Test4D_normalize), axis=1)
 print(prediction[:10])
 #+end_src
 以MNIST手寫數字辨識為例，我們可以自已寫一個數字餵給模型，看看模型是否能正確預測。
@@ -482,6 +573,7 @@ print(prediction[:10])
 #+latex:\newpage
 
 * 實作1
+** CNN實作
 - [[id:31d6a744-f7f7-47e4-ae33-3f9fa91c33bb][CNN實作]]
 
 * 實作2: MNIST
@@ -491,7 +583,7 @@ print(prediction[:10])
 ** MNIST資料集
 - MNIST 是機器學習領域中相當著名的資料集，號稱機器學習領域的「Hello world.」，其重要性不言可喻。
 - MNIST 資料集由 0~9 的數字影像構成(如圖[[fig:MNIST-set]])，共計 60000 張訓練影像、10000 張測試影像。
-- 一般的 MMIST 資料集的用法為：使用訓練影像進行學習，再利用學習後的模型預測能否正確分類測試影像。
+- 一般的 MNIST 資料集的用法為：使用訓練影像進行學習，再利用學習後的模型預測能否正確分類測試影像。
 
 準備資料是訓練模型的第一步，基礎資料可以是網上公開的資料集，也可以是自己的資料集。視覺、語音、語言等各種型別的資料在網上都能找到相應的資料集。
 
@@ -504,7 +596,7 @@ MNIST 數據集來自美國國家標準與技術研究所, National Institute of
 
 雖然自己手動下載是個不錯的主意，可以讓你練習如何從網路抓檔案、解壓、設定這些檔案的下載路徑、然後再讀進來變成numpy的array或是pandas的dataframe，再把這些資料餵給tensorflow模組去建模型.....不過這對初學者來說著實是一件很麻煩的事，所以多數的套件都很貼心的幫你準備好了直接從網路抓下資料集的function，像tensorflow的load_data。
 *** load data
-MNIST 資料集是一個適合拿來當作 TensotFlow 的練習素材，在 Tensorflow 的現有套件中，也已經有內建好的 MNIST 資料集，我們只要在安裝好 TensorFlow 的 Python 環境中執行以下程式碼，即可將 MNIST 資料成功讀取進來。
+MNIST 資料集是一個適合拿來當作 TensorFlow 的練習素材，在 Tensorflow 的現有套件中，也已經有內建好的 MNIST 資料集，我們只要在安裝好 TensorFlow 的 Python 環境中執行以下程式碼，即可將 MNIST 資料成功讀取進來。
 #+BEGIN_SRC python  -n -r :results output :exports both :session mnist :async
 import tensorflow as tf
 mnist = tf.keras.datasets.mnist
@@ -576,7 +668,7 @@ print(X_train[0][7])
 :  0.         0.         0.         0.        ]
 
 **** Label的格式轉換
-載入的 y 為所對應的數字 0~9，在這我們要運用 keras 中的 np_under_utils.to_under_categorical 將 y 轉成 one-hot 的形式，將他轉為一個 10 維的 vector，例如：我們所拿到的資料為 y=3，經過 np_utils.to_categorical，會轉換為 y=[0,0,0,1,0,0,0,0,0,0]。這部份的轉換程式碼如下：
+載入的 y 為所對應的數字 0~9，在這我們要運用 keras 中的 =np_utils.to_categorical= 將 y 轉成 one-hot 的形式，將他轉為一個 10 維的 vector，例如：我們所拿到的資料為 y=3，經過 np_utils.to_categorical，會轉換為 y=[0,0,0,1,0,0,0,0,0,0]。這部份的轉換程式碼如下：
 #+BEGIN_SRC python -r -n :results output :exports both :session mnist :async
 # 將y轉換成one-hot encoding
 from tensorflow.keras.utils import to_categorical
@@ -585,7 +677,7 @@ print(y_train[0])
 Y_train = to_categorical(y_train, 10)
 Y_test = to_categorical(y_test, 10)
 # 回傳處理完的資料
-print(y_Train[0])
+print(Y_train[0])
 #+END_SRC
 
 #+RESULTS:
@@ -640,7 +732,7 @@ Non-trainable params: 0 (0.00 Byte)
 _________________________________________________________________
 #+end_example
 
-在編譯時，以adim優化器，由於使用 softmax 單元結束神經網路，所以配合使用 categorical_crossentropy 為損失基準。
+在編譯時，以adam優化器，由於使用 softmax 單元結束神經網路，所以配合使用 categorical_crossentropy 為損失基準。
 
 #+NAME: 配置 model 以進行訓練
 #+BEGIN_SRC python -r -n :results output :exports both :session mnist :async
@@ -654,12 +746,12 @@ model.compile(loss='categorical_crossentropy',
 ** 訓練CNN模型
 #+BEGIN_SRC python -r -n :results output :exports both :session mnist :async
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # 设置 Tensorflow 日志级别为 ERROR
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # 設定 TensorFlow 日誌級別為 ERROR
 
-history = model.fit(X_train, Y_train,  # 训练数据和标签
+history = model.fit(X_train, Y_train,  # 訓練資料和標籤
                     batch_size=128,     # 批次大小
-                    epochs=10,          # 训练轮数
-                    validation_split=0.2)  # 验证集比例（可选）
+                    epochs=10,          # 訓練輪數
+                    validation_split=0.2)  # 驗證集比例（可選）
 #+end_src
 
 #+RESULTS:
@@ -688,20 +780,20 @@ Epoch 10/10
 
 ** 評估CNN模型
 #+BEGIN_SRC python -r -n :results output :exports both :session mnist :async
-# 在测试数据上评估模型
+# 在測試資料上評估模型
 loss, accuracy = model.evaluate(X_test, Y_test)
 print('Test loss:', loss)
 print('Test accuracy:', accuracy)
 
 import matplotlib.pyplot as plt
 
-# 获取训练历史中的损失值和准确率值
+# 取得訓練歷史中的損失值和準確率值
 train_loss = history.history['loss']
 val_loss = history.history['val_loss']
 train_accuracy = history.history['accuracy']
 val_accuracy = history.history['val_accuracy']
 
-# 绘制损失值折线图
+# 繪製損失值折線圖
 plt.cla()
 plt.plot(train_loss, label='Training Loss')
 plt.plot(val_loss, label='Validation Loss')
@@ -711,7 +803,7 @@ plt.ylabel('Loss')
 plt.legend()
 plt.savefig('images/cnn-mnist-Loss.png', dpi=300)
 
-# 绘制准确率折线图
+# 繪製準確率折線圖
 plt.cla()
 plt.plot(train_accuracy, label='Training Accuracy')
 plt.plot(val_accuracy, label='Validation Accuracy')
@@ -728,16 +820,16 @@ plt.savefig('images/cnn-mnist-Accuracy.png', dpi=300)
 : Test accuracy: 0.992900013923645
 
 #+CAPTION: Training and Validation Loss
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:cnn-mnist-Loss
+#+name: fig:cnn-mnist-Loss
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/cnn-mnist-Loss.png]]
 
 #+CAPTION: Training and Validation Accuracy
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:cnn-mnist-Accuracy
+#+name: fig:cnn-mnist-Accuracy
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -745,10 +837,10 @@ plt.savefig('images/cnn-mnist-Accuracy.png', dpi=300)
 
 ** 預測結果
 #+BEGIN_SRC python -r -n :results output :exports both :session mnist :async
-# 使用模型进行预测
-predictions = model.predict(x_test)
+# 使用模型進行預測
+predictions = model.predict(X_test)
 
-# 輸出前10個樣本的预测结果
+# 輸出前10個樣本的預測結果
 for i in range(10):
     print("Predicted:", predictions[i].argmax(), "Actual:", Y_test[i].argmax())
 #+end_src
@@ -772,14 +864,14 @@ Predicted: 9 Actual: 9
 #+BEGIN_SRC python -r -n :results output :exports both :session mnist :async
 import pandas as pd
 
-# 假设 predictions 和 y_test 是模型预测结果和实际标签
-# 假设 predictions 和 y_test 都是一维数组，每個元素是樣本对应的类别标签
+# 假設 predictions 和 y_test 是模型預測結果和實際標籤
+# 假設 predictions 和 y_test 都是一維陣列，每個元素是樣本對應的類別標籤
 
-# 将预测结果和实际标签转换为 Pandas Series
+# 將預測結果和實際標籤轉換為 Pandas Series
 predicted_labels = pd.Series(predictions.argmax(axis=1), name='Predicted')
 actual_labels = pd.Series(Y_test.argmax(axis=1), name='Actual')
 
-# 使用 pd.crosstab 计算交叉表
+# 使用 pd.crosstab 計算交叉表
 crosstab_result = pd.crosstab(actual_labels, predicted_labels)
 
 # 輸出交叉表
@@ -822,9 +914,9 @@ plt.scatter(x, y)
 : y:  [ 85.07647921  96.21107688  90.60605344 ...  97.41007778 102.38380208 80.86243195]
 
 結果如下圖，一共有10個點，如何畫出一條迴歸線代表這10個點的趨勢？這個題目本身是什麼意思？
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: 迴歸資料散佈圖
+#+LABEL:fig:cnn-regression-1
+#+name: fig:cnn-regression-1
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -847,7 +939,7 @@ plt.savefig("images/cnn-regression-2.png", dpi=300)
 #+end_src
 
 #+CAPTION: 2000個資料點
-#+LABEL:fig:Labl
+#+LABEL:fig:images2000
 #+name: fig:images2000
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
@@ -889,9 +981,9 @@ print(regr.predict(x[:3]))
 :  [98.58801576]
 :  [86.16764168]]
 
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: scikit learn 線性迴歸結果
+#+LABEL:fig:cnn-regression-3
+#+name: fig:cnn-regression-3
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -907,9 +999,9 @@ from keras.layers import Dropout
 model = Sequential()
 model.add(Dense(4, input_shape=(1,)))
 model.add(Dropout(0.5))
-model.add(Dense(8, input_shape=(1,)))
+model.add(Dense(8))
 model.add(Dropout(0.5))
-model.add(Dense(1, input_shape=(1,)))
+model.add(Dense(1))
 model.compile(loss='mse', optimizer='rmsprop', metrics=['mse'])
 print(model)
 #+end_src
@@ -958,9 +1050,9 @@ plt.savefig("images/cnn-regression-4.png", dpi=300)
 #+RESULTS:
 : dict_keys(['loss', 'mse', 'val_loss', 'val_mse'])
 
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: 訓練Loss曲線
+#+LABEL:fig:cnn-regression-4
+#+name: fig:cnn-regression-4
 #+ATTR_LATEX: :width 400
 #+ATTR_ORG: :width 400
 #+ATTR_HTML: :width 500
@@ -1009,9 +1101,9 @@ print(model.predict(x_Test[:5]))
 # A simple regression model
 model = Sequential()
 model.add(Dense(4, input_shape=(1,)))
-model.add(Dense(8, input_shape=(1,)))
-model.add(Dense(4, input_shape=(1,)))
-model.add(Dense(1, input_shape=(1,)))
+model.add(Dense(8))
+model.add(Dense(4))
+model.add(Dense(1))
 model.compile(loss='mean_squared_error', optimizer='rmsprop')
 #mean_squared_logarithmic_error
 #mean_absolute_percentage_error
@@ -1045,12 +1137,12 @@ print(model.predict(x_Test[:5]))
 #+begin_src python -r -n :results output :exports both :async :session REG
 model = Sequential()
 model.add(Dense(4, input_shape=(1,)))
-model.add(Dense(8, input_shape=(1,)))
-model.add(Dense(16, input_shape=(1,)))
-model.add(Dense(32, input_shape=(1,)))
-model.add(Dense(16, input_shape=(1,)))
-model.add(Dense(4, input_shape=(1,)))
-model.add(Dense(1, input_shape=(1,)))
+model.add(Dense(8))
+model.add(Dense(16))
+model.add(Dense(32))
+model.add(Dense(16))
+model.add(Dense(4))
+model.add(Dense(1))
 model.compile(loss='mse', optimizer='rmsprop')
 train_history = model.fit(x=x_Train, y=y_Train,
                           validation_split=0.2,
@@ -1316,9 +1408,9 @@ plot_images_labels_prediction(x_img_test,y_label_test,
 #+end_src
 
 #+RESULTS:
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: Cifar-10 預測結果
+#+LABEL:fig:cifar10-predict
+#+name: fig:cifar10-predict
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -1379,15 +1471,15 @@ truck Probability:0.008786337
 #+end_example
 
 #+CAPTION: Image 0
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:cifar10-predict-image-0
+#+name: fig:cifar10-predict-image-0
 #+ATTR_LATEX: :width 50
 #+ATTR_ORG: :width 50
 #+ATTR_HTML: :width 50
 [[file:images/cifar10-predict-image-0.png]]
 #+CAPTION: Image 3
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:cifar10-predict-image-3
+#+name: fig:cifar10-predict-image-3
 #+ATTR_LATEX: :width 50
 #+ATTR_ORG: :width 50
 #+ATTR_HTML: :width 50
@@ -1413,7 +1505,7 @@ print("Saved model to disk")
 : {0: 'airplane', 1: 'automobile', 2: 'bird', 3: 'cat', 4: 'deer', 5: 'dog', 6: 'frog', 7: 'horse', 8: 'ship', 9: 'truck'}
 : Saved model to disk
 
-#+latex:\newpage`
+#+latex:\newpage
 
 * [課堂練習][作業] :TNFSH:
 ** [課堂練習]Regression :TNFSH:
@@ -1465,11 +1557,11 @@ from keras.layers import Dropout
 model = Sequential()
 model.add(Dense(16, input_shape=(1,)))
 model.add(Dropout(0.5))
-model.add(Dense(64, input_shape=(1,)))
+model.add(Dense(64))
 model.add(Dropout(0.5))
-model.add(Dense(32, input_shape=(1,)))
+model.add(Dense(32))
 model.add(Dropout(0.5))
-model.add(Dense(1, input_shape=(1,)))
+model.add(Dense(1))
 model.compile(loss='mean_absolute_percentage_error', optimizer='rmsprop')
 
 # The fit() method - trains the model
@@ -1499,9 +1591,9 @@ print(y_data[:3])
 : 1/1 [==============================] - 0s 22ms/step
 : [-10.          -9.989995    -9.97998999]
 : [4.54854618 3.17973664 3.75330284]
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: CNN迴歸練習Loss曲線
+#+LABEL:fig:cnn-regression-pract
+#+name: fig:cnn-regression-pract
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -1526,7 +1618,7 @@ print(y_data[:3])
 請你建立一個預測MODEL，以利該中心未來做檢測使用。將來只要遇到類似病情的個案，該醫院就能先針對這些特徵值進行檢測，並將檢測結果輸入此MODEL來預測個案是否為此病患者，並即時予以適當治療。
 *** 作業要求
 - 嗯，基本上就是自由心證，你能交多少就交多少，你想只交一張圖也行，你要從頭交待你在做什麼、每一個步驟有啥意義、一共測了幾種CASE、最後成果如何、你的心得....也行，看你的誠意啦-_-(這向來是最坑人的一句話)
-- 我是這樣覺得啦...MODEL積木隨便叠一叠，精確度至少也不應該低於 *0.8* 吧...QQ
+- 我是這樣覺得啦...MODEL積木隨便疊一疊，精確度至少也不應該低於 *0.8* 吧...QQ
 *** 參考答案 :noexport:
 - [[https://colab.research.google.com/drive/1RjvgCt_QUPB7CQVTQ7DHL6qzfdfR1EYx][05.Keras糖尿病預測.ipynb]]
 - https://www.kaggle.com/saurabh00007/diabetescsv?select=diabetes.csv
@@ -1583,8 +1675,8 @@ print(y_data[:3])
 最終希望生成的資料夾架構如下:
 
 #+CAPTION: 原生資料、訓練用資料架構
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:data-folder-structure
+#+name: fig:data-folder-structure
 #+ATTR_LATEX: :width 200
 #+ATTR_ORG: :width 200
 #+ATTR_HTML: :width 200
@@ -1891,7 +1983,7 @@ Non-trainable params: 0 (0.00 Byte)
 _________________________________________________________________
 #+end_example
 *** 訓練模型
-建構好 model、整理完資料，接下來就可以調整 model 來搭配產生器所產生的資料，我們可以應用 model 的 fit_generator 方法，這個方法的第 1 個參數即是一個 Python 的產生器，然而由於資料是無止盡地產生，所以在宣告訓練時期之前，Keras model 需要知道從產生器抽取多少樣本，這就是 steps_per_epoch 參數的功能，它指定了從產生器取得的批次量，也就是說，model 在運行了 steps_per_epoch 次的梯度下降步驟後，訓練過程將進入下一個訓練週期(epochs)。在以下的例子中，每個批次量包含 20 個樣本，而目標樣本有 2000 個，所以就需要有 100 個批次量。
+建構好 model、整理完資料，接下來就可以調整 model 來搭配產生器所產生的資料，我們可以應用 model 的 fit 方法，這個方法的第 1 個參數即是一個 Python 的產生器，然而由於資料是無止盡地產生，所以在宣告訓練時期之前，Keras model 需要知道從產生器抽取多少樣本，這就是 steps_per_epoch 參數的功能，它指定了從產生器取得的批次量，也就是說，model 在運行了 steps_per_epoch 次的梯度下降步驟後，訓練過程將進入下一個訓練週期(epochs)。在以下的例子中，每個批次量包含 20 個樣本，而目標樣本有 2000 個，所以就需要有 100 個批次量。
 #+begin_src python -r -n :async :results output :exports both :session QQQ
 # 配置 model 以進行訓練
 from keras import optimizers
@@ -1977,7 +2069,7 @@ Epoch 30/30
   saving_api.save_model(
 #+end_example
 
-使用上述 fit_generator 時，還可以傳遞 validation_data 參數，此參數可以接收一個資料產生器，也可以接收 Numpy 陣列，如果接收的資料來自產生器，則還要指定 validation_steps 參數，告訴程式要從產生器中抽取多少次批量進行評估。在完成訓練後把 model 存起來，並繪製訓練週期與驗證週期的 model 損失值與準確度。
+使用上述 fit 方法時，還可以傳遞 validation_data 參數，此參數可以接收一個資料產生器，也可以接收 Numpy 陣列，如果接收的資料來自產生器，則還要指定 validation_steps 參數，告訴程式要從產生器中抽取多少次批量進行評估。在完成訓練後把 model 存起來，並繪製訓練週期與驗證週期的 model 損失值與準確度。
 *** 評估模型
 #+begin_src python -r -n :async :results output :exports both :session QQQ
 import matplotlib.pyplot as plt
@@ -1994,7 +2086,6 @@ plt.plot(epochs, acc, 'bo', label='Training acc')
 plt.plot(epochs, val_acc, 'b', label='Validation acc')
 plt.title('Training and validation accuracy')
 plt.legend()
-plt.plot()
 plt.savefig("images/cats-and-dogs-accuracy-v1.png")
 plt.figure()
 
@@ -2003,7 +2094,6 @@ plt.plot(epochs, loss, 'bo', label='Training loss')
 plt.plot(epochs, val_loss, 'b', label='Validation loss')
 plt.title('Training and validation loss')
 plt.legend()
-plt.plot()
 plt.savefig("images/cats-and-dogs-loss-v1.png")
 #+end_src
 
@@ -2034,7 +2124,13 @@ plt.savefig("images/cats-and-dogs-loss-v1.png")
 ** 改善#1: 資料擴增
 Overfitting 的部份成因是由於樣本太少導致無法訓練出具備普適性、可套用到新資料的 model，想像一下如果有無限量的資料，則 model 將會因應用手邊資料的各種可能面向，也就不致於 overfitting。資料擴增(Data Augmentation)就是由現有訓練樣本生成更多訓練資料的方法，主要是透過隨機變換原始資料，以產生相似的影像，進而增加訓練樣本數。最終目標是在訓練時，model 不會看到兩次完全相同的影像。
 
-在 Keras 中，我們可以藉由設定 ImageDataGenerator，在讀取影像時執行隨機變換(random transformation)來達到資料擴增，至於變換的方向則可以在 ImageDataGenerator 的參數中進一步指定。以下例來看：
+在 Keras 中，我們可以藉由設定 ImageDataGenerator，在讀取影像時執行隨機變換(random transformation)來達到資料擴增，至於變換的方向則可以在 ImageDataGenerator 的參數中進一步指定。
+
+#+begin_quote
+*注意：* =ImageDataGenerator= 在 Keras 3.x 中已被標記為棄用，建議改用 =keras.utils.image_dataset_from_directory= 搭配 =tf.data= pipeline，或使用 Keras 內建的資料擴增層（如 =layers.RandomFlip=, =layers.RandomRotation= 等）直接嵌入模型中。本教材仍沿用 =ImageDataGenerator= 以維持與既有程式碼的一致性。
+#+end_quote
+
+以下例來看：
 
 #+begin_src python -r -n :async :results output :exports both :session QQQ
 datagen = ImageDataGenerator(
@@ -2049,7 +2145,7 @@ datagen = ImageDataGenerator(
 
 #+RESULTS:
 
-上述程式之 fill__mode 共提供四種像素填補方法：
+上述程式之 =fill_mode= 共提供四種像素填補方法：
 - constant: 依照輸入的 cval(浮點數或整數)將影像邊界之外都以該值填補，例如 cval=k，則影像填補為 kkkkkkkk|abcd|kkkkkkkk
 - nearest: 以最接近的像素值填補，如：aaaaaaaa|abcd|dddddddd
 - reflect: 以影像重複填補(影像以一正一反方向)，如 abcddcba|abcd|dcbaabcd
@@ -2105,8 +2201,6 @@ for batch in datagen.flow(x, batch_size=1):
     plt.figure(i)
     #imgplot = plt.imshow(image.array_to_img(batch[0]))
     plt.imshow(image.array_to_img(batch[0]))
-    #plt.clf()
-    plt.plot()
     plt.savefig("CatsAugmentation"+str(i)+".png")
     i += 1
     if i % 4 == 0:
@@ -2119,33 +2213,33 @@ for batch in datagen.flow(x, batch_size=1):
 : /Volumes/LaCie/data/cats_and_dogs_small/train/cats/cat.3.jpg
 : (1, 150, 150, 3)
 
-#+CAPTION: Cats image augmentation
-#+LABEL:fig:CatAugmentation
-#+name: fig:CatAugmentation
+#+CAPTION: Cats image augmentation 0
+#+LABEL:fig:CatAugmentation-0
+#+name: fig:CatAugmentation-0
 #+ATTR_LATEX: :width 200
 #+ATTR_ORG: :width 200
 #+ATTR_HTML: :width 400
 [[file:images/CatsAugmentation0.png]]
 
-#+CAPTION: Cats image augmentation
-#+LABEL:fig:CatAugmentation
-#+name: fig:CatAugmentation
+#+CAPTION: Cats image augmentation 1
+#+LABEL:fig:CatAugmentation-1
+#+name: fig:CatAugmentation-1
 #+ATTR_LATEX: :width 200
 #+ATTR_ORG: :width 200
 #+ATTR_HTML: :width 400
 [[file:images/CatsAugmentation1.png]]
 
-#+CAPTION: Cats image augmentation
-#+LABEL:fig:CatAugmentation
-#+name: fig:CatAugmentation
+#+CAPTION: Cats image augmentation 2
+#+LABEL:fig:CatAugmentation-2
+#+name: fig:CatAugmentation-2
 #+ATTR_LATEX: :width 200
 #+ATTR_ORG: :width 200
 #+ATTR_HTML: :width 400
 [[file:images/CatsAugmentation2.png]]
 
-#+CAPTION: Cats image augmentation
-#+LABEL:fig:CatAugmentation
-#+name: fig:CatAugmentation
+#+CAPTION: Cats image augmentation 3
+#+LABEL:fig:CatAugmentation-3
+#+name: fig:CatAugmentation-3
 #+ATTR_LATEX: :width 200
 #+ATTR_ORG: :width 200
 #+ATTR_HTML: :width 400
@@ -2230,7 +2324,7 @@ validation_generator = test_datagen.flow_from_directory(
   class_mode='binary')
 
 # 訓練
-history = model.fit_generator(
+history = model.fit(
   train_generator,
   epochs=50, verbose=1,
   validation_data=validation_generator,
@@ -2252,7 +2346,6 @@ plt.plot(epochs, acc, 'bo', label='Training acc')
 plt.plot(epochs, val_acc, 'b', label='Validation acc')
 plt.title('Training and validation accuracy')
 plt.legend()
-plt.plot()
 plt.savefig("CatsDogsDataAugmentation-acc.png")
 plt.figure()
 
@@ -2261,7 +2354,6 @@ plt.plot(epochs, loss, 'bo', label='Training loss')
 plt.plot(epochs, val_loss, 'b', label='Validation loss')
 plt.title('Training and validation loss')
 plt.legend()
-plt.plot()
 plt.savefig("CatsDogsDataAugmentation-loss.png")
 #+END_SRC
 
@@ -2334,13 +2426,13 @@ Epoch 50/50
 #+ATTR_HTML: :width 500
 [[file:images/CatsDogsDataAugmentation-acc.png]]
 
-由圖[[fig:Cat-Dog-Data-Augmentation-Acc]]和[[fig:Cat-Dog-Data-Augmentation-Loss]]可以發現，在加入了 data augmentation 和 dropout 後，訓練曲線與驗證曲線漸趨一致，不再 overfitting，model 的準確度也達到 84%。但值的一提的是: 同樣的資料集與演算法，在 Google colab 上以 GPU 執行的結果(下圖)與在本機執行(上圖)時並不相同。
+由圖[[fig:Cat-Dog-Data-Augmentation-Acc]]和[[fig:Cat-Dog-Data-Augmentation-Loss]]可以發現，在加入了 data augmentation 和 dropout 後，訓練曲線與驗證曲線漸趨一致，不再 overfitting，model 的準確度也達到 84%。但值得一提的是: 同樣的資料集與演算法，在 Google colab 上以 GPU 執行的結果(下圖)與在本機執行(上圖)時並不相同。
 
 #+CAPTION: Cats and Dogs Data Augmentation on Google colab - Accuracy
 #+LABEL:fig:Cat-Dog-Data-Augmentation-Acc-colab
 #+name: fig:Cat-Dog-Data-Augmentation-Acc-colab
 #+ATTR_LATEX: :width 300
-#+ATTR_HTML: width 400
+#+ATTR_HTML: :width 400
 #+ATTR_ORG: :width 300
 [[file:images/Cat-Dog-Data-Augmentation-Acc-colab.png]]
 
@@ -2348,25 +2440,25 @@ Epoch 50/50
 #+LABEL:fig:Cat-Dog-Data-Augmentation-Loss-colab
 #+name: fig:Cat-Dog-Data-Augmentation-Loss-colab
 #+ATTR_LATEX: :width 300
-#+ATTR_HTML: width 400
+#+ATTR_HTML: :width 400
 #+ATTR_ORG: :width 300
 [[file:images/Cat-Dog-Data-Augmentation-loss-colab.png]]
 
-在透過進一步 regularization 技術的使用，以及調整神經網路參數(如每個卷積層的過濾器數量、神經網路中的層數)，我們就能獲得更高的準確度(86%或 87%)，但在資料不及的情況下(如本例)，我們仍很難進一步提升準確度，此時，就要使用預先訓練 model。
+在透過進一步 regularization 技術的使用，以及調整神經網路參數(如每個卷積層的過濾器數量、神經網路中的層數)，我們就能獲得更高的準確度(86%或 87%)，但在資料不足的情況下(如本例)，我們仍很難進一步提升準確度，此時，就要使用預先訓練 model。
 
 ** 改善 2: Pretrained network
-Pretrained network，以簡單的話來說，就是「站在巨人的肩膀」[fn:9]，所謂「巨人」，就是別人已經用 ImageNet 訓練好的模型，例如 Google 的 Inception Model、Microsoft 的 Resnet Model 等等，把它當作 Pre-trained Model，幫助我們提取出照片的特徵(feature)。順帶一提，所謂的 Transfer Learning 就是把 Pre-trained Model 最後一層拔掉 (註：最後一層是用來分類的)，加入新的一層，然後用新資料訓練新層的參數。
+Pretrained network，以簡單的話來說，就是「站在巨人的肩膀」[fn:11]，所謂「巨人」，就是別人已經用 ImageNet 訓練好的模型，例如 Google 的 Inception Model、Microsoft 的 Resnet Model 等等，把它當作 Pre-trained Model，幫助我們提取出照片的特徵(feature)。順帶一提，所謂的 Transfer Learning 就是把 Pre-trained Model 最後一層拔掉 (註：最後一層是用來分類的)，加入新的一層，然後用新資料訓練新層的參數。
 
-能夠用來被當成 pretrained netwrok 的 model 通常是擁有大量資料集的大規模圖片分類模型，如果這個原始資料集足夠大量且具通用性，那麼 pretrained network 學習的空間層次特徵(spartial hierarchy features)就足以充當視覺世界的通用 model，其特徵對於許多不同的電腦視覺問題都同樣有效，即便是要辨識與原始任務完全不同的類別也能通用。
+能夠用來被當成 pretrained network 的 model 通常是擁有大量資料集的大規模圖片分類模型，如果這個原始資料集足夠大量且具通用性，那麼 pretrained network 學習的空間層次特徵(spatial hierarchy features)就足以充當視覺世界的通用 model，其特徵對於許多不同的電腦視覺問題都同樣有效，即便是要辨識與原始任務完全不同的類別也能通用。
 
 例如，以 ImageNet 先訓練出一個神經網路(其辨識項目為日常生活用品)，然後重新訓練這個已訓練完成的神經網路，去識別和原始樣本天差地別的家具產品等。和許多淺層的神經網路相較，深度學習的關鍵優勢在於學習到的特徵可移植到不同問題上。
 
-以下由 Karen Simonyan 和 Andrew Zisserman 於 2014 年開發的 VGG16 架構。使用 pretrain network 有兩種方式：特徵萃取(feature extraction)和徵調(fine-tuning)。
+以下由 Karen Simonyan 和 Andrew Zisserman 於 2014 年開發的 VGG16 架構。使用 pretrain network 有兩種方式：特徵萃取(feature extraction)和微調(fine-tuning)。
 
 *** 特徵萃取
 Feature extraction 是使用 pretrained network 學習到的表示法，以這些表示法從新樣本中萃取有趣的特徵，然後將這些特徵輸入到從頭訓練的新分類器中進行處理。用於影像分類的 CNN 分為以下兩部份：以一系列的卷積層和池化層開始，以密集連接的分類器結束。第一部分稱為 model 的 convolutional base (卷積基底)，在 CNN 的情況下，特徵萃取以一個 pretrained network 做為 convolutional base，透過 convolutional base 處理新資料，
 
-為何不連分類器也預先訓練？原因是 CNN 的特徵圖是來自影像上通用 pattern 的概念，因此無論面臨何種電腦視覺問題，都能通用；而分類器學習到的表示法可能只適用於 model 所訓練的類別，僅關於整個影像中該類別相關的機率。此外，卷積特徵圖仍會描述物件出現的位置，但全連接層並沒有空間的概念，全連接層學習到的表示法不再包含物件在輸入影像中位罝的任何訊息，所以只要是和物件出現位置相關的問題，全連接層產生的特徵絕大多數是沒有用的。
+為何不連分類器也預先訓練？原因是 CNN 的特徵圖是來自影像上通用 pattern 的概念，因此無論面臨何種電腦視覺問題，都能通用；而分類器學習到的表示法可能只適用於 model 所訓練的類別，僅關於整個影像中該類別相關的機率。此外，卷積特徵圖仍會描述物件出現的位置，但全連接層並沒有空間的概念，全連接層學習到的表示法不再包含物件在輸入影像中位置的任何訊息，所以只要是和物件出現位置相關的問題，全連接層產生的特徵絕大多數是沒有用的。
 
 特定卷積層所萃取出來的表示法，其普適程度取於該層的深度，model 中較早出現的層會萃取局部、高度通用的特徵圖（例如可視邊緣、顏色或紋理），而較深入的層則會萃取更抽象的概念（如貓耳朵、狗眼），如果新的資料集與訓練原始 model 的資料集有很大的差別，最好使用 model 的前幾層來進行特徵萃取，而不是使用整個 convolutional base。以下以 ImageNet 訓練的 VGG16 所產生的 convolutional base 來實作，類似 pretrained 的影像分類 model 還有 Xception、Inception V3、ResNet50、VGG19、MobileNet，均已收錄於 keras.applications。
 
@@ -2374,7 +2466,7 @@ Feature extraction 是使用 pretrained network 學習到的表示法，以這�
 要使用這個 pretrained model，還需要傳三個參數給 VGG16 建構式：
 - weights: 用於初始化 model 的權重檢查點
 - include_top: 指在神經網路頂部有沒有包含密集連接的分類器。預設情況下，密集連接分類器對應於 ImageNet 的 1000 個類別。然而，我們實際想分類的可能沒這麼多層，所以這裡不一定要包含預設分類器。
-- input_shape: qpaqamo 供給神經網路的影像張量 shape。這個參數為 optional，如果不傳，則神經網路能處理任何 shape 的輸入張量。
+- input_shape: 供給神經網路的影像張量 shape。這個參數為 optional，如果不傳，則神經網路能處理任何 shape 的輸入張量。
 
 這裡會從網路下載VGG16模型以及其參數權重，會花一點時間....
 
@@ -2443,8 +2535,8 @@ _________________________________________________________________
 
 由上述輸出觀察，最終特徵圖的 shape 為(4, 4, 512)，這算是神經網路的 top 層特徵，這個預訓練的 model 共有 13 層 Conv2D 層，最後要再接上密集連接分類器。做法有二：
 
-1. 在資料集上執行 convolutional base，將輸出記錄到硬碟上的 Numpy 陣列，然後再輸入到獨立的密集分類層。這種解決方案只需要為每個輪入影像執行一次 convolutional base，而 convolutional base 是處理過程中成本最高的部份，所以這種做法速度快成本低。但也因如此，這種做法不允許使用資料擴增法。
-1. 在頂部(最後端)增加 Dnese 層來擴展 model (conv_base)，並從輸入資料開始，從頭到尾執行整個處理過程。這種方式允許資料擴增技術，因為每次輸入影像在執行 convolutional base 時都會在 model 處理到。但這種方式的成本較高。
+1. 在資料集上執行 convolutional base，將輸出記錄到硬碟上的 Numpy 陣列，然後再輸入到獨立的密集分類層。這種解決方案只需要為每個輸入影像執行一次 convolutional base，而 convolutional base 是處理過程中成本最高的部份，所以這種做法速度快成本低。但也因如此，這種做法不允許使用資料擴增法。
+1. 在頂部(最後端)增加 Dense 層來擴展 model (conv_base)，並從輸入資料開始，從頭到尾執行整個處理過程。這種方式允許資料擴增技術，因為每次輸入影像在執行 convolutional base 時都會在 model 處理到。但這種方式的成本較高。
 
 **** 快速特徵萃取
 先執行 ImageDataGenerator，將影像轉換為 Numpy 陣列及其 label 向量，然後呼叫 conv_base model 的 predict 方法從這些影像中萃取特徵。
@@ -2531,7 +2623,7 @@ model.add(layers.Dense(256, activation='relu', input_dim=4 * 4 * 512))
 model.add(layers.Dropout(0.5))  # 丟棄法
 model.add(layers.Dense(1, activation='sigmoid'))
 
-model.compile(optimizer=optimizers.RMSprop(lr=2e-5),
+model.compile(optimizer=optimizers.RMSprop(learning_rate=2e-5),
               loss='binary_crossentropy',
               metrics=['acc'])
 
@@ -2579,17 +2671,17 @@ plt.savefig('images/pretrained-catdog-loss.png', dpi=300)
 #+END_SRC
 
 #+RESULTS:
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: Pretrained Cats and Dogs Accuracy
+#+LABEL:fig:pretrained-catdog-acc
+#+name: fig:pretrained-catdog-acc
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/pretrained-catdog-acc.png]]
 
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: Pretrained Cats and Dogs Loss
+#+LABEL:fig:pretrained-catdog-loss
+#+name: fig:pretrained-catdog-loss
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -2653,7 +2745,7 @@ plt.savefig('images/pretrained-catdog-loss.png', dpi=300)
   model.add(layers.Dropout(0.5))  # 丟棄法
   model.add(layers.Dense(1, activation='sigmoid'))
 
-  model.compile(optimizer=optimizers.RMSprop(lr=2e-5),
+  model.compile(optimizer=optimizers.RMSprop(learning_rate=2e-5),
                 loss='binary_crossentropy',
                 metrics=['acc'])
 
@@ -2677,7 +2769,6 @@ plt.savefig('images/pretrained-catdog-loss.png', dpi=300)
   plt.plot(epochs, val_acc, 'b', label='Validation acc')
   plt.title('Training and validation accuracy')
   plt.legend()
-  plt.plot()
   plt.savefig("Pretrained-VGG16-1-acc.png")
   plt.figure()
 
@@ -2686,7 +2777,6 @@ plt.savefig('images/pretrained-catdog-loss.png', dpi=300)
   plt.plot(epochs, val_loss, 'b', label='Validation loss')
   plt.title('Training and validation loss')
   plt.legend()
-  plt.plot()
   plt.savefig("Pretrained-VGG16-1-loss.png")
 
 #+END_SRC
@@ -2708,7 +2798,7 @@ Epoch 30/30
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
-file:images/Pretrained-VGG16-1-acc.png
+[[file:images/Pretrained-VGG16-1-acc.png]]
 
 #+CAPTION: 簡單特徵萃取的訓練和驗證損失
 #+LABEL:fig:Pretrained-VGG16-1-loss
@@ -2721,7 +2811,7 @@ file:images/Pretrained-VGG16-1-acc.png
 圖中顯示可以達到 90%的驗證準確度，比較原來的 model 成效，雖然準確度有提高，但仍可看到 overfitting 的情況，即便 model 裡已套用了 dropout，也許是因為無法使用資料擴增法，對 overfitting 的防治仍然有限。
 **** 加入資料擴增的特徵萃取
 
-將資料擴增加入特徵萃取的作法是擴展 conv_base model 並從輸入資料開始，從頭到尾執行整個處理過程，這種做法的運算成本非常昂貴，只能在 GPU 上執行，在 CPU 上絕對難以處理。由於 model 的行為與 layer 類似，因此可以將 model(如 conv\uunder{}base)視為 layer，增加到 Sequential model 中，就如同增加神經網路的 layer 一樣。其作法如下：
+將資料擴增加入特徵萃取的作法是擴展 conv_base model 並從輸入資料開始，從頭到尾執行整個處理過程，這種做法的運算成本非常昂貴，只能在 GPU 上執行，在 CPU 上絕對難以處理。由於 model 的行為與 layer 類似，因此可以將 model(如 =conv_base=)視為 layer，增加到 Sequential model 中，就如同增加神經網路的 layer 一樣。其作法如下：
 
 #+NAME: 在 convolutional base 卷積基底上增加全連接層分類器
 #+begin_src python -r -n :async :results output :exports both :session QQQ
@@ -2779,7 +2869,7 @@ print('This is the number of trainable weights '
 : This is the number of trainable weights before freezing the conv base: 30
 : This is the number of trainable weights after freezing the conv base: 4
 
-由於 conv_base 被凍結更新權重，所以 model 只會訓練增力的兩個 Dense 層權重，每層有兩個參數要更新(主要權重矩陣和偏差向量)，所以一共剩 4 個 trainable weights，原本的 pretrained model 有 13 層 Conv2D，共 26 個 trainable weights。
+由於 conv_base 被凍結更新權重，所以 model 只會訓練新增的兩個 Dense 層權重，每層有兩個參數要更新(主要權重矩陣和偏差向量)，所以一共剩 4 個 trainable weights，原本的 pretrained model 有 13 層 Conv2D，共 26 個 trainable weights。
 
 接下來就可以使用資料擴增來訓練 model:
 
@@ -2839,10 +2929,10 @@ validation_generator = test_datagen.flow_from_directory(
   class_mode='binary')
 
 model.compile( loss='binary_crossentropy',
-       optimizer=optimizers.RMSprop(lr=2e-5),
+       optimizer=optimizers.RMSprop(learning_rate=2e-5),
        metrics=['acc'])
 
-history = model.fit_generator(
+history = model.fit(
   train_generator,
   steps_per_epoch=100,
   epochs=30,
@@ -2863,7 +2953,6 @@ plt.plot(epochs, acc, 'bo', label='Training acc')
 plt.plot(epochs, val_acc, 'b', label='Validation acc')
 plt.title('Training and validation accuracy')
 plt.legend()
-plt.plot()
 plt.savefig("images/CatsDogsDataAugmentationPretrained-acc.png")
 plt.figure()
 
@@ -2872,7 +2961,6 @@ plt.plot(epochs, loss, 'bo', label='Training loss')
 plt.plot(epochs, val_loss, 'b', label='Validation loss')
 plt.title('Training and validation loss')
 plt.legend()
-plt.plot()
 plt.savefig("images/CatsDogsDataAugmentationPretrained-loss.png")
 #+END_SRC
 
@@ -3012,18 +3100,18 @@ for layer in conv_base.layers: #由低到高
         layer.trainable = False
 #+END_SRC
 
-解凍完部份 layer 後即可開始徵調神經網路，這裡使用 RMSProp 優化器以非常低的學習率來微調，降低學習率的目的在減小 3 個解凍層的修改幅度，以免因為過大的修改損害到這些表示法。
+解凍完部份 layer 後即可開始微調神經網路，這裡使用 RMSProp 優化器以非常低的學習率來微調，降低學習率的目的在減小 3 個解凍層的修改幅度，以免因為過大的修改損害到這些表示法。
 
 #+NAME: 微調
 #+begin_src python -r -n :async :results output :exports both :session QQQ
 # 編譯模型
 model.compile(
     loss='binary_crossentropy',
-    optimizer=optimizers.RMSprop(lr=1e-5),
+    optimizer=optimizers.RMSprop(learning_rate=1e-5),
     metrics=['acc'])
 
 # 訓練模型
-history = model.fit_generator(
+history = model.fit(
     train_generator,
     steps_per_epoch=100,
     epochs=100,
@@ -3031,7 +3119,7 @@ history = model.fit_generator(
     validation_steps=50)
 #+END_SRC
 
-#+NAME: 完整徵調過程
+#+NAME: 完整微調過程
 #+Begin_src python -r -n :results output :exports both
 import os
 import numpy as np
@@ -3104,11 +3192,11 @@ model.add(layers.Dense(1, activation='sigmoid')) # 增加全連接層分類器
 # 編譯模型
 model.compile(
     loss='binary_crossentropy',
-    optimizer=optimizers.RMSprop(lr=1e-5),
+    optimizer=optimizers.RMSprop(learning_rate=1e-5),
     metrics=['acc'])
 
 # 訓練模型
-history = model.fit_generator(
+history = model.fit(
     train_generator,
     steps_per_epoch=100,
     epochs=100,
@@ -3129,7 +3217,6 @@ plt.plot(epochs, acc, 'bo', label='Training acc')
 plt.plot(epochs, val_acc, 'b', label='Validation acc')
 plt.title('Training and validation accuracy')
 plt.legend()
-plt.plot()
 plt.savefig("images/FineTune-acc-1.png")
 plt.figure()
 
@@ -3138,11 +3225,10 @@ plt.plot(epochs, loss, 'bo', label='Training loss')
 plt.plot(epochs, val_loss, 'b', label='Validation loss')
 plt.title('Training and validation loss')
 plt.legend()
-plt.plot()
 plt.savefig("images/FineTune-loss-1.png")
 #+END_SRC
 
-#+RESULTS: 完整徵調過程
+#+RESULTS: 完整微調過程
 #+begin_example
 Model: "vgg16"
 _________________________________________________________________
@@ -3204,7 +3290,7 @@ Found 1000 images belonging to 2 classes.
 [[file:images/FineTune-acc-1.png]]
 
 #+CAPTION: VGG16 Fine Tune Loss
-#+LABEL:fig:VGG16-Fine-Tune Loss
+#+LABEL:fig:VGG16-Fine-Tune-Loss
 #+name: fig:VGG16-Fine-Tune-Loss
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
@@ -3215,7 +3301,7 @@ Found 1000 images belonging to 2 classes.
 
 * 視覺化呈現 CNN 的學習內容
 
-CNN 學習的表示法非常適合以視覺化呈現，因為它們大部份就是視覺概念的表示法(represnetations of visual concepts)，幾種常用的視得化技術如下：
+CNN 學習的表示法非常適合以視覺化呈現，因為它們大部份就是視覺概念的表示法(representations of visual concepts)，幾種常用的視覺化技術如下：
 - 視覺化中間層 convnet 的輸出(中間啟動函數)：有助於理解 convnet 是如何一層一層的轉化資料，以及對過濾器(filter)的含義。
 - 視覺化 CNN 過濾器：用於準確理解 CNN 中每個過濾器所要接受的視覺 patter 或概念中
 - 視覺化類別激活熱圖(heatmaps of class activation): 有助於了解影像的哪些部份被識別為某個類別，藉以定位影像中的物件。
@@ -3310,7 +3396,7 @@ plt.imshow(img_tensor[0])
 plt.savefig('images/cat.1700.png', dpi=300)
 #+end_src
 #+CAPTION: 測試集原圖
-#+LABEL:fig:Labl
+#+LABEL:fig:test-orig-cat
 #+name: fig:test-orig-cat
 #+ATTR_LATEX: :width 200
 #+ATTR_ORG: :width 200
@@ -3373,14 +3459,14 @@ print(first_layer_activation.shape) # 看一下第一層產生的shape
 其中第3個channel的圖像為：
 #+Begin_src python -r -n :async :results output :exports both :session view
 import matplotlib.pyplot as plt
-# 秀出第3個頻導的特徵圖
+# 秀出第3個頻道的特徵圖
 plt.matshow(first_layer_activation[0, :, :, 3], cmap='viridis')
 #plt.show()
 plt.savefig('images/cat.1700.channel3.png', dpi=300)
 #+end_src
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: Channel 3 特徵圖
+#+LABEL:fig:cat-channel3
+#+name: fig:cat-channel3
 #+ATTR_LATEX: :width 200
 #+ATTR_ORG: :width 200
 #+ATTR_HTML: :width 300
@@ -3391,15 +3477,15 @@ plt.savefig('images/cat.1700.channel3.png', dpi=300)
 其中第6個channel的圖像為：
 #+Begin_src python -r -n :async :results output :exports both :session view
 import matplotlib.pyplot as plt
-# 秀出第3個頻導的特徵圖
+# 秀出第3個頻道的特徵圖
 plt.matshow(first_layer_activation[0, :, :, 6], cmap='viridis')
 #plt.show()
 plt.savefig('images/cat.1700.channel6.png', dpi=300)
 #+end_src
 #+RESULTS:
 #+CAPTION: Channel 6
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:cat-channel6
+#+name: fig:cat-channel6
 #+ATTR_LATEX: :width 200
 #+ATTR_ORG: :width 200
 #+ATTR_HTML: :width 300
@@ -3408,15 +3494,15 @@ plt.savefig('images/cat.1700.channel6.png', dpi=300)
 其中第24個channel的圖像為：
 #+Begin_src python -r -n :async :results output :exports both :session view
 import matplotlib.pyplot as plt
-# 秀出第3個頻導的特徵圖
+# 秀出第3個頻道的特徵圖
 plt.matshow(first_layer_activation[0, :, :, 24], cmap='viridis')
 #plt.show()
 plt.savefig('images/cat.1700.channel24.png', dpi=300)
 #+end_src
 #+RESULTS:
 #+CAPTION: Channel 24
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:cat-channel24
+#+name: fig:cat-channel24
 #+ATTR_LATEX: :width 200
 #+ATTR_ORG: :width 200
 #+ATTR_HTML: :width 300
@@ -3425,22 +3511,22 @@ plt.savefig('images/cat.1700.channel24.png', dpi=300)
 其中第27個channel的圖像為：
 #+Begin_src python -r -n :async :results output :exports both :session view
 import matplotlib.pyplot as plt
-# 秀出第3個頻導的特徵圖
+# 秀出第3個頻道的特徵圖
 plt.matshow(first_layer_activation[0, :, :, 27], cmap='viridis')
 #plt.show()
 plt.savefig('images/cat.1700.channel27.png', dpi=300)
 #+end_src
 #+RESULTS:
 #+CAPTION: Channel 27
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:cat-channel27
+#+name: fig:cat-channel27
 #+ATTR_LATEX: :width 200
 #+ATTR_ORG: :width 200
 #+ATTR_HTML: :width 300
 [[file:images/cat.1700.channel27.png]]
 *** 依序觀察每一層的結果
 #+Begin_src python -r -n :async :results output :exports both :session view
-# 秀出第30個頻導的特徵圖
+# 秀出第30個頻道的特徵圖
 for i in range(32):
     plt.matshow(first_layer_activation[0, :, :, i], cmap='viridis')
     plt.title(f'channel: {i}')
@@ -3449,7 +3535,7 @@ for i in range(32):
 #+end_src
 
 ** 各層的輸出結果
-現在，我們來輸出這個CNN模型中每一層輪出的完整樣貌，我們從中提取、繪製每8個特徵圖(feature maps)中的通道，並將結果以類似matplotlib的subplot()呈現出來。
+現在，我們來輸出這個CNN模型中每一層輸出的完整樣貌，我們從中提取、繪製每8個特徵圖(feature maps)中的通道，並將結果以類似matplotlib的subplot()呈現出來。
 
 #+Begin_src python -r -n :async :results output :exports both :session view
 import keras
@@ -3505,57 +3591,57 @@ for layer_name, layer_activation in zip(layer_names, activations): # 我們有8�
 #plt.show()
 #+end_src
 #+CAPTION: 經過第一個卷積層
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:vis-conv2d
+#+name: fig:vis-conv2d
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 800
 [[file:images/conv2d.png]]
 #+CAPTION: max pooling轉換後
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:vis-maxpool2d
+#+name: fig:vis-maxpool2d
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 800
 [[file:images/max_pooling2d.png]]
 #+CAPTION: 經過第二個卷積層
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:vis-conv2d-1
+#+name: fig:vis-conv2d-1
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 800
 [[file:images/conv2d_1.png]]
 #+CAPTION: 經過第二次max pooling
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:vis-maxpool2d-1
+#+name: fig:vis-maxpool2d-1
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 800
 [[file:images/max_pooling2d_1.png]]
 #+CAPTION: 經過第三個卷積層
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:vis-conv2d-2
+#+name: fig:vis-conv2d-2
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 800
 [[file:images/conv2d_2.png]]
 #+CAPTION: 第三個max pooling
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:vis-maxpool2d-2
+#+name: fig:vis-maxpool2d-2
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 800
 [[file:images/max_pooling2d_2.png]]
 #+CAPTION: 第四個卷積層
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:vis-conv2d-3
+#+name: fig:vis-conv2d-3
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 800
 [[file:images/conv2d_3.png]]
 #+CAPTION: 第四個max pooling
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:vis-maxpool2d-3
+#+name: fig:vis-maxpool2d-3
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 800
@@ -3563,12 +3649,12 @@ for layer_name, layer_activation in zip(layer_names, activations): # 我們有8�
 
 由上圖可知，隨層數越來越高，啟動函數的輸出變得越來越抽象，視覺上也越來越難解釋，model 開始編碼出更高階的概念。此外，啟動函數輸出的稀疏性也隨著層數的深度而增加，在第一層中，所有的過濾器都被輸入影響所驅動(都有值)，但接下來就有越來越多的 filter 的值是空的(全黑)，這表示在這些層的輸入影像中已經找不到過濾器要編碼的圖案 pattern 了。
 
-上述示例也證明了深度神經網路所學習到的表示法有一個重要特性：各層萃取的特徵隨著層的𣶶度而變的越來越抽象，越高階的啟動函數越不會帶有關於特定輸入的資訊，卻具備更多關於目標的資訊（此例中指的是貓或狗）。這和人或動物感知世界的方式很像：在觀察一個場景幾秒中後閉眼，我們可以記得場景中有哪些抽象事物，但不會記得每個物體的特殊外觀，因為大腦也會將事物抽象化。
+上述示例也證明了深度神經網路所學習到的表示法有一個重要特性：各層萃取的特徵隨著層的深度而變得越來越抽象，越高階的啟動函數越不會帶有關於特定輸入的資訊，卻具備更多關於目標的資訊（此例中指的是貓或狗）。這和人或動物感知世界的方式很像：在觀察一個場景幾秒中後閉眼，我們可以記得場景中有哪些抽象事物，但不會記得每個物體的特殊外觀，因為大腦也會將事物抽象化。
 
-** CMA :noexport:
-CMA(class activation map)可以用來理解影像中的哪些部份會讓 convnet 做出最終分類的決策，這有助於 convnet 決策過程的偵錯。CAM 主要是針對輸入影像產生類別激活熱圖(heatmap of class)，這是一個 2D 的分數網格圖，針對輸入影像的每個位置(網格)進行計算，然後指出每個位置相對於目前類別的重要性。我們可以使用"Graid-CAM: Visual Explanations from Deep Networks via Gradient-based Localization"這篇論文提到的方法，即，給定影像，取得卷積層的輸出特徵，以"這個類別對每個 channel 的梯度值"對這個特徵圖中的每個 channel 做加權。進而產生「某張圖片激活某類別的強度」的 2D 分數網格圖。
+** CAM :noexport:
+CMA(class activation map)可以用來理解影像中的哪些部份會讓 convnet 做出最終分類的決策，這有助於 convnet 決策過程的偵錯。CAM 主要是針對輸入影像產生類別激活熱圖(heatmap of class)，這是一個 2D 的分數網格圖，針對輸入影像的每個位置(網格)進行計算，然後指出每個位置相對於目前類別的重要性。我們可以使用"Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization"這篇論文提到的方法，即，給定影像，取得卷積層的輸出特徵，以"這個類別對每個 channel 的梯度值"對這個特徵圖中的每個 channel 做加權。進而產生「某張圖片激活某類別的強度」的 2D 分數網格圖。
 
-做法如下(從Google下載tnesorflow的VGG16會花 *一點* 時間)：
+做法如下(從Google下載TensorFlow的VGG16會花 *一點* 時間)：
 #+begin_src shell -r -n :results output :exports both
 conda install -c conda-forge grad-cam
 #+end_src
@@ -3606,7 +3692,7 @@ print('預測結果:', decode_predictions(preds, top=3)[0])
 
 np.argmax(preds[0])
 
-#設定 Gard-CAM 演算法
+#設定 Grad-CAM 演算法
 from keras import backend as K
 
 african_elephant_output = model.output[:, 386] # ← 預測向量中的 "非洲象" 項目
@@ -3638,8 +3724,7 @@ import numpy as np
 heatmap = np.maximum(heatmap, 0)
 heatmap /= np.max(heatmap)
 plt.matshow(heatmap)
-plt.plot()
-plot.savefig("images/heapmapOfClassActivation.png")
+plt.savefig("images/heatmapOfClassActivation.png")
 
 # 將熱圖與原始影像疊加在一起
 import cv2
@@ -3661,17 +3746,17 @@ print('是否儲存成功:', cv2.imwrite('images/elephant_cam.jpg', superimposed
 #+RESULTS:
 : 1994708b-f258-4b4c-8229-69d443c84517
 
-#+CAPTION: Heapmap of class activation
-#+LABEL:fig:heapmapOfClassActivation
-#+name: fig:heapmapOfClassActivation
+#+CAPTION: Heatmap of class activation
+#+LABEL:fig:heatmapOfClassActivation
+#+name: fig:heatmapOfClassActivation
 #+ATTR_LATEX: :width 300
 #+ATTR_HTML: :width 400
 #+ATTR_ORG: :width 300
-[[file:images/heapmapOfClassActivation.png]]
+[[file:images/heatmapOfClassActivation.png]]
 
-#+CAPTION: 將激活熱圖與影像叠加
-#+LABEL:fig:heapmapOfClassActivationCombination
-#+name: fig:heapmapOfClassActivationCombination
+#+CAPTION: 將激活熱圖與影像疊加
+#+LABEL:fig:heatmapOfClassActivationCombination
+#+name: fig:heatmapOfClassActivationCombination
 #+ATTR_LATEX: :width 300
 #+ATTR_HTML: :width 400
 #+ATTR_ORG: :width 300
@@ -3693,7 +3778,7 @@ print('是否儲存成功:', cv2.imwrite('images/elephant_cam.jpg', superimposed
 - [[https://app.runwayml.com/video-tools/motion-tracking][runwayml]]
 - [[https://cycling74.com/forums/max-and-cnmat-osc-help-please][Max]]
 - [[https://openframeworks.cc/download/][OF]]
-- [[https://www.youtube.com/watch?v=ARnf4ilr9Hc][Intorduction to Runway]]
+- [[https://www.youtube.com/watch?v=ARnf4ilr9Hc][Introduction to Runway]]
 - 研究OSC: 一種application間傳送message的protocol
 - [[https://www.youtube.com/c/GeneKogan/videos][Gene Kogan]]
 - [[https://affinelayer.com/pixsrv/][GAN DEMO: Image-to-Image Demo]]
@@ -3721,20 +3806,24 @@ Kaggle: https://www.kaggle.com/ryanholbrook/overfitting-and-underfitting
 
 * Footnotes
 
-[fn:1] [[https://ithelp.ithome.com.tw/articles/10191820][Day 06：處理影像的利器 -- 卷積神經網路(Convolutional Neural Network)]]
+[fn:1] [[https://technews.tw/2024/10/14/ai-is-dumber-than-a-cat/][AI 智力不如貓？AI 科學家楊立昆試圖打破 AGI 迷思]]
 
-[fn:2] [[https://medium.com/@syshen/%E5%85%A5%E9%96%80%E6%B7%B1%E5%BA%A6%E5%AD%B8%E7%BF%92-2-d694cad7d1e5][入門深度學習 — 2]]
+[fn:2] [[https://www.youtube.com/shorts/ZaEWdQxT3vg][AI教父辛頓：別相信我學生楊立昆的鬼話]]
 
-[fn:3] [[https://medium.com/chiukevin0321/cnn-%E5%82%B3%E7%B5%B1nn-comparison-9b0a6a9b1e2d][DNN & CNN comparison]]
+[fn:3] [[https://ithelp.ithome.com.tw/articles/10191820][Day 06：處理影像的利器 -- 卷積神經網路(Convolutional Neural Network)]]
 
-[fn:4] [[https://medium.com/@chih.sheng.huang821/卷積神經網路-convolutional-neural-network-cnn-卷積計算的倒傳遞推導與稀疏矩陣觀點來看卷積計算-e82ac16e510f][卷積神經網路(Convolutional neural network, CNN):卷積計算的倒傳遞推導與稀疏矩陣觀點來看卷積計算]]
+[fn:4] [[https://medium.com/@syshen/%E5%85%A5%E9%96%80%E6%B7%B1%E5%BA%A6%E5%AD%B8%E7%BF%92-2-d694cad7d1e5][入門深度學習 — 2]]
 
-[fn:5] [[https://ujjwalkarn.me/2016/08/11/intuitive-explanation-convnets/][An Intuitive Explanation of Convolutional Neural Networks]]
+[fn:5] [[https://medium.com/chiukevin0321/cnn-%E5%82%B3%E7%B5%B1nn-comparison-9b0a6a9b1e2d][DNN & CNN comparison]]
 
-[fn:6] [[https://www.books.com.tw/products/0010822932][Deep learning 深度學習必讀：Keras 大神帶你用 Python 實作]]
+[fn:6] [[https://medium.com/@chih.sheng.huang821/卷積神經網路-convolutional-neural-network-cnn-卷積計算的倒傳遞推導與稀疏矩陣觀點來看卷積計算-e82ac16e510f][卷積神經網路(Convolutional neural network, CNN):卷積計算的倒傳遞推導與稀疏矩陣觀點來看卷積計算]]
 
-[fn:7] [[https://blog.yeshuanova.com/2018/10/dataset-iris/][機器學習資料集 - Iris dataset ]]
+[fn:7] [[https://ujjwalkarn.me/2016/08/11/intuitive-explanation-convnets/][An Intuitive Explanation of Convolutional Neural Networks]]
 
-[fn:8] [[https://aifreeblog.herokuapp.com/posts/54/data_science_203/][資料的正規化(Normalization)及標準化(Standardization)]]
+[fn:8] [[https://www.books.com.tw/products/0010822932][Deep learning 深度學習必讀：Keras 大神帶你用 Python 實作]]
 
-[fn:9] [[https://medium.com/yiyi-network/transfer-learning-1f87d4f1886f][Kaggle Learn | Deep Learning 深度學習 | 學習資源介紹 (Part 2)]]
+[fn:9] [[https://blog.yeshuanova.com/2018/10/dataset-iris/][機器學習資料集 - Iris dataset ]]
+
+[fn:10] [[https://aifreeblog.herokuapp.com/posts/54/data_science_203/][資料的正規化(Normalization)及標準化(Standardization)]]
+
+[fn:11] [[https://medium.com/yiyi-network/transfer-learning-1f87d4f1886f][Kaggle Learn | Deep Learning 深度學習 | 學習資源介紹 (Part 2)]]

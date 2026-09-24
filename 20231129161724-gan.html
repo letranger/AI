@@ -3,11 +3,11 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2025-07-15 Tue 15:28 -->
+<!-- 2026-02-14 Sat 20:28 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>生成對抗網路</title>
-<meta name="author" content="Yung-Chin Yen" />
+<meta name="author" content="顏永進" />
 <meta name="generator" content="Org Mode" />
 <style type="text/css">
   #content { max-width: 60em; margin: auto; }
@@ -234,23 +234,31 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org593ddec">1. GAN</a></li>
-<li><a href="#orgc90a571">2. 生成模型</a>
+<li><a href="#org9c0bde8">1. GAN</a></li>
+<li><a href="#orgb910d86">2. 生成模型與鑑別器</a>
 <ul>
-<li><a href="#org5e0625e">2.1. 生成模型與鑑別模型</a></li>
-<li><a href="#org3685485">2.2. 生成模型的框架: 兩維度的生成模型遊戲</a></li>
+<li><a href="#orgf5fa7b3">2.1. 鑑別器</a></li>
+<li><a href="#orgbb08412">2.2. 生成器</a></li>
+<li><a href="#orgadf48f3">2.3. 生成器與鑑別器的比較</a></li>
+<li><a href="#org28d2555">2.4. 生成器與鑑別器的訓練</a></li>
 </ul>
 </li>
-<li><a href="#orgd4352a8">3. Keras GAN</a></li>
-<li><a href="#org490f2b8">4. 應用領域</a></li>
-<li><a href="#org1510d2f">5. DCGANs</a></li>
-<li><a href="#org70a7829">6. DeepLearning 的 convolution 動畫</a></li>
-<li><a href="#org9dae182">7. 比賽只有 CNN v.s. RNN</a></li>
-<li><a href="#org98eaac2">8. ideas</a></li>
+<li><a href="#org482a185">3. 生成器</a>
+<ul>
+<li><a href="#org715e2f4">3.1. 生成器與鑑別器</a></li>
+<li><a href="#orga1cbe71">3.2. 生成器的框架: 兩維度的生成器遊戲</a></li>
+</ul>
+</li>
+<li><a href="#org3ac7b00">4. Keras GAN</a></li>
+<li><a href="#org2fa3153">5. 應用領域</a></li>
+<li><a href="#org2bab3b5">6. DCGANs</a></li>
+<li><a href="#org3f8ffb6">7. DeepLearning 的 convolution 動畫</a></li>
+<li><a href="#org64c5fad">8. 比賽只有 CNN v.s. RNN</a></li>
+<li><a href="#orgc8402a5">9. ideas</a></li>
 </ul>
 </div>
 </div>
-<a href="https://hits.sh/letranger.github.io/AI-course/GPU.html/"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI-course/GPU.html.svg"/></a>
+<a href="https://letranger.github.io/AI/20231129161724-gan.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20231129161724-gan.html.svg"/></a>
 
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-4EJ3V5BG0Z"></script>
@@ -260,82 +268,186 @@
   gtag('js', new Date());
   gtag('config', 'G-4EJ3V5BG0Z');
 </script>
-<div id="outline-container-org593ddec" class="outline-2">
-<h2 id="org593ddec"><span class="section-number-2">1.</span> GAN</h2>
+<div id="outline-container-org9c0bde8" class="outline-2">
+<h2 id="org9c0bde8"><span class="section-number-2">1.</span> GAN</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 生成對抗網路是由蒙特婁大學的研究生伊思・古德費洛(Ian Goodfellow)所發明。2014年的一個晚上，Goodfellow和他的幾個朋友去了當地的一家酒館，他們討論到打造可以生成高畫質圖像的深度學習系統會碰到到的問題。在喝了不知道多少啤酒後，Goodfellow提出了生成對抗網路背後的基本概念，但受到了其他人很大的質疑。之後，Goodfellow一回到家立即開始寫程式。幾個小時內，他就有了第一個功能強大的生成對抗網路。這個成就使Goodfellow成為深度學習社群的傳奇人物。Meta首席AI科學家楊立昆表示，生成對抗網路是「深度學習領域過去二十年來最酷的概念」<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>。<br />
 </p>
+
+<p>
+GAN（Generative Adversarial Network）是一種生成模型，透過兩個神經網路互相競爭來生成新的資料。這兩個網路分別是生成器（Generator）和鑑別器（Discriminator）。生成器負責生成新的資料，而鑑別器則負責判斷資料是真實的還是由生成器生成的。這種對抗性訓練使得生成器能夠逐漸提高其生成資料的質量。<br />
+</p>
 </div>
 </div>
-<div id="outline-container-orgc90a571" class="outline-2">
-<h2 id="orgc90a571"><span class="section-number-2">2.</span> 生成模型</h2>
+<div id="outline-container-orgb910d86" class="outline-2">
+<h2 id="orgb910d86"><span class="section-number-2">2.</span> 生成模型與鑑別器</h2>
 <div class="outline-text-2" id="text-2">
+<p>
+生成模型和鑑別器是機器學習中兩種不同的模型類型，它們在處理資料的方式和目標上有所不同。<br />
+</p>
+</div>
+<div id="outline-container-orgf5fa7b3" class="outline-3">
+<h3 id="orgf5fa7b3"><span class="section-number-3">2.1.</span> 鑑別器</h3>
+<div class="outline-text-3" id="text-2-1">
 <ul class="org-ul">
-<li>生成模型是以 <b>機率模型</b> 的方式來描述資料集的 <b>產生方式</b> 。對這個模型抽樣就可以生成新的資料。<br /></li>
+<li>鑑別器是以 <b>決定型模型</b> 的方式來描述資料集的 <b>分類方式</b> 。對這個模型抽樣就可以得到一個分類結果。<br /></li>
+<li>例如：建置一個包含了許多馬匹的影像資料庫，我們想建一個能鑑別出這些馬的模型。<br /></li>
+<li>首先需要一個有許多馬的資料集，裡面有許多實例(instance)，每個資料點為一個觀察值(observation)<br /></li>
+<li>每個觀察值都包含了許多特徵（對於圖片來說就是像素值），鑑別器的目標就是建置個能將這些特徵映射到特定類別的模型。<br /></li>
+<li>鑑別器必須是決定型(deterministic)而非機率型(probabilistic)，如果模型是將所有圖片的像素值取平均，則每次產生的結果就都會相同，這就不是鑑別，模型要包含一個隨機元素來影響其所生成的個別樣本。<br /></li>
+<li>可以想像有一個未知的機率分配來決定為什麼有些影像比較容易在訓練集資料中找到，有些則否。我們的目標是建置一個模型去盡可能模仿這樣的機率分配，並從中抽樣來生成全新且具鑑別度的觀察值。<br /></li>
+<li>鑑別器的訓練資料中有許多馬的照片，透過觀察所有照片的特徵值（像素），我們生成一個能描述這些特徵值的機率分配，並用這個機率分配來鑑別一張圖片是否為馬。鑑別器通常是搭配有標籤資料集學會一個 <b>可將輸入映射到特定輸出的映射函數</b> 。<br /></li>
+<li>鑑別器的估計值為 \(p(y|x)\)，即，觀察到 \(x\) 時其標籤為 \(y\) 的機率，鑑別器會試著去估計出某個觀測值 \(x\) 屬於類別 \(y\) 的機率。<br /></li>
+<li>鑑別器的應用包括：圖像分類、語音識別、文本分類等。<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgbb08412" class="outline-3">
+<h3 id="orgbb08412"><span class="section-number-3">2.2.</span> 生成器</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+生成器和鑑別器的主要區別在於它們的目標和處理方式。生成器的目標是生成新的資料，而鑑別器的目標是分類或鑑別資料。以下是生成器的詳細說明：<br />
+</p>
+<ul class="org-ul">
+<li>生成器是以 <b>機率模型</b> 的方式來描述資料集的 <b>產生方式</b> 。對這個模型抽樣就可以生成新的資料。<br /></li>
 <li>例如：建置一個包含了許多馬匹的影像資料庫，我們想建一個能生成 <b>未出現過的、逼真的馬</b> 的模型。<br /></li>
-<li>首先需要一個有許多馬的資料集，裡面有許多實例(instance)，每個資枓點為一個觀察值(obwervation)<br /></li>
-<li>每個觀察值都包含了許多特徵（對於圖片來說就是像素值），生成模型的目標就是建置個能生成多組新特徵的模型，讓這個新特徵看起來和原始資料很類似。<br /></li>
-<li>生成模型必須是機率型(probabilistic)而非決定型(deterministic)，如果模型是將所有圖片的像素值取平均，則每次產生的結果就都會想同，這就不是生成，模型要包含一個隨機元素來影響其所生成的個別樣本。<br /></li>
+<li>首先需要一個有許多馬的資料集，裡面有許多實例(instance)，每個資料點為一個觀察值(observation)<br /></li>
+<li>每個觀察值都包含了許多特徵（對於圖片來說就是像素值），生成器的目標就是建置個能生成多組新特徵的模型，讓這個新特徵看起來和原始資料很類似。<br /></li>
+<li>生成器必須是機率型(probabilistic)而非決定型(deterministic)，如果模型是將所有圖片的像素值取平均，則每次產生的結果就都會相同，這就不是生成，模型要包含一個隨機元素來影響其所生成的個別樣本。<br /></li>
+<li>可以想像有一個未知的機率分配來決定為什麼有些影像比較容易在訓練集資料中找到，有些則否。我們的目標是建置一個模型去盡可能模仿這樣的機率分配，並從中抽樣來生成全新且具鑑別度的觀察值。<br /></li>
+<li>很難當比賽題目，因為做出來的都是假的，不易評分<br /></li>
+<li>生成器的訓練資料中有許多馬的照片，透過觀察所有照片的特徵值（像素），我們生成一個能描述這些特徵值的機率分配，並用這個機率分配來生成一張全新的圖片。生成器通常是搭配無標籤資料集學會一個 <b>可將輸入映射到特定輸出的映射函數</b> 。<br /></li>
+<li>生成器的應用包括：圖像生成、文本生成、音樂生成等。<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgadf48f3" class="outline-3">
+<h3 id="orgadf48f3"><span class="section-number-3">2.3.</span> 生成器與鑑別器的比較</h3>
+<div class="outline-text-3" id="text-2-3">
+<p>
+生成器和鑑別器的主要區別在於它們的目標和處理方式。生成器的目標是生成新的資料，而鑑別器的目標是分類或鑑別資料。以下是它們的比較：<br />
+</p>
+<ul class="org-ul">
+<li>**目標**：<br />
+<ul class="org-ul">
+<li>生成器：生成新的資料，模擬資料的分佈。<br /></li>
+<li>鑑別器：分類或鑑別資料，估計資料屬於某個類別的機率。<br /></li>
+</ul></li>
+<li>**資料處理**：<br />
+<ul class="org-ul">
+<li>生成器：使用無標籤資料集，學習資料的特徵分佈。<br /></li>
+<li>鑑別器：使用有標籤資料集，學習如何將輸入映射到特定輸出。<br /></li>
+</ul></li>
+<li>**模型類型**：<br />
+<ul class="org-ul">
+<li>生成器：機率模型，包含隨機元素。<br /></li>
+<li>鑑別器：決定型模型，通常是監督式學習。<br /></li>
+</ul></li>
+<li>**應用**：<br />
+<ul class="org-ul">
+<li>生成器：圖像生成、文本生成、音樂生成等。<br /></li>
+<li>鑑別器：圖像分類、語音識別、文本分類等。<br /></li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org28d2555" class="outline-3">
+<h3 id="org28d2555"><span class="section-number-3">2.4.</span> 生成器與鑑別器的訓練</h3>
+<div class="outline-text-3" id="text-2-4">
+<p>
+生成器和鑑別器的訓練是生成對抗網路（GAN）中的核心部分。它們之間的訓練過程是對抗性的，以下是它們的訓練流程：<br />
+</p>
+<ol class="org-ol">
+<li>**初始化模型**：首先，初始化生成器和鑑別器的神經網路模型。<br /></li>
+<li>**訓練鑑別器**：<br />
+<ul class="org-ul">
+<li>從真實資料集中抽取一批真實樣本。<br /></li>
+<li>使用生成器生成一批假樣本。<br /></li>
+<li>將真實樣本和假樣本一起輸入到鑑別器中。<br /></li>
+<li>計算鑑別器對真實樣本的預測和對假樣本的預測，並計算損失函數。<br /></li>
+<li>更新鑑別器的權重，使其能更好地區分真實樣本和假樣本。<br /></li>
+</ul></li>
+<li>**訓練生成器**：<br />
+<ul class="org-ul">
+<li>從隨機噪聲中生成一批假樣本。<br /></li>
+<li>將這些假樣本輸入到鑑別器中，並計算鑑別器對這些假樣本的預測。<br /></li>
+<li>計算生成器的損失函數，這個損失函數通常是鑑別器對假樣本的預測結果。<br /></li>
+<li>更新生成器的權重，使其能生成更逼真的樣本，以騙過鑑別器。<br /></li>
+</ul></li>
+<li>**迭代訓練**：重複步驟2和3，直到生成器能生成足夠逼真的樣本，或者達到預定的訓練次數。<br /></li>
+</ol>
+</div>
+</div>
+</div>
+<div id="outline-container-org482a185" class="outline-2">
+<h2 id="org482a185"><span class="section-number-2">3.</span> 生成器</h2>
+<div class="outline-text-2" id="text-3">
+<ul class="org-ul">
+<li>生成器是以 <b>機率模型</b> 的方式來描述資料集的 <b>產生方式</b> 。對這個模型抽樣就可以生成新的資料。<br /></li>
+<li>例如：建置一個包含了許多馬匹的影像資料庫，我們想建一個能生成 <b>未出現過的、逼真的馬</b> 的模型。<br /></li>
+<li>首先需要一個有許多馬的資料集，裡面有許多實例(instance)，每個資料點為一個觀察值(observation)<br /></li>
+<li>每個觀察值都包含了許多特徵（對於圖片來說就是像素值），生成器的目標就是建置個能生成多組新特徵的模型，讓這個新特徵看起來和原始資料很類似。<br /></li>
+<li>生成器必須是機率型(probabilistic)而非決定型(deterministic)，如果模型是將所有圖片的像素值取平均，則每次產生的結果就都會相同，這就不是生成，模型要包含一個隨機元素來影響其所生成的個別樣本。<br /></li>
 <li>可以想像有一個未知的機率分配來決定為什麼有些影像比較容易在訓練集資料中找到，有些則否。我們的目標是建置一個模型去盡可能模仿這樣的機率分配，並從中抽樣來生成全新且具鑑別度的觀察值。<br /></li>
 <li>很難當比賽題目，因為做出來的都是假的，不易評分<br /></li>
 </ul>
 </div>
-<div id="outline-container-org5e0625e" class="outline-3">
-<h3 id="org5e0625e"><span class="section-number-3">2.1.</span> 生成模型與鑑別模型</h3>
-<div class="outline-text-3" id="text-2-1">
+<div id="outline-container-org715e2f4" class="outline-3">
+<h3 id="org715e2f4"><span class="section-number-3">3.1.</span> 生成器與鑑別器</h3>
+<div class="outline-text-3" id="text-3-1">
 <p>
-生成模型的訓練資料中有許多馬的照片，透過觀察所有照片的特徵值（像素），我們生成一個能描述這些特徵值的機率分配，並用這個機率分配來生成一張全新的圖片。生成模型通常是搭配無標籤資料集學會一個 <b>可將輸入映射到特定輸出的映射函數</b> 。<br />
+生成器的訓練資料中有許多馬的照片，透過觀察所有照片的特徵值（像素），我們生成一個能描述這些特徵值的機率分配，並用這個機率分配來生成一張全新的圖片。生成器通常是搭配無標籤資料集學會一個 <b>可將輸入映射到特定輸出的映射函數</b> 。<br />
 </p>
 
 <p width="500">
 <img src="images/GAN-flow-1.jpg" alt="GAN-flow-1.jpg" width="500" /><br />
-對鑑別模型來說，訓練資料中的每個觀察值（instance）都有對應的label（如，這張是否為梵谷的畫），如此這個模型就能學習如何鑑別這兩個群組，因此，我們可以將之視為監督式學習。<br />
+對鑑別器來說，訓練資料中的每個觀察值（instance）都有對應的label（如，這張是否為梵谷的畫），如此這個模型就能學習如何鑑別這兩個群組，因此，我們可以將之視為監督式學習。<br />
 </p>
 
-<div id="org87145e9" class="figure">
+<div id="org689408c" class="figure">
 <p><img src="images/GAN-flow-1.jpg" alt="GAN-flow-1.jpg" width="500" /><br />
 </p>
-<p><span class="figure-number">Figure 1: </span>鑑別模型處理流程</p>
+<p><span class="figure-number">Figure 1: </span>鑑別器處理流程</p>
 </div>
 
 <p>
-鑑別模型的估計值為 \(p(y|x)\)，即，觀察到 \(x\) 時其標籤為 \(y\) 的機率，鑑別模型會試著去估計出某個觀測值 \(x\) 屬於類別 \(y\) 的機率。<br />
+鑑別器的估計值為 \(p(y|x)\)，即，觀察到 \(x\) 時其標籤為 \(y\) 的機率，鑑別器會試著去估計出某個觀測值 \(x\) 屬於類別 \(y\) 的機率。<br />
 </p>
 </div>
 <ol class="org-ol">
-<li><a id="org1f20bf2"></a>生成模型的應用<br />
-<div class="outline-text-4" id="text-2-1-1">
+<li><a id="org7ea041a"></a>生成器的應用<br />
+<div class="outline-text-4" id="text-3-1-1">
 <ul class="org-ul">
 <li>NVIDIA的StyleGAN: 可以產生超逼真的人臉影像<br /></li>
 <li>OpenAI的GPT-2語言模型: 指定一小段前言，完成一整段文字。<br /></li>
 </ul>
 </div>
 </li>
-<li><a id="org5a35f27"></a>生成學習與強化學習<br />
-<div class="outline-text-4" id="text-2-1-2">
+<li><a id="org58ada7a"></a>生成學習與強化學習<br />
+<div class="outline-text-4" id="text-3-1-2">
 <p>
-強化學習可以訓練一台機器在某個地形上行走，一般的作法是建立許多地形的電腦模擬環境，再訓練代理人(agent)去嚐試各種策略。如果能透過生成模型來模擬生成環境將會更有效率。<br />
+強化學習可以訓練一台機器在某個地形上行走，一般的作法是建立許多地形的電腦模擬環境，再訓練代理人(agent)去嚐試各種策略。如果能透過生成器來模擬生成環境將會更有效率。<br />
 </p>
 </div>
 </li>
 </ol>
 </div>
-<div id="outline-container-org3685485" class="outline-3">
-<h3 id="org3685485"><span class="section-number-3">2.2.</span> 生成模型的框架: 兩維度的生成模型遊戲</h3>
+<div id="outline-container-orga1cbe71" class="outline-3">
+<h3 id="orga1cbe71"><span class="section-number-3">3.2.</span> 生成器的框架: 兩維度的生成器遊戲</h3>
 </div>
 </div>
-<div id="outline-container-orgd4352a8" class="outline-2">
-<h2 id="orgd4352a8"><span class="section-number-2">3.</span> Keras GAN</h2>
-<div class="outline-text-2" id="text-3">
+<div id="outline-container-org3ac7b00" class="outline-2">
+<h2 id="org3ac7b00"><span class="section-number-2">4.</span> Keras GAN</h2>
+<div class="outline-text-2" id="text-4">
 <p>
 <a href="https://github.com/eriklindernoren/Keras-GAN">https://github.com/eriklindernoren/Keras-GAN</a><br />
 </p>
 </div>
 </div>
-<div id="outline-container-org490f2b8" class="outline-2">
-<h2 id="org490f2b8"><span class="section-number-2">4.</span> 應用領域</h2>
-<div class="outline-text-2" id="text-4">
+<div id="outline-container-org2fa3153" class="outline-2">
+<h2 id="org2fa3153"><span class="section-number-2">5.</span> 應用領域</h2>
+<div class="outline-text-2" id="text-5">
 <ul class="org-ul">
 <li>PairedCycleGAN<br /></li>
 <li>TwinGAN<br /></li>
@@ -350,39 +462,39 @@
 </ul>
 </div>
 </div>
-<div id="outline-container-org1510d2f" class="outline-2">
-<h2 id="org1510d2f"><span class="section-number-2">5.</span> DCGANs</h2>
-<div class="outline-text-2" id="text-5">
+<div id="outline-container-org2bab3b5" class="outline-2">
+<h2 id="org2bab3b5"><span class="section-number-2">6.</span> DCGANs</h2>
+<div class="outline-text-2" id="text-6">
 <ol class="org-ol">
 <li>使用 strided convolutions 取代 pooling layers<br /></li>
 <li>移除全連接層 fully<br /></li>
 </ol>
 </div>
 </div>
-<div id="outline-container-org70a7829" class="outline-2">
-<h2 id="org70a7829"><span class="section-number-2">6.</span> DeepLearning 的 convolution 動畫</h2>
-<div class="outline-text-2" id="text-6">
+<div id="outline-container-org3f8ffb6" class="outline-2">
+<h2 id="org3f8ffb6"><span class="section-number-2">7.</span> DeepLearning 的 convolution 動畫</h2>
+<div class="outline-text-2" id="text-7">
 <ul class="org-ul">
 <li><a href="https://github.com/vdumoulin/conv_arithmetic">A technical report on convolution arithmetic in the context of deep learning</a><br /></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org9dae182" class="outline-2">
-<h2 id="org9dae182"><span class="section-number-2">7.</span> 比賽只有 CNN v.s. RNN</h2>
+<div id="outline-container-org64c5fad" class="outline-2">
+<h2 id="org64c5fad"><span class="section-number-2">8.</span> 比賽只有 CNN v.s. RNN</h2>
 </div>
 
-<div id="outline-container-org98eaac2" class="outline-2">
-<h2 id="org98eaac2"><span class="section-number-2">8.</span> ideas</h2>
-<div class="outline-text-2" id="text-8">
+<div id="outline-container-orgc8402a5" class="outline-2">
+<h2 id="orgc8402a5"><span class="section-number-2">9.</span> ideas</h2>
+<div class="outline-text-2" id="text-9">
 <ul class="org-ul">
 <li>文字 -&gt; POP<br /></li>
 <li>有一種應用是將照片中的衣服移除，那，如何判別是真的沒穿衣服還是被 GAN 產生的<br /></li>
 <li>ZARA：把衣服套在人身上<br /></li>
 <li>如何 judge 一張圖是生成的還是真實的<br /></li>
-<li>Pix2pix: 黑白照片轉彩色、畫輸廓轉照片(圖片)(Paired)、給照片轉 3D<br /></li>
+<li>Pix2pix: 黑白照片轉彩色、畫輪廓轉照片(圖片)(Paired)、給照片轉 3D<br /></li>
 <li>把同一張照片轉成各種畫家的畫風<br /></li>
-<li>Explaining and Harnessing Adverssaral Examples: Goodfellow<br />
-把一張圖片特意加上噪點，結果使的 AI 的判斷確認為其他圖<br />
+<li>Explaining and Harnessing Adversarial Examples: Goodfellow<br />
+把一張圖片特意加上噪點，結果使得 AI 的判斷確認為其他圖<br />
 後果：可能影響自駕車的安全&#x2026;..<br /></li>
 </ul>
 </div>
@@ -392,15 +504,15 @@
 <div id="text-footnotes">
 
 <div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
-<a href="https://www.books.com.tw/products/E050141335">AI無所不在的教來, Rule of the Robots</a>, P.248<br />
+<a href="https://www.books.com.tw/products/E050141335">AI無所不在的未來, Rule of the Robots</a>, P.248<br />
 </p></div></div>
 
 
 </div>
 </div></div>
 <div id="postamble" class="status">
-<p class="author">Author: Yung-Chin Yen</p>
-<p class="date">Created: 2025-07-15 Tue 15:28</p>
+<p class="author">Author: 顏永進</p>
+<p class="date">Created: 2026-02-14 Sat 20:28</p>
 </div>
 </body>
 </html>

@@ -2,16 +2,17 @@
 :ID:       82e219c3-6ca0-43b0-bb11-e3a8454f089d
 :END:
 #+title: 資料預處理
+#+AUTHOR: 顏永進
 
 #+INCLUDE: ../pdf.org
 #+TAGS: AI, Machine Learning
 #+OPTIONS: toc:2 ^:nil num:5
 #+OPTIONS: H:4
-#+PROPERTY: header-args :eval never-export
+#+PROPERTY: header-args :python :python "/Users/letranger/Dropbox/notes/roam/venv/bin/python3" :eval never-export
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/muse.css" />
 #+HTML_HEAD_EXTRA: <script src="../css/copy_code.js"></script>
 #+begin_export html
-<a href="https://hits.sh/letranger.github.io/AI/20221023130936-資料預處理.html"><img alt="Hits" align="right" src="https://hits.sh/letranger.github.io/AI/20221023130936-資料預處理.html.svg"/></a>
+<a href="https://letranger.github.io/AI/20221023130936-資料預處理.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20221023130936-資料預處理.html.svg"/></a>
 #+end_export
 
 #+latex:\newpage
@@ -58,12 +59,6 @@ print('test')
 #+RESULTS:
 : test
 
-進行數運模式運算之前，需要進行的數據預處理工作大致可分為以下幾點：
-1. 數據遺漏值處理
-1. 數據分類編碼
-1. 數據訓練集與測試集之分割
-1. 數據特徵選取
-
 * AI處理的資料
 如前所述，機器學習在訓練模型時會需使用龐大的資料集，這些資料集某種程度上就是我們常聽到的「大數據(Big Data)」。大數據與傳統資料在以下幾個方面有顯著差異：
 ** 資料量：
@@ -94,27 +89,33 @@ print('test')
 * 資料預處理
 在收集到所需的資料後，常會遇到各種資料不全、缺失的情況，因此需要對資料進行整理，以便後續的分析。在進行資料建模運算之前，需要進行的資料預處理工作大致可分為以下幾點：
 
-1. 資料遺漏值與異常值處理
+** 資料遺漏值與異常值處理
    對於資料中的缺失值或異常值，可以採取以下方法：
    - 刪除有遺漏值或異常值的樣本或特徵。
    - 用平均值、中位數、眾數等方法進行填補。
    - 對於異常值，可以選擇替代處理，以減少對模型的負面影響。
-2. 資料編碼
+** 資料編碼
    針對類別型資料進行編碼，常見的編碼方法有：
    - 標籤編碼（Label Encoding）：將類別資料轉換為數值標籤，適用於類別之間有順序性的情況。
    - 獨熱編碼（One-Hot Encoding）：將類別資料轉換為二進位表示，每個類別對應一個新特徵，適用於類別之間無順序性的情況。
    - 二元編碼（Binary Encoding）：對於類別數量較多的情況，二元編碼可以有效減少特徵數量，平衡編碼效率與模型複雜度。
-3. 資料標準化與正規化
+** 資料標準化與正規化
    - 對資料進行標準化或正規化，以便縮放資料範圍，確保所有特徵值在相似的數值範圍內，這樣有助於提升模型的訓練效果。
-4. 資料特徵選取
+   - 標準化（Standardization）：將資料轉換為均值為0、標準差為1的分布。     
+   - 正規化（Normalization）：將資料縮放到特定範圍內，通常是0到1之間。
+** 資料特徵選取
    - 根據資料集中的特徵對預測目標的影響程度，選擇保留有用的特徵。這可以透過統計方法或特徵重要性評估技術來實現。
-5. 資料擴增
-6. 資料縮減
+   - 特徵選取有助於減少模型的複雜度，提升模型的泛化能力，並且可以減少過擬合的風險。
+** 資料擴增
+   - 對於資料量不足的情況，可以使用資料擴增技術來增加訓練資料的多樣性，例如對圖像進行旋轉、翻轉等操作，或是對文本進行同義詞替換等方法。
+   - 資料擴增有助於提升模型的泛化能力，減少過擬合的風險，並且可以在有限的資料集上獲得更好的性能。
+** 資料縮減
    - 使用主成分分析（PCA）等方法來降低資料維度，減少運算量並保留重要資訊。
-7. 資料訓練集與測試集之分割
+   - 使用特徵選取方法來刪除不相關或冗餘的特徵，以提升模型的效率和性能。     
+** 資料訓練集與測試集之分割
    - 將資料集分為訓練集和測試集，以便進行模型訓練和性能評估。通常的分割合適比例為80%訓練集與20%測試集，或者70%與30%。
 
-以下的程式碼 *大部份* 都是 *簡單* 的pandas應用，如果你看不懂，表示你自已要惡補一下Pandas的課程，可以參看:
+以下的程式碼 *大部份* 都是 *簡單* 的pandas應用，如果你看不懂，表示你自己要惡補一下Pandas的課程，可以參看:
 - [[https://letranger.github.io/PythonCourse/Pandas.html][Pandas教學]]
 - [[https://leemeng.tw/practical-pandas-tutorial-for-aspiring-data-scientists.html][資料科學家的 pandas實戰手冊:掌握40個實用數據技巧]]
 - 其他的自己[[https://www.google.com/][Google]]
@@ -126,7 +127,7 @@ print('test')
 **** 檔案在/content裡
 ***** 先把下載的檔案拉到
 #+CAPTION: 將檔案上傳至Colab雲端硬碟
-#+LABEL:fig:Labl
+#+LABEL:fig:uploadFile
 #+name: fig:uploadFile
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
@@ -161,195 +162,214 @@ df = pd.read_csv('https://raw.githubusercontent.com/letranger/AI/refs/heads/gh-p
 print(df)
 #+end_src
 ** 識別、刪除遺漏值
-現實世界中可能會因各種原因導致數據缺失或遺漏(如問卷被刻意留白)，這些部份通常會以「空白」、「NaN」或「NULL」來取代。
-*** Emacs Baabel Virtual Environment for Python :noexport:
-虛擬環境名稱設定: venv
-#+begin_src shell -r -n :results output :exports both
-python3 -m venv /tmp/venv
-source /tmp/venv/bin/activate
-echo $VIRTUAL_ENV
-#+end_src
+現實世界中可能會因各種原因導致數據缺失或遺漏(如問卷被刻意留白、儀器當機沒量到)，這些部份通常會以「空白」、「NaN」或「NULL」來取代。
 
-#+RESULTS:
-: /tmp/venv
-
-#+BEGIN_SRC elisp
-(pyvenv-activate "/tmp/venv")
-(setq org-babel-python-command "/tmp/venv/bin/python3")
-#+END_SRC
-
-#+RESULTS:
-: /tmp/venv/bin/python3
+以下我們用一份全班健康檢查資料來示範。這份資料有6個欄位，其中「備註」欄是護理師用來寫觀察紀錄的，但顯然大家都懶得寫；另外張小美那天量到一半就跑去打排球，所以視力和段考平均都是空的。
 *** 查看資料集內容
-#+BEGIN_SRC python -r -n :async :results  output :exports both :session venv
-csv_data ="""A,B,C,D,E
- 1.0,,  2.0,  3.0, 4.0
- 5.0,,  6.0,, 8.0
-10.0,, 11.0, 12.0, 5.0
-9.9,,8.0, 12.0"""
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
+csv_data = """姓名,身高,體重,備註,視力,段考平均
+王小明,172,65,,1.0,78
+李小華,168,58,,0.8,82
+張小美,163,52,,,
+林阿強,175,80,,0.6,45
+陳小玲,155,48,,0.9,91"""
 
-import sys
 import pandas as pd
-
-# 讀入程式檔中的csv資料
 from io import StringIO
+
+# 讓中文欄名與內容對齊
+pd.set_option('display.unicode.ambiguous_as_wide', True)
+pd.set_option('display.unicode.east_asian_width', True)
+
 df = pd.read_csv(StringIO(csv_data))
 print(df)
 #+END_SRC
 
 #+RESULTS:
-: A   B     C     D    E
-: 0   1.0 NaN   2.0   3.0  4.0
-: 1   5.0 NaN   6.0   NaN  8.0
-: 2  10.0 NaN  11.0  12.0  5.0
-: 3   9.9 NaN   8.0  12.0  NaN
+#+begin_example
+   姓名  身高  體重 備註  視力  段考平均
+0  王小明   172    65  NaN   1.0      78.0
+1  李小華   168    58  NaN   0.8      82.0
+2  張小美   163    52  NaN   NaN       NaN
+3  林阿強   175    80  NaN   0.6      45.0
+4  陳小玲   155    48  NaN   0.9      91.0
+#+end_example
 
-雖然pd.read_csv是用來讀取網路上或本機端的csv檔，此處為了省去大家讀取d檔案的工作，我們以直接以字串模擬一個檔案出來，所以在讀取時要以下列的方式來讀取內容：
+雖然 =pd.read_csv= 是用來讀取網路上或本機端的csv檔，此處為了省去大家讀取檔案的工作，我們直接以字串模擬一個檔案出來，所以在讀取時要以下列的方式來讀取內容：
 #+begin_src python -r -n :results output :exports both
 pd.read_csv(StringIO(字串變數名稱))
 #+end_src
 *** 遺漏值的識別
-現在可以大概統計一下遺漏值
+現在可以大概統計一下遺漏值的分佈情況：
 #+BEGIN_SRC python -r -n :async :results output :exports both :session venv
-# 列出每行有的null個數
+# 列出每個欄位有幾個NaN
 print(df.isnull().sum())
+# 列出每筆資料有幾個NaN
 print(df.isnull().sum(axis=1))
 #+END_SRC
 
 #+RESULTS:
 #+begin_example
-A    0
-B    4
-C    0
-D    1
-E    1
+姓名        0
+身高        0
+體重        0
+備註        5
+視力        1
+段考平均    1
 dtype: int64
 0    1
-1    2
-2    1
-3    2
+1    1
+2    3
+3    1
+4    1
 dtype: int64
 #+end_example
+
+從統計結果可以看出：「備註」欄 5 筆全是 NaN（根本沒人寫），而張小美（第 2 筆）缺了 3 個值，是缺最多的。
 *** 刪除有遺漏值的記錄
 **** 刪除有遺失值的資料列
 #+BEGIN_SRC python -r -n :async :results output :exports both :session venv
-print('====刪掉有遺失值的列:df.dropna(axis=0)====')
+# 只要該列有任何NaN就整列刪掉
 tmpDf = df.dropna(axis=0)
 print(tmpDf)
 #+end_src
 
 #+RESULTS:
 : Empty DataFrame
-: Columns: [A, B, C, D, E]
+: Columns: [姓名, 身高, 體重, 備註, 視力, 段考平均]
 : Index: []
-**** 刪除有遺失值的資料行
+
+結果：全部刪光了！因為每一列都至少有「備註」是 NaN，所以 =dropna(axis=0)= 一刀切下去就什麼都不剩了。這就是為什麼不能無腦使用 dropna 的原因。
+**** 刪除有遺失值的資料欄
 #+BEGIN_SRC python -r -n :async :results output :exports both :session venv
-print('====刪掉有遺失值的欄:df.dropna(axis=1)====')
+# 只要該欄有任何NaN就整欄刪掉
 tmpDf = df.dropna(axis=1)
 print(tmpDf)
 #+end_src
 
 #+RESULTS:
-: ====刪掉有遺失值的欄:df.dropna(axis=1)====
-:       A     C
-: 0   1.0   2.0
-: 1   5.0   6.0
-: 2  10.0  11.0
-: 3   9.9   8.0
-**** 刪除整列為NaN者
+#+begin_example
+     姓名  身高  體重
+0  王小明   172    65
+1  李小華   168    58
+2  張小美   163    52
+3  林阿強   175    80
+4  陳小玲   155    48
+#+end_example
+
+只剩下姓名、身高、體重——因為只有這三欄完全沒有 NaN。備註、視力、段考平均都因為含有 NaN 而被砍掉了。
+**** 刪除整欄為NaN者
 #+BEGIN_SRC python -r -n :async :results output :exports both :session venv
-print('====刪除整欄為NaN者:df.dropna(how=\'all\')====')
+# 只刪除「整欄都是NaN」的欄位
 tmpDf = df.dropna(axis=1, how='all')
 print(tmpDf)
 #+end_src
 
 #+RESULTS:
-: ====刪除整欄為NaN者:df.dropna(how='all')====
-:       A     C     D    E
-: 0   1.0   2.0   3.0  4.0
-: 1   5.0   6.0   NaN  8.0
-: 2  10.0  11.0  12.0  5.0
-: 3   9.9   8.0  12.0  NaN
+#+begin_example
+     姓名  身高  體重  視力  段考平均
+0  王小明   172    65   1.0      78.0
+1  李小華   168    58   0.8      82.0
+2  張小美   163    52   NaN       NaN
+3  林阿強   175    80   0.6      45.0
+4  陳小玲   155    48   0.9      91.0
+#+end_example
+
+用 =how='all'=就只會刪掉「備註」這種完全沒人填的廢欄，視力和段考平均雖然有缺值但不是全空，所以保留下來了。
 **** 刪除有值個數低於thresh的列
 #+BEGIN_SRC python -r -n :async :results output :exports both :session venv
-print('====刪除有值個數低於thresh的列:df.dropna(thresh=4)====')
-tmpDf = df.dropna(thresh=4)
+# 只保留至少有5個非NaN值的列
+tmpDf = df.dropna(thresh=5)
 print(tmpDf)
 #+end_src
 
 #+RESULTS:
-: ====刪除有值個數低於thresh的列:df.dropna(thresh=4)====
-:       A   B     C     D    E
-: 0   1.0 NaN   2.0   3.0  4.0
-: 2  10.0 NaN  11.0  12.0  5.0
-**** 刪除特定行(如第C行)中有NaN之列
+#+begin_example
+     姓名  身高  體重  備註  視力  段考平均
+0  王小明   172    65   NaN   1.0      78.0
+1  李小華   168    58   NaN   0.8      82.0
+3  林阿強   175    80   NaN   0.6      45.0
+4  陳小玲   155    48   NaN   0.9      91.0
+#+end_example
+
+張小美（第 2 筆）只有 3 個有效值（姓名、身高、體重），不到門檻 5，所以被過濾掉了。其他人雖然備註也是 NaN，但其餘欄位都有值，所以保留下來。
+**** 刪除特定欄位
 #+BEGIN_SRC python -r -n :async :results output :exports both :session venv
-print('====刪除特定行(如第C行)中有NaN之列:df.dropna(columns=[\'C\'])====')
-tmpDf=df.drop(columns=['C'])
+# 直接刪掉「視力」這個欄位
+tmpDf = df.drop(columns=['視力'])
 print(tmpDf)
 #+END_SRC
 
 #+RESULTS:
-: ====刪除特定行(如第C行)中有NaN之列:df.dropna(columns=['C'])====
-:       A   B     D    E
-: 0   1.0 NaN   3.0  4.0
-: 1   5.0 NaN   NaN  8.0
-: 2  10.0 NaN  12.0  5.0
-: 3   9.9 NaN  12.0  NaN
+#+begin_example
+     姓名  身高  體重  備註  段考平均
+0  王小明   172    65   NaN      78.0
+1  李小華   168    58   NaN      82.0
+2  張小美   163    52   NaN       NaN
+3  林阿強   175    80   NaN      45.0
+4  陳小玲   155    48   NaN      91.0
+#+end_example
+
 雖然刪除包含遺漏值的數據似乎是個方便的方法，但終究可能會刪除過多的樣本，導致分析的結果並不可靠；或是因為刪除了特徵的時候，卻失去了重要的資訊。
 ** 填補遺漏值
+接下來用另一份純數值的健檢資料來示範填補遺漏值的各種方法。這份資料記錄了 5 位學生的身高、體重、視力、體溫和段考平均：
 *** 直接填零
-#+BEGIN_SRC python -r -n :async :results  output :exports both :session venv
-csv_data ="""A,B,C,D,E
-1.0,7.7, 2.0,  3.0, 4.0
-5.0,,  6.0,, 8.0
-10.0,, 11.0, 12.0, 5.0
-9.9,8.8,8.0, 12.0"""
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
+csv_data = """身高,體重,視力,體溫,段考平均
+172,65,1.0,36.5,78
+168,,0.8,,82
+163,52,1.2,36.8,
+175,80,,36.3,45
+155,48,0.9,37.2,91"""
 
-import sys
 import pandas as pd
-# python 2.7需進行unicode轉碼
-if (sys.version_info < (3, 0)):
-    csv_data = unicode(csv_data)
-# 讀入程式檔中的csv資料
 from io import StringIO
-df = pd.read_csv(StringIO(csv_data))
 
+df = pd.read_csv(StringIO(csv_data))
 tmpDf = df.fillna(0)
 print(tmpDf)
 #+end_src
 
 #+RESULTS:
-:       A    B     C     D    E
-: 0   1.0  7.7   2.0   3.0  4.0
-: 1   5.0  0.0   6.0   0.0  8.0
-: 2  10.0  0.0  11.0  12.0  5.0
-: 3   9.9  8.8   8.0  12.0  0.0
+#+begin_example
+   身高  體重  視力  體溫  段考平均
+0   172  65.0   1.0  36.5      78.0
+1   168   0.0   0.8   0.0      82.0
+2   163  52.0   1.2  36.8       0.0
+3   175  80.0   0.0  36.3      45.0
+4   155  48.0   0.9  37.2      91.0
+#+end_example
+
+填零雖然簡單，但顯然有問題——體溫 0 度和段考 0 分都不太合理。所以更常見的做法是用平均值來填補。
 *** 以平均值填補
 **** Python手動填補
-#+BEGIN_SRC python -r -n :async :results  output :exports both :session venv
+以「體溫」欄為例，用該欄的平均值 (36.7°C) 來填補缺失值：
+#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
 print(df)
-df['D'] = df['D'].fillna(df['D'].mean())
+df['體溫'] = df['體溫'].fillna(df['體溫'].mean())
 print(df)
 #+end_src
 
 #+RESULTS:
 #+begin_example
-      A    B     C     D    E
-0   1.0  7.7   2.0   3.0  4.0
-1   5.0  NaN   6.0   NaN  8.0
-2  10.0  NaN  11.0  12.0  5.0
-3   9.9  8.8   8.0  12.0  NaN
-      A    B     C     D    E
-0   1.0  7.7   2.0   3.0  4.0
-1   5.0  NaN   6.0   9.0  8.0
-2  10.0  NaN  11.0  12.0  5.0
-3   9.9  8.8   8.0  12.0  NaN
+   身高  體重  視力  體溫  段考平均
+0   172  65.0   1.0  36.5      78.0
+1   168   NaN   0.8   NaN      82.0
+2   163  52.0   1.2  36.8       NaN
+3   175  80.0   NaN  36.3      45.0
+4   155  48.0   0.9  37.2      91.0
+   身高  體重  視力  體溫  段考平均
+0   172  65.0   1.0  36.5      78.0
+1   168   NaN   0.8  36.7      82.0
+2   163  52.0   1.2  36.8       NaN
+3   175  80.0   NaN  36.3      45.0
+4   155  48.0   0.9  37.2      91.0
 #+end_example
-**** 以scikit-learn的impute填補
-最常見的「插補技術」之一為「平均插補」(mean imputation)，即，以整個特徵行的平均值來代替遺漏值。
+
+可以看到第 1 筆的體溫從 NaN 變成了 36.7（其他 4 人體溫的平均值），這比填 0 合理多了。
+**** 以scikit-learn的SimpleImputer填補
+上面的手動填補一次只能處理一個欄位。如果想要一次把所有欄位的缺失值都用該欄的平均值補上，可以用 scikit-learn 的 =SimpleImputer= ：
 #+BEGIN_SRC python -r -n :async :results output :exports both :session venv
-# impute missing values via the column mean
 from sklearn.impute import SimpleImputer
 import numpy as np
 
@@ -361,93 +381,112 @@ print(imputed_data)
 #+END_SRC
 
 #+RESULTS:
-:       A    B     C     D    E
-: 0   1.0  7.7   2.0   3.0  4.0
-: 1   5.0  NaN   6.0   9.0  8.0
-: 2  10.0  NaN  11.0  12.0  5.0
-: 3   9.9  8.8   8.0  12.0  NaN
-: [[ 1.          7.7         2.          3.          4.        ]
-:  [ 5.          8.25        6.          9.          8.        ]
-:  [10.          8.25       11.         12.          5.        ]
-:  [ 9.9         8.8         8.         12.          5.66666667]]
+#+begin_example
+   身高  體重  視力  體溫  段考平均
+0   172  65.0   1.0  36.5      78.0
+1   168   NaN   0.8  36.7      82.0
+2   163  52.0   1.2  36.8       NaN
+3   175  80.0   NaN  36.3      45.0
+4   155  48.0   0.9  37.2      91.0
+[[172.     65.      1.     36.5    78.   ]
+ [168.     61.25    0.8    36.7    82.   ]
+ [163.     52.      1.2    36.8    74.   ]
+ [175.     80.      0.975  36.3    45.   ]
+ [155.     48.      0.9    37.2    91.   ]]
+#+end_example
 
-scikit-learn早期版本的填補類別為Imputer，屬於 transformer 類別，主要的工作是做「數據轉換」，這些 estimator 有兩種基本方法：fit 與 transform，fit 方法是用來進行參數學習。
-
-在新的版本中，SimpleImputer 已經被拿來取代以前的 sklearn.preprocessing.Imputer，預設的strategy為mean，其他strategy請參關[[https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html][scikit-learn官網]]。
+=SimpleImputer= 屬於 scikit-learn 的 transformer 類別，主要的工作是做「數據轉換」，有兩種基本方法：=fit= 用來學習參數（如計算每欄的平均值），=transform= 用來實際執行轉換。
 ***** SimpleImputer 基本語法：
-#+BEGIN_SRC python -r -n :async :results output :exports both :session venv
+#+BEGIN_SRC python -r -n :results output :exports both
 from sklearn.impute import SimpleImputer
 
 # 建立 SimpleImputer 物件
 imputer = SimpleImputer(strategy='mean')
 
-# 對數據進行學習
+# 對數據進行學習（計算每欄平均值）
 imputer.fit(data)
 
-# 對數據進行轉換，填補遺漏值
+# 對數據進行轉換，用學到的平均值填補遺漏值
 filled_data = imputer.transform(data)
 #+end_src
 其中的strategy可以是
-- mean：使用每一列的均值填補缺失值（預設）。
-- median：使用每一列的中位數填補缺失值。
-- most_frequent：使用每一列最常出現的值填補缺失值。
-- constant：使用一個固定值來填補缺失值，需指定 fill_value。
-***** SimpleImputer範例
+- =mean= ：使用每一欄的均值填補缺失值（預設）。
+- =median= ：使用每一欄的中位數填補缺失值。
+- =most_frequent= ：使用每一欄最常出現的值填補缺失值。
+- =constant= ：使用一個固定值來填補缺失值，需指定 =fill_value= 。
+
+其他strategy請參閱[[https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html][scikit-learn官網]]。
+***** SimpleImputer各種strategy範例
+以下用同一份健檢資料來比較不同 strategy 的效果：
+****** 使用均值 (mean) 來填補：
 #+BEGIN_SRC python -r -n :async :results output :exports both :session venv
-import numpy as np
 from sklearn.impute import SimpleImputer
-
-# 建立帶有遺漏值的數據
-data = np.array([[1, 2, np.nan], [4, np.nan, 6], [7, 8, 9]])
-
-# 使用均值填補遺漏值
 imputer = SimpleImputer(strategy='mean')
-imputer.fit(data)
-filled_data = imputer.transform(data)
-
+filled_data = imputer.fit_transform(df.values)
 print(filled_data)
-
 #+end_src
 
 #+RESULTS:
-: [[1.  2.  7.5]
-:  [4.  5.  6. ]
-:  [7.  8.  9. ]]
+#+begin_example
+[[172.     65.      1.     36.5    78.   ]
+ [168.     61.25    0.8    36.7    82.   ]
+ [163.     52.      1.2    36.8    74.   ]
+ [175.     80.      0.975  36.3    45.   ]
+ [155.     48.      0.9    37.2    91.   ]]
+#+end_example
+
+體重缺失值填入 61.25（其他 4 人的平均體重），視力填入 0.975（其他 4 人的平均視力）。
 ****** 使用中位數 (median) 來填補：
 #+BEGIN_SRC python -r -n :async :results output :exports both :session venv
 imputer = SimpleImputer(strategy='median')
-filled_data = imputer.fit_transform(data)
+filled_data = imputer.fit_transform(df.values)
 print(filled_data)
 #+end_src
 
 #+RESULTS:
-: [[1.  2.  7.5]
-:  [4.  5.  6. ]
-:  [7.  8.  9. ]]
+#+begin_example
+[[172.    65.     1.    36.5   78.  ]
+ [168.    58.5    0.8   36.65  82.  ]
+ [163.    52.     1.2   36.8   80.  ]
+ [175.    80.     0.95  36.3   45.  ]
+ [155.    48.     0.9   37.2   91.  ]]
+#+end_example
 
+中位數比均值更不容易受到極端值影響。例如段考平均的中位數是 80，而均值是 74。
 ****** 使用最常出現的值 (most_frequent) 來填補：
 #+BEGIN_SRC python -r -n :async :results output :exports both :session venv
 imputer = SimpleImputer(strategy='most_frequent')
-filled_data = imputer.fit_transform(data)
+filled_data = imputer.fit_transform(df.values)
 print(filled_data)
 #+end_src
 
 #+RESULTS:
-: [[1. 2. 6.]
-:  [4. 2. 6.]
-:  [7. 8. 9.]]
+#+begin_example
+[[172.   65.    1.   36.5  78. ]
+ [168.   48.    0.8  36.3  82. ]
+ [163.   52.    1.2  36.8  45. ]
+ [175.   80.    0.8  36.3  45. ]
+ [155.   48.    0.9  37.2  91. ]]
+#+end_example
 
+=most_frequent= 適合類別資料（如血型、性別），用在數值資料上就不太合理了——每個值都只出現一次，所以它會挑最小的來填。
 ****** 使用固定值 (constant) 來填補：
 #+BEGIN_SRC python -r -n :async :results output :exports both :session venv
 imputer = SimpleImputer(strategy='constant', fill_value=-1)
-filled_data = imputer.fit_transform(data)
+filled_data = imputer.fit_transform(df.values)
 print(filled_data)
 #+end_src
 
 #+RESULTS:
-: [[ 1.  2. -1.]
-:  [ 4. -1.  6.]
-:  [ 7.  8.  9.]]
+#+begin_example
+[[172.   65.    1.   36.5  78. ]
+ [168.   -1.    0.8  -1.   82. ]
+ [163.   52.    1.2  36.8  -1. ]
+ [175.   80.   -1.   36.3  45. ]
+ [155.   48.    0.9  37.2  91. ]]
+#+end_example
+
+用 -1 這種明顯不可能出現的值來標記「此處原本是缺失的」，方便後續做特殊處理。
 *** 時間序列資料的插補
 假設我們有一些 PM2.5 感測器在全台南市地區，每 30 分鐘偵測一次，共有 20 支感測器進行了一段時間的測量，其中部分感測器在特定時間失靈，導致一些值遺失。
 **** 線性插補
@@ -509,7 +548,7 @@ Sensor1  Sensor2  Sensor3  ...  Sensor18  Sensor19  Sensor20
 [11 rows x 20 columns]
 #+end_example
 **** [課堂練習]線性插補的兩端缺失問題 :TNFSH:
-上面的插補似乎無法解決 *資料列的頭尾缺失* 問題，請想辧法解決這個問題，你可以
+上面的插補似乎無法解決 *資料列的頭尾缺失* 問題，請想辦法解決這個問題，你可以
 1. 通靈
 2. Google
 3. 冥想
@@ -529,8 +568,8 @@ df_pm25 = df_pm25.interpolate(method='linear', axis=1)
 print('========== 使用線性插補處理後的資料 ==========')
 print(df_pm25)
 
-# 使用前後時間平均值進行插補
-df_pm25 = df_pm25.fillna(method='bfill', axis=1)
+# 使用後向填充來處理頭尾缺失
+df_pm25 = df_pm25.bfill(axis=1)
 #
 print('========== 使用最近的有效值填補頭尾缺失後的資料 ==========')
 print(df_pm25)
@@ -554,7 +593,6 @@ print(df_pm25)
 10      NaN     47.0     41.0  ...     47.00     50.00      50.0
 
 [11 rows x 20 columns]
-<string>:16: FutureWarning: DataFrame.fillna with 'method' is deprecated and will raise in a future version. Use obj.ffill() or obj.bfill() instead.
 ========== 使用最近的有效值填補頭尾缺失後的資料 ==========
     Sensor1  Sensor2  Sensor3  ...  Sensor18  Sensor19  Sensor20
 0      35.0     40.0     30.0  ...     40.67     42.33      44.0
@@ -571,14 +609,21 @@ print(df_pm25)
 
 [11 rows x 20 columns]
 #+end_example
-***** 語法說明 :noexport:
-在 Pandas 中，bfill 是 "backward fill" 的縮寫，用來向後填充缺失值。相對地，向前填充缺失值的方法是 ffill，即 "forward fill"。
-- ffill（前向填充）
+***** ffill 與 bfill 語法說明 :noexport:
+在 Pandas 中，=bfill()= 是 "backward fill" 的縮寫，用來向後填充缺失值。相對地，向前填充缺失值的方法是 =ffill()= ，即 "forward fill"。
+- =ffill()= （前向填充）
   - 作用: 使用前一個非缺失值來填充缺失值。
   - 應用場景: 適合需要根據上一個觀測值推斷當前缺失值的情況，例如時間序列數據。
-- bfill（後向填充）
+- =bfill()= （後向填充）
   - 作用: 使用下一個非缺失值來填充缺失值。
   - 應用場景: 當希望根據下一個觀測值來推斷當前缺失值時使用。
+
+#+begin_quote
+*語法變更提醒*
+
+早期版本的 Pandas 使用 =fillna(method='ffill')= 和 =fillna(method='bfill')= 來進行前/後向填充，這種寫法比較直覺——因為 =fillna= 就是「填補空值」的意思，搭配 =method= 參數來指定填補方式。但從 Pandas 2.0 起，這種寫法已被標記為 deprecated（棄用），未來版本將會報錯。新的寫法改為直接呼叫 =df.ffill()= 和 =df.bfill()= ，更簡潔也更明確。
+#+end_quote
+
 #+BEGIN_SRC python -r -n :async :results output :exports both :session venv
 import pandas as pd
 import numpy as np
@@ -587,11 +632,11 @@ import numpy as np
 data = {'A': [1, np.nan, 3, np.nan, 5]}
 df = pd.DataFrame(data)
 
-# 前向填充
-df_ffill = df.fillna(method='ffill')
+# 前向填充（舊寫法：df.fillna(method='ffill')，已棄用）
+df_ffill = df.ffill()
 
-# 後向填充
-df_bfill = df.fillna(method='bfill')
+# 後向填充（舊寫法：df.fillna(method='bfill')，已棄用）
+df_bfill = df.bfill()
 
 print("原始資料:")
 print(df)
@@ -603,8 +648,6 @@ print(df_bfill)
 
 #+RESULTS:
 #+begin_example
-<string>:10: FutureWarning: DataFrame.fillna with 'method' is deprecated and will raise in a future version. Use obj.ffill() or obj.bfill() instead.
-<string>:13: FutureWarning: DataFrame.fillna with 'method' is deprecated and will raise in a future version. Use obj.ffill() or obj.bfill() instead.
 原始資料:
      A
 0  1.0
@@ -634,15 +677,15 @@ print(df_bfill)
 南一中網路書店即將開張，為了處理龐大的書單資料，資訊科教師們很無恥的把書籍資料登錄工作當成作業分派給一年級的修課學生，所謂團結力量大，一份不太可靠的[[file:Downloads/403books.csv][書目資料]]就這麼完成了。
 
 這份[[file:Downloads/403books.csv][書目資料]]共計271,350筆，每筆資料有以下9個欄位
-- 'ISBN'
-- 'Book-Title'
-- 'Book-Author'
-- 'Year-Of-Publication'
-- 'Publisher'
-- 'Image-URL-S'
-- 'Image-URL-M'
-- 'Image-URL-L'
-- 'Book-Price'
+- ISBN
+- Book-Title
+- Book-Author
+- Year-Of-Publication
+- Publisher
+- Image-URL-S
+- Image-URL-M
+- Image-URL-L
+- Book-Price
 
 然而，大概是因為作者群都是被迫做白工的關係，這份資料有不少缺失值與錯誤資料，錯誤的類型大概有以下幾類：
 1. 缺失: 就是該欄位完全沒有值
@@ -665,7 +708,7 @@ print(df_bfill)
 1. 列出修正(刪除缺失值)後的資料筆數
 1. 列出2000年出版的書籍數量
 1. 列出作者中有Bruce的書籍數量
-1. 列出 500<=書價<=800 的書籍數量
+1. 列出 800<=書價<=1000 的書籍數量
 1. 列出平均書價
 *** 參考答案
 整份colab的程式碼要能一次執行並輸出以下結果(不能直接print我給的答案...)
@@ -754,8 +797,8 @@ df.loc[m, ['Book-Price']] = [100]
 
 #print(df.describe())
 
-# ==========作業輪出結果
-# 1. 列出條正後的資料筆數
+# ==========作業輸出結果
+# 1. 列出修正後的資料筆數
 print('可用資料數:',len(df))
 # 2. 查詢2000年出版了幾本書
 m = (df['Year-Of-Publication'] == 2000)
@@ -790,471 +833,6 @@ min            1376.000000     100.000000
 max            2024.000000    1000.000000
 #+end_example
 
-* 資料間的關係
-找出特徵值間的差異與相似性是機器學習中非常重要的工作。
-** 兩點間的距離
-兩種常見的特徵距離計算方式:曼哈頓距離及歐幾里得距離，以一個城市中的兩個地標為例(如圖[[fig:feature-distance]]中的兩個黑點)。
-
-#+CAPTION: 城市中的兩個地標
-#+LABEL:fig:Labl
-#+name: fig:feature-distance
-#+ATTR_LATEX: :width 200
-#+ATTR_ORG: :width 200
-#+ATTR_HTML: :width 300
-[[file:images/資料間的關係/2024-02-02_13-46-36_2024-02-02_13-20-54.png]]
-
-*** 曼哈頓距離（Manhattan distance）
-在如圖[[fig:feature-distance]]這樣的棋盤式街道的城式中，要由點(1,1)走到(7,7)的最簡單方式是先往上直走到(1,7)，再右轉直走到(7,7)，這便是曼哈頓距離，這段距離為 \(|1-7|+|1-7| \)，公式為
-$$ \sum_{i=1}^n|x_i-y_i| $$
-*** 歐幾里得距離（Euclidian distance）
-#+CAPTION: Numbus 2000
-#+LABEL:fig:Labl
-#+name: fig:numbus2000
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 400
-[[file:images/資料間的關係/2024-02-02_14-05-00_2024-02-02_14-03-31.png]]
-
-如果我們肯花美金499[fn:4]買到[[https://cinereplicas.com/products/harry-potter-nimbus-2000-broom-2019-edition][Nimbus 2000]]，那我們就能實踐「直線是兩點間最短距離」這個法則，此時圖[[fig:feature-distance]]中由點(1,1)到點(7,7)的矩離就變成\( \sqrt{(1-7)^2+(1-7)^2} \)，公式為
-$$ \sqrt{\sum_{i=1}^n(x_i-y_i)^2 } $$
-*** [課堂練習]能力相似度 :TNFSH:
-上述計算方式貌似沒什麼問題，但如果今天的問題不是二維地圖中的兩個點，而是：
-- 計算兩個人身材的相似度:特徵值為身高、體重、體脂率[fn:5]
-- 計算兩個學生程式設計能力的差異: 特徵值為APCS觀念題分數、APCS實作題分數[fn:6]、一年級程式設計學期分數
-
-我們還能用同樣的方式來計算嗎？
-
-以下是5位學生的程式設計能力資料(特徵值為APCS觀念題分數、APCS實作題分數、一年級程式設計學期分數)，請問那一位學生與你的能力(50, 300, 86)最為接近?
-- A: 70, 340, 84
-- B: 60, 310, 89
-- C: 50, 280, 90
-- D: 40, 320, 78
-- E: 91, 310, 99
-**** solution :noexport:
-***** 原始資料
-#+begin_src python -r -n :results output :exports both
-import numpy as np
-orig = [[70, 340, 84], [58, 318, 76], [54, 279, 85], [40, 320, 78], [91, 310, 99]]
-sc = np.array(orig)
-me = np.array([50, 300, 86])
-for s in sc:
-    dist = np.sqrt(np.sum(np.square(s - me)))
-    print('ED:',dist)
-for s in sc:
-    dist = np.sqrt(np.sum(abs(s - me)))
-    print('MD:',dist)
-#+end_src
-
-#+RESULTS:
-#+begin_example
-ED: 44.76605857119878
-ED: 22.090722034374522
-ED: 21.400934559032695
-ED: 23.748684174075834
-ED: 44.15880433163923
-MD: 7.874007874011811
-MD: 6.0
-MD: 5.0990195135927845
-MD: 6.164414002968976
-MD: 8.0
-#+end_example
-***** 標準化
-#+begin_src python -r -n :results output :exports both
-import numpy as np
-from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import MinMaxScaler
-
-orig = [[70, 340, 84], [58, 318, 76], [54, 279, 85], [40, 320, 78], [91, 310, 99]]
-me = [50, 300, 86]
-orig.append(me)
-scalsc = []
-sc = np.array(orig)
-stdsc = StandardScaler()
-for i in range(len(sc[0])):
-    scalsc.append(stdsc.fit_transform(sc)[:,i])
-scalsc = np.array(scalsc).transpose()
-
-for s in scalsc:
-    dist = np.sqrt(np.sum(np.square(s - scalsc[5, :])))
-    print(s, 'ED:',dist)
-for s in scalsc:
-    dist = np.sqrt(np.sum(abs(s - scalsc[5:,])))
-    print('MD:',dist)
-#+end_src
-
-#+RESULTS:
-#+begin_example
-ED: 2.4716117475041277
-ED: 1.729572721531174
-ED: 1.1525315662800393
-ED: 1.6376819924249435
-ED: 3.1123821199274815
-ED: 0.0
-MD: 1.9040179292551567
-MD: 1.6739662071123351
-MD: 1.224091723377491
-MD: 1.6614327764060297
-MD: 2.1917020067767887
-MD: 0.0
-#+end_example
-*** 進階閱讀
-- [[https://kknews.cc/zh-tw/code/v3laxal.html][python 各類距離公式實現]]
-- [[https://www.pinecone.io/learn/vector-similarity/][Vector Similarity Explained]]
-** 兩個向量間的距離
-以下為三個學生的國文、數學、英文三科成績，哪兩個學生的學業能力較為接近?
-- James: 80, 90, 70
-- Ruby: 90, 80, 60
-- Vanessa: 90, 70, 90
-
-為了回答上述問題，我們可以將學生的各科成績當成vector(如圖[[fig:3scores]])，我們的問題就變成：哪兩個vector更為相似? 三個學生的成績向量分佈如下：
-#+begin_src python -r -n :results output :exports both
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-import numpy as np
-
-plt.rcParams['font.sans-serif'] = ['Arial Unicode MS'] # 步驟一（替換系統中的字型，這裡用的是Mac OSX系統）
-plt.rcParams['axes.unicode_minus'] = False  # 步驟二（解決座標軸負數的負號顯示問題）
-
-def setup_3d_axes():
-    ax = plt.axes(projection='3d')
-    ax.view_init(azim=-105, elev=20)
-    ax.set_xlabel('國文')
-    ax.set_ylabel('英文')
-    ax.set_zlabel('數學')
-    ax.set_xlim(0, 100)
-    ax.set_ylim(0, 100)
-    ax.set_zlim(0, 100)
-    return ax
-
-ax = setup_3d_axes()
-
-# plot the vector (3, 2, 5)
-origin = np.zeros((3, 1))
-point = np.array([[80, 90, 70]]).T
-vector = np.hstack([origin, point])
-ax.plot(*vector, color='r', label='James')
-#ax.plot(*point, color='k', marker='o')
-
-# project the vector onto the x,y plane and plot it
-xy_projection_matrix = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 0]])
-projected_point = xy_projection_matrix @ point
-projected_vector = xy_projection_matrix @ vector
-
-point = np.array([[90, 80, 60]]).T
-vector = np.hstack([origin, point])
-ax.plot(*vector, color='b', label='Ruby')
-#ax.plot(*point, color='k', marker='o')
-
-# project the vector onto the x,y plane and plot it
-xy_projection_matrix = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 0]])
-projected_point = xy_projection_matrix @ point
-projected_vector = xy_projection_matrix @ vector
-
-point = np.array([[90, 70, 90]]).T
-vector = np.hstack([origin, point])
-ax.plot(*vector, color='g', label='Vanessa')
-#ax.plot(*point, color='k', marker='o')
-
-# project the vector onto the x,y plane and plot it
-xy_projection_matrix = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 0]])
-projected_point = xy_projection_matrix @ point
-projected_vector = xy_projection_matrix @ vector
-
-ax.legend()
-plt.legend()
-plt.savefig('images/healthCondition.png', dpi=300)
-#+end_src
-#+RESULTS:
-#+CAPTION: 三個學生的成績向量
-#+LABEL:fig:Labl
-#+name: fig:3scores
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
-[[file:images/healthCondition.png]]
-
-如何計算? 有以下三種方式：歐幾里得距離、餘弦相似度、向量內積(如圖[[fig:vecsim]])[fn:7]。
-#+CAPTION: Vector Similarity
-#+LABEL:fig:Labl
-#+name: fig:vecsim
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
-[[file:images/資料間的關係/2024-02-03_17-40-18_2024-02-03_17-39-29.png]]
-*** 歐幾里得距離
-#+CAPTION: 歐幾里得距離
-#+LABEL:fig:Labl
-#+name: fig:Name
-#+ATTR_LATEX: :width 200
-#+ATTR_ORG: :width 200
-#+ATTR_HTML: :width 300
-[[file:images/資料間的關係/2024-02-03_17-48-03_2024-02-03_17-47-50.png]]
-
-多維空間中兩個向量之間的直線距離，距離越近越相似。歐幾里得距離演算法的優點是可以反映向量的絕對距離，適用於需要考慮向量長度的相似性計算。例如推薦系統中，需要根據使用者的歷史行為來推薦相似的商品，這時就需要考慮使用者的歷史行為的數量，而不僅僅是使用者的歷史行為的相似度[fn:8]。
-
-- \( a: (a_1, a_2, \dots , a_n)\)
-- \( b: (b_1, b_2, \dots , b_n)\)
-計算兩向量a, b歐幾里得距離的方式為: \( d(a,b) = \sqrt{(a_1-b_1)^2 + (a_2-b_2)^2 + \dots + (a_n-b_n)^2}\)
-**** Python手刻 :noexport:
-#+begin_src python -r -n :results output :exports both
-import math
-
-# 定義三個人的分數
-James = [80, 90, 70]
-Ruby = [90, 80, 60]
-Vanessa = [90, 70, 90]
-
-# 計算歐幾里得距離的函數
-def euclidean_distance(a, b):
-    #sum_squared_diff = sum((x - y) ** 2 for x, y in zip(a, b))
-    sum_squared_diff = 0
-    for x, y in zip(a, b):
-        sum_squared_diff += (x - y) ** 2
-    return math.sqrt(sum_squared_diff)
-
-# 計算每對之間的距離
-distance_James_Ruby = euclidean_distance(James, Ruby)
-distance_James_Vanessa = euclidean_distance(James, Vanessa)
-distance_Ruby_Vanessa = euclidean_distance(Ruby, Vanessa)
-
-# 輸出結果
-print(f"James 和 Ruby 之間的歐幾里得距離: {distance_James_Ruby}")
-print(f"James 和 Vanessa 之間的歐幾里得距離: {distance_James_Vanessa}")
-print(f"Ruby 和 Vanessa 之間的歐幾里得距離: {distance_Ruby_Vanessa}")
-#+end_src
-**** Numpy :noexport:
-***** 方法一
-#+begin_src python -r -n :results output :exports both
-import numpy as np
-
-# 定義三個人的分數
-James = np.array([80, 90, 70])
-Ruby = np.array([90, 80, 60])
-Vanessa = np.array([90, 70, 90])
-
-# 計算歐幾里得距離的函數
-def euclidean_distance(a, b):
-    return np.sqrt(np.sum((a - b) ** 2))
-
-# 計算每對之間的距離
-distance_James_Ruby = euclidean_distance(James, Ruby)
-distance_James_Vanessa = euclidean_distance(James, Vanessa)
-distance_Ruby_Vanessa = euclidean_distance(Ruby, Vanessa)
-
-# 輸出結果
-print(f"James 和 Ruby 之間的歐幾里得距離: {distance_James_Ruby}")
-print(f"James 和 Vanessa 之間的歐幾里得距離: {distance_James_Vanessa}")
-print(f"Ruby 和 Vanessa 之間的歐幾里得距離: {distance_Ruby_Vanessa}")
-#+end_src
-***** 方法二
-範例
-#+begin_src python -r -n :results output :exports both
-import numpy as np
-
-point1 = np.array([1, 2])
-point2 = np.array([4, 6])
-
-# 計算每個維度的平方差
-squared_diff = np.square(point1 - point2)
-
-# 將平方差加總後取平方根
-distance = np.sqrt(np.sum(squared_diff))
-
-print(f"歐幾里得距離: {distance}")
-
-#+end_src
-做法
-#+begin_src python -r -n :results output :exports both
-import numpy as np
-
-# 定義三個人的分數
-James = np.array([80, 90, 70])
-Ruby = np.array([90, 80, 60])
-Vanessa = np.array([90, 70, 90])
-
-# 計算每對之間的距離
-distance_James_Ruby = np.sqrt(np.sum(np.square(James - Ruby)))
-distance_James_Vanessa = np.sqrt(np.sum(np.square(James - Vanessa)))
-distance_Ruby_Vanessa = np.sqrt(np.sum(np.square(Ruby - Vanessa)))
-
-# 輸出結果
-print(f"James 和 Ruby 之間的歐幾里得距離: {distance_James_Ruby}")
-print(f"James 和 Vanessa 之間的歐幾里得距離: {distance_James_Vanessa}")
-print(f"Ruby 和 Vanessa 之間的歐幾里得距離: {distance_Ruby_Vanessa}")
-#+end_src
-*** 餘弦相似度(Cosine Similarity)
-#+CAPTION: 餘弦相似度
-#+LABEL:fig:Labl
-#+name: fig:Name
-#+ATTR_LATEX: :width 200
-#+ATTR_ORG: :width 200
-#+ATTR_HTML: :width 300
-[[file:images/資料間的關係/2024-02-03_17-50-17_2024-02-03_17-50-07.png]]
-
-兩個向量的夾角越小越相似，比較兩個向量的餘弦值進行比較，夾角越小，餘弦值越大。餘弦相似度對向量的長度不敏感，只關注向量的方向，因此適用於高維向量的相似性計算。例如語義搜尋和文件分類[fn:8]。當兩個向量的方向重合時夾角餘弦取最大值1，當兩個向量的方向完全相反夾角餘弦取最小值-1。
-
-- \( a: (a_1, a_2, \dots , a_n)\)
-- \( b: (b_1, b_2, \dots , b_n)\)
-計算兩向量a, b餘弦相似度的方式為: \( sim(a,b) = \frac{a \cdot b}{||a| \cdot |b||} = \frac{ \sum\limits_{i=1}^n a_i \times b_i}{\sqrt{\sum\limits_{i=1}^na_i^2} \times \sqrt{\sum\limits_{i=1}^nb_i^2}} \)
-**** Dot Product
-#+CAPTION: 向量內積
-#+LABEL:fig:Labl
-#+name: fig:Name
-#+ATTR_LATEX: :width 200
-#+ATTR_ORG: :width 200
-#+ATTR_HTML: :width 300
-[[file:images/資料間的關係/2024-02-03_17-49-28_2024-02-03_17-49-09.png]]
-
-一種計算向量之間相似度的度量演算法，它計算兩個向量之間的點積（內積），所得值越大越與搜尋值相似[fn:8]。
-
-- \( a: (a_1, a_2, \dots , a_n)\)
-- \( b: (b_1, b_2, \dots , b_n)\)
-計算兩向量a, b內積的方式為: \( a \cdot b =  a_1b_1 + a_2b_2 + \dots + a_nb_n \)
-或是
-$$ a \cdot b = |a||b| \cos \alpha $$
-*** 歐幾里得距離實作
-有了公式就可以自己用你苦學了半年的Python+高一數學來手刻程式，或是呼叫其他函式庫來計算。
-**** Python手刻
-:PROPERTIES:
-:ID:       24a2b357-9306-451d-a97a-683ed9e1b140
-:END:
-#+begin_src python -r -n :results output :exports both
-import math
-
-def cosine_similarity(v1,v2):
-    sumxx, sumxy, sumyy = 0, 0, 0
-    for i in range(len(v1)):
-        x = v1[i]; y = v2[i]
-        sumxx += x*x
-        sumyy += y*y
-        sumxy += x*y
-    return sumxy/math.sqrt(sumxx*sumyy)
-
-James = [80, 90, 70]
-Ruby = [90, 80, 60]
-Vanessa = [90, 70, 90]
-JR_sim = cosine_similarity(James, Ruby)
-RV_sim = cosine_similarity(Ruby, Vanessa)
-JV_sim = cosine_similarity(James, Vanessa)
-
-print('James v.s. Ruby:', JR_sim)
-print('Ruby v.s. Vanessa:', RV_sim)
-print('James v.s. Vanessa:', JV_sim)
-#+end_src
-
-#+RESULTS:
-: James v.s. Ruby: 0.9925966195847843
-: Ruby v.s. Vanessa: 0.977356154645257
-: James v.s. Vanessa: 0.978640304032486
-
-**** Numpy
-#+begin_src python -r -n :results output :exports both
-from numpy import dot
-from numpy.linalg import norm
-
-James = [80, 90, 70]
-Ruby = [90, 80, 60]
-Vanessa = [90, 70, 90]
-JR_sim = dot(James, Ruby)/(norm(James)*norm(Ruby))
-RV_sim = dot(Ruby, Vanessa)/(norm(Ruby)*norm(Vanessa))
-JV_sim = dot(James, Vanessa)/(norm(James)*norm(Vanessa))
-
-print('James v.s. Ruby:', JR_sim)
-print('Ruby v.s. Vanessa:', RV_sim)
-print('James v.s. Vanessa:', JV_sim)
-#+end_src
-
-#+RESULTS:
-: James v.s. Ruby: 0.9925966195847841
-: Ruby v.s. Vanessa: 0.9773561546452569
-: James v.s. Vanessa: 0.9786403040324858
-*** 餘弦相似度實作
-**** SciPy
-#+begin_src python -r -n :results output :exports both
-from scipy import spatial
-
-James = [80, 90, 70]
-Ruby = [90, 80, 60]
-Vanessa = [90, 70, 90]
-JR_sim = 1 - spatial.distance.cosine(James, Ruby)
-RV_sim = 1 - spatial.distance.cosine(Ruby, Vanessa)
-JV_sim = 1 - spatial.distance.cosine(James, Vanessa)
-
-print('James v.s. Ruby:', JR_sim)
-print('Ruby v.s. Vanessa:', RV_sim)
-print('James v.s. Vanessa:', JV_sim)
-#+end_src
-
-#+RESULTS:
-: James v.s. Ruby: 0.9925966195847843
-: Ruby v.s. Vanessa: 0.977356154645257
-: James v.s. Vanessa: 0.978640304032486
-** [課堂作業]曼哈頓距離
-- 參考前節[歐幾里得距離實作]
-- 自行Google曼哈頓距離的定義
-- 計算以下三人兩兩間的距離，找出能力最接近的2人
-#+begin_src python -r -n :results output :exports both
-# 定義三個人的分數
-James = [80, 90, 70]
-Ruby = [90, 80, 60]
-Vanessa = [90, 70, 90]
-#+end_src
-*** solution :noexport:
-#+begin_src python -r -n :results output :exports both
-import math
-
-def cosine_similarity(v1,v2):
-    sumxx, sumxy, sumyy = 0, 0, 0
-    for i in range(len(v1)):
-        x = v1[i]; y = v2[i]
-        sumxx += x*x
-        sumyy += y*y
-        sumxy += x*y
-    return sumxy/math.sqrt(sumxx*sumyy)
-
-James = [80, 90, 70]
-Ruby = [90, 80, 60]
-Vanessa = [90, 70, 90]
-JR_sim = cosine_similarity(James, Ruby)
-RV_sim = cosine_similarity(Ruby, Vanessa)
-JV_sim = cosine_similarity(James, Vanessa)
-
-print('James v.s. Ruby:', JR_sim)
-print('Ruby v.s. Vanessa:', RV_sim)
-print('James v.s. Vanessa:', JV_sim)
-#+end_src
-** 其他應用
-計算向量間的距離不僅可以比較上述以數值呈現的特徵，也能比較看起來並不是數值的特徵，例如：文字。例如，如何比較這幾個單字間的相似性：lion, dog, cat, love, apple, NYC[fn:9]。
-
-如圖[[fig:nlpsim]][fn:9]，我們可以由三個角度(animalness, petness, cityness)來賦予每個單字一個數值，那麼就可以利用同樣的方式來比較不同單字間的相似性，這就是自然語言處理的基本原理。
-
-#+CAPTION: 不同單字間的相似性
-#+LABEL:fig:Labl
-#+name: fig:nlpsim
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 400
-[[file:images/資料間的關係/2024-02-03_19-07-07_2024-02-03_19-07-00.png]]
-** [課堂作業]誰和我的能力最接近 :TNFSH:
-*** 說明
-以下是5位學生的程式設計能力資料(特徵值為APCS觀念題分數、APCS實作題分數、一年級程式設計學期分數)，請問那一位學生與你的能力(50, 300, 86)最為接近?
-#+begin_quote
-A: 70, 340, 84
-B: 60, 310, 89
-C: 50, 280, 90
-D: 40, 320, 78
-E: 91, 310, 99
-#+end_quote
-*** 要求
-- 找出與你的能力最相似的那位學生編號
-- 你可以完全用程式自動輸出，也可以用程式計算你與每個人的相似度後再人工輸出，但是不能以[[color:orange][通靈]]的方式直接輸出結果
-#+begin_src python -r -n :results output :exports both
-# 這是免費贈送的讀檔code,你不一定要用numpy,也可以使用python來計算
-import numpy as np
-
-scores = [[70, 340, 84], [58, 318, 76], [54, 279, 85], [40, 320, 78], [91, 310, 99]]
-#+end_src
-
 * 資料集分類特徵編碼
 ** 讀檔
 真實世界的數據集往往包含各種「類別特徵」(categorical feature)，類別特徵可再分為
@@ -1285,7 +863,7 @@ print(df)
 : 6   東區  390  24.7  56.38  住宅大樓(11層含以上有電梯)  27  十三層/十四層  住商用  行政區
 : 7  新化區  482  15.3  31.59     公寓(5樓含以下無電梯)  42    三層/五層  住家用  倉庫區
 ** 次序變項
-目前的土地使用區分大致有行政區、文教區、倉庫區、風景區、農業區、河川區...等不同型態，這裡主觀的以上述順序做為土地價值順序，也就是把'土地區分'這個欄位視為ordinal feature。此處自定一個 mapping dictionary，即 land_mapping，然後將 land_mapping 對應到 land_mapping 中的鍵值(程式第[[(sizeMapping)]]行)。
+目前的土地使用區分大致有行政區、文教區、倉庫區、風景區、農業區、河川區...等不同型態，這裡主觀的以上述順序做為土地價值順序，也就是把'土地區分'這個欄位視為ordinal feature。此處自定一個 mapping dictionary，即 land_mapping，然後將 land_mapping 對應到 land_mapping 中的鍵值(程式第[[(landMapping)]]行)。
 #+BEGIN_SRC python -r -n :async :results output :exports both :session venv
 ### Mapping ordinal features
 land_mapping = {
@@ -1296,7 +874,7 @@ land_mapping = {
     '農業區': 3,
     '保護區': 2,
     '河川區': 1}
-df['地區別'] = df['地區別'].map(land_mapping)   (ref:sizeMapping)
+df['地區別'] = df['地區別'].map(land_mapping)   (ref:landMapping)
 print(df)
 #+END_SRC
 
@@ -1338,7 +916,7 @@ print(df)
 7  新化區  482  15.3  31.59     公寓(5樓含以下無電梯)  42    三層/五層   1    5
 #+end_example
 
-能將類別轉成整數，也要能將整數轉回類別。此處可以利用已產生的對應字典，藉由借調 key-value 來產生「反轉字典」(第[[(invClassMapping)]]行)，將對調產生的整數還原回原始類別特徵。
+能將類別轉成整數，也要能將整數轉回類別。此處可以利用已產生的對應字典，藉由對調 key-value 來產生「反轉字典」(第[[(invClassMapping)]]行)，將對調產生的整數還原回原始類別特徵。
 
 #+BEGIN_SRC python -r -n :async :results output :exports both :session venv
 # 產生反轉字典，將整數還原至原始的類別標籤
@@ -1389,7 +967,7 @@ print(df) # 類別與數字的對應不一定與自訂字典一致
 
 反向編碼
 #+BEGIN_SRC python -r -n :async :results output :exports both :session venv
-# 反向编碼，將數值編碼轉換回原始類別
+# 反向編碼，將數值編碼轉換回原始類別
 original_labels = le.inverse_transform(y)
 print("反轉編碼:", original_labels)
 
@@ -1511,7 +1089,7 @@ X_dense = X_transformed.toarray()
 encoded_columns = ct.named_transformers_['OneHot'].get_feature_names_out(['地段'])
 df_encoded = pd.DataFrame(X_dense, columns=encoded_columns)
 
-print('===One-Hot结果===')
+print('===One-Hot結果===')
 print(df_encoded)
 #+END_SRC
 
@@ -1574,7 +1152,7 @@ print(df_encoded)
 #+end_example
 
 * 特徵縮放(Feature scaling)
-當我們在比較分析兩組數據資料時，可能會遭遇因單位的不同(例如：身高與體重)，或數字大小的代表性不同(例如：粉專1萬人與滿足感0.8)，造成各自變化的程度不一，進而影響統計分析的結果；為解決此類的問題，我們可利用資料的正規化(Normalization, 或譯為常態化)與標準化(Standardization)來進行數據的比較及分析[fn:2]。
+當我們在比較分析兩組數據資料時，可能會遭遇因單位的不同(例如：身高與體重)，或數字大小的代表性不同(例如：粉專1萬人與滿足感0.8)，造成各自變化的程度不一，進而影響統計分析的結果；為解決此類的問題，我們可利用資料的正規化(Normalization, 或譯為常態化)與標準化(Standardization)來進行數據的比較及分析[fn:1]。
 
 「特徵縮放」(Feature scaling)是資料預處理的一個關鍵，「決策樹」和「隨機森林」是極少數無需進行 feature scaling 的分類技術；對多數機器學習演算法而言，若特徵值經過適當的縮放，都能有更佳成效。Feature scaling 的重要性可以以下例子看出，假設有兩個特徵值(a, b)，其中 a 的測量範圍為 1 到 10，b 的測量值範圍為 1 到 100000，以典型分類演算法的做法，一定是忙於最佳化特徵值 b；若以 KNN 的演算法，也會被特徵值 b 所支配。
 
@@ -1649,7 +1227,7 @@ print(df[['總價', '單價']])
 #+end_example
 
 ** 標準化(Standardization)
-標準化則是將資料轉換為具有零均值和單位方差(說人話就是平均數為0、標準差為1h)的分佈，這意味著數據被中心化並且具有相同的尺度。這種技術適合資料呈現常態分佈或近似常態分佈的情況，並且適合大多數機器學習模型（如線性回歸、支持向量機等）。
+標準化則是將資料轉換為具有零均值和單位方差(說人話就是平均數為0、標準差為1)的分佈，這意味著數據被中心化並且具有相同的尺度。這種技術適合資料呈現常態分佈或近似常態分佈的情況，並且適合大多數機器學習模型（如線性回歸、支持向量機等）。
 
 雖說常態化簡單實用，但對許多機器學習演算法來說(特別是梯度下降法的最佳化)，標準化則更為實際，我們可令標準化後的特徵值其平均數為 0、標準差為 1，這樣一來，特徵值會滿足常態分佈，進而使演算法對於離群值不那麼敏感。標準化的公式如下：
 $$x_{std}^i = \frac{x^i-\mu_x}{\sigma_x}$$
@@ -1701,116 +1279,6 @@ print(df[['總價', '單價']])
 - 樹模型（如決策樹、隨機森林）：這些模型對資料尺度不敏感，正規化能使其更具解釋性。
 - 對輸入範圍有特定要求的模型：如神經網絡，尤其是一些輸入需要在特定範圍內的神經網絡結構，如RNN和一些圖像處理應用的CNN。
 
-* 資料擴增
-資料擴增是一種在訓練機器學習模型特別是深度學習模型時非常重要的技術。它通過對訓練資料進行多種隨機變換，來生成更多的資料樣本，以增強模型的泛化能力並避免過擬合。資料擴增對於擁有有限的情況尤其有用，因為它能夠讓模型看到更多樣化的資料，從而提升模型的預測能力和準確度。
-- 資料擴增的重要性
-  資料擴增能夠模擬真實世界中數據的變化。例如，影像資料可能因為角度、光照、比例等不同而有所變化。透過對現有資料進行旋轉、翻轉、縮放、平移等變換，我們可以有效地提高模型的健壯性，使其能夠在不同場景下依然表現良好。
-- 資料擴增的常見方法
-  資料擴增的方式多種多樣，以下是幾種常見的影像資料擴增技術：
-  1. 翻轉 (Flip)：將圖像在水平方向或垂直方向進行翻轉，模擬鏡像或反轉情況下的圖像。
-  1. 旋轉 (Rotation)：對圖像進行不同角度的旋轉，例如 90 度、180 度、270 度等，模擬不同角度拍攝的圖像。
-  1. 縮放 (Scaling)：將圖像進行放大或縮小，模擬不同距離下的拍攝效果。
-  1. 裁剪 (Cropping)：隨機裁剪圖像的一部分，模擬局部的視角或遮擋的情況。
-  1. 人工噪聲 (Noise Addition)：在圖像中增加隨機噪聲，模擬圖像在低光或其他干擾條件下的情況。
-  1. 平移 (Translation)：將圖像沿著水平或垂直方向進行平移，模擬不同位置的圖像對象。
-** 下載範例程式
-- 底下的檔案可以透過以下方式下載(於終端機執行)
-- 要記得修改main.py裡的資料夾路徑
-#+begin_src shell -r -n :results output :exports both
-git clone https://github.com/letranger/DataAugmentationDemo.git
-#+end_src
-** 範例
-安裝opencv
-#+begin_src shell -r -n :results output :exports both
-pip3 install opencv-python
-#+end_src
-資料夾位置 ~/Downloads
-資料夾架構
-#+begin_src shell -r -n :results output :exports both
-tree ~/Downloads/aug -d
-#+end_src
-
-#+RESULTS:
-: /Users/letranger/Downloads/aug
-: ├── augImages
-: │   ├── cats
-: │   └── dogs
-: └── images
-:     ├── cats
-:     └── dogs
-:
-: 7 directories
-
-#+begin_src python -r :async :results output :exports both :session venv
-import cv2
-import os
-import numpy as np
-
-def augment_image(image):
-    """對輸入圖像進行數據增強並返回增強後的圖像列表"""
-    augmented_images = []
-
-    # 原圖
-    augmented_images.append(image)
-
-    # 翻轉圖像
-    flip1 = cv2.flip(image, 0)  # 垂直翻轉
-    flip2 = cv2.flip(image, 1)  # 水平翻轉
-    flip3 = cv2.flip(image, -1) # 垂直和水平翻轉
-    augmented_images.extend([flip1, flip2, flip3])
-
-    # 旋轉圖像
-    for angle in [90, 180, 270]:
-        M = cv2.getRotationMatrix2D((image.shape[1] // 2, image.shape[0] // 2), angle, 1)
-        rotated = cv2.warpAffine(image, M, (image.shape[1], image.shape[0]))
-        augmented_images.append(rotated)
-
-    # 縮放圖像
-    for scale in [0.9, 1.1]:
-        scaled = cv2.resize(image, None, fx=scale, fy=scale)
-        augmented_images.append(scaled)
-
-    return augmented_images
-
-def process_directory(input_dir, output_dir):
-    """處理輸入目錄中的所有圖像，並將增強後的圖像保存到輸出目錄"""
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-
-    categories = ['dogs', 'cats']
-    for category in categories:
-        category_input_dir = os.path.join(input_dir, category)
-        category_output_dir = os.path.join(output_dir, category)
-
-        # 檢查並創建子目錄
-        if not os.path.exists(category_output_dir):
-            os.makedirs(category_output_dir)
-
-        for filename in os.listdir(category_input_dir):
-            image_path = os.path.join(category_input_dir, filename)
-            image = cv2.imread(image_path)
-            augmented_images = augment_image(image)
-
-            for i, augmented_image in enumerate(augmented_images):
-                output_filename = f"{os.path.splitext(filename)[0]}_aug_{i}.jpg"
-                output_path = os.path.join(category_output_dir, output_filename)
-                cv2.imwrite(output_path, augmented_image)
-
-# 輸入和輸出目錄
-input_directory = '/Users/letranger/Downloads/DataAugmentationDemo/images'
-output_directory = '/Users/letranger/Downloads/DataAugmentationDemo/augImages'
-
-# 處理圖像
-process_directory(input_directory, output_directory)
-#+end_src
-
-#+RESULTS:
-
-** 其他擴增方法
-其他資料擴增方式還有:濾波、銳化、去噪、旋轉、縮放、裁剪和增加人工噪聲....，至於資料擴增對於模型有何助益請[[https://blog.toright.com/posts/7144/keras-tutorial-cnn-data-augmentation-training][參閱這篇]]。其他資料擴增方式請看:
-- [[https://cynthiachuang.github.io/Augmentor-Image-Augmentation-Library-in-Python/][Augmentor：影像資料增強工具庫]]
-- [[https://chtseng.wordpress.com/2017/11/11/data-augmentation-%E8%B3%87%E6%96%99%E5%A2%9E%E5%BC%B7/][Data Augmentation 資料增強]]
-
 * 資料集與資料分割
 ** 常用資料集
 當你使用 Python 學習人工智慧（AI）和機器學習（ML）時，以下是一些常用的資料集及其簡單介紹：
@@ -1824,7 +1292,7 @@ from tensorflow.keras.datasets import mnist
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 #+end_src
 *** Iris
-- 簡介：Iris 資料集包含 3 種鰹魚花（Setosa、Versicolour 和 Virginica）的 150 個樣本，每個樣本有 4 個特徵（花萼長度、花萼寬度、花瓣長度、花瓣寬度）。
+- 簡介：Iris 資料集包含 3 種鳶尾花（Setosa、Versicolour 和 Virginica）的 150 個樣本，每個樣本有 4 個特徵（花萼長度、花萼寬度、花瓣長度、花瓣寬度）。
 - 用途：常用於分類和聚類算法的入門練習。
 - 特徵：每個樣本包含 4 個特徵和 1 個標籤。
 - 來源：可以從 sklearn 中直接獲取。
@@ -1893,10 +1361,10 @@ X, y = breast_cancer.data, breast_cancer.target
 [[file:images/datapreprocessing.png]]
 
 *** 為什麼要分割資料
-- 訓練集（training): 舉例來說就是上課學習。主要用在訓練階段，用於模型擬合，直接參與了模型參數調整的過程[fn:1]。
-- 驗證集（validation）: 舉例來說就是模擬考，你會根據模擬考的成績繼續學習、或調整學習方式重新學習。在訓練過程中，用於評估模型的初步能力與超參數調整的依據。不過驗證集是非必需的，不像訓練集和測試集。如果不需要調整超參數，就可以不使用驗證集[fn:1]。
-- 測試集（test）就像是學測，用來評估你最終的學習結果。用來評估模型最終的泛化能力。為了能評估模型真正的能力，測試集不應該為參數調整、選擇特徵等依據[fn:1]。
-使用學測來比喻，是因為測試集不應該做為參數調整、選擇特徵等依據。這些選擇與調整可以想像成學習方式的調整，但學測已經考完，你不能時光倒轉回到最初調整學習方式[fn:1]。
+- 訓練集（training): 舉例來說就是上課學習。主要用在訓練階段，用於模型擬合，直接參與了模型參數調整的過程[fn:2]。
+- 驗證集（validation）: 舉例來說就是模擬考，你會根據模擬考的成績繼續學習、或調整學習方式重新學習。在訓練過程中，用於評估模型的初步能力與超參數調整的依據。不過驗證集是非必需的，不像訓練集和測試集。如果不需要調整超參數，就可以不使用驗證集[fn:2]。
+- 測試集（test）就像是學測，用來評估你最終的學習結果。用來評估模型最終的泛化能力。為了能評估模型真正的能力，測試集不應該為參數調整、選擇特徵等依據[fn:2]。
+使用學測來比喻，是因為測試集不應該做為參數調整、選擇特徵等依據。這些選擇與調整可以想像成學習方式的調整，但學測已經考完，你不能時光倒轉回到最初調整學習方式[fn:2]。
 *** 資料分割實作
 訓練集與測試集的分割可以自行以Python進行分割，也可以直接呼叫函式進行分割
 **** 手動分割
@@ -2008,286 +1476,14 @@ Class labels [1 2 3]
 [1 2]
 #+end_example
 
-* 選取有意義的特徵 :noexport:
-overfitting 的產生原因是模型過度遷就於訓練數據，導致面對新數據(測試集)時成效不彰，我們稱這種模型具有較高變異性(high variance)，一般的解決策略有：
-- 收集更多的訓練數據集
-- 經由正規化，對於過度複雜的模型引進一個「懲罰」(penalty)
-- 以較少的參數做出較簡單的模型(使用更簡單的模型)
-- 減少數據維度
-
-** L1L2 regularzation
-
-一個典型的解釋[fn:10]如圖[[fig:OverFitting-1]]，"我們知道, 過擬合就是所謂的模型對可見的數據過度自信, 非常完美的擬合上了這些數據, 如果具備過擬合的能力, 那麼這個方程就可能是一個比較複雜的非線性方程 , 正是因為這裡的 $x^3$ 和 $x^2$ 使得這條虛線能夠被彎來彎去, 所以整個模型就會特別努力地去學習作用在 $x^3$ 和 $x^2$ 上的 $c$, $d$ 參數. 但是我們期望模型要學到的卻是 *這條藍色的曲線*. 因為它能更有效地概括數據.而且只需要一個 $y=a+bx$ 就能表達出數據的規律. 或者是說, 藍色的線最開始時, 和紅色線同樣也有 $c,d$ 兩個參數, 可是最終學出來時, $c$ 和 $d$ 都學成了 0, 雖然藍色方程的誤差要比紅色大, 但是概括起數據來還是藍色好. 那我們如何保證能學出來這樣的參數呢? 這就是 l1 l2 正規化出現的原因。"
-
-#+CAPTION: 過擬合問題
-#+LABEL:fig: OverFitting-1
-#+name: fig:OverFitting-1
-#+ATTR_LATEX: :width 300
-[[file:images/L1l2regularization2.png]]
-
-對於上述訓練出的兩個方程式，我們可以用\((y_{\theta}(x)-y)^2\)來計算模型預測值\(y(x)\)和真實數據\(y\)的誤差，而 L1, L2 就只是在這個誤差公式後加上一些式子來修正這個公式(如圖[[fig:OverFitting-2]])，其目的在於讓誤差的最佳化不僅取決於訓練數據擬合的優劣，同時也取決於參數值(如 $c,d$)的大小；L2 正規化以參數平方來做為計算方式，L1 正規化則是計算每個參數的絕對值。
-#+CAPTION: L1,L2 正規化公式
-#+LABEL:fig: OverFitting-2
-#+name: fig:OverFitting-2
-#+ATTR_LATEX: :width 300
-[[file:images/L1l2regularization3.png]]
-
-進一步以 Tensorflow Playground 的圖示來觀察 L1,L2 正規化的差異[fn:11]，如果把正規化(Regularization)設定為 L1，再執行訓練。可以看到很多權重都被設定為 0，特徵輸入與隱藏層的神經元被大大的減少，如圖[[fig:L1l2regularization4]]，整個模型的複雜度簡化很多。L1 正規化確實有助於將我們的複雜模型縮減為更小的泛化模型。添加正規化後，我們看到無用的功能全部變為零，並且連接線變得稀疏並顯示為灰色。倖存下來的唯一特徵是 $x_1$ 平方和 $x_2$ 平方，這是有道理的，因為這 2 個特徵加在一起就構成了一個圓的方程式。
-
-#+CAPTION: L1 正規化
-#+LABEL:fig: L1l2regularization4
-#+name: fig:L1l2regularization4
-#+ATTR_LATEX: :width 400
-[[file:images/L1l2regularization4.png]]
-
-反觀 L2 正規化，當我們訓練它時，每個權重與神經元都還是處於活動狀態，但是非常虛弱，如圖[[fig:OverFitting-3]]，L1 正規化使用其中一個特徵而將某些拋棄，而 L2 正規化將同時保留特徵並使權重值保持較小。因此，使用 L1，您可以得到一個較小的模型，但預測性可能較低。所以：
-
-- L1 正規化：有可能導致零權重，因刪除更多特徵而使模型稀疏。
-- L2 正規化：會對更大的權重值造成更大的影響，將使權重值保持較小。
-
-#+CAPTION: L2 正規化
-#+LABEL:fig: OverFitting-3
-#+name: fig:OverFitting-3
-#+ATTR_LATEX: :width 400
-[[file:images/L1l2regularization5.png]]
-
-* 處理數據中的分類特徵編碼問題 :noexport:
-** categorical feature
-
-真實世界的數據集往往包含各種「類別特徵」(categorical feature)，類別特徵可再分為
-- nominal feature: 名義特徵
-- ordinal feature: 次序特徵
-
-#+BEGIN_SRC python -r -n :results output :exports both
-  import pandas as pd
-  df = pd.DataFrame([['green', 'M', 10.1, 'class2'],
-                     ['red', 'L', 13.5, 'class1'],
-                     ['blue', 'XL', 15.3, 'class2']])
-
-  df.columns = ['color', 'size', 'price', 'classlabel']
-  print(df)
-#+END_SRC
-
-#+RESULTS:
-:    color size  price classlabel
-: 0  green    M   10.1     class2
-: 1    red    L   13.5     class1
-: 2   blue   XL   15.3     class2
-
-** 對應 ordinal feature
-
-自定一個 mapping dictionary，即 size\under{}mapping，然後將 classlabel 對應到 size\under{}mapping 中的鍵值(程式第[[(sizeMapping)]]行)。
-
-#+BEGIN_SRC python -r -n :results output :exports both
-  import pandas as pd
-  df = pd.DataFrame([['green', 'M', 10.1, 'class2'],
-                     ['red', 'L', 13.5, 'class1'],
-                     ['blue', 'XL', 15.3, 'class2']])
-
-  df.columns = ['color', 'size', 'price', 'classlabel']
-  ### Mapping ordinal features
-  size_mapping = {'XL': 3,
-                  'L': 2,
-                  'M': 1}
-  df['size'] = df['size'].map(size_mapping)   (ref:sizeMapping)
-  print(df)
-#+END_SRC
-
-#+RESULTS:
-:    color  size  price classlabel
-: 0  green     1   10.1     class2
-: 1    red     2   13.5     class1
-: 2   blue     3   15.3     class2
-
-** 對應 nominal feature
-
-許多機器學習的函式庫需要將「類別標籤」編碼為整數值。方法之一是以列舉方式為這些 nominal features 自 0 開始編號，先以 enumerate 方式建立一個 mapping dictionary: class_mapping(程式第[[(classMapping)]]行)，然後利用這個字典將類別特徵轉換為整數值。
-
-此外，也可以利用已產生的對應字典，藉由借調 key-value 來產生「反轉字典」(第[[(invClassMapping)]]行)，將對調產生的整數還原回原始類別特徵。
-
-scikit-learn 中有一個更為方便的 LabelEncoder 類別則可以直接完成上述工作(第[[(labelEncoder)]]行)。
-
-#+BEGIN_SRC python -r -n :results output :exports both
-  import pandas as pd
-  df = pd.DataFrame([['green', 'M', 10.1, 'class2'],
-                     ['red', 'L', 13.5, 'class1'],
-                     ['blue', 'XL', 15.3, 'class2']])
-
-  df.columns = ['color', 'size', 'price', 'classlabel']
-  # 建利對應字典
-  import pandas as np
-  class_mapping = {
-      label: idx for idx, label in enumerate(np.unique(df['classlabel'])) (ref:classMapping)
-  }
-  print(class_mapping)
-  # 將類別特徵轉換為整數值
-  df['classlabel'] = df['classlabel'].map(class_mapping)
-  print(df)
-
-  # 產生反轉字典，將整數還原至原始的類別標籤
-  inv_class_mapping = {v: k for k, v in class_mapping.items()} (ref:invClassMapping)
-  df['classlabel'] = df['classlabel'].map(inv_class_mapping)
-  print(df)
-
-  # Label encoding with sklearn's LabelEncoder
-  from sklearn.preprocessing import LabelEncoder
-  class_le = LabelEncoder()
-  y = class_le.fit_transform(df['classlabel'].values) (ref:labelEncoder)
-  print(y)
-  df['classlabel'] = y
-  print(df) # 類別與數字的對應不一定與自訂字典一致
-
-#+END_SRC
-
-#+RESULTS:
-#+begin_example
-{'class2': 0, 'class1': 1}
-   color size  price  classlabel
-0  green    M   10.1           0
-1    red    L   13.5           1
-2   blue   XL   15.3           0
-   color size  price classlabel
-0  green    M   10.1     class2
-1    red    L   13.5     class1
-2   blue   XL   15.3     class2
-[1 0 1]
-   color size  price  classlabel
-0  green    M   10.1           1
-1    red    L   13.5           0
-2   blue   XL   15.3           1
-#+end_example
-
-** 對 nominal feature 執行 one-hot encoding
-將類別 (categorical)或是文字(text)的資料轉換成數字，而讓程式能夠更好的去理解及運算。理由:
-1. 字串無法套入數學模型進行運算
-2. 直接換成數字會造成誤解
-*** pd.get_dummies
-get_dummies 是利用pandas实现one hot encode的方式[fn:3]。
-#+begin_src python -r -n :results output :exports both
-import pandas as pd
-df = pd.DataFrame([
-    ['台中', '惠文高中'],
-    ['台中', '中女中'],
-    ['台南', '大灣高中'],
-    ['台南', '台南一中'],
-    ['高雄', '高雄女中']
-])
-df.columns = ['city', 'school']
-print('---城市原值---')
-print(df['city'].values)
-print('---one hot encoding轉換---')
-print(pd.get_dummies(df['city']))
-#+end_src
-
-#+RESULTS:
-: ---城市原值---
-: ['台中' '台中' '台南' '台南' '高雄']
-: ---one hot encoding轉換---
-:    台中  台南  高雄
-: 0   1     0    0
-: 1   1     0    0
-: 2   0     1    0
-: 3   0     1    0
-: 4   0     0    1
-
-*** scikit
-scikit-learn 的 LabelENcoder 類別可以用來將「類別特徵」編碼為整數值，但這樣會引發另一個問題，如果我們將上述資料中的 color 特徵轉換為整數值，如下：
-
-#+BEGIN_SRC python -r -n :results output :exports both
-  import pandas as pd
-  df = pd.DataFrame([['green', 'M', 10.1, 'class2'],
-                     ['red', 'L', 13.5, 'class1'],
-                     ['blue', 'XL', 15.3, 'class2']])
-
-  df.columns = ['color', 'size', 'price', 'classlabel']
-
-  X = df[['color', 'size', 'price', 'classlabel']].values
-
-  # 以LabelEncoder轉換
-  from sklearn.preprocessing import LabelEncoder
-  color_le = LabelEncoder()
-  print(X[:,0])
-  X[:,0] = color_le.fit_transform(X[:,0])
-  print(X[:,0])
-
-#+END_SRC
-
-#+RESULTS:
-: ['green' 'red' 'blue']
-: [1 2 0]
-
-由輸出結果可以發現，經過類別編碼後的顏色特徵，由原本不具次序的特徵變成存在大小關係(red>green>blue)，這明顯會影響 model 運算的結果。針對此一問題，常見的解決方案是 one-hot encoding，其原理是：對特徵值中的每個值，建立一個新的「虛擬特徵」(dummy feature)。方法有二：
-- 利用 ColumnTransformer 函式庫的 ColumnTransformer 類別，將特徵值轉換 One-Hot Encoding 的對應矩陣，如程式第[[(FitTransform)]]行。
-- 利用 Pandas 套件的 get\under{}dummies 類別，一次將矩陣內指定之 column 轉換為 One-Hot encoding，如程式第[[(GetDummies)]]行。這種轉換只有字串數據會被轉換，其他內容則否。
-
-#+BEGIN_SRC python -r -n :results output :exports both
-  import pandas as pd
-  df = pd.DataFrame([['green', 'M', 10.1, 'class2'],
-                     ['red', 'L', 13.5, 'class1'],
-                     ['blue', 'XL', 15.3, 'class2']])
-
-  df.columns = ['color', 'size', 'price', 'classlabel']
-
-  X = df[['color', 'size', 'price', 'classlabel']].values
-  print(df)
-
-  # one-hot encoding: ColumnTransformer / fit_transform
-  from sklearn.preprocessing import LabelEncoder
-  from sklearn.preprocessing import OneHotEncoder
-  from sklearn.compose import ColumnTransformer
-  import numpy as np
-
-  X = df[['color', 'size', 'price']].values
-
-  ct = ColumnTransformer(
-      # The column numbers to be transformed (here is [0] but can be [0, 1, 3])
-      # Leave the rest of the columns untouched
-      [('OneHot', OneHotEncoder(), [0])], remainder='passthrough'
-  )
-  print(ct.fit_transform(X)) (ref:FitTransform)
-
-  # on-hot encoding: pandas / get_dummies
-  import pandas as pd
-  print(pd.get_dummies(df[['price', 'color', 'size']])) (ref:GetDummies)
-#+END_SRC
-
-#+RESULTS:
-#+begin_example
-   color size  price classlabel
-0  green    M   10.1     class2
-1    red    L   13.5     class1
-2   blue   XL   15.3     class2
-[[0.0 1.0 0.0 'M' 10.1]
- [0.0 0.0 1.0 'L' 13.5]
- [1.0 0.0 0.0 'XL' 15.3]]
-   price  color_blue  color_green  color_red  size_L  size_M  size_XL
-0   10.1           0            1          0       0       1        0
-1   13.5           0            0          1       1       0        0
-2   15.3           1            0          0       0       0        1
-#+end_example
-
-應用 one-hot encoding 時，我們必須留意它所引入的「多元共線性」(multicollinearity)問題，這在某些狀況下(如要計算反矩陣)可能會產生一些問題，若特徵間有高度相關，則會難以計算反矩陣，導致數值不穩定的舘計。
-
 * Footnotes
 
-[fn:1] [[https://cynthiachuang.github.io/What-is-the-Difference-between-Training-Validation-and-Test-Dataset/][訓練集、驗證集、測試集的定義與劃分]]
+[fn:1] [[https://aifreeblog.herokuapp.com/posts/54/data_science_203/][資料的正規化(Normalization)及標準化(Standardization)]]
 
-[fn:2] [[https://aifreeblog.herokuapp.com/posts/54/data_science_203/][資料的正規化(Normalization)及標準化(Standardization)]]
+[fn:2] [[https://cynthiachuang.github.io/What-is-the-Difference-between-Training-Validation-and-Test-Dataset/][訓練集、驗證集、測試集的定義與劃分]]
+
+[fn:5] [[https://ithelp.ithome.com.tw/articles/10219648?sc=rss.iron][Google ML課程筆記 - Overfitting 與 L1 /L2 Regularization ]]
+
+[fn:4] [[https://morvanzhou.github.io/tutorials/machine-learning/ML-intro/3-09-l1l2regularization/][L1 / L2 正規化]]
 
 [fn:3] [[https://blog.csdn.net/maymay_/article/details/80198468][pandas.get_dummies 的用法]]
-
-[fn:4] [[https://cinereplicas.com/products/harry-potter-nimbus-2000-broom-2019-edition][Nimbus 2000]]
-
-[fn:5] [[https://www.cw.com.tw/index.php/article/5124891?rec=es][體脂肪多少才標準？體脂機的原理是什麼？體脂率對照表一次看]]
-
-[fn:6] [[https://apcs.csie.ntnu.edu.tw/index.php/info/grades/][APCS檢測資訊]]
-
-[fn:7] [[https://www.pinecone.io/learn/vector-similarity/][Vector Similarity Explained]]
-
-[fn:8] [[http://blog.itpub.net/70027826/viewspace-2970075/][向量資料庫與pgvector ]]
-
-[fn:9] [[https://livebook.manning.com/concept/nlp/3d-vector][Natural Language Processing in Action: Understanding, analyzing, and generating text with Python]]
-
-[fn:10][[https://morvanzhou.github.io/tutorials/machine-learning/ML-intro/3-09-l1l2regularization/][L1 / L2 正規化]]
-
-[fn:11][[https://ithelp.ithome.com.tw/articles/10219648?sc=rss.iron][Google ML課程筆記 - Overfitting 與 L1 /L2 Regularization ]]

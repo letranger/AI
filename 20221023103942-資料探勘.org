@@ -2,17 +2,28 @@
 :ID:       20221023T103942.753704
 :END:
 #+title: 資料探勘
-
-#+INCLUDE: ../pdf.org
-#+TAGS: AI
-#+OPTIONS: toc:2 ^:nil num:5
-#+PROPERTY: header-args :eval never-export
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/white.css" />
+#+AUTHOR: 顏永進
+#+OPTIONS: toc:2 ^:nil num:3
+#+OPTIONS: H:4
+#+TAGS: Python, Basic
+#+PROPERTY: header-args :python :python "/Users/letranger/Dropbox/notes/roam/venv/bin/python3" :eval never-export
+#+include: ../pdf-m1.org
 #+EXCLUDE_TAGS: noexport
-#+latex:\newpage
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/muse.css" />
+#+HTML_HEAD_EXTRA: <script src="../css/copy_code.js"></script>
+#+REVEAL_ROOT: https://cdn.jsdelivr.net/npm/reveal.js
 
 #+begin_export html
-<a href="https://hits.sh/letranger.github.io/AI-course/DM.html/"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI-course/DM.html.svg"/></a>
+<a href="https://letranger.github.io/AI/20221023103942-資料探勘.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20221023103942-資料探勘.html.svg"/></a>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4EJ3V5BG0Z"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-4EJ3V5BG0Z');
+</script>
 #+end_export
 
 
@@ -22,8 +33,17 @@ Discover knowledge from data, or, knowledge discovery from data (KDD).
 
 Extraction of interesting, non-trivial, implicit, previously unknown and potentially useful patterns of knowledge from huge data.
 
-* Why Data Mininng
-雖然資料量大，取得容易，但是其中夾雜太多無關資料
+簡單來說，資料探勘就是從大量資料中，找出隱藏的、有價值的規律或知識。這些規律通常不是靠人工就能輕易發現的，需要透過演算法自動分析。例如：超市從數百萬筆消費記錄中發現「買尿布的人常常也會買啤酒」，這就是資料探勘的經典案例。
+
+* Why Data Mining
+雖然資料量大，取得容易，但是其中夾雜太多無關資料，光靠人力根本無法處理。
+
+想像一下：
+- 全球每天產生超過 25 億 GB 的資料，包含社群貼文、購物記錄、感測器數據等
+- 一間超市每天可能產生數萬筆交易記錄，一年就是上千萬筆
+- 醫院累積了數十年的病歷資料，其中可能隱藏著疾病之間的關聯
+
+這些資料量遠遠超過人工逐一檢視的能力，因此我們需要自動化的方法——也就是資料探勘技術——來從中找出有意義的模式與知識。
 
 * 資料類型
 ** Database-oriented data set
@@ -41,19 +61,25 @@ graph(社群網路關係)
 
 GPS 軌跡記錄
 *** Multimedia database
+圖片、影片、音訊等多媒體檔案，例如：從大量監視器畫面中辨識異常行為
 *** Text
+文字資料，例如：新聞報導、社群貼文、電子郵件，可用於情感分析或主題分類
 *** The World-Wide Web
+網頁內容與連結結構，例如：搜尋引擎分析網頁之間的連結關係來決定搜尋排名
 
 * 背後會用到的技術
-- Database
-- Machine Learning
-- Neural Network
+- Database：負責儲存與管理大量資料，讓我們能有效率地存取和查詢所需的資料
+- Machine Learning：提供各種演算法（如決策樹、分群），讓電腦能自動從資料中學習規律
+- Neural Network：一種模仿人腦運作方式的機器學習方法，特別擅長處理複雜的模式辨識任務
 
 * Data Mining Process
 ** Preprocessing([[id:82e219c3-6ca0-43b0-bb11-e3a8454f089d][資料預處理]])
 *** Data collection
+蒐集原始資料，例如從資料庫、網頁、感測器等來源取得所需資料
 *** Data cleaning
+清理資料中的錯誤、缺失值或重複資料，例如刪除空白欄位、修正格式不一致的日期
 *** Data integration
+將來自不同來源的資料合併在一起，例如把學生的成績資料和出缺席資料整合成一張表
 ** Exploration
 *** Data warehousing
 決定使用哪一種儲存方式
@@ -69,26 +95,57 @@ GPS 軌跡記錄
 *** Decision making
 
 * General Types of Data Mining
-** Association rule mining
-- a -> b
+** Association rule mining（關聯規則）
+找出資料之間的伴隨關係，也就是「買了 A 的人通常也會買 B」這種規律。
+- a → b
 - 由大賣場的銷售記錄，發現買了 a 的人都買了 b。決策: 把兩種商品擺在一起
-- 某種資訊出現 -> 下雨機率高
-** Classification
-- A:Y
-- B:N
-- C:Y
-- D:Y
-- E:N
-- F:Y
-- decision tree
-** Clustering
-- {AB}
-- {CDE}
-- {F}
+- 某種資訊出現 → 下雨機率高
+- 應用範例：超市商品擺設、網站推薦系統（「買了這個的人也買了...」）
+** Classification（分類）
+根據已知的標籤資料，學習出一套規則，用來預測新資料的類別。就像老師批改了一堆考卷（已知答案），學生從中學到判斷規則。
+- 範例：已知六個人是否購買某商品（Y=買, N=不買）
+  - A:Y, B:N, C:Y, D:Y, E:N, F:Y
+- 電腦會根據這些資料建立一棵 decision tree（決策樹），用來預測第七個人會不會購買
+- 應用範例：垃圾郵件偵測（判斷一封信是不是垃圾信）、疾病診斷
+** Clustering（分群）
+把相似的資料自動歸為一組，不需要事先知道有哪些類別。電腦會自己找出資料之間的相似性。
+- 範例：將六個人依相似度自動分成三組
+  - {A, B}：彼此相似，歸為一組
+  - {C, D, E}：彼此相似，歸為一組
+  - {F}：和其他人都不太一樣，自成一組
+- 應用範例：顧客分群（VIP 客戶 vs 一般客戶）、新聞文章自動分類
 
 * Association rule mining
-- min_support = 2
-- min_conf = 2/3
+
+在關聯規則分析中，有兩個最重要的指標：
+
+*Support（支持度）* ：兩個商品「同時被購買」的次數。
+
+*Confidence（信賴度）* ：一個條件機率。白話說就是：「買了 A 的人裡面，有多少比例也買了 B？」
+
+公式：
+#+begin_example
+confidence(A → B) = A 和 B 同時出現的次數 ÷ A 出現的次數
+#+end_example
+
+以下面的交易資料為例，假設我們要算 =B → C= 的 confidence：
+1. 先數 B 出現在哪些交易：100, 200, 400 → 共 *3 次*
+2. 再數 B 和 C 同時出現在哪些交易：200, 400 → 共 *2 次*
+3. confidence(B → C) = 2 ÷ 3 ≈ *0.667*
+
+意思是：買了 B 的人中，有 66.7% 也買了 C。
+
+反過來算 =C → B= 呢？
+1. C 出現在哪些交易：200, 400 → 共 *2 次*
+2. C 和 B 同時出現：200, 400 → 共 *2 次*
+3. confidence(C → B) = 2 ÷ 2 = *1.0*
+
+意思是：買了 C 的人，*100%* 都買了 B。注意 B → C 和 C → B 的 confidence 不一樣！
+
+我們會設定門檻值來過濾規則，只保留夠強的：
+- min_support = 2（至少同時出現 2 次）
+- min_conf = 2/3（信賴度至少 66.7%）
+- 同時達到兩個門檻的規則，叫做 *Strong rule*
 ** Mining implications between items
 |-----+------------|
 | Tid | Items      |
@@ -99,27 +156,139 @@ GPS 軌跡記錄
 | 400 | A, B, C, D |
 |-----+------------|
 
-** Frequent item sets
-- 把所有元素的全部排列組合全部列出，每種可能都去計算次數，出現次數>=min_support 才留下
-- ex: {A}, {B}, {C}, {D}, {B,C}, {A,B}, {A,D}, {B,D}, {A,B,D}
-- 單一的集合沒有意義，故排除前四項
-- 接下來看{B,C}，但是倒底是 B -> C 還是 C -> B? 於是兩個假設都去做做看，結果兩項都成立
-- 那{A,B,D}如何判斷？就每一種可能性都去檢查....
+** Frequent item sets（頻繁項目集）
+找出頻繁項目集的步驟如下：
+1. 先列出所有可能的商品組合（注意：這裡是「組合」而非「排列」，{A,B} 和 {B,A} 視為同一組）
+2. 計算每種組合在交易資料中同時出現的次數（即 support）
+3. 只保留 support >= min_support 的組合
+
+以上面的交易資料為例：
+- 1-itemset（單一商品）：{A}, {B}, {C}, {D}... 先計算各自出現次數
+- 2-itemset（兩兩組合）：{B,C}, {A,B}, {A,D}, {B,D}... 計算同時出現的次數，只保留 >= min_support 的
+- 3-itemset：{A,B,D}... 依此類推
+
+接下來要從頻繁項目集產生關聯規則：
+- 對於 {B,C}，有兩個可能的規則：B → C 或 C → B，兩個都要分別計算 confidence
+- 對於 {A,B,D}，可能的規則更多：A → {B,D}、B → {A,D}、{A,B} → D... 每一種都要檢查
 ** Strong rules (同時符合 min_support, min_conf)
-- {A,D} -> B(2/3) : A,D 發生的狀況下，B也發生
-- 目的在於自動將所有 Strong rules 自動列出
-- B -> C(2/3)
-- C -> B(2/2)
-- 要從 frequent item set 轉換到 String rules:
+同時滿足 support >= 2 *且* confidence >= 2/3 的規則才是 Strong rule：
+- B → C：support=2, confidence=2/3≈0.667（B 出現 3 次，其中 2 次有 C）✓
+- C → B：support=2, confidence=2/2=1.0（C 出現 2 次，2 次都有 B）✓
+- {A,D} → B：support=2, confidence=2/3≈0.667（{A,D} 一起出現 3 次，其中 2 次有 B）✓
+目標就是讓電腦自動把所有 Strong rules 找出來。
 ** 產生 Strong rules 用到的演算法: Apriori Algorithm
+暴力法是把所有商品的所有組合都列出來，一一計算 support——但商品一多，組合數量會爆炸（10 種商品就有 1023 種可能的組合）。
 
-* Downward Closure Property
+Apriori 演算法的核心想法：*由小到大，逐層篩選*，淘汰掉的就不再往下展開。
+
+步驟如下：
+1. 先數所有 1-itemset 的 support，淘汰不達標的
+2. 用「活下來」的 1-itemset 組合出候選 2-itemset，再數 support，再淘汰
+3. 用「活下來」的 2-itemset 組合出候選 3-itemset⋯⋯
+4. 重複直到沒有新的頻繁項目集為止
+5. 最後從所有頻繁項目集產生規則，只保留 confidence 達標的
+
+為什麼這樣有效？因為 [[*Downward Closure Property（向下封閉性質）][Downward Closure Property]]：如果 {A, B} 不夠頻繁，那 {A, B, C} 一定也不頻繁——直接跳過，不用算。這一招讓 Apriori 在實務上比暴力法快非常多。
+
+** 以 Pandas 實作關聯規則分析
+以上述交易資料為例，用 Pandas 來計算 support 和 confidence：
+#+begin_src python -r -n :results output :exports both
+import pandas as pd
+import numpy as np
+from itertools import combinations
+
+# 建立交易資料
+transactions = {
+    100: ['A', 'B', 'D'],
+    200: ['B', 'C', 'E'],
+    300: ['A', 'D'],
+    400: ['A', 'B', 'C', 'D'],
+}
+
+# 轉換為交易矩陣（每欄代表一個商品，每列代表一筆交易）
+all_items = sorted(set(item for items in transactions.values() for item in items))
+rows = []
+for tid, items in transactions.items():
+    rows.append({item: 1 if item in items else 0 for item in all_items})
+df = pd.DataFrame(rows, index=transactions.keys())
+df.index.name = 'Tid'
+print("交易矩陣:")
+print(df)
+
+# 計算每個商品的 support（出現次數）
+n = len(df)
+print(f"\n總交易數: {n}")
+print("\n各商品 support count:")
+print(df.sum())
+#+end_src
+
+#+begin_src python -r -n :results output :exports both
+import pandas as pd
+import numpy as np
+from itertools import combinations
+
+transactions = {
+    100: ['A', 'B', 'D'],
+    200: ['B', 'C', 'E'],
+    300: ['A', 'D'],
+    400: ['A', 'B', 'C', 'D'],
+}
+all_items = sorted(set(item for items in transactions.values() for item in items))
+rows = []
+for tid, items in transactions.items():
+    rows.append({item: 1 if item in items else 0 for item in all_items})
+df = pd.DataFrame(rows, index=transactions.keys())
+n = len(df)
+
+# 找出所有 2-itemset 的 support
+min_support = 2
+print(f"min_support = {min_support}\n")
+print("2-itemset support:")
+freq_2 = {}
+for a, b in combinations(all_items, 2):
+    support = (df[a] & df[b]).sum()   # 兩個商品同時出現的次數
+    if support >= min_support:
+        freq_2[(a, b)] = support
+        print(f"  {{{a}, {b}}}: {support}")
+
+# 計算 confidence（信賴度）
+print(f"\nmin_conf = 2/3 ≈ 0.667\n")
+print("Strong rules (同時滿足 min_support 和 min_conf):")
+min_conf = 2/3
+for (a, b), sup in freq_2.items():
+    # a -> b
+    conf_ab = sup / df[a].sum()
+    if conf_ab >= min_conf:
+        print(f"  {a} → {b}: support={sup}, confidence={conf_ab:.3f}")
+    # b -> a
+    conf_ba = sup / df[b].sum()
+    if conf_ba >= min_conf:
+        print(f"  {b} → {a}: support={sup}, confidence={conf_ba:.3f}")
+#+end_src
+
+從結果可以觀察到：
+- =B → C= 的 confidence 為 2/3，代表買了 B 的人有 2/3 的機率也會買 C
+- =C → B= 的 confidence 為 2/2 = 1.0，代表買了 C 的人 *一定* 也買了 B
+- 兩條規則的 support 相同（都是 2），但 confidence 不同，這說明關聯規則是有方向性的
+
+* Downward Closure Property（向下封閉性質）
 - Any subset of a frequent itemset must be frequent
-- If there is any imteset which is infrequent, its superset should not be frequent
+- If there is any itemset which is infrequent, its superset should not be frequent
 
-* Sequential Pattern Mining
+白話說：如果某個商品組合不夠常見（不是頻繁項目集），那麼包含它的更大組合一定也不常見，就不需要再檢查了。
+
+舉例：如果 {啤酒, 尿布} 只出現 1 次（不夠頻繁），那 {啤酒, 尿布, 牛奶} 最多也只會出現 1 次，一定也不頻繁。這個性質大幅減少了需要計算的組合數量，是 Apriori 演算法能有效運作的關鍵。
+
+* Sequential Pattern Mining（序列模式探勘）
 ** Mining sequential implications between items
-強調 item 的前後順序
+和關聯規則不同，序列模式探勘強調事件發生的「先後順序」。
+
+*表格記號說明：*
+- =< ... >= 表示一個完整的序列（按時間先後排列）
+- =(1)= 表示在某個時間點購買了商品 1
+- =(2,5)= 表示在同一個時間點同時購買了商品 2 和 5
+- 整個序列由左到右代表時間的推進
+
 |-----+---------------------------|
 | SID | Sequences                 |
 |-----+---------------------------|
@@ -130,6 +299,907 @@ GPS 軌跡記錄
 | 500 | < (4) (3,5,6) >           |
 |-----+---------------------------|
 
+以 SID=100 為例：顧客先買了商品 1，接著同時買了商品 2 和 5，之後買了商品 3，最後買了商品 4。
+
+*生活化例子：* 顧客先買了手機 → 過幾天買了手機殼 → 再過一段時間買了螢幕保護貼。這個「手機 → 手機殼 → 保護貼」就是一個序列模式。
+
 - min_support = 2
 - Some frequent sequential patterns:
 {1,4,3,2}, {1,3,5},{4,5}
+- 這些模式代表有至少 2 位顧客的購買順序符合這個序列
+
+* 資料探索實作：用 Pandas 分析真實資料
+在進行資料探勘之前，第一步通常是「認識你的資料」。以下用 Pandas 示範幾個常見的資料探索技巧。
+
+** 載入與觀察資料
+#+begin_src python -r -n :results output :exports both
+import pandas as pd
+import numpy as np
+
+# 使用 seaborn 內建的鐵達尼號資料集
+import seaborn as sns
+df = sns.load_dataset('titanic')
+
+print(f"資料維度: {df.shape[0]} 筆, {df.shape[1]} 個欄位\n")
+print("前 5 筆資料:")
+print(df.head())
+#+end_src
+
+** 基本統計摘要
+#+begin_src python -r -n :results output :exports both
+import pandas as pd
+import seaborn as sns
+
+df = sns.load_dataset('titanic')
+
+# 數值欄位的統計摘要
+print("數值欄位統計:")
+print(df.describe().round(2))
+
+# 類別欄位的分佈
+print("\n\n各欄位缺失值數量:")
+print(df.isnull().sum())
+#+end_src
+
+** 交叉分析（Cross Tabulation）
+交叉分析是探索類別變數之間關聯性的基本工具，概念類似關聯規則中的共現分析：
+#+begin_src python -r -n :results output :exports both
+import pandas as pd
+import seaborn as sns
+
+df = sns.load_dataset('titanic')
+
+# 艙等 vs 存活率
+cross = pd.crosstab(df['class'], df['survived'], margins=True)
+print("艙等 vs 存活（人數）:")
+print(cross)
+
+# 以百分比呈現
+cross_pct = pd.crosstab(df['class'], df['survived'], normalize='index')
+print("\n艙等 vs 存活（比例）:")
+print(cross_pct.round(3))
+
+# 性別 vs 存活率
+print("\n性別 vs 存活（比例）:")
+print(pd.crosstab(df['sex'], df['survived'], normalize='index').round(3))
+#+end_src
+
+從交叉分析可以發現：頭等艙乘客的存活率明顯高於三等艙，女性的存活率也遠高於男性。這些就是從資料中「挖掘」出來的知識。
+
+** 用 groupby 聚合分析
+=groupby= 是 Pandas 中最常用的分析工具之一，可以依照某個欄位分組後計算統計量：
+#+begin_src python -r -n :results output :exports both
+import pandas as pd
+import seaborn as sns
+
+df = sns.load_dataset('titanic')
+
+# 依艙等分組，計算各項平均
+print("依艙等分組的平均值:")
+print(df.groupby('class')[['survived', 'age', 'fare']].mean().round(2))
+
+# 多層分組: 艙等 + 性別
+print("\n依艙等+性別分組的存活率:")
+print(df.groupby(['class', 'sex'])['survived'].mean().round(3))
+#+end_src
+
+* 課堂練習 :TNFSH:
+** 練習一：超市購物籃分析
+以下是某超市一天內的 8 筆交易記錄。請用 Pandas 找出所有符合條件的關聯規則。
+
+| Tid | 購買商品             |
+|-----+----------------------|
+|   1 | 牛奶, 麵包, 雞蛋     |
+|   2 | 牛奶, 麵包           |
+|   3 | 麵包, 奶油           |
+|   4 | 牛奶, 麵包, 奶油     |
+|   5 | 牛奶, 雞蛋           |
+|   6 | 麵包, 雞蛋           |
+|   7 | 牛奶, 麵包, 雞蛋, 奶油 |
+|   8 | 牛奶, 奶油           |
+
+*** 計算提醒
+假設牛奶出現 5 次，牛奶和麵包同時出現 4 次：
+- =牛奶 → 麵包= 的 confidence = 4 ÷ 5 = 0.8（買牛奶的人有 80% 也買麵包）
+- 反過來，如果麵包出現 6 次，則 =麵包 → 牛奶= 的 confidence = 4 ÷ 6 ≈ 0.667
+- 同一組商品，方向不同，confidence 就不同！
+
+*** 步驟
+1. 將交易資料轉換為交易矩陣（DataFrame），每一列是一筆交易，每一欄是一種商品，1 代表有買、0 代表沒買：
+#+begin_example
+     奶油  牛奶  雞蛋  麵包
+Tid
+1       0     1     1     1
+2       0     1     0     1
+3       1     0     0     1
+4       1     1     0     1
+5       0     1     1     0
+6       0     0     1     1
+7       1     1     1     1
+8       1     1     0     0
+#+end_example
+2. 計算每個商品的出現次數（support count）
+3. 找出所有 support >= 3 的 2-itemset
+   - 2-itemset = 兩種商品的組合（例如 {牛奶, 麵包}）
+   - support >= 3 = 這兩樣東西在 8 筆交易中「同時出現至少 3 次」
+   - 商業意義：如果兩個商品很少被一起買（例如只有 1 次），那就算分析出規則也沒用——可能只是巧合。設定 support 門檻是為了濾掉這種雜訊，只留下真的夠常見、值得拿來做決策的組合。
+4. 對這些 2-itemset 計算雙向的 confidence，找出 confidence >= 0.5 的 strong rules
+   - 算法：confidence(A → B) = A 和 B 同時出現的次數 ÷ A 出現的次數
+   - 例如：牛奶出現 6 次，{牛奶, 麵包} 同時出現 4 次 → confidence(牛奶→麵包) = 4/6 ≈ 0.667
+   - 意義：「買了牛奶的人裡面，有多少比例也買了麵包？」答案是約 67%
+   - 為什麼要算「雙向」？因為 =牛奶→麵包= 和 =麵包→牛奶= 的 confidence 不同。前者問的是「牛奶帶動麵包的能力」，後者問的是「麵包帶動牛奶的能力」——方向不同，結論就不同
+   - confidence >= 0.5 表示：至少有一半的人買了 A 也會買 B，這個關聯才夠強，值得拿來做促銷決策
+
+*** 範例：用前 4 筆交易跑完整流程
+先用交易 1~4 的小資料集，把整個分析流程跑一次。理解每一步在做什麼，再挑戰完整的 8 筆資料。
+
+#+begin_src python -r -n :results output :exports both
+import pandas as pd
+import numpy as np
+from itertools import combinations
+
+# 只取前 4 筆交易做示範
+transactions = {
+    1: ['牛奶', '麵包', '雞蛋'],
+    2: ['牛奶', '麵包'],
+    3: ['麵包', '奶油'],
+    4: ['牛奶', '麵包', '奶油'],
+}
+
+# Step 1: 建立交易矩陣
+all_items = sorted(set(item for items in transactions.values() for item in items))
+rows = []
+for tid, items in transactions.items():
+    rows.append({item: 1 if item in items else 0 for item in all_items})
+df = pd.DataFrame(rows, index=transactions.keys())
+df.index.name = 'Tid'
+print("交易矩陣:")
+print(df)
+
+# Step 2: 各商品出現次數
+print(f"\n各商品出現次數:")
+item_counts = df.sum()
+print(item_counts)
+
+# Step 3: 找出 support >= 2 的 2-itemset
+min_support = 2
+print(f"\n=== 2-itemset (min_support={min_support}) ===")
+freq_2 = {}
+for a, b in combinations(all_items, 2):
+    support = (df[a] & df[b]).sum()    # 兩欄都是 1 的列數 = 同時購買次數
+    if support >= min_support:
+        freq_2[(a, b)] = support
+        print(f"  {{{a}, {b}}}: support={support}")
+
+# Step 4: 計算 confidence，找出 strong rules (confidence >= 0.5)
+min_conf = 0.5
+print(f"\n=== Strong Rules (min_conf={min_conf}) ===")
+for (a, b), sup in freq_2.items():
+    conf_ab = sup / df[a].sum()   # A 出現幾次中，AB 同時出現幾次
+    conf_ba = sup / df[b].sum()
+    if conf_ab >= min_conf:
+        print(f"  {a} → {b}: confidence={conf_ab:.3f}")
+    if conf_ba >= min_conf:
+        print(f"  {b} → {a}: confidence={conf_ba:.3f}")
+#+end_src
+
+範例結果：只有 4 筆交易、min_support=2，找到 2 組 frequent 2-itemset（{奶油, 麵包} 和 {牛奶, 麵包}）和 4 條 strong rules。其中「奶油→麵包」和「牛奶→麵包」的 confidence 都是 1.000——因為資料量小，看起來完美得不太真實。
+
+*** 你的任務：分析全部 8 筆交易
+把上面的範例程式碼複製過來，做以下修改：
+1. 將交易資料改為完整的 8 筆（參考最上面的表格）
+2. 將 =min_support= 改為 3（資料變多，門檻也要提高）
+3. 執行後，對照下面的正確答案確認你的程式沒有問題
+
+*正確答案（用來驗證）：*
+#+begin_example
+各商品出現次數：奶油=4, 牛奶=6, 雞蛋=4, 麵包=6
+
+Frequent 2-itemsets（共 5 組）：
+  {奶油, 牛奶}: support=3
+  {奶油, 麵包}: support=3
+  {牛奶, 雞蛋}: support=3
+  {牛奶, 麵包}: support=4  ← support 最高
+  {雞蛋, 麵包}: support=3
+
+Strong Rules（共 10 條，confidence >= 0.5）：
+  最高 confidence = 0.750（共 4 條：奶油→牛奶、奶油→麵包、雞蛋→牛奶、雞蛋→麵包）
+  {牛奶, 麵包} 的 support 最高，但雙向 confidence 都是 0.667（不是最高！）
+#+end_example
+
+#+begin_src python -r -n :results output :exports both
+import pandas as pd
+import numpy as np
+from itertools import combinations
+
+# TODO: 把 8 筆交易資料填入
+transactions = {
+    1: ['牛奶', '麵包', '雞蛋'],
+    2: ['牛奶', '麵包'],
+    3: ['麵包', '奶油'],
+    4: ['牛奶', '麵包', '奶油'],
+    5: ['牛奶', '雞蛋'],
+    6: ['麵包', '雞蛋'],
+    7: ['牛奶', '麵包', '雞蛋', '奶油'],
+    8: ['牛奶', '奶油'],
+}
+
+# TODO: 把範例的 Step 1~4 貼過來，min_support 改為 3
+
+#+end_src
+
+*** 思考題
+1. {牛奶, 麵包} 的 support 最高（4 次），但 confidence 卻不是最高——為什麼？（提示：看看牛奶和麵包各自的出現次數）
+2. =牛奶 → 麵包= 和 =麵包 → 牛奶= 的 confidence 是否相同？為什麼？
+3. 如果你是店長，想做「買 A 送 B 折價券」的促銷，你會選哪條規則？為什麼？
+
+*** 參考解答 :noexport:
+#+begin_src python -r -n :results output :exports both
+import pandas as pd
+import numpy as np
+from itertools import combinations
+
+transactions = {
+    1: ['牛奶', '麵包', '雞蛋'],
+    2: ['牛奶', '麵包'],
+    3: ['麵包', '奶油'],
+    4: ['牛奶', '麵包', '奶油'],
+    5: ['牛奶', '雞蛋'],
+    6: ['麵包', '雞蛋'],
+    7: ['牛奶', '麵包', '雞蛋', '奶油'],
+    8: ['牛奶', '奶油'],
+}
+
+all_items = sorted(set(item for items in transactions.values() for item in items))
+rows = []
+for tid, items in transactions.items():
+    rows.append({item: 1 if item in items else 0 for item in all_items})
+df = pd.DataFrame(rows, index=transactions.keys())
+n = len(df)
+
+print("=== 各商品出現次數 ===")
+item_counts = df.sum()
+print(item_counts)
+
+# 找出所有 2-itemset 的 support
+print(f"\n=== 2-itemset (min_support={3}) ===")
+freq_2 = {}
+for a, b in combinations(all_items, 2):
+    support = (df[a] & df[b]).sum()
+    if support >= 3:
+        freq_2[(a, b)] = support
+        print(f"  {{{a}, {b}}}: support={support}")
+
+# 計算 confidence，找出 strong rules
+min_conf = 0.5
+print(f"\n=== Strong Rules (min_conf={min_conf}) ===")
+rules = []
+for (a, b), sup in freq_2.items():
+    conf_ab = sup / df[a].sum()
+    conf_ba = sup / df[b].sum()
+    if conf_ab >= min_conf:
+        rules.append((a, b, sup, conf_ab))
+        print(f"  {a} → {b}: support={sup}, confidence={conf_ab:.3f}")
+    if conf_ba >= min_conf:
+        rules.append((b, a, sup, conf_ba))
+        print(f"  {b} → {a}: support={sup}, confidence={conf_ba:.3f}")
+
+# 結果分析
+print(f"\n=== 分析 ===")
+print(f"共找到 {len(rules)} 條 strong rules")
+print(f"\n最強的關聯規則（confidence 最高）:")
+rules.sort(key=lambda x: x[3], reverse=True)
+for a, b, sup, conf in rules[:3]:
+    print(f"  {a} → {b}: confidence={conf:.3f}")
+    print(f"    → 買了{a}的人有 {conf:.0%} 的機率也會買{b}")
+#+end_src
+
+** 練習二：鐵達尼號乘客資料探索
+1912 年鐵達尼號撞上冰山沉沒，2224 名乘客中只有 710 人生還。誰活了下來？是運氣，還是有什麼規律？讓我們用資料探勘的方法找出來。
+
+*** 資料來源
+這份資料集是資料科學界的「Hello World」，幾乎每本教科書都會用到。我們使用 Python 的 =seaborn= 套件內建的版本，一行程式碼就能載入（需要網路連線）：
+
+#+begin_src python -r -n :results output :exports both
+import seaborn as sns
+
+# 從 seaborn 內建資料集載入（第一次執行會從網路下載）
+df = sns.load_dataset('titanic')
+print(f"資料筆數: {len(df)}")
+print(f"欄位: {list(df.columns)}")
+print("\n前 3 筆資料：")
+print(df.head(3).to_string())
+#+end_src
+
+主要欄位說明：
+| 欄位     | 意義                                    |
+|----------+-----------------------------------------|
+| survived | 是否存活（1=存活, 0=罹難）              |
+| pclass   | 艙等（1=頭等艙, 2=二等艙, 3=三等艙）   |
+| sex      | 性別                                    |
+| age      | 年齡                                    |
+| fare     | 船票價格                                |
+| class    | 艙等（文字版：First, Second, Third）    |
+| alone    | 是否獨自旅行（True/False）              |
+| embarked | 登船港口（S=南安普敦, C=瑟堡, Q=皇后鎮）|
+
+*** 範例：用 groupby 分析性別與存活率
+以下示範如何用 =groupby= 計算不同群組的存活率。 =mean= 是平均值（因為 survived 欄位是 0/1，平均值就等於存活率）， =count= 是該群組的人數：
+
+#+begin_src python -r -n :results output :exports both
+import pandas as pd
+import numpy as np
+import seaborn as sns
+
+df = sns.load_dataset('titanic')
+
+print(f"總乘客數: {len(df)}")
+print(f"整體存活率: {df['survived'].mean():.1%}")
+
+# 依性別分組，計算存活率和人數
+print("\n--- 依性別 ---")
+print(df.groupby('sex')['survived'].agg(['mean', 'count']))
+#+end_src
+
+從結果可以看到：女性存活率遠高於男性。但性別是唯一的關鍵因素嗎？接下來請你自己分析看看。
+
+*** 實作任務
+請仿照上面的範例，分析以下三個因素對存活率的影響，每個都要寫程式跑出結果：
+
+*任務 A：艙等（class）*
+#+begin_src python -r -n :results output :exports both
+import pandas as pd
+import seaborn as sns
+df = sns.load_dataset('titanic')
+
+# 請用 groupby 分析 'class' 欄位對存活率的影響
+# 提示：把範例中的 'sex' 換成 'class' 就好
+
+#+end_src
+
+*你應該得到的結果：*
+#+begin_example
+            mean  count
+class
+First   0.629630    216
+Second  0.472826    184
+Third   0.242363    491
+#+end_example
+→ 頭等艙存活率約 63%，三等艙只有 24%。有錢果然可以續命。
+
+*任務 B：年齡分組*
+
+年齡是連續數值，不能直接 groupby。要先用 =pd.cut()= 把年齡切成幾個區間，再分組分析：
+#+begin_src python -r -n :results output :exports both
+import pandas as pd
+import seaborn as sns
+df = sns.load_dataset('titanic')
+
+# 先建立年齡分組欄位（兒童/青少年/成人/老年）
+df['age_group'] = pd.cut(df['age'], bins=[0, 12, 18, 60, 100],
+                          labels=['兒童(0-12)', '青少年(13-18)',
+                                  '成人(19-60)', '老年(61+)'])
+
+# 請用 groupby 分析 'age_group' 對存活率的影響
+
+#+end_src
+
+*你應該得到的結果：*
+#+begin_example
+                  mean  count
+age_group
+兒童(0-12)    0.579710     69
+青少年(13-18) 0.428571     70
+成人(19-60)   0.388788    553
+老年(61+)     0.227273     22
+#+end_example
+→ 兒童存活率約 58%，老年人只有 23%。「婦女小孩優先」不是說說而已。
+（注意：有 177 人的年齡資料缺失，所以 count 加起來不到 891）
+
+*任務 C：自選因素*
+
+從以下欄位中任選一個，分析它對存活率的影響：
+- =alone= ：是否獨自旅行（True/False）
+- =embarked= ：登船港口（S/C/Q）
+- =pclass= ：艙等數字版（1/2/3）
+- 或試試交叉分析： =df.groupby(['class', 'sex'])['survived'].mean()=
+
+#+begin_src python -r -n :results output :exports both
+import pandas as pd
+import seaborn as sns
+df = sns.load_dataset('titanic')
+
+# 請自選一個因素進行分析
+
+#+end_src
+
+*** 綜合分析
+跑完三個任務後，請回答以下問題（直接寫在程式碼的 print 裡面或用文字回答）：
+1. 你分析的所有因素中，哪一個對存活率的影響最大？你是怎麼判斷的？（提示：比較各群組之間存活率的差距）
+2. 兒童（12 歲以下）的存活率和成人比起來如何？這反映了什麼歷史事實？
+3. 如果你是保險公司，會根據這些分析結果怎麼定保費？哪些人該收比較多？
+
+*** 參考解答 :noexport:
+#+begin_src python -r -n :results output :exports both
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+df = sns.load_dataset('titanic')
+
+print(f"總乘客數: {len(df)}, 存活率: {df['survived'].mean():.1%}\n")
+
+# 各因素的存活率分析
+factors = {
+    '性別': 'sex',
+    '艙等': 'class',
+    '登船港口': 'embarked',
+    '是否獨自旅行': 'alone',
+}
+
+for label, col in factors.items():
+    print(f"--- {label} ({col}) ---")
+    result = df.groupby(col)['survived'].agg(['mean', 'count'])
+    result.columns = ['存活率', '人數']
+    result['存活率'] = result['存活率'].map('{:.1%}'.format)
+    print(result)
+    print()
+
+# 年齡分組分析
+df['age_group'] = pd.cut(df['age'], bins=[0, 12, 18, 60, 100],
+                          labels=['兒童(0-12)', '青少年(13-18)',
+                                  '成人(19-60)', '老年(61+)'])
+print("--- 年齡分組 ---")
+age_result = df.groupby('age_group')['survived'].agg(['mean', 'count'])
+age_result.columns = ['存活率', '人數']
+age_result['存活率'] = age_result['存活率'].map('{:.1%}'.format)
+print(age_result)
+
+# 交叉分析: 艙等 + 性別
+print("\n--- 艙等 × 性別 存活率 ---")
+cross = df.groupby(['class', 'sex'])['survived'].mean().round(3)
+print(cross)
+
+# 視覺化
+fig, axes = plt.subplots(1, 3, figsize=(14, 4))
+
+df.groupby('sex')['survived'].mean().plot(kind='bar', ax=axes[0], color=['steelblue','salmon'])
+axes[0].set_title('性別 vs 存活率')
+axes[0].set_ylabel('存活率')
+axes[0].set_xticklabels(axes[0].get_xticklabels(), rotation=0)
+
+df.groupby('class')['survived'].mean().plot(kind='bar', ax=axes[1], color=['gold','silver','brown'])
+axes[1].set_title('艙等 vs 存活率')
+axes[1].set_ylabel('存活率')
+axes[1].set_xticklabels(axes[1].get_xticklabels(), rotation=0)
+
+df.groupby('age_group')['survived'].mean().plot(kind='bar', ax=axes[2], color='teal')
+axes[2].set_title('年齡 vs 存活率')
+axes[2].set_ylabel('存活率')
+axes[2].set_xticklabels(axes[2].get_xticklabels(), rotation=15)
+
+plt.tight_layout()
+plt.savefig("images/titanic-eda.png", dpi=300)
+
+print("\n=== 思考題解答 ===")
+print("1. 性別的影響更大。女性存活率約 74%，男性約 19%，差距達 55 個百分點；")
+print("   而艙等的差距（頭等艙 63% vs 三等艙 24%）約 39 個百分點。")
+print()
+print("2. 兒童（12 歲以下）存活率約 58%，高於整體的 38%，")
+print("   這反映了「婦女和小孩優先」的救生原則。")
+print()
+print("3. 保險公司可以根據性別、年齡、艙位等因素進行風險評估，")
+print("   例如：為高風險群組（男性、三等艙）設定較高的保費。")
+print("   這正是資料探勘在商業應用上的典型案例。")
+#+end_src
+
+** 練習三：搶救 LiarFood 大作戰
+你剛被升為南一中校內便利商店 LiarFood 的代理店長。前任店長上個月推了「咖啡＋御飯糰 第二件六折」——他的邏輯很簡單：這兩個賣最好，綁在一起一定大賣吧？
+
+結果月底算帳才發現：大家本來就會買咖啡（不需要促銷就會買），白白少收了一堆錢。前任店長已經被調去物流中心搬箱子了。
+
+現在輪到你。區經理丟了一疊交易記錄在你桌上：「用數據說話，別再用直覺。下個月業績報告見。」如果你也選錯，物流中心的箱子就是兩個人搬了。
+
+*** 觀念提醒：Support 與 Confidence
+在分析之前，先搞懂兩個關鍵數字（搞不懂的話，物流中心見）：
+- *Support（支持度）* ：兩個商品在所有交易中「同時被購買」的次數。例如 71 筆交易中有 13 筆同時買了鮮奶和麵包，則 support = 13。support 越高 = 這組合越常出現。
+- *Confidence（信賴度）* ：已知顧客買了 A，他「也買了 B」的比例。例如買泡麵的 12 人中有 11 人也買了茶葉蛋，則 =泡麵 → 茶葉蛋= 的 confidence = 11/12 ≈ 92%。confidence 越高 = A 對 B 的帶貨力越強。
+  - 注意：=A → B= 和 =B → A= 的 confidence 通常不同！買泡麵的人幾乎都買茶葉蛋，但買茶葉蛋的人不一定買泡麵（也許他只是肚子餓）。
+
+*** 情境說明
+- 資料：71 筆交易記錄（含隨機交易與三種典型客群的購買模式）
+- 商品：茶葉蛋、御飯糰、咖啡、鮮奶、麵包、餅乾、泡麵、果汁
+- 你的任務：找出一組商品做「第二件六折」，讓公司賺最多錢（而不是讓自己去搬箱子）
+
+*** 步驟
+1. 觀察交易資料，認識你的顧客
+2. 用關聯規則找出常被一起購買的商品組合
+3. 加入成本分析，算出哪個組合打折後還能賺錢
+4. 寫一份讓區經理點頭的促銷企劃
+
+*** Step 1：認識你的顧客
+#+begin_src python -r -n :results output :exports both
+import pandas as pd
+import numpy as np
+from itertools import combinations
+
+np.random.seed(42)  # 固定隨機種子，讓每次執行結果相同
+
+# 商品清單與各商品被購買的基礎機率
+products = {
+    '茶葉蛋': 0.20,
+    '御飯糰': 0.35,
+    '咖啡':   0.45,   # 國民飲料，人人都買
+    '鮮奶':   0.18,
+    '麵包':   0.22,
+    '餅乾':   0.15,
+    '泡麵':   0.05,   # 平常沒什麼人買...嗎？
+    '果汁':   0.20,
+}
+
+# 產生 40 筆隨機交易
+n_base = 40
+transactions = {}
+for i in range(1, n_base + 1):
+    basket = [p for p, prob in products.items() if np.random.random() < prob]
+    if len(basket) == 0:
+        basket = [np.random.choice(list(products.keys()))]
+    transactions[i] = basket
+
+tid = n_base
+
+# === 三種典型客群（每間超商都有的那些人）===
+
+# 早餐族（7:50 衝進來的高中生，固定拿鮮奶+麵包，月底有錢再加個御飯糰）
+for _ in range(12):
+    tid += 1
+    base = ['鮮奶', '麵包']
+    if np.random.random() < 0.3:
+        base.append('御飯糰')
+    transactions[tid] = base
+
+# 宵夜族（凌晨 2 點的大學生，泡麵+茶葉蛋是靈魂套餐，缺一不可）
+for _ in range(11):
+    tid += 1
+    transactions[tid] = ['泡麵', '茶葉蛋']
+
+# 趕上班族（8:05 的社畜，抓了咖啡就走，連發票都不要）
+for _ in range(8):
+    tid += 1
+    transactions[tid] = ['咖啡']
+
+# 建立交易矩陣
+all_items = sorted(products.keys())
+rows = []
+for tid, items in transactions.items():
+    rows.append({item: 1 if item in items else 0 for item in all_items})
+df = pd.DataFrame(rows, index=transactions.keys())
+df.index.name = 'Tid'
+
+print(f"共 {len(df)} 筆交易，{len(all_items)} 種商品\n")
+print("前 10 筆交易:")
+print(df.head(10))
+print(f"\n各商品出現次數（由高到低）:")
+print(df.sum().sort_values(ascending=False))
+print("\n☝ 咖啡賣最好。前任店長看到這裡就決定拿咖啡做促銷了。")
+print("  但你比他聰明——你會繼續往下看。")
+#+end_src
+
+*** Step 2：找出商品之間的關聯（前任店長沒做的事）
+咖啡賣最好，不代表它跟別人「一起」賣最好。讓我們算算看。
+
+*你應該得到的結果（min_support=8）：*
+#+begin_example
+Frequent 2-itemsets（共 3 組）：
+  {御飯糰, 麵包}: support=8
+  {泡麵, 茶葉蛋}: support=11
+  {鮮奶, 麵包}: support=13  ← support 冠軍
+
+Confidence 亮點：
+  泡麵 → 茶葉蛋: confidence=0.917（買泡麵的人有 92% 也買茶葉蛋）
+  鮮奶 → 麵包: confidence=0.812（買鮮奶的人有 81% 也買麵包）
+  咖啡的配對？沒有任何一組 support 超過 8——銷量冠軍配對能力竟然是零
+#+end_example
+
+#+begin_src python -r -n :results output :exports both
+import pandas as pd
+import numpy as np
+from itertools import combinations
+
+# --- 以下為資料產生（與 Step 1 相同）---
+np.random.seed(42)
+products = {
+    '茶葉蛋': 0.20, '御飯糰': 0.35, '咖啡': 0.45, '鮮奶': 0.18,
+    '麵包': 0.22, '餅乾': 0.15, '泡麵': 0.05, '果汁': 0.20,
+}
+n_base = 40
+transactions = {}
+for i in range(1, n_base + 1):
+    basket = [p for p, prob in products.items() if np.random.random() < prob]
+    if len(basket) == 0:
+        basket = [np.random.choice(list(products.keys()))]
+    transactions[i] = basket
+tid = n_base
+for _ in range(12):
+    tid += 1
+    base = ['鮮奶', '麵包']
+    if np.random.random() < 0.3:
+        base.append('御飯糰')
+    transactions[tid] = base
+for _ in range(11):
+    tid += 1
+    transactions[tid] = ['泡麵', '茶葉蛋']
+for _ in range(8):
+    tid += 1
+    transactions[tid] = ['咖啡']
+all_items = sorted(products.keys())
+rows = []
+for t, items in transactions.items():
+    rows.append({item: 1 if item in items else 0 for item in all_items})
+df = pd.DataFrame(rows, index=transactions.keys())
+n = len(df)
+# --- 資料產生結束 ---
+
+# 請完成以下分析：
+# (1) 設定 min_support = 8，用 combinations 找出所有符合條件的 2-itemset
+# (2) 計算每條規則的 confidence（雙向都要算！）
+# (3) 回答：咖啡（銷量冠軍）的配對 support 有進榜嗎？
+# (4) support 冠軍和 confidence 冠軍是同一組嗎？
+
+min_support = 8
+
+# 提示：程式碼結構跟練習一幾乎一樣
+# 如果你忘了怎麼寫，往上翻「以 Pandas 實作關聯規則分析」那段
+#+end_src
+
+*** Step 3：別急著慶祝——打折之後還賺錢嗎？
+找到熱門組合了？先別急著跟區經理報告。前任店長也找到了熱門組合（咖啡+御飯糰），但他忘了一件事：*打折是要成本的*。
+
+以下是各商品的成本與售價（注意看鮮奶的利潤...）：
+
+| 商品   | 成本(元) | 售價(元) | 正常利潤(元) |
+|--------+----------+----------+--------------|
+| 茶葉蛋 |        5 |       13 |            8 |
+| 御飯糰 |       12 |       30 |           18 |
+| 咖啡   |       15 |       45 |           30 |
+| 鮮奶   |       25 |       35 |     10（薄） |
+| 麵包   |        8 |       25 |           17 |
+| 餅乾   |        6 |       20 |           14 |
+| 泡麵   |        8 |       30 |           22 |
+| 果汁   |       10 |       25 |           15 |
+
+*遊戲規則：* 兩件商品中，較便宜的那件打六折（售價 × 0.6），較貴的維持原價。
+
+請計算 Step 2 找到的每個組合：
+1. 每組促銷利潤 = (貴的售價 − 貴的成本) + (便宜的售價 × 0.6 − 便宜的成本)
+2. 預估總利潤 = 每組促銷利潤 × support
+
+*你應該得到的結果：*
+#+begin_example
+御飯糰(原價) + 麵包(六折): 每組利潤=25.0元 × 8組 = 200.0元
+泡麵(原價) + 茶葉蛋(六折): 每組利潤=24.8元 × 11組 = 272.8元  ← 利潤冠軍！
+鮮奶(原價) + 麵包(六折): 每組利潤=17.0元 × 13組 = 221.0元
+
+→ support 最高的「鮮奶+麵包」反而不是最賺的（鮮奶成本太高，利潤被吃掉了）
+→ 最賺錢的是「泡麵+茶葉蛋」：帶貨力最強 + 利潤最高 = 最佳促銷組合
+#+end_example
+
+#+begin_src python -r -n :results output :exports both
+import pandas as pd
+import numpy as np
+from itertools import combinations
+
+# --- 資料產生（與 Step 1 相同）---
+np.random.seed(42)
+products = {
+    '茶葉蛋': 0.20, '御飯糰': 0.35, '咖啡': 0.45, '鮮奶': 0.18,
+    '麵包': 0.22, '餅乾': 0.15, '泡麵': 0.05, '果汁': 0.20,
+}
+n_base = 40
+transactions = {}
+for i in range(1, n_base + 1):
+    basket = [p for p, prob in products.items() if np.random.random() < prob]
+    if len(basket) == 0:
+        basket = [np.random.choice(list(products.keys()))]
+    transactions[i] = basket
+tid = n_base
+for _ in range(12):
+    tid += 1
+    base = ['鮮奶', '麵包']
+    if np.random.random() < 0.3:
+        base.append('御飯糰')
+    transactions[tid] = base
+for _ in range(11):
+    tid += 1
+    transactions[tid] = ['泡麵', '茶葉蛋']
+for _ in range(8):
+    tid += 1
+    transactions[tid] = ['咖啡']
+all_items = sorted(products.keys())
+rows = []
+for t, items in transactions.items():
+    rows.append({item: 1 if item in items else 0 for item in all_items})
+df = pd.DataFrame(rows, index=transactions.keys())
+n = len(df)
+# --- 資料產生結束 ---
+
+# 商品成本與售價
+price = {'茶葉蛋': 13, '御飯糰': 30, '咖啡': 45, '鮮奶': 35,
+         '麵包': 25, '餅乾': 20, '泡麵': 30, '果汁': 25}
+cost  = {'茶葉蛋': 5, '御飯糰': 12, '咖啡': 15, '鮮奶': 25,
+         '麵包': 8, '餅乾': 6, '泡麵': 8, '果汁': 10}
+
+# 請完成以下分析：
+# 對 Step 2 找到的每個 frequent 2-itemset，計算：
+# (1) 哪個商品較貴（原價賣），哪個較便宜（打六折）
+# (2) 每組促銷利潤
+# (3) 預估總利潤 = 每組利潤 × support
+# 最後回答：利潤最高的組合和 support 最高的組合是同一組嗎？
+# （如果不是，恭喜你，你找到了前任店長搬箱子的原因。）
+#+end_src
+
+*** 思考題
+1. 咖啡是銷量冠軍，但拿它做第二件六折是好主意嗎？前任店長犯了什麼錯？
+2. support 最高的組合 vs confidence 最高的組合——如果你只能選一個做促銷，選誰？
+3. 鮮奶+麵包是最多人一起買的組合（support 冠軍），但算完利潤後呢？為什麼會差這麼多？（提示：看看鮮奶的成本占售價多少比例）
+4. 區經理突然改口要推「三件合購 79 折」。你的程式碼只需要改一個地方，哪裡？
+
+*** 參考解答 :noexport:
+#+begin_src python -r -n :results output :exports both
+import pandas as pd
+import numpy as np
+from itertools import combinations
+
+# 資料產生
+np.random.seed(42)
+products = {
+    '茶葉蛋': 0.20, '御飯糰': 0.35, '咖啡': 0.45, '鮮奶': 0.18,
+    '麵包': 0.22, '餅乾': 0.15, '泡麵': 0.05, '果汁': 0.20,
+}
+n_base = 40
+transactions = {}
+for i in range(1, n_base + 1):
+    basket = [p for p, prob in products.items() if np.random.random() < prob]
+    if len(basket) == 0:
+        basket = [np.random.choice(list(products.keys()))]
+    transactions[i] = basket
+tid = n_base
+for _ in range(12):
+    tid += 1
+    base = ['鮮奶', '麵包']
+    if np.random.random() < 0.3:
+        base.append('御飯糰')
+    transactions[tid] = base
+for _ in range(11):
+    tid += 1
+    transactions[tid] = ['泡麵', '茶葉蛋']
+for _ in range(8):
+    tid += 1
+    transactions[tid] = ['咖啡']
+all_items = sorted(products.keys())
+rows = []
+for t, items in transactions.items():
+    rows.append({item: 1 if item in items else 0 for item in all_items})
+df = pd.DataFrame(rows, index=transactions.keys())
+n = len(df)
+
+print(f"共 {n} 筆交易\n")
+
+# 1. 個別商品銷量
+print("=== 各商品出現次數 ===")
+item_counts = df.sum().sort_values(ascending=False)
+print(item_counts)
+
+# 2. 找出所有 2-itemset
+min_support = 8
+print(f"\n=== 2-itemset (min_support={min_support}) ===")
+freq_2 = {}
+for a, b in combinations(all_items, 2):
+    support = (df[a] & df[b]).sum()
+    if support >= min_support:
+        freq_2[(a, b)] = support
+        print(f"  {{{a}, {b}}}: support={support} ({support/n:.1%})")
+
+# 3. 計算 confidence
+min_conf = 0.3
+print(f"\n=== 關聯規則 (min_conf={min_conf}) ===")
+rules = []
+for (a, b), sup in freq_2.items():
+    conf_ab = sup / df[a].sum()
+    conf_ba = sup / df[b].sum()
+    if conf_ab >= min_conf:
+        rules.append((a, b, sup, conf_ab))
+        print(f"  {a} → {b}: support={sup}, confidence={conf_ab:.3f}")
+    if conf_ba >= min_conf:
+        rules.append((b, a, sup, conf_ba))
+        print(f"  {b} → {a}: support={sup}, confidence={conf_ba:.3f}")
+
+# 4. 三個指標的比較
+print(f"\n=== 前任店長的錯誤 ===")
+top_item = item_counts.index[0]
+top_item_count = item_counts.iloc[0]
+print(f"個別銷量最高: {top_item}（{top_item_count} 次）")
+top_item_pairs = {k: v for k, v in freq_2.items()
+                  if top_item in k}
+if top_item_pairs:
+    best_pair = max(top_item_pairs.items(), key=lambda x: x[1])
+    print(f"  → 但 {top_item} 最強的配對也才 {best_pair[0]}: support={best_pair[1]}")
+    print(f"    翻譯：大家買咖啡是因為需要續命，不是因為旁邊放了什麼。")
+else:
+    print(f"  → {top_item} 和任何商品的配對 support 都不到 {min_support}！")
+    print(f"    翻譯：大家買咖啡是因為需要續命，不是因為旁邊放了什麼。")
+
+pair_by_support = sorted(freq_2.items(), key=lambda x: x[1], reverse=True)
+print(f"\nsupport 最高: {pair_by_support[0][0][0]}+{pair_by_support[0][0][1]}"
+      f"（support={pair_by_support[0][1]}）")
+
+best_conf_rule = max(rules, key=lambda x: x[3])
+print(f"confidence 最高: {best_conf_rule[0]}→{best_conf_rule[1]}"
+      f"（confidence={best_conf_rule[3]:.0%}，support={best_conf_rule[2]}）")
+print(f"  翻譯：買{best_conf_rule[0]}的人有 {best_conf_rule[3]:.0%} 會順手拿{best_conf_rule[1]}。")
+
+# 5. 促銷建議（不考慮成本）
+print(f"\n=== 初步方案（還沒算錢）===")
+print("方案 A（人多的組合）：")
+a, b = pair_by_support[0][0]
+sup_a = pair_by_support[0][1]
+print(f"  {a} + {b}：{sup_a} 組客人一起買過（佔 {sup_a/n:.0%} 的交易）")
+print()
+print("方案 B（帶貨力最強的組合）：")
+x, y = best_conf_rule[0], best_conf_rule[1]
+print(f"  {x} + {y}：買{x}的人有 {best_conf_rule[3]:.0%} 也買{y}")
+print()
+print("到這裡都很好。但前任店長也做到這一步了。")
+print("他沒做的是下面這件事——")
+
+# 6. 成本利潤分析（前任店長沒做的事）
+price = {'茶葉蛋': 13, '御飯糰': 30, '咖啡': 45, '鮮奶': 35,
+         '麵包': 25, '餅乾': 20, '泡麵': 30, '果汁': 25}
+cost  = {'茶葉蛋': 5, '御飯糰': 12, '咖啡': 15, '鮮奶': 25,
+         '麵包': 8, '餅乾': 6, '泡麵': 8, '果汁': 10}
+
+print(f"\n=== 算錢時間（第二件六折利潤分析）===")
+profit_results = []
+for (a, b), sup in freq_2.items():
+    if price[a] >= price[b]:
+        expensive, cheap = a, b
+    else:
+        expensive, cheap = b, a
+    profit_full = price[expensive] - cost[expensive]
+    profit_disc = price[cheap] * 0.6 - cost[cheap]
+    profit_combo = profit_full + profit_disc
+    total_profit = profit_combo * sup
+    profit_results.append((a, b, expensive, cheap, profit_combo, sup, total_profit))
+    print(f"  {expensive}(原價) + {cheap}(六折):")
+    print(f"    每組利潤 = {profit_full:.0f} + {profit_disc:.1f} = {profit_combo:.1f} 元")
+    print(f"    預估總利潤 = {profit_combo:.1f} × {sup}組 = {total_profit:.1f} 元")
+
+profit_results.sort(key=lambda x: x[6], reverse=True)
+print(f"\n=== 最終報告（給區經理看的那種）===")
+print("三個角度，三個不同的答案：")
+print(f"  銷量冠軍 → {item_counts.index[0]}（孤狼型商品，配對能力差）")
+best_s = pair_by_support[0]
+print(f"  最常一起買 → {best_s[0][0]}+{best_s[0][1]}（support={best_s[1]}）")
+print(f"  帶貨力最強 → {best_conf_rule[0]}→{best_conf_rule[1]}（confidence={best_conf_rule[3]:.0%}）")
+best_p = profit_results[0]
+print(f"  最賺錢的   → {best_p[2]}+{best_p[3]}（預估總利潤 {best_p[6]:.0f} 元）")
+print()
+if best_s[0] != (best_p[0], best_p[1]):
+    worst_s = [r for r in profit_results if (r[0],r[1]) == best_s[0]][0]
+    print(f"驚不驚喜？「最多人一起買」的 {best_s[0][0]}+{best_s[0][1]} 反而不是最賺的！")
+    print(f"  原因：{best_s[0][0]}+{best_s[0][1]} 每組只賺 {worst_s[4]:.1f} 元（鮮奶成本太高，利潤太薄）")
+    print(f"  而 {best_p[2]}+{best_p[3]} 每組賺 {best_p[4]:.1f} 元，雖然客人少一些，但每組多賺很多")
+print()
+print("結論：")
+print("  資料探勘（support、confidence）告訴你『誰跟誰常一起出現』")
+print("  但要不要做促銷，還得看打折後賺不賺錢。")
+print("  這就是為什麼資料科學家需要懂一點商業——不然就去搬箱子了。")
+
+# 額外：3-itemset
+print(f"\n=== 加碼：如果要推三件合購呢？(min_support={min_support}) ===")
+for a, b, c in combinations(all_items, 3):
+    support = (df[a] & df[b] & df[c]).sum()
+    if support >= min_support:
+        print(f"  {{{a}, {b}, {c}}}: support={support}")
+#+end_src

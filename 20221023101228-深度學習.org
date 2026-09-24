@@ -3,9 +3,10 @@
 :ROAM_ALIASES: Deep-Learning
 :END:
 #+title: 深度學習
+#+AUTHOR: 顏永進
 # -*- org-export-babel-evaluate: nil -*-
 #+INCLUDE: ../pdf.org
-#+PROPERTY: header-args :eval never-export
+#+PROPERTY: header-args :python :python "/Users/letranger/Dropbox/notes/roam/venv/bin/python3" :eval never-export
 #+TAGS: AI, Python
 #+EXCLUDE_TAGS: noexport
 #+OPTIONS: toc:2 ^:nil num:5
@@ -17,7 +18,7 @@
 <a href="https://letranger.github.io/AI/20221023101228-深度學習.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20221023101228-深度學習.html.svg"/></a>
 #+end_export
 * 為此 org 啟用 venv :noexport:
-#+begin_src shell -r -n :results output :exports no
+#+begin_src shell -r -n :results output :exports none
 python3 -m venv ./venv
 source ./venv/bin/activate
 echo $VIRTUAL_ENV
@@ -29,7 +30,7 @@ python3 -m pip install -U seaborn
 python3 -m pip install -U statsmodels
 #+end_src
 
-#+begin_src shell -r -n :results output :exports no
+#+begin_src shell -r -n :results output :exports none
 python3 -m pip install -U scikeras
 #+end_src
 
@@ -59,7 +60,7 @@ Installing collected packages: scikeras
 Successfully installed scikeras-0.13.0
 #+end_example
 
-#+BEGIN_SRC emacs-lisp :exports no
+#+BEGIN_SRC emacs-lisp :exports none
 (pyvenv-activate "./venv")
 (setq org-babel-python-command "./venv/bin/python3")
 #+END_SRC
@@ -69,10 +70,9 @@ Successfully installed scikeras-0.13.0
 : ./venv/bin/python3
 
 * 深度學習
-所謂深度學習是指
 #+CAPTION: AI, Machine Learning與Deep Learning
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:AI-ML-DL
+#+name: fig:AI-ML-DL
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -107,7 +107,7 @@ Successfully installed scikeras-0.13.0
 
 關於增加層數的重要性，目前還缺乏理論佐證，但從過往的研究或實驗中，有幾點可以說明。
 1. 在 ILSVRC 這種大型視覺辨識競賽結果中，加深層數的比例多與辨識效能成正比。
-2. 加深層數可以在減少網路參數的狀況下得到相同成效，透過重叠層級，可以讓 ReLU 等活化函數夾在卷積層之間，進一步提高網路的表現力，因為透過活化函數，可以在網路增加「非線性」的能力，重叠非線性函數，也能達到更複雜的表現力。
+2. 加深層數可以在減少網路參數的狀況下得到相同成效，透過重疊層級，可以讓 ReLU 等活化函數夾在卷積層之間，進一步提高網路的表現力，因為透過活化函數，可以在網路增加「非線性」的能力，重疊非線性函數，也能達到更複雜的表現力。
 3. 學習的效率也是加深層數的優點之一，卷積層的神經元會反應出邊界等單純形狀，隨著層數增加，可以反應出紋理、物體部位等特質，依照階層逐漸變複雜。
 4. 以辨識「狗」為例子，如果要以層數較少的網路來解決這個問題，卷積層就要一次「理解」眾多特徵，還要因應不同拍攝環境帶來的變化，一次處理這些龐大的資料會花費許多學習時間； 如果加深層數，就能用階層分解必須學習的問題，每一層可以處理單純的問題，例如，最初的層級可以只學習邊界，利用少量的學習資料來進行效率化的學習。
 5. 加深層數可以階層性的傳遞資料，例如，擷取出邊界的下一層會使用邊界資料來學習更高階的問題（如判斷形狀）。
@@ -118,16 +118,16 @@ Successfully installed scikeras-0.13.0
 VGG 為由卷積層與池化層構成的基本 CNN。特色是含權重層（卷積層及全連接層）共 16-19 層，有時會稱為 VGG16[fn:2] 或 VGG19[fn:3]。VGG 由於結構非常簡單，應用性高，所以多數技術人員喜歡使用以 VGG 為最基礎的網路。
 
 #+CAPTION: VGG-16
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:VGG16
+#+name: fig:VGG16
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/深度學習/2024-03-21_15-57-59_2024-03-21_15-57-03.png]]
 
 #+CAPTION: VGG-19
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:VGG19
+#+name: fig:VGG19
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -135,8 +135,8 @@ VGG 為由卷積層與池化層構成的基本 CNN。特色是含權重層（卷
 *** GoogLeNet
 GoogLeNet[fn:4]為2014 年 ILSVRC (ImageNet Large Scale Visual Recognition Competition)圖像分類競賽的冠軍得主，與 VGGNet（該年的亞軍）相比具有相對較低的錯誤率。GoogLeNet基本上與 CNN 相同，其特色是不僅會往垂直方向加深網路，也會往水平方向加深。GoogLeNet 往水平方向的做法稱為「Inception 結構」。
 #+CAPTION: GoogLeNet
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:GoogLeNet
+#+name: fig:GoogLeNet
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 700
@@ -144,8 +144,8 @@ GoogLeNet[fn:4]為2014 年 ILSVRC (ImageNet Large Scale Visual Recognition Compe
 *** ResNet
 ResNet[fn:5]是由 Microsoft 團隊開發的網路，特色是具有能加深比過去更多層的「結構」，為了解決因加深過多層數無法順利學習的問題，ResNet 導入了「跳躍結構」（也稱為捷徑或分流）。跳躍結構是「直接」傳遞輸入資料，所以在反向傳播時，也會將上層的梯度「直接」傳遞給下層。透過這種跳躍結構，不用擔心梯度變小（或變得太大），可以把「具有意義的梯度」傳遞給上層。因此，跳躍結構能減少之前因為加深層數，使得梯度變小，出現梯度消失的問題。
 #+CAPTION: ResNet
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:ResNet
+#+name: fig:ResNet
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 700
@@ -153,18 +153,18 @@ ResNet[fn:5]是由 Microsoft 團隊開發的網路，特色是具有能加深比
 *** ImageNet大賽
 從下圖可觀察到，網路的層數從2014年GoogLeNet的22層爆增到2015年ResNet的152層，足足多了130層。這個結果證實了越深的網路，在沒有Overfitting的情況下，效果是越好的[fn:6]。
 #+CAPTION: ImageNet歷年冠軍
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:ImageNet-champs
+#+name: fig:ImageNet-champs
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/深度學習/2024-03-21_16-28-03_2024-03-21_16-26-55.png]]
 
-那麼...如果想要提升模型的效果，是不是加越多網路層，使網路越深就可以了呢？，底下這個研究結果可以給我們一點啟發：
+那麼...如果想要提升模型的效果，是不是加越多網路層，使網路越深就可以了呢？底下這個研究結果可以給我們一點啟發：
 
 #+CAPTION: DNN層數與誤差的實驗
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:DNN-depth-error
+#+name: fig:DNN-depth-error
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -172,12 +172,51 @@ ResNet[fn:5]是由 Microsoft 團隊開發的網路，特色是具有能加深比
 
 這是為2016年IEEE Conference on Computer Vision and Pattern Recognition的一篇研究結果[fn:7]，實驗結果顯示一般深度網路層數越多，訓練誤差不降反增。
 
+*** 後續發展
+在 ResNet 之後，深度學習模型的架構仍持續演進：
+
+- *EfficientNet* (2019)：Google 提出的模型，透過「複合縮放」(compound scaling) 方法，同時調整網路的深度、寬度和解析度，以更少的參數達到更高的準確率。EfficientNet-B7 在 ImageNet 上以 66M 參數達到 84.3% top-1 準確率，遠優於先前需要更多參數的模型。
+- *Vision Transformer (ViT)* (2020)：Google 將原本用於自然語言處理的 Transformer 架構應用於影像辨識，將影像切割成小區塊（patches）後，以類似處理文字序列的方式進行分類。ViT 證明了在足夠大的資料集上，Transformer 可以超越傳統 CNN 的表現，開啟了電腦視覺領域的新典範。
+- *ConvNeXt* (2022)：Meta 提出的純 CNN 架構，借鑑了 Transformer 的設計理念（如更大的卷積核、Layer Normalization），證明經過現代化改良的 CNN 仍能與 Transformer 匹敵。
+
+*** Transformer
+Transformer 是 2017 年由 Google 團隊在論文《Attention Is All You Need》中提出的架構，是近年來深度學習領域最具影響力的突破。
+
+**** 核心概念：自注意力機制 (Self-Attention)
+傳統的序列模型（如 RNN、LSTM）是逐步處理輸入序列的每個元素，因此難以平行化且不易捕捉長距離依賴關係。Transformer 完全捨棄了遞迴結構，改用「自注意力機制」(Self-Attention Mechanism) 來計算序列中每個元素與其他所有元素之間的關聯程度。
+
+自注意力的核心運算包含三個向量：
+- *Query (Q)* ：代表「我在找什麼」
+- *Key (K)* ：代表「我有什麼」
+- *Value (V)* ：代表「我提供什麼資訊」
+
+其公式為：
+\[ \text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V \]
+
+其中 \(d_k\) 為 Key 向量的維度，除以 \(\sqrt{d_k}\) 是為了避免內積值過大導致 softmax 梯度消失。
+
+**** 編碼器-解碼器架構
+Transformer 由編碼器（Encoder）和解碼器（Decoder）兩部分組成：
+- *編碼器* ：負責理解輸入序列，由多層自注意力層和前饋神經網路堆疊而成
+- *解碼器* ：負責生成輸出序列，除了自注意力外還加入了「交叉注意力」(Cross-Attention)，用來關注編碼器的輸出
+
+後續的模型通常只使用其中一部分：
+- 僅編碼器：BERT（用於文本理解、分類）
+- 僅解碼器：GPT 系列（用於文本生成）
+- 編碼器-解碼器：T5、BART（用於翻譯、摘要）
+
+**** 為什麼 Transformer 如此重要
+1. *平行化運算* ：不像 RNN 需要逐步計算，Transformer 可以同時處理整個序列，大幅提升訓練速度
+2. *長距離依賴* ：自注意力機制讓模型能直接關注序列中任意位置的元素，不會像 RNN 那樣隨距離增加而遺忘
+3. *可擴展性* ：Transformer 的效能隨模型大小和資料量的增加而持續提升，這個特性催生了「大型語言模型」(LLM) 的發展
+4. *跨領域應用* ：除了自然語言處理，Transformer 也被成功應用於電腦視覺 (ViT)、語音辨識、蛋白質結構預測 (AlphaFold) 等領域
+
 ** 深度學習的高速化
 由於大資料(big data)與大型網路的關係，使得深度學習必須進行大量運算，過去我們使用 CPU 來進行運算，如今多數深度學習的框架多支援 GPU，甚至支援以多個 GPU 與多台裝置進行分散式學習。GPU 原本是圖形專用處理器，可以快速處理平行運算，GPU 運算的目標是把其強大的效能運用在各種用途。比較 CPU 與 GPU 在 AlexNet 的學習，CPU 需花費 40 天以上，GPU 則可以在 6 天內完成。
 
-利用 GPU 除了可以大幅提升深度學習的運算速度，但是一旦變成多層網路時，就需要花費數天或數週的時間來學習，Google 的 TensorFlow、Microsoft 的 CNTK 便是針對分散式學習來開發的，100 個分散式的 GPU 可以提升比單一 GPU 高到 56 倍的速度，意味著原本要有天才能完成的學習，只要 3 小時就可以結束。
+利用 GPU 除了可以大幅提升深度學習的運算速度，但是一旦變成多層網路時，就需要花費數天或數週的時間來學習，Google 的 TensorFlow、Microsoft 的 CNTK 便是針對分散式學習來開發的，100 個分散式的 GPU 可以提升比單一 GPU 高到 56 倍的速度，意味著原本要花好幾天才能完成的學習，只要 3 小時就可以結束。
 
-在深度學習的高速化過程中，包含運算量在內，記憶體容量、匯流排頻寬等，都會造成瓶頸，就記憶體容量來說，必須考慮到大量權重參數及中間資料會儲存在記憶體的情況。至於匯流排頻寛，一旦通過 GPU(或 CPU)的匯流排資料超過一定的限制，該處就會形成瓶頸，所以，最好能儘量減少通過網路的資料位元數。
+在深度學習的高速化過程中，包含運算量在內，記憶體容量、匯流排頻寬等，都會造成瓶頸，就記憶體容量來說，必須考慮到大量權重參數及中間資料會儲存在記憶體的情況。至於匯流排頻寬，一旦通過 GPU(或 CPU)的匯流排資料超過一定的限制，該處就會形成瓶頸，所以，最好能儘量減少通過網路的資料位元數。
 *** GPU v.s. CPU
 #+CAPTION: CPU 與 GPU 在架構上的設計差異
 #+LABEL:fig:CPUGPU
@@ -193,61 +232,86 @@ ResNet[fn:5]是由 Microsoft 團隊開發的網路，特色是具有能加深比
 - CPU 的發展主要致力於最佳化系統的遲滯時間，讓系統能有迅速流暢的反應；GPU 的發展則是朝頻寬最佳化努力。在深度神經網路中，頻寬為主要的系統瓶頸
 - GPU 的 Level 1 cache 比 CPU 快且大，在深度神經網路中，大部份的資料都會再次被使用到
 
-** 深度學習應用領域 :noexport:
-*** 影像辨識:卷積神經網路 CNN
-MNIST 歷年的競賽前幾名都是以 CNN 為基礎，進一步提高辨識準確率的方法還包括整體學習、學習率遞減（learning rate decay）、資料擴增（Data Augmentation, 如利用旋轉、垂直或水平移動輸入影像來小幅改變輸入資料以增加輸入影像張數）。
+** 深度學習應用領域
 
-傳統機器學習進行圖片識別，主要是希望能透過原始像數值找出一種適合的分類器(classifier)，但事實證明這麼做不管用，因為信噪比太低。後來的改善方式是由人類挑選出重要特徵，然後由機器學習演算法使用這些「特徵向量(feature vectors)」進行分類判斷。這種特徵提取(feature extraction)的做法確實改善了信噪比，但是如果圖片的重要特點因光線或其他因素難以識別，則精確率會降低很多，而且，事前的人工挑選特徵花去太多人力，以深度學習進行圖片視覺就是設法消除那些既繁瑣又會造成侷限性的特徵選取程序。David Hubel 和 Torsten Wiesel 發現動物視覺皮層有一部份專門負責檢測邊緣，1959 年他們把電極插入貓的大腦中，在螢幕上投射出黑白圖案，發現有些神經元只有在出現垂直線時被激發，有些則只有在出現水平線時被激發，有些則是只有看到某特定角度的線時被激發。進一步的研究確認，視覺皮層是以分層的結構組織起來的，每一層都會根據前一層所偵測到的特徵得出進一步的訊息，從線條、輪廓、形狀，一直到整個物體。由上述研究得來的第一個概念就是「過濾器(filter)」。
+深度學習到底能幹嘛？答案是：幾乎什麼都能幹。以下是幾個你可能每天都在用、但沒意識到背後是深度學習在撐腰的應用。
 
-典型的過濾器如下：
-- blur = [[1./9, 1./9, 1./9], [1./9, 1./9, 1./9], [1./9, 1./9, 1./9]]
-#+CAPTION: 模糊過濾器
-#+name: fig:blurFilter
-#+ATTR_LATEX: :width 300
-#+ATTR_HTML: :width 500
-#+ATTR_ORG: :width 300
-[[file:images/blur-filter.png]]
+*** 看圖說故事：電腦視覺
 
-- edges = [[1, 1, 1], [1, -8, 1], [1, 1, 1]]
-#+CAPTION: 邊緣強調過濾器
-#+name: fig:edgesFilter
-#+ATTR_LATEX: :width 300
-#+ATTR_HTML: :width 500
-#+ATTR_ORG: :width 400
-[[file:images/edges-filter.png]]
+電腦視覺是深度學習最早大放異彩的領域。簡單來說，就是讓電腦「看懂」圖片和影片。
 
-圖[[fig:blurFilter]]為一 3*3 的模楜強過濾器產生的效果，圖[[fig:edgesFilter]]則為邊緣強週器的效果。過濾器可以改變圖形，並顯示可用於「圖形偵測」和「圖形分類」的特徵。例如，為了對數字進行分類，內部的顏色並不重要，此時，邊緣強調過濾器就有助於辨識數字的一般形狀，進而提升數字識別效能。
+**** 影像辨識
+你的手機相簿能自動把同一個人的照片歸在一起、Google 相簿搜尋「海邊」就能找出所有海邊照片——這些都是深度學習在背後默默工作。核心技術是[[id:20221023T101414.457264][卷積神經網路（CNN）]]，它模仿人類視覺皮層的運作方式，一層一層地從影像中提取特徵：先看到邊緣、再看到紋理、然後辨識形狀、最後認出整個物體。
 
-我們可以用「類神經網路」的方式來理解「過濾器」，將我們定義的「過濾器」視為一組加權，最終的值又做為下一層的啟動值（輸入）。如圖[[fig:filterScanner]]，過濾器會逐次掃過整張圖，然後建立一組新的圖片，
-#+CAPTION: 過濾器的掃瞄計算
-#+name: fig:filterScanner
-#+ATTR_LATEX: :width 260
-#+ATTR_ORG: :width 260
-#+ATTR_HTML: :width 500
-[[file:images/filter-scanner.png]]
-*** 語言模型
-[[id:263cb433-d0eb-4400-a373-35175c000c01][循環神經網路]]
-*** 棋盤遊戲
-大約在 50 年代，研究人員開始建立具有 AI 的遊戲，這些遊戲以「西洋跳棋」(checkers)和「西洋棋」(chess)為主，這兩種遊戲有一些共同之處：
-- 它們是所謂的「零和遊戲」(zero-sum games)，即一個玩家所得到的奬勵就來自另一個玩家相對應的損失。另一類相對的遊戲則是指兩位玩家可以選擇合作，如 「囚徒困境」(prisoner's dilemma)。
-- 它們都具有「完全資訊」(perfect information)，兩方不同玩家都知道遊戲的整個狀態；另一種相對的遊戲則是撲克。因為得知目前狀態就可以導出最好的行動，所以這種遊戲可以減少 AI 所需處理問題的複雜度。
-- 兩種遊戲都有「明確性」(deterministic): 如果一個玩家下了一步，這步就會導致一個明確的下一個狀態；另一種相對的遊戲中，玩家下的一步可能是丟一次骰子或是抽一張牌，這就無法導致一個明確的下一步。
-*** 電腦遊戲
-*** 異常偵測
-*** 物體偵測
-從影像中分析出物體位置，進行分類。物體偵測比物體辨識的問題更困難，最著名的方式為 R-CNN，R-CNN 的實際處理流程有點複雜，包括把影像變形成正方形，使用 SVM 分類。
-*** 影像分割
-指針對影像以像素標籤進行類別分類，利用神經網路進行影像分割，最簡單的方法就是以全部的像素為對象，再依照各個像素進行推論處理。典型做法為 FCN(Fully Convolutional Network)，相對於一般 CNN 含有全連接層的情況，FCN 把全連接層更換成「執行相同動作的卷積層」，在物體辨識的網路全連接層中，中間資料的空間大小當作排列成 1 行節點來處理。
-*** 產生圖說
-針對影像自動產生說明該影像的內容，代表性方法為 NIC (Neural Image Caption)模型，NIC 是由處理多層 CNN 與自然語言的 RNN(Recurrent Neural Network, [[id:263cb433-d0eb-4400-a373-35175c000c01][循環神經網路]])所構成，RNN 指擁有遞迴功能的網路，常用在自然語言、時間序列資料等有連續性的資料上。
-*** 影像風格轉換
-代表論文為 A Neural Algorithm of Artistic Style。
-*** 產生影像
-從零開始產生「臥室」影像，代表性方法為 DCGAN(Deep Convolutional Generative Adversarial Network)。DCGAN 利用大量影像（如大量拍攝臥室影像）來學習，結束學習後，只要利用該模組就能產生新的影像。DCGAN 運用了 Generator(生成器)與 Discriminator(判別器)等兩個神經網路，Generator 產生與本尊相似的影像，Discriminator 判斷是否為本尊，即，確定是由 Generator 產生的影像或是實際拍攝的影像。兩者彼此制䚘學習，Generator 可以學習到更精巧的偽裝影像技術，Discriminator 則學習更高的鑑定技能，二者相互切磋成長，最終，Generator 能學會畫出與本尊一模一樣的影像。
-*** 自動駕駛
-最近在辨識周圍環境的技術中，深度學習的能力頗受期待，例如以 CNN 為基礎的網路 SegNet 即可精確辨識走路的環境。
-*** Deep Q-Network (強化學習)
-人類是透過嚐試錯誤來學習，例如騎腳踏車，在電腦領域中，也有從嚐試錯誤的過程中進行自主學習的例子，稱為強化學習(reinforcement learning)。在強化學習中，代理人(Agent)根據環境狀況來決定要採取的行動，利用該行動讓㼈境變化。隨環境變化，代理人獲得某些報酬。強化學習的目的是決定代理人的行動方針，以獲得更好的報酬。典型的 DQN 可以讓遊戲自動學習，達到超越人類等級的能力，使用 DQN 的 CNN 可以輸入遊戲影像(如連續 4 個畫面)，最後針對遊戲的控制器動作(搖桿的動作與按鈕)分別輸出該動作的「價值」。由於 DQN 的輸入只是影像，所以不用隨著遊戲的不同來改變設定，同一套 DQN 可以學習「小精靈」與「Atari」。DQN 與 AlphaGo 都是 Google Deep Mind 公司的研究。* ex: 入侵偵測系統
+**** 物體偵測
+影像辨識只能告訴你「這張圖裡有一隻狗」，物體偵測則更進一步：不只知道有狗，還知道狗在圖片的哪個位置，並用方框把牠框出來。你在 Instagram 上傳照片時，系統自動偵測到人臉並建議你標記朋友，就是物體偵測的應用。代表性的模型包括 R-CNN 系列和 YOLO（You Only Look Once，對，它的名字就是這麼中二）。
+
+**** 影像分割
+物體偵測用方框框住物體，影像分割則更精細——它會標記出物體的每一個像素。自動駕駛車就是靠這個技術來區分「這是路面」「這是行人」「這是紅綠燈」。想像你在 Photoshop 裡用魔術棒選取物體，影像分割就是讓 AI 幫你做這件事，而且做得比你好。
+
+*** 聽懂人話：自然語言處理
+
+讓電腦理解和生成人類語言，這個領域叫自然語言處理（NLP）。
+
+**** 語言模型與聊天機器人
+你最熟悉的應該就是 [[id:22f4856f-104e-4c15-8226-8b9b70bc584b][ChatGPT]] 了。ChatGPT 的核心是 GPT（Generative Pre-trained Transformer），一個基於 Transformer 架構的大型[[id:23447394-65f3-4149-b26d-c3a88272c0c9][語言模型]]。它在網路上的海量文本資料上進行預訓練，學會了「給定前面的文字，下一個字最可能是什麼」。聽起來很簡單？但當模型大到有上千億個參數時，這個「猜下一個字」的能力就強大到可以寫作文、寫程式、翻譯、甚至解數學題。
+
+**** 機器翻譯
+Google 翻譯在 2016 年換上了基於深度學習的翻譯模型後，翻譯品質有了巨大的飛躍。早期的翻譯系統是一個字一個字對照著翻（所以翻出來的句子常常語序錯亂），現在的模型則是「讀完整句話，理解意思，再用另一種語言重新表達」，更接近人類翻譯的方式。
+
+**** 語音辨識
+Siri、Google 助理、小愛同學——這些語音助手背後都是深度學習。語音辨識模型會把聲波轉成頻譜圖（一種把聲音「畫」成圖片的方式），然後用類似影像辨識的技術來辨認你說了什麼。所以本質上，語音辨識就是一種「看圖說故事」——只不過看的是聲音的圖。
+
+*** 無中生有：生成式 AI
+
+如果說前面的應用是讓 AI「看懂」或「聽懂」，生成式 AI 則是讓 AI 自己「創作」。
+
+**** 影像生成
+還記得 2022 年一幅 AI 生成的畫作在美國科羅拉多州藝術博覽會拿下冠軍，引發藝術界大地震嗎？那就是影像生成模型的威力。從早期的 GAN（生成對抗網路）到現在的 Stable Diffusion、DALL-E、Midjourney，AI 已經能根據一段文字描述（如「一隻戴著墨鏡在沙灘上衝浪的柴犬」）生成逼真的圖片。
+
+GAN 的運作方式很有趣：它有兩個神經網路在互相對抗。生成器（Generator）負責「偽造」圖片，判別器（Discriminator）負責「鑑定」圖片是真是假。就像偽鈔集團和警察的軍備競賽——偽鈔越做越像，警察的鑑定技術也越來越強，最終生成器能畫出連判別器都分不出真假的圖片。
+
+**** 影像風格轉換
+把你的自拍照變成梵谷的《星夜》風格、或是變成漫畫風——這就是風格轉換（Style Transfer）。它的原理是用一個 CNN 分別提取「內容圖」的結構和「風格圖」的筆觸、色彩特徵，然後把兩者合成在一起。2015 年 Gatys 等人發表論文《A Neural Algorithm of Artistic Style》後，各種修圖 App 紛紛加入這個功能，讓每個人都能當一秒畢卡索。
+
+*** 打敗人類：遊戲 AI
+
+深度學習在遊戲領域的表現大概是最容易讓人「哇」出來的。
+
+**** AlphaGo 與棋盤遊戲
+2016 年，Google DeepMind 的 AlphaGo 以 4:1 擊敗世界圍棋冠軍李世乭，震驚全球。圍棋的棋盤有 19×19 = 361 個交叉點，合法的盤面數量估計超過 \(10^{170}\)（作為對比，宇宙中的原子數量大約只有 \(10^{80}\)），所以不可能像西洋棋那樣靠暴力搜尋所有可能的走法。AlphaGo 結合了深度學習（用 CNN 評估盤面好壞）和[[id:0a5c37c0-741a-4a1a-bec7-f98074830132][強化學習]]（讓 AI 自己跟自己下棋不斷進步），才突破了這個難關。
+
+後來的 AlphaGo Zero 更誇張——它完全不看人類棋譜，從零開始自己跟自己下，3 天就超越了 AlphaGo，40 天後已經是地球上最強的圍棋選手。人類花了幾千年累積的棋藝精華，AI 只花了 40 天就全部超越，順便發明了一堆人類從沒想過的下法。
+
+**** 電玩遊戲與 DQN
+DeepMind 在 2013 年發表的 DQN（Deep Q-Network）是另一個里程碑。他們讓 AI 只靠「看螢幕畫面」來學習玩 Atari 遊戲（對，就是那個年代久遠的遊戲機），完全不告訴 AI 遊戲規則，AI 就自己摸索出了超越人類的玩法。
+
+DQN 的核心概念是強化學習（Reinforcement Learning）：AI（稱為代理人 Agent）在環境中採取行動，根據結果獲得獎勵或懲罰，然後學會「在什麼情況下做什麼動作最有利」。就像你小時候打電動——死了就知道剛才不該那樣做，過關了就記住這個方法有效。差別在於 AI 可以在幾小時內「死」個幾百萬次然後變成高手，你大概試了幾十次就想摔手把了。
+
+最厲害的是，同一套 DQN 不用改任何設定就能學會玩完全不同的遊戲——從打磚塊到小精靈都行，因為它的輸入就只是「螢幕上的像素」而已。
+
+*** 救命用的：醫療與科學
+
+**** 醫學影像分析
+AI 讀 X 光片和 CT 掃描的準確率在某些任務上已經可以媲美甚至超越資深放射科醫師。例如，Google Health 開發的乳癌篩檢模型在 2020 年的研究中，漏診率比人類醫師低了 9.4%。不過，AI 目前還是以「輔助」角色為主——畢竟告訴病人「AI 說你沒事」聽起來還是不太令人安心。
+
+**** 蛋白質結構預測
+2020 年，DeepMind 的 AlphaFold 在蛋白質結構預測競賽 CASP14 中取得壓倒性勝利，解決了一個困擾生物學界 50 年的難題。蛋白質的功能取決於它的 3D 結構，但從胺基酸序列預測 3D 結構一直是個超級困難的問題。AlphaFold 利用 Transformer 架構，成功預測了幾乎所有已知蛋白質的結構，對藥物開發和疾病研究產生了深遠的影響。這項成果也讓 DeepMind 的 Demis Hassabis 和 John Jumper 獲得了 2024 年的諾貝爾化學獎。
+
+*** 小結
+
+| 應用領域 | 代表技術/模型 | 你可能在哪裡遇到它 |
+|----------+--------------+-------------------|
+| 影像辨識 | CNN、ResNet | 手機人臉解鎖、Google 相簿搜尋 |
+| 物體偵測 | YOLO、R-CNN | Instagram 人臉標記、自駕車 |
+| 聊天機器人 | GPT、Transformer | ChatGPT、Gemini |
+| 語音辨識 | Whisper | Siri、Google 助理 |
+| 影像生成 | GAN、Diffusion Model | Midjourney、DALL-E |
+| 遊戲 AI | DQN、AlphaGo | 你打不贏的電腦對手 |
+| 醫學影像 | CNN | AI 輔助 X 光判讀 |
+| 蛋白質預測 | AlphaFold | 新藥開發 |
+
+看完這些，你可能會覺得深度學習無所不能。但別忘了，這些厲害的應用背後，都是靠大量資料、大量算力、以及精心設計的模型架構撐起來的。接下來我們就要來了解這些模型到底是怎麼運作的。
 
 * 深度學習運作原理
 ** 機器學習的SOP
@@ -257,9 +321,7 @@ MNIST 歷年的競賽前幾名都是以 CNN 為基礎，進一步提高辨識準
 1. 評估模型/修改模型(回到3.)
 1. 發佈模型/應用
 
-** 資料的分割
-訓練模型時通常會將資料集分割為訓練集、測試集，有時還會再細分出驗證集。
-其具體分割方式可以分為以下幾類：
+** 資料的分割 :noexport:
 *** 基本資料分割
 以下這些方法用於基本的模型訓練與評估，適合初步模型測試或大規模資料。
 **** 訓練/測試分割（train-Test Split)
@@ -329,7 +391,7 @@ K-Fold 交叉驗證的主要目的之一是評估不同模型或超參數組合�
 4. 用測試集做最終評估
    - 測試集應在第一步就獨立出來，不能參與 K-Fold 交叉驗證。交叉驗證應僅針對訓練集，確保泛化能力評估準確無誤
 
-實際進行資料分割時，K-folder將訓練集分為K組，每次取其中一組作為測試集，其餘的作為訓練集，重複K次，最後取平均值作為模型的性能評估。
+實際進行資料分割時，K-fold將訓練集分為K組，每次取其中一組作為測試集，其餘的作為訓練集，重複K次，最後取平均值作為模型的性能評估。
 
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
@@ -602,7 +664,7 @@ model.fit(X_train, y_train)
 #+ATTR_ORG: :width 400
 [[file:images/img-191107115304.jpg]]
 
-而深度學習的基本工作就是使用損失函數做為回饋訊息來一步步微調權重，逐步降低每次學習的損失分數，最終目標在於讓損失函數結果達到最小，而這個微調工作則由優化器(optimizer，也稱最佳化函數)來執行。優化器實作了反向傳播演算法(Backpropagation)，這也是深度學習中的核心演算法，藉此來週整權重。
+而深度學習的基本工作就是使用損失函數做為回饋訊息來一步步微調權重，逐步降低每次學習的損失分數，最終目標在於讓損失函數結果達到最小，而這個微調工作則由優化器(optimizer，也稱最佳化函數)來執行。優化器實作了反向傳播演算法(Backpropagation)，這也是深度學習中的核心演算法，藉此來調整權重。
 
 #+CAPTION: 優化器
 #+LABEL:fig:python-deep-learning-5
@@ -619,7 +681,7 @@ model.fit(X_train, y_train)
 我們再複習一下[[id:d6daa102-05bb-475d-b619-db8b61e86030][神經網路]]這章裡的文字：
 
 #+begin_quote
-是的，就如同考試時你面對陌生選擇題的反應，神經網路也決定這麼幹，隨便丟一些數值填到矩陣中當成第一批參數。事實上，同樣的策略我們在[[id:7cd4a142-4cd9-46b6-b9a4-2ad750ae622f][線性迴歸:年齡身高預測/隨機的力量]]裡已經玩過了，當初在找出方程式的最佳參數組合時，我們也是閉上眼睛隨便選一組。不管整個網路中有多少參數，當我們隨機設定好了所有參數的最初值後，整個神經網就就可以運作了，嗯...至少已經可以依照前向傳播的流程輸出第一個預測結果了，你看，我們已經朝完美的人工智慧跨近一大步了-_-
+是的，就如同考試時你面對陌生選擇題的反應，神經網路也決定這麼幹，隨便丟一些數值填到矩陣中當成第一批參數。事實上，同樣的策略我們在[[id:7cd4a142-4cd9-46b6-b9a4-2ad750ae622f][線性迴歸:年齡身高預測/隨機的力量]]裡已經玩過了，當初在找出方程式的最佳參數組合時，我們也是閉上眼睛隨便選一組。不管整個網路中有多少參數，當我們隨機設定好了所有參數的最初值後，整個神經網路就可以運作了，嗯...至少已經可以依照前向傳播的流程輸出第一個預測結果了，你看，我們已經朝完美的人工智慧跨進一大步了-_-
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 400
@@ -628,6 +690,171 @@ model.fit(X_train, y_train)
 接下來的流程其實和[[id:6ae7fb7a-0b38-4448-b19f-073d262513f2][迴歸]]有點類似，我們評估預測結果的品質，然後回頭修正參數，只是這次的工程有點浩大，我們要修正所有的參數，這個回頭修正所有參數的過程稱為反向傳播(backward propagation)。
 
 #+end_quote
+
+** 過度配適與正則化
+在訓練深度學習模型時，一個核心挑戰是：模型在訓練資料上表現很好，但在新的（未見過的）資料上表現很差。這個現象稱為「過度配適」(Overfitting)，意味著模型記住了訓練資料中的雜訊和細節，而非學到真正的規律。
+
+與之相對的是「配適不足」(Underfitting)，指模型過於簡單，連訓練資料中的基本規律都無法捕捉。理想的模型應該在這兩者之間取得平衡。
+
+*** 如何判斷過度配適
+觀察訓練過程中的損失函數和準確率曲線：
+- 訓練損失持續下降，但驗證損失在某個時間點開始上升 → 過度配適
+- 訓練準確率遠高於驗證準確率 → 過度配適
+- 訓練損失和驗證損失都很高 → 配適不足
+
+*** 正則化技術
+正則化 (Regularization) 是指用來減少過度配適的各種技術：
+
+**** Dropout
+Dropout 是深度學習中最常用的正則化技術之一，由 Hinton 等人在 2014 年提出。其做法是在訓練過程中隨機「關閉」一定比例的神經元（將其輸出設為 0），迫使網路不依賴任何特定的神經元，從而學到更具泛化能力的特徵。
+
+#+begin_src python -r -n :results output :exports both
+# 在 Dense 層之後加入 Dropout，隨機關閉 25% 的神經元
+model.add(layers.Dense(64, activation='relu'))
+model.add(layers.Dropout(0.25))
+#+end_src
+注意：Dropout 只在訓練時啟用，在預測（推論）時所有神經元都會被使用。
+
+**** L1 與 L2 正則化
+在損失函數中加入權重的懲罰項，限制權重值不要過大：
+- *L1 正則化*（Lasso）：加入權重絕對值的總和，傾向使部分權重變為 0，達到特徵選擇的效果
+- *L2 正則化*（Ridge，又稱 Weight Decay）：加入權重平方的總和，傾向使所有權重都較小但不為 0
+#+begin_src python -r -n :results output :exports both
+from keras import regularizers
+
+# L2 正則化
+model.add(layers.Dense(64, activation='relu',
+                       kernel_regularizer=regularizers.l2(0.001)))
+
+# L1 正則化
+model.add(layers.Dense(64, activation='relu',
+                       kernel_regularizer=regularizers.l1(0.001)))
+
+# 同時使用 L1 與 L2
+model.add(layers.Dense(64, activation='relu',
+                       kernel_regularizer=regularizers.l1_l2(l1=0.001, l2=0.001)))
+#+end_src
+**** Early Stopping
+監控驗證損失，當驗證損失連續數個 epoch 不再改善時，自動停止訓練：
+#+begin_src python -r -n :results output :exports both
+from keras.callbacks import EarlyStopping
+
+early_stop = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+model.fit(X_train, y_train, epochs=100, validation_split=0.2, callbacks=[early_stop])
+#+end_src
+
+其中 =patience=5= 表示容許驗證損失連續 5 個 epoch 未改善，=restore_best_weights=True= 會在停止時恢復到驗證損失最低時的權重。
+**** Batch Normalization
+Batch Normalization (BN) 由 Ioffe 和 Szegedy 於 2015 年提出，對每一層的輸入進行標準化處理（使其均值接近 0、標準差接近 1）。雖然 BN 最初的目的是加速訓練收斂，但實務上也具有一定的正則化效果。
+#+begin_src python -r -n :results output :exports both
+model.add(layers.Dense(64, activation='relu'))
+model.add(layers.BatchNormalization())
+#+end_src
+**** Data Augmentation
+透過對訓練資料進行隨機變換（如旋轉、翻轉、縮放、裁切）來人為增加訓練樣本的多樣性，這在影像分類任務中特別有效。詳細內容可參考[[id:20221023T101414.457264][CNN/卷積神經網路]]中的資料擴增章節。
+
+** 遷移學習 (Transfer Learning)
+遷移學習是指將在某個任務上訓練好的模型（或其部分知識）應用到另一個相關任務上的技術。這是現代深度學習實務中最重要的概念之一，因為從零開始訓練一個深度神經網路往往需要龐大的資料集和運算資源。
+
+*** 為什麼需要遷移學習
+- 標註資料昂貴且稀少：許多實際問題只有少量標註資料
+- 訓練成本高：從零訓練大型模型需要大量 GPU 時間
+- 特徵可以共用：低層的特徵（如邊緣、紋理）在不同視覺任務中是通用的
+
+*** 常見做法
+**** 特徵提取 (Feature Extraction)
+使用預訓練模型（如在 ImageNet 上訓練的 VGG、ResNet）作為固定的特徵提取器，只訓練最後的分類層：
+
+#+begin_src python -r -n :results output :exports both :eval no
+from keras.applications import ResNet50
+from keras import layers, models
+
+# 載入預訓練的 ResNet50，不包含頂層分類器
+base_model = ResNet50(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
+
+# 凍結預訓練模型的權重
+base_model.trainable = False
+
+# 在上面堆疊自己的分類層
+model = models.Sequential([
+    base_model,
+    layers.GlobalAveragePooling2D(),
+    layers.Dense(256, activation='relu'),
+    layers.Dropout(0.5),
+    layers.Dense(10, activation='softmax')  # 假設分 10 類
+])
+#+end_src
+
+**** 微調 (Fine-tuning)
+先用特徵提取的方式訓練頂層，再解凍預訓練模型的部分（或全部）層進行微調，使用較小的學習率以避免破壞已學到的特徵：
+
+#+begin_src python -r -n :results output :exports both :eval no
+# 解凍預訓練模型的最後幾層
+base_model.trainable = True
+for layer in base_model.layers[:-20]:  # 只解凍最後 20 層
+    layer.trainable = False
+
+# 用較小的學習率重新編譯
+model.compile(optimizer=keras.optimizers.Adam(learning_rate=1e-5),
+              loss='categorical_crossentropy',
+              metrics=['accuracy'])
+#+end_src
+
+*** 自然語言處理中的遷移學習
+在 NLP 領域，遷移學習的成功更加顯著：
+- *Word2Vec / GloVe*：預訓練的詞向量，可直接用於各種 NLP 任務
+- *BERT* (2018)：Google 提出的預訓練語言模型，在大量文本上以遮蔽語言模型 (Masked LM) 方式預訓練，再針對下游任務微調
+- *GPT 系列*：OpenAI 的大型語言模型，展示了「預訓練 + 提示」(pre-train + prompt) 的新典範，不需微調即可執行多種任務
+
+** 常見優化器比較
+在訓練神經網路時，優化器負責根據損失函數的梯度來更新權重。不同的優化器有不同的更新策略，選擇合適的優化器對訓練效果影響很大。
+
+*** SGD (隨機梯度下降)
+最基本的優化器，每次用一個小批量（mini-batch）的梯度來更新權重：
+\[ w = w - \eta \cdot \nabla L \]
+其中 \(\eta\) 為學習率，\(\nabla L\) 為損失函數的梯度。SGD 簡單但收斂速度慢，且容易陷入局部最小值。
+
+*** SGD + Momentum
+在 SGD 基礎上加入「動量」，讓更新方向考慮過去的梯度方向，類似球從坡上滾下時累積的速度：
+\[ v = \gamma v + \eta \cdot \nabla L \]
+\[ w = w - v \]
+其中 \(\gamma\) 通常設為 0.9。Momentum 可以加速收斂並減少震盪。
+
+*** RMSprop
+由 Hinton 提出，對每個參數使用不同的學習率，根據該參數過去梯度的大小做調整。對於梯度大的參數使用較小的學習率，對於梯度小的參數使用較大的學習率，適合處理非穩態（non-stationary）問題。
+
+*** Adam
+結合了 Momentum 和 RMSprop 的優點，同時追蹤梯度的一階矩（均值）和二階矩（變異數），是目前最常用的優化器。
+
+#+begin_src python -r -n :results output :exports both :eval no
+# SGD（隨機梯度下降）：最基本的優化器，像是用最笨的方法下山
+model.compile(optimizer='sgd', loss='categorical_crossentropy')
+
+# SGD + Momentum（加上動量）：像是滾球下山，會「記住」之前的方向，不容易卡住
+model.compile(optimizer=keras.optimizers.SGD(learning_rate=0.01, momentum=0.9),
+              loss='categorical_crossentropy')
+
+# RMSprop：會根據梯度大小自動調整學習速度，比 SGD 聰明
+model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
+
+# Adam（最常用）：結合了 Momentum 和 RMSprop 的優點，新手首選
+model.compile(optimizer='adam', loss='categorical_crossentropy')
+
+# Adam 搭配自訂學習率（learning_rate 越小學越慢但越穩定）
+model.compile(optimizer=keras.optimizers.Adam(learning_rate=0.001),
+              loss='categorical_crossentropy')
+#+end_src
+
+*** 如何選擇優化器
+| 情境 | 建議優化器 |
+|------+------|
+| 一般任務、快速實驗 | Adam |
+| 電腦視覺（CNN） | SGD + Momentum（搭配學習率排程） |
+| 自然語言處理 | Adam 或 AdamW |
+| 資料量小、模型簡單 | Adam |
+| 追求最佳泛化效能 | SGD + Momentum + 學習率排程 |
+
+實務上，Adam 是最安全的預設選擇。但在電腦視覺的大規模訓練中，SGD + Momentum 搭配適當的學習率排程（如 cosine annealing）往往能達到更好的最終效能。
 
 * 實作範例
 ** 二元分類：IMDB
@@ -639,13 +866,15 @@ In a Wonderful morning...
 #+begin_example
 (8, 3, 386, 1969...)
 #+end_example
-即，每個單字都會依據其出現頻率給定一個編號，編號越小越常見。(與 IMDb 相關的 paper 參見[[https://paperswithcode.com/sota/sentiment-analysis-on-imdb][Sentiment Analysis on IMDb / paperswithcode]]
+即，每個單字都會依據其出現頻率給定一個編號，編號越小越常見。(與 IMDb 相關的 paper 參見[[https://paperswithcode.com/sota/sentiment-analysis-on-imdb][Sentiment Analysis on IMDb / paperswithcode]])
 
 #+BEGIN_SRC python -r -n :async :results output :exports both :session imdb
-from keras.datasets import imdb
+from keras.datasets import imdb  # 從 Keras 內建資料集載入 IMDB 電影評論資料
+# 載入資料，num_words=10000 表示只保留出現頻率前 10000 名的單字（其他太冷門的就不要了）
+# 回傳值會自動分成「訓練集」和「測試集」，各有 data（評論內容）和 labels（正面=1/負面=0）
 (train_data, train_labels), (test_data, test_labels) = imdb.load_data(num_words=10000)
-print(train_data[0])
-print(train_labels[0])
+print(train_data[0])   # 印出第一筆評論，內容是一串數字（每個數字代表一個單字的編號）
+print(train_labels[0]) # 印出第一筆評論的標籤（1=正面評論, 0=負面評論）
 #+END_SRC
 
 #+RESULTS:
@@ -653,17 +882,17 @@ print(train_labels[0])
 : 1
 
 如上為第一筆評論的單字代號與評論結果，若要將原始資料的單字代號還原，其程式碼如下：
-#+BEGIN_SRC python -r -n:async :results output :exports both :session imdb
-# word_index is a dictionary mapping words to an integer index
+#+BEGIN_SRC python -r -n :async :results output :exports both :session imdb
+# 取得「單字 → 數字編號」的對照字典（例如 'this' → 11）
 word_index = imdb.get_word_index()     (ref:wordIndex)
 print("字典中key為this對應的value:",word_index['this'])
-# We reverse it, mapping integer indices to words
+# 把字典反過來變成「數字編號 → 單字」，這樣我們才能把數字還原成看得懂的英文
 reverse_word_index = dict([(value, key) for (key, value) in word_index.items()])    (ref:reverseWordIndex)
 print("反轉字典中key為11所對應到的value:",reverse_word_index[11])
 print("反轉字典中key為1所對應到的value:",reverse_word_index[1])
 print("反轉字典中key為2所對應到的value:",reverse_word_index[2])
-# We decode the review; note that our indices were offset by 3
-# because 0, 1 and 2 are reserved indices for "padding", "start of sequence", and "unknown".
+# 把第一筆評論從數字序列還原成英文句子
+# 注意：每個數字要先減 3，因為 0/1/2 被 IMDB 保留給「填充」「序列開頭」「未知字」這三個特殊用途
 decoded_review = ' '.join([reverse_word_index.get(i - 3, '?') for i in train_data[0]]) (ref:decodedReview)
 print(decoded_review)
 #+END_SRC
@@ -681,28 +910,32 @@ print(decoded_review)
 1. 填補資料中每個子 list 內容使其具有相同長度，再做reshape
 2. 對每個子 list 做 one-hot encoding，其程式碼如下：
 #+BEGIN_SRC python -r -n :async :results output :exports both :session imdb
-import numpy as np
-def vectorize_sequences(sequences, dimension=10000):
-    # Create an all-zero matrix of shape (len(sequences), dimension)
-    results = np.zeros((len(sequences), dimension))
-    for i, sequence in enumerate(sequences):
-        results[i, sequence] = 1.  # set specific indices of results[i] to 1s
-    return results
-print("====train_data[0]======")
-print(train_data[0])
-# Our vectorized training data
+import numpy as np  # 載入 NumPy，等等要用來做矩陣運算
 
+# 這個函式負責把評論資料做 one-hot encoding（獨熱編碼）
+# 簡單說就是：把「出現過哪些單字」標記成 1，沒出現的標記成 0
+def vectorize_sequences(sequences, dimension=10000):
+    # 先建一個全部是 0 的大矩陣，大小是（資料筆數 × 10000 個單字）
+    results = np.zeros((len(sequences), dimension))
+    for i, sequence in enumerate(sequences):  # 逐筆處理每則評論
+        results[i, sequence] = 1.  # 把這則評論中出現過的單字位置標記為 1
+    return results
+
+print("====train_data[0]======")
+print(train_data[0])  # 原始資料：一串單字編號（長度不固定）
+
+# 將訓練資料向量化（變成固定長度 10000 的 0/1 向量）
 x_train = vectorize_sequences(train_data)
-# Our vectorized test data
+# 將測試資料也做一樣的向量化處理
 x_test = vectorize_sequences(test_data)
 print("====x_data[0]======")
-print(x_train[0])
+print(x_train[0])  # 向量化後：長度固定為 10000 的 0/1 陣列
 
-# 最後再將標籤資料也向量化
+# 最後再將標籤資料轉換為 float32 格式（神經網路比較喜歡浮點數）
 y_train = np.asarray(train_labels).astype('float32')
 y_test = np.asarray(test_labels).astype('float32')
 print("====y_data[0]======")
-print(y_train[0])
+print(y_train[0])  # 標籤：1.0 代表正面，0.0 代表負面
 #+END_SRC
 
 
@@ -750,9 +983,19 @@ print(y_train[0])
 #+ATTR_ORG: :width 200
 [[file:images/nn3-6.png]]
 
-由於輸入資料為向量、標籤為純量(1, 0)，對這樣的問題，適合用 relu 啟動函數的全連接層(Dense)堆疊架構：Dense(16, activation='relu')。其中 16 指該層神經元的數量(也可看成該層的寬度)，典型旳寫法為：
+將上述 ditaa 圖換成更具體的視覺化，如圖[[fig:imdb-model-annotated]]，可以看到 one-hot 向量中每個位置對應一個單字，1 代表該單字出現在評論中、0 代表未出現。每條連線都帶有一個權重（weight），訓練過程就是在調整這些權重，讓模型學會「哪些字的出現與正面/負面評論有關」。
+
+#+CAPTION: IMDB 模型架構：從 One-Hot 向量到情感預測
+#+name: fig:imdb-model-annotated
+#+ATTR_LATEX: :width 500
+#+ATTR_ORG: :width 500
+#+ATTR_HTML: :width 700
+[[file:images/imdb-model-annotated.png]]
+
+由於輸入資料為向量、標籤為純量(1, 0)，對這樣的問題，適合用 relu 啟動函數的全連接層(Dense)堆疊架構：Dense(16, activation='relu')。其中 16 指該層神經元的數量(也可看成該層的寬度)，典型的寫法為：
 #+BEGIN_SRC python -r :results output :exports both :eval no
-# 加入Dense隱藏層，該層有16個神經元
+# 加入一個 Dense（全連接）隱藏層，該層有 16 個神經元
+# activation='relu' 表示用 ReLU 啟動函數：負數變 0，正數保留原值
 model.add(layers.Dense(16, activation='relu'))
 #+END_SRC
 
@@ -764,7 +1007,6 @@ model.add(layers.Dense(16, activation='relu'))
 #+ATTR_LATEX: :width 200
 #+ATTR_ORG: :width 200
 #+ATTR_HTML: :width 300
-#+RESULTS:
 [[file:images/ReLUPlot.png]]
 
 *** 為什麼要加入[[id:d3bcc30a-3d94-4a3c-8e66-baaac7325c75][Activation Function]]
@@ -880,8 +1122,8 @@ y_3 &=& x_5w_{53} + x_6w_{63} + x_7w_{73}
 為了有效讓模型更加複雜，此處可以在模型中加入非線性轉換，如圖[[fig:ReLUFunction]]中的ReLU[[id:d3bcc30a-3d94-4a3c-8e66-baaac7325c75][激勵函數]]，其結果如圖[[fig:exam-Network4]]所示。
 
 #+CAPTION: ReLU 函數圖
-#+LABEL:fig:ReLUFunction
-#+name: fig:ReLUFunction
+#+LABEL:fig:ReLUFunction2
+#+name: fig:ReLUFunction2
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
@@ -943,25 +1185,30 @@ reLU6 -[dashed]-|> 學測成績
 *** 程式實作
 圖[[fig:nn3-6]]的實作程式如下，此處以最簡單的 NN (Neural Network) 作為範例。以 Keras 的核心為模型，應用最常使用 Sequential 模型。藉由.add()我們可以一層一層的將神經網路疊起。在每一層之中我們只需要簡單的設定每層的大小(units)與激勵函數(activation function)。
 #+BEGIN_SRC python -r -n :async :results output :exports both :session imdb
-from keras import models
-from keras import layers
+from keras import models  # 載入模型模組
+from keras import layers  # 載入層模組
 
+# 建立一個 Sequential（順序型）模型——就像疊積木一樣，一層一層往上疊
 model = models.Sequential()
-model.add(layers.Dense(16, activation='relu', input_shape=(10000,)))
+# 輸入層：告訴模型每筆資料是一個長度 10000 的向量（one-hot 編碼後的結果）
+model.add(layers.Input(shape=(10000,)))
+# 第一層隱藏層：16 個神經元，用 ReLU 啟動函數（負數變 0，正數保留）
 model.add(layers.Dense(16, activation='relu'))
+# 第二層隱藏層：再來 16 個神經元，一樣用 ReLU
+model.add(layers.Dense(16, activation='relu'))
+# 輸出層：只有 1 個神經元，用 sigmoid 把結果壓在 0~1 之間（代表正面評論的機率）
 model.add(layers.Dense(1, activation='sigmoid'))
 #+END_SRC
 
 #+RESULTS:
-: /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/keras/src/layers/core/dense.py:85: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
-:   super().__init__(activity_regularizer=activity_regularizer, **kwargs)
 
 建好 model 後，要選擇一個損失函數和一個優化器，由於要處理的是二元分類問題，所以最好用 binary_crossentropy 損失函數，因為 crossentropy 主要就是用來測量機率分佈之間的距離(差異)。其實作如下：
 
 #+BEGIN_SRC python -r -n :async :results output :exports both :session imdb
-model.compile(optimizer='rmsprop',
-             loss='binary_crossentropy',
-             metrics=['accuracy'])
+# 編譯模型：設定訓練時要用的優化器、損失函數和評估指標
+model.compile(optimizer='rmsprop',             # 優化器：RMSprop（一種聰明的梯度下降法）
+             loss='binary_crossentropy',       # 損失函數：二元交叉熵（專門用於二分類問題）
+             metrics=['accuracy'])             # 評估指標：準確率（答對幾題 / 總題數）
 #+END_SRC
 
 #+RESULTS:
@@ -969,43 +1216,45 @@ model.compile(optimizer='rmsprop',
 之所以能將 optimizer 和 loss function 以字串方式經由參數傳給 compile()，這是因為 rmsprop、binary_crossentropy 和 accuracy 均已事先在 Keras 套件中定義好了，若是要進一步自訂參數(如自訂學習率)，做法如下：
 
 #+BEGIN_SRC python -r -n :async :results output :exports both :session imdb
-# 調整learning rate
+# 方法一：自訂學習率（learning_rate 越小學越慢但越穩，越大學越快但可能亂跳）
 from keras import optimizers
 
-model.compile(optimizer=optimizers.RMSprop(learning_rate=0.001),
+model.compile(optimizer=optimizers.RMSprop(learning_rate=0.001),  # 自訂學習率為 0.001
               loss='binary_crossentropy',
               metrics=['accuracy'])
 
-# 使用另外的評估函數
-from keras import losses
-from keras import metrics
+# 方法二：用物件形式指定損失函數和評估指標（效果跟字串一樣，但可以做更多客製化）
+from keras import losses    # 載入損失函數模組
+from keras import metrics   # 載入評估指標模組
 
 model.compile(optimizer=optimizers.RMSprop(learning_rate=0.001),
-              loss=losses.binary_crossentropy,
-              metrics=[metrics.binary_accuracy])
+              loss=losses.binary_crossentropy,        # 用物件形式指定損失函數
+              metrics=[metrics.binary_accuracy])       # 用物件形式指定評估指標
 #+END_SRC
 
 #+RESULTS:
-若您使用的是M1/M2核心的Mac電腦，則可能會出現上述訊息，雖然不影響正執行結果，但你仍可以參考[[https://stackoverflow.com/questions/77222463/is-there-a-way-to-change-adam-to-legacy-when-using-mac-m1-m2-in-tensorflow][stackoverflow上的這篇文章]]來解決這些惱人的訊息。
+若您使用的是M1/M2核心的Mac電腦，則可能會出現上述訊息，雖然不影響正常執行結果，但你仍可以參考[[https://stackoverflow.com/questions/77222463/is-there-a-way-to-change-adam-to-legacy-when-using-mac-m1-m2-in-tensorflow][stackoverflow上的這篇文章]]來解決這些惱人的訊息。
 *** 驗證神經網路的 model
 為了在訓練期間監控 model 對新資料的準確度，可以從原始訓練資料中分離出 10000 個樣本來建立驗證資料集。
 #+BEGIN_SRC python -r -n :async :results output :exports both :session imdb
-x_val = x_train[:10000] # 前10000個資料為驗證集
-partial_x_train = x_train[10000:] # 第10000個以後為訓練集
+# 從 25000 筆訓練資料中，切出前 10000 筆當作「驗證集」（用來監控訓練過程中有沒有過度配適）
+x_val = x_train[:10000]           # 驗證集的特徵（前 10000 筆）
+partial_x_train = x_train[10000:] # 真正拿來訓練的特徵（剩下的 15000 筆）
 
-y_val = y_train[:10000]
-partial_y_train = y_train[10000:]
+y_val = y_train[:10000]           # 驗證集的標籤
+partial_y_train = y_train[10000:] # 訓練集的標籤
 #+END_SRC
 
 #+RESULTS:
 
 接下來才是使用 fit()來訓練模型，進行 20 個訓練週期(epoch，即，把 x_train 和 y_train 張量中的所有訓練樣本進行 20 輪的訓練)，以 512 個小樣本的小批量(batch_size)進行訓練，
 #+BEGIN_SRC python -r -n :async :results output :exports both :session imdb
-history = model.fit(partial_x_train,
-                    partial_y_train,
-                    epochs=20,
-                    batch_size=512,
-                    validation_data=(x_val, y_val))
+# 開始訓練模型！fit() 就是讓模型「學習」的指令
+history = model.fit(partial_x_train,              # 訓練用的特徵資料
+                    partial_y_train,              # 訓練用的標籤（正確答案）
+                    epochs=20,                    # 把全部資料跑 20 輪（像複習考卷 20 遍）
+                    batch_size=512,               # 每次餵 512 筆資料給模型（不是一次全丟，會消化不良）
+                    validation_data=(x_val, y_val))  # 每跑完一輪就用驗證集測試一下，看有沒有「背答案」的跡象
 #+END_SRC
 
 #+RESULTS:
@@ -1017,13 +1266,14 @@ Epoch 20/20
 [1m30/30[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 9ms/step - binary_accuracy: 0.9995 - loss: 0.0107 - val_binary_accuracy: 0.8726 - val_loss: 0.5637
 #+end_example
 
-model.fit()會回傳一個 history 物件，這物件本身有一個 history 屬性，為一個包含有關訓練過程中相關資料的字典，這個字期包含有 4 個項目(val_loss, val_acc, loss, acc)，為訓練和驗證時監控的指標。
+model.fit()會回傳一個 history 物件，這物件本身有一個 history 屬性，為一個包含有關訓練過程中相關資料的字典，這個字典包含有 4 個項目(loss, binary_accuracy, val_loss, val_binary_accuracy)，為訓練和驗證時監控的指標。
 #+BEGIN_SRC python -r -n :async :results output :exports both :session imdb
-print(history.history)
-print("binary_accuracy:",history.history['binary_accuracy'])
-print("loss:",history.history['loss'])
-print("val_binary_accuracy:",history.history['val_binary_accuracy'])
-print("val_loss:",history.history['val_loss'])
+# history.history 是一個字典，記錄了每個 epoch 的訓練指標
+print(history.history)                                          # 印出完整的訓練歷史紀錄
+print("binary_accuracy:",history.history['binary_accuracy'])    # 每個 epoch 的訓練準確率
+print("loss:",history.history['loss'])                          # 每個 epoch 的訓練損失值
+print("val_binary_accuracy:",history.history['val_binary_accuracy'])  # 每個 epoch 的驗證準確率
+print("val_loss:",history.history['val_loss'])                  # 每個 epoch 的驗證損失值
 #+end_src
 
 #+RESULTS:
@@ -1034,47 +1284,36 @@ print("val_loss:",history.history['val_loss'])
 : val_loss: [0.39949268102645874, 0.3119995892047882, 0.28234928846359253, 0.3045506775379181, 0.30820411443710327, 0.2834608554840088, 0.2936294972896576, 0.3101825714111328, 0.3229252099990845, 0.34479930996894836, 0.36042720079421997, 0.3789125978946686, 0.4012978971004486, 0.46704238653182983, 0.44717246294021606, 0.47011518478393555, 0.4929317533969879, 0.5508306622505188, 0.5428465604782104, 0.563687264919281]
 
 #+BEGIN_SRC python -r -n :async :results output :exports both :session imdb
-# 秀出history架構
+# 把訓練歷史紀錄存到 history_dict，方便等等畫圖用
 history_dict = history.history
-print(history_dict.keys())
+print(history_dict.keys())  # 看看字典裡有哪些 key（loss, accuracy 之類的）
 
-# 畫圖
+# 繪圖輔助函數：把訓練過程畫成折線圖，一眼看出模型學得好不好
 import matplotlib.pyplot as plt
-accuracy = history.history['binary_accuracy']
-val_accuracy = history.history['val_binary_accuracy']
-loss = history.history['loss']
-val_loss = history.history['val_loss']
-epochs = range(1, len(accuracy) + 1)# "bo" is for "blue dot"
-plt.cla()
-plt.plot(epochs, loss, 'bo', label='Training loss')
-# b is for "solid blue line"
-plt.plot(epochs, val_loss, 'b', label='Validation loss')
-plt.title('Training and validation loss')
-plt.xlabel('Epochs')
-plt.ylabel('Loss')
-plt.legend()
-plt.plot()
-plt.savefig("images/imdb-Keras-1.png")
-plt.cla()
-#plt.show()plt.clf()   # clear figureplt.clf()
-acc_values = history_dict['binary_accuracy']
-val_acc_values = history_dict['val_binary_accuracy']
-plt.plot(epochs, accuracy, 'bo', label='Training acc')
-plt.plot(epochs, val_accuracy, 'b', label='Validation acc')
-plt.title('Training and validation accuracy')
-plt.xlabel('Epochs')
-plt.ylabel('Accuracy')
-plt.legend()
-plt.plot()
-plt.savefig("images/imdb-Keras-2.png")
-#plt.show()
+def plot_train_history(hdict, train_key, val_key, ylabel, filename, axis_range=None):
+    plt.cla()                                          # 清除前一張圖（不然會疊在一起）
+    epochs = range(1, len(hdict[train_key]) + 1)       # X 軸：第 1, 2, 3... 個 epoch
+    plt.plot(epochs, hdict[train_key], 'bo', label='Training ' + ylabel.lower())   # 訓練曲線（藍色圓點）
+    plt.plot(epochs, hdict[val_key], 'b', label='Validation ' + ylabel.lower())    # 驗證曲線（藍色線）
+    plt.title(f'Training and validation {ylabel.lower()}')  # 圖表標題
+    plt.xlabel('Epochs')   # X 軸標籤
+    plt.ylabel(ylabel)     # Y 軸標籤
+    if axis_range:         # 如果有指定座標軸範圍就套用
+        plt.axis(axis_range)
+    plt.legend()           # 顯示圖例（哪條線是訓練、哪條是驗證）
+    plt.savefig(f"images/{filename}")  # 把圖存成檔案
+
+# 畫出 Loss 曲線（損失值越低越好）
+plot_train_history(history_dict, 'loss', 'val_loss', 'Loss', 'imdb-Keras-1.png')
+# 畫出 Accuracy 曲線（準確率越高越好）
+plot_train_history(history_dict, 'binary_accuracy', 'val_binary_accuracy', 'Accuracy', 'imdb-Keras-2.png')
 #+END_SRC
 
 #+RESULTS:
 : dict_keys(['binary_accuracy', 'loss', 'val_binary_accuracy', 'val_loss'])
 
 #+CAPTION: IMDB-Keras-1
-#+LABEL:fig: IMDB-Keras-1
+#+LABEL:fig:IMDB-Keras-1
 #+name: fig:IMDB-Keras-1
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
@@ -1094,7 +1333,7 @@ plt.savefig("images/imdb-Keras-2.png")
 第二版的 model 做了以下改進:
 - 將資料向量化(vectorize_sequences())
 - 加入了兩層 layer 以及 dropout 層，其架構如圖[[fig:nn3-6-2]]
-#+BEGIN_SRC ditaa :file nn3-6-2.png
+#+BEGIN_SRC ditaa :file images/nn3-6-2.png
 
         輸入(向量化文字)
             |
@@ -1144,87 +1383,61 @@ plt.savefig("images/imdb-Keras-2.png")
 [[file:images/nn3-6-2.png]]
 
 #+BEGIN_SRC python -r -n :async :results output :exports both :session imdb
-# 向量化function
+# ===== 第二版：優化模型 =====
+
+# 向量化函式（跟前面一樣，把單字編號轉成 one-hot 向量）
 def vectorize_sequences(sequences, dimension=10000):
-    # Create an all-zero matrix of shape (len(sequences), dimension)
-    results = np.zeros((len(sequences), dimension))
+    results = np.zeros((len(sequences), dimension))  # 建立全 0 矩陣
     for i, sequence in enumerate(sequences):
-        results[i, sequence] = 1.  # set specific indices of results[i] to 1s
+        results[i, sequence] = 1.  # 出現過的單字位置設為 1
     return results
-# Our vectorized training data
-x_train = vectorize_sequences(train_data)
-# Our vectorized test data
-x_test = vectorize_sequences(test_data)
-# 最後再將標籤資料也向量化
+
+x_train = vectorize_sequences(train_data)   # 向量化訓練資料
+x_test = vectorize_sequences(test_data)     # 向量化測試資料
+# 標籤轉為浮點數格式
 y_train = np.asarray(train_labels).astype('float32')
 y_test = np.asarray(test_labels).astype('float32')
-# 建立model
-model = models.Sequential()
-model.add(layers.Dense(16, activation='relu', input_shape=(10000,)))
-model.add(layers.Dense(64, activation='relu'))
-model.add(layers.Dropout(0.25))
-model.add(layers.Dense(64, activation='relu'))
-model.add(layers.Dropout(0.25))
-model.add(layers.Dense(1, activation='sigmoid'))
 
-#判斷作業系統類型，選擇優化器
+# 建立優化版 model（比第一版多了 Dropout 層來防止過度配適）
+model = models.Sequential()
+model.add(layers.Input(shape=(10000,)))          # 輸入層：10000 維向量
+model.add(layers.Dense(16, activation='relu'))   # 隱藏層 1：16 個神經元
+model.add(layers.Dense(64, activation='relu'))   # 隱藏層 2：64 個神經元（加寬，讓模型學更多特徵）
+model.add(layers.Dropout(0.25))                  # Dropout：隨機關掉 25% 的神經元（防止模型「背答案」）
+model.add(layers.Dense(64, activation='relu'))   # 隱藏層 3：再來 64 個神經元
+model.add(layers.Dropout(0.25))                  # 再加一層 Dropout，雙重保險
+model.add(layers.Dense(1, activation='sigmoid')) # 輸出層：sigmoid 輸出 0~1 的機率
+
+# 設定優化器，學習率調低到 0.0001（學慢一點但更穩定）
 import platform
-#if platform.system() == "Darwin" and platform.processor() == "arm":
-#    opt = optimizers.legacy.RMSprop(learning_rate=0.0001)
-#else:
 opt = optimizers.RMSprop(learning_rate=0.0001)
 
+# 編譯模型
 model.compile(optimizer=opt, loss='binary_crossentropy',
               metrics=[metrics.binary_accuracy])
 
-# 驗證資料集
-x_val = x_train[:10000] # 前10000個資料為驗證集
-partial_x_train = x_train[10000:] # 第10000個以後為訓練集
+# 切出驗證集（跟前面一樣的做法）
+x_val = x_train[:10000]           # 前 10000 筆做驗證
+partial_x_train = x_train[10000:] # 剩下的拿來訓練
 y_val = y_train[:10000]
 partial_y_train = y_train[10000:]
 
-# 訓練model
+# 開始訓練（verbose=0 表示不要一直印進度條，安靜訓練）
 history = model.fit(partial_x_train, partial_y_train,
                     epochs=20, batch_size=512,
                     validation_data=(x_val, y_val), verbose=0)
 
-# 秀出history架構
+# 看看訓練歷史紀錄有哪些指標
 history_dict = history.history
 print(history_dict.keys())
 
-# 進行預測
+# 用訓練好的模型對測試集進行預測（每筆資料會得到一個 0~1 的機率值）
 x = model.predict(x_test)
 print(x)
 
-# 畫圖
-import matplotlib.pyplot as plt
-plt.cla()
-loss = history.history['loss']
-val_loss = history.history['val_loss']
-epochs = range(1, len(binary_accuracy) + 1)# "bo" is for "blue dot"
-plt.plot(epochs, loss, 'bo', label='Training loss')
-# b is for "solid blue line"
-plt.plot(epochs, val_loss, 'b', label='Validation loss')
-plt.title('Training and validation loss')
-plt.xlabel('Epochs')
-plt.ylabel('Loss')
-plt.legend()
-plt.plot()
-plt.savefig("images/imdb-Keras-3.png")
-#plt.show()
-
-plt.cla()
-acc_values = history_dict['binary_accuracy']
-val_acc_values = history_dict['val_binary_accuracy']
-plt.plot(epochs, binary_accuracy, 'bo', label='Training acc')
-plt.plot(epochs, val_binary_accuracy, 'b', label='Validation acc')
-plt.title('Training and validation accuracy')
-plt.xlabel('Epochs')
-plt.ylabel('Accuracy')
-plt.legend()
-plt.plot()
-plt.savefig("images/imdb-Keras-4.png")
-#plt.show()
+# 畫出優化版的 Loss 和 Accuracy 曲線，跟第一版比較看看有沒有進步
+plot_train_history(history_dict, 'loss', 'val_loss', 'Loss', 'imdb-Keras-3.png')
+plot_train_history(history_dict, 'binary_accuracy', 'val_binary_accuracy', 'Accuracy', 'imdb-Keras-4.png')
 #+END_SRC
 
 #+RESULTS:
@@ -1238,24 +1451,24 @@ plt.savefig("images/imdb-Keras-4.png")
 :  [0.12886518]
 :  [0.4191768 ]]
 
-#+CAPTION: IMDB-Keras-1
-#+LABEL:fig: IMDB-Kera-1
-#+name: fig:IMDB-Keras-1
+#+CAPTION: IMDB-Keras-3 (優化版 Loss)
+#+LABEL:fig:IMDB-Keras-3b
+#+name: fig:IMDB-Keras-3b
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
-[[file:images/imdb-Keras-1.png]]
+[[file:images/imdb-Keras-3.png]]
 
-#+CAPTION: IMDB-Keras-2
-#+LABEL:fig: IMDB-Kera-2
-#+name: fig:IMDB-Keras-2
+#+CAPTION: IMDB-Keras-4 (優化版 Accuracy)
+#+LABEL:fig:IMDB-Keras-4b
+#+name: fig:IMDB-Keras-4b
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
-[[file:images/imdb-Keras-2.png]]
+[[file:images/imdb-Keras-4.png]]
 
 #+CAPTION: IMDB-Keras-3
-#+LABEL:fig: IMDB-Kera-3
+#+LABEL:fig:IMDB-Keras-3
 #+name: fig:IMDB-Keras-3
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
@@ -1263,7 +1476,7 @@ plt.savefig("images/imdb-Keras-4.png")
 [[file:images/imdb-Keras-3.png]]
 
 #+CAPTION: IMDB-Keras-4
-#+LABEL:fig: IMDB-Kera-4
+#+LABEL:fig:IMDB-Keras-4
 #+name: fig:IMDB-Keras-4
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
@@ -1272,289 +1485,136 @@ plt.savefig("images/imdb-Keras-4.png")
 
 比較上述兩組結果，可以發現優化版的 model 在 loss function 以及 accuracy 的表現都有進步。
 
-** 資料分割: IRIS / K-Fold Cross Validation
+** [課堂作業]多類別分類挑戰：路透社新聞                            :TNFSH:
 
-*** GridSearchCV
-#+begin_src python -r -n  :async :results output :exports both :session IRIS-KFold
+恭喜你已經成功訓練出一個能分辨電影評論正負面的 IMDB 模型了！但人生就是這樣，老闆不會讓你只做二選一的簡單題。現在我們要挑戰一個更硬的任務：把路透社（Reuters）的新聞分成 *46 個主題* 。沒錯，46 個，比你期末考的科目還多。
+
+*** 背景知識
+
+Reuters 資料集是 1986 年路透社發布的新聞分類資料集，也內建在 Keras 裡（跟 IMDB 一樣方便，感謝 Keras 佛心）。
+
+跟 IMDB 的關鍵差異：
+
+| 比較項目 | IMDB（已完成） | Reuters（本次作業） |
+|----------+----------------+---------------------|
+| 類別數   | 2（正/負面）   | 46 個主題           |
+| 輸出層啟動函數 | =sigmoid= | ??? |
+| 輸出層神經元數 | 1          | ??? |
+| 損失函數 | =binary_crossentropy= | ??? |
+
+你的任務：根據 IMDB 的經驗，把上面三個 =???= 填出來。
+
+*** 第一步：載入資料與向量化
+
+這部分跟 IMDB 幾乎一樣，直接給你，不用客氣：
+
+#+begin_src python -r -n :results output :exports both :session reuters
+from keras.datasets import reuters               # 載入 Reuters 新聞分類資料集
+from tensorflow.keras.utils import to_categorical # 載入 one-hot 編碼工具
 import numpy as np
-import tensorflow as tf
-from sklearn.datasets import load_iris
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.metrics import classification_report, accuracy_score
-from tensorflow import keras
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
-from scikeras.wrappers import KerasClassifier
 
-# 載入IRIS資料集
-iris = load_iris()
-x, y = iris.data, iris.target
-
-# 資料標準化
-scaler = StandardScaler()
-x = scaler.fit_transform(x)
-
-# 分割資料集為訓練集和測試集
-x_train, x_test, y_train, y_test = train_test_split(
-    x, y, test_size=0.2, random_state=9527
-)
-
-# 建立模型的函數 (用於 KerasClassifier)
-def create_model(optimizer='adam', activation='relu'):
-    model = Sequential()
-    model.add(Dense(16, input_dim=4, activation=activation))
-    model.add(Dense(8, activation=activation))
-    model.add(Dense(3, activation='softmax'))
-
-    model.compile(optimizer=optimizer,
-                  loss='sparse_categorical_crossentropy',
-                  metrics=['accuracy'])
-    return model
-
-# 使用 scikeras 的 KerasClassifier
-model = KerasClassifier(model=create_model, verbose=0)
-
-# 設定參數網格 (需加上 model__ 前綴)
-param_grid = {
-    'batch_size': [10, 20, 32],
-    'epochs': [50, 100],
-    'model__optimizer': ['adam', 'sgd'],
-    'model__activation': ['relu', 'tanh']
-}
-
-# 建立 GridSearchCV 物件
-grid = GridSearchCV(estimator=model,
-                    param_grid=param_grid,
-                    cv=5,
-                    n_jobs=-1)
-
-# 執行參數搜尋
-grid_result = grid.fit(x_train, y_train)
-
-# 輸出最佳參數及最佳分數
-print(f"最佳參數: {grid_result.best_params_}")
-print(f"最佳驗證準確度: {grid_result.best_score_:.4f}")
-
-# 以最佳模型在測試集上評估效果
-best_model = grid_result.best_estimator_
-y_pred = best_model.predict(x_test)
-print(f"測試集準確度: {accuracy_score(y_test, y_pred):.4f}")
-print(classification_report(y_test, y_pred))
-#+end_src
-
-
-#+RESULTS:
-#+begin_example
-最佳參數: {'batch_size': 10, 'epochs': 100, 'model__activation': 'tanh', 'model__optimizer': 'adam'}
-最佳驗證準確度: 0.9583
-測試集準確度: 1.0000
-              precision    recall  f1-score   support
-
-           0       1.00      1.00      1.00        13
-           1       1.00      1.00      1.00         6
-           2       1.00      1.00      1.00        11
-
-    accuracy                           1.00        30
-   macro avg       1.00      1.00      1.00        30
-weighted avg       1.00      1.00      1.00        30
-#+end_example
-
-** 多類別分類：數位新聞
-目標：將路透社(Reuters)的數位新聞專欄分成 46 個主題，這屬於多類別分類(multiclass classification)問題，每個資料點只會被歸入一個類別；如果每個資料點可能屬於多個類別，則屬於多標籤多類別(multilabel multiclass classification)問題。
-*** 資料集
-和 MNIST、IMDB 一樣，這組由 Reuters 在 1986 年發布的簡短新聞主題資料集也內建在 Keras 中，這個資料集總共分為 46 個不同主題。
-#+BEGIN_SRC python -r -n :async :results output :exports both :session reuters
-from keras.datasets import reuters
+# 載入資料，num_words=10000 表示只保留最常見的 10000 個字（跟 IMDB 一樣的套路）
 (train_data, train_labels), (test_data, test_labels) = reuters.load_data(num_words=10000)
-print(train_data[0])
-print(train_labels[0])
-#+END_SRC
+print(f"訓練資料筆數: {len(train_data)}")       # 看看有多少筆訓練資料
+print(f"測試資料筆數: {len(test_data)}")         # 看看有多少筆測試資料
+print(f"類別數: {max(train_labels) + 1}")        # 最大標籤值 +1 = 總類別數（因為從 0 開始編號）
 
-#+RESULTS:
-: [1, 2, 2, 8, 43, 10, 447, 5, 25, 207, 270, 5, 3095, 111, 16, 369, 186, 90, 67, 7, 89, 5, 19, 102, 6, 19, 124, 15, 90, 67, 84, 22, 482, 26, 7, 48, 4, 49, 8, 864, 39, 209, 154, 6, 151, 6, 83, 11, 15, 22, 155, 11, 15, 7, 48, 9, 4579, 1005, 504, 6, 258, 6, 272, 11, 15, 22, 134, 44, 11, 15, 16, 8, 197, 1245, 90, 67, 52, 29, 209, 30, 32, 132, 6, 109, 15, 17, 12]
-: 3
-
-將資料向量化有幾種方式：將 label list 轉為整數張量，或是用 one-hot 編碼。以下為使用 python 自訂的編碼程式：
-
-#+BEGIN_SRC python -r -n :async :results output :exports both :session reuters
-import numpy as np
-
+# 向量化函式（跟 IMDB 一模一樣：把單字編號轉成 one-hot 向量）
 def vectorize_sequences(sequences, dimension=10000):
-    results = np.zeros((len(sequences), dimension))
+    results = np.zeros((len(sequences), dimension))  # 建立全 0 矩陣
     for i, sequence in enumerate(sequences):
-        results[i, sequence] = 1.
+        results[i, sequence] = 1.                    # 出現過的單字標記為 1
     return results
 
-# Our vectorized training data
-x_train = vectorize_sequences(train_data)
-# Our vectorized test data
-x_test = vectorize_sequences(test_data)
-print('原始資料集維度:',train_data.shape)
-print('向量化資料集維度:',x_train.shape)
-print(x_train[0])
-#+END_SRC
+x_train = vectorize_sequences(train_data)  # 向量化訓練資料
+x_test = vectorize_sequences(test_data)    # 向量化測試資料
 
-#+RESULTS:
-: 原始資料集維度: (8982,)
-: 向量化資料集維度: (8982, 10000)
-: [0. 1. 1. ... 0. 0. 0.]
-
-另外，Keras 也有一個內建的函式可用：
-
-#+BEGIN_SRC python -r -n :async :results output :exports both :session reuters
-from tensorflow.keras.utils import to_categorical
-
+# 標籤用 one-hot 編碼：因為有 46 個類別，每個標籤會變成長度 46 的向量
+# 例如類別 3 會變成 [0, 0, 0, 1, 0, 0, ..., 0]（只有第 3 個位置是 1）
 one_hot_train_labels = to_categorical(train_labels)
 one_hot_test_labels = to_categorical(test_labels)
-print(one_hot_train_labels.shape)
-print(one_hot_train_labels[0])
-#+END_SRC
+print(f"標籤 one-hot 維度: {one_hot_train_labels.shape}")  # 應該是 (筆數, 46)
+#+end_src
 
-#+RESULTS:
-: (8982, 46)
-: [0. 0. 0. 1. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
-:  0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
-*** 建立神經網路模型
+*** 第二步：建立模型（填空題）
 
-此次面臨的問題不似 IMDB 只分成兩類，而是共有 46 類，若每個 Dense layer 仍只使用16個維度，可能無法學會區分 46 個不同類別，故有需要將維度增加：
+請把下方程式碼中的 =______= 替換成正確的值。想想看：IMDB 只要分 2 類，現在要分 46 類，模型該怎麼改？
 
-#+BEGIN_SRC python -r -n :async :results output :exports both :session reuters
-from keras import models
-from keras import layers
+#+begin_src python -r -n :results output :exports both :session reuters
+from keras import models  # 載入模型模組
+from keras import layers  # 載入層模組
 
-model = models.Sequential()
-model.add(layers.Dense(64, activation='relu', input_shape=(10000,)))
-model.add(layers.Dense(64, activation='relu'))
-model.add(layers.Dense(46, activation='softmax'))
-#+END_SRC
+model = models.Sequential()                          # 建立順序型模型
+model.add(layers.Input(shape=(10000,)))              # 輸入層：10000 維向量（跟 IMDB 一樣）
+model.add(layers.Dense(64, activation='relu'))       # 隱藏層 1：64 個神經元（比 IMDB 多，因為分類更複雜）
+model.add(layers.Dense(64, activation='relu'))       # 隱藏層 2：64 個神經元
+model.add(layers.Dense(______, activation='______'))  # <-- 輸出層：幾個神經元？什麼啟動函數？
 
-#+RESULTS:
+model.compile(optimizer='rmsprop',
+              loss='______',            # <-- 什麼損失函數？
+              metrics=['accuracy'])
 
-另外，輸出層將啟動函數由 sigmoid 改為 softmax，以機率值來顯示預測的類別結果，配合這種情境，最適合的損失函數為 categorical_crossentropy，它可以測量兩個機率分佈間的差距（即神經網路輸出的預測機率分佈與真實分佈間的距離），透過最小化這兩個分佈間的距離來訓練神經網路，讓結果接近答案。
+model.summary()  # 印出模型架構摘要（可以看到每層的參數數量）
+#+end_src
 
-#+BEGIN_SRC python -r -n :async :results output :exports both :session reuters
-model.compile(optimizer='rmsprop', loss='categorical_crossentropy',
-                metrics=['accuracy'])
-#+END_SRC
+*** 第三步：訓練與評估
 
-#+RESULTS:
+模型建好之後，訓練和評估的流程跟 IMDB 一樣：
 
-此處的metrics用來儲存後續評估(model.evaluate)模型的記錄
-#+RESULTS:
-*** 驗證資料集
-由訓練集抽出 1000 個樣本來驗證：
-#+BEGIN_SRC python -r -n :async :results output :exports both :session reuters
-x_val = x_train[:1000]
-partial_x_train = x_train[1000:]
+#+begin_src python -r -n :results output :exports both :session reuters
+# 切出驗證集（前 1000 筆當驗證，剩下的拿來訓練）
+x_val = x_train[:1000]                          # 驗證集特徵
+partial_x_train = x_train[1000:]                # 訓練集特徵
+y_val = one_hot_train_labels[:1000]             # 驗證集標籤
+partial_y_train = one_hot_train_labels[1000:]   # 訓練集標籤
 
-y_val = one_hot_train_labels[:1000]
-partial_y_train = one_hot_train_labels[1000:]
-#+END_SRC
-
-#+RESULTS:
-
-*** 訓練模型
-#+BEGIN_SRC python -r -n :async :results output :exports both :session reuters
+# 開始訓練模型
 history = model.fit(partial_x_train,
                     partial_y_train,
-                    epochs=9,
-                    batch_size=512,
-                    validation_data=(x_val, y_val),
-                    verbose=0)
-history_dict = history.history
-print(history_dict.keys())
-#+end_src
+                    epochs=9,                    # 訓練 9 輪
+                    batch_size=512,              # 每批次 512 筆
+                    validation_data=(x_val, y_val),  # 每輪結束後用驗證集測試
+                    verbose=0)                   # 安靜模式，不印進度條
 
-#+RESULTS:
-: dict_keys(['accuracy', 'loss', 'val_accuracy', 'val_loss'])
-*** 評估模型
-程式第[[(modelEvaluate)]]行的model.evaluate()會傳回兩個結果:
-- loss value
-- model.compile()時指定的metrics，這裡會記錄accuracy
+# 用測試集評估模型表現
+results = model.evaluate(x_test, one_hot_test_labels)
+print(f"測試集 Loss: {results[0]:.4f}")       # 損失值（越低越好）
+print(f"測試集 Accuracy: {results[1]:.4f}")   # 準確率（越高越好）
 
-
-#+BEGIN_SRC python -r -n :async :results output :exports both :session reuters
-print('loss:', history_dict['loss'])
-print('accuracy:', history_dict['accuracy'])
-print('val_accuracy:', history_dict['val_accuracy'])
-# 評估
-# Returns the loss value & metrics values for the model in test mode.
-results = model.evaluate(x_test, one_hot_test_labels)      (ref:modelEvaluate)
-print("評估資料內容：",results)
-# 預測
+# 拿測試集做預測，看看模型實際猜的結果
 predictions = model.predict(x_test)
-print("預測資料架構：",predictions[0].shape)
-print("預測資料內容：",predictions[0])
-print("預測結果:",np.argmax(predictions[0]))
-print("答案:",one_hot_test_labels[0])
-#+END_SRC
-
-#+RESULTS:
-#+begin_example
-loss: [3.0026934146881104, 1.6911225318908691, 1.232879877090454, 0.995611846446991, 0.8247262835502625, 0.6870928406715393, 0.5740740299224854, 0.4755861163139343, 0.4013058543205261]
-accuracy: [0.47619643807411194, 0.6736406683921814, 0.7411676049232483, 0.7872713804244995, 0.8251065015792847, 0.8561763763427734, 0.8801052570343018, 0.9030318260192871, 0.9189426302909851]
-val_accuracy: [0.6200000047683716, 0.6959999799728394, 0.7379999756813049, 0.765999972820282, 0.7929999828338623, 0.8069999814033508, 0.8130000233650208, 0.8069999814033508, 0.8130000233650208]
-71/71 ━━━━━━━━━━━━━━━━━━━━ 0s 839us/step - accuracy: 0.8001 - loss: 0.9160
-評估資料內容： [0.9611411094665527, 0.7858415246009827]
-71/71 ━━━━━━━━━━━━━━━━━━━━ 0s 685us/step
-預測資料架構： (46,)
-預測資料內容： [1.2854149e-05 3.7789090e-05 4.2292118e-05 9.0718436e-01 8.3002120e-02
- 2.3392004e-06 2.9046484e-04 1.1120371e-05 1.7645630e-03 3.6879155e-05
- 1.1398656e-06 5.2984012e-04 7.8006480e-05 5.6496664e-04 2.5368774e-05
- 1.3207436e-04 7.5159752e-04 2.6923684e-05 1.9250263e-05 4.1414335e-04
- 1.8693011e-03 7.0673483e-04 6.4346145e-06 1.2796119e-04 6.4659413e-05
- 3.2037435e-05 5.2164037e-06 1.2275139e-04 9.2562705e-06 2.1327383e-04
- 5.8351434e-05 1.9944042e-04 3.2126438e-05 2.4959205e-05 8.7677283e-05
- 2.4225967e-05 6.1072549e-04 4.1610518e-05 3.6517431e-06 2.3155226e-04
- 9.5444564e-05 4.4300844e-04 1.3225984e-05 1.0810289e-05 4.7312778e-07
- 3.7070378e-05]
-預測結果: 3
-答案: [0. 0. 0. 1. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
- 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
-#+end_example
-上述程式在經由 9 個 epoch 後精準度已近 80%(0.79)。
-*** 評估結果視覺化
-#+BEGIN_SRC python -r -n :async :results output :exports both :session reuters
-# 畫圖
-import matplotlib.pyplot as plt
-
-loss = history.history['loss']
-val_loss = history.history['val_loss']
-
-epochs = range(1, len(loss) + 1)
-plt.cla()
-plt.plot(epochs, loss, 'bo', label='Training loss')
-plt.plot(epochs, val_loss, 'b', label='Validation loss')
-plt.title('Training and validation loss')
-plt.xlabel('Epochs')
-plt.ylabel('Loss')
-plt.axis([0, 10, 0, 3])
-plt.legend()
-plt.plot()
-plt.savefig("images/reuters-1.png")
-#plt.show()
-
-plt.cla()   # clear figure
-
-accuracy = history.history['accuracy']
-val_accuracy = history.history['val_accuracy']
-
-plt.plot(epochs, accuracy, 'bo', label='Training accuracy')
-plt.plot(epochs, val_accuracy, 'b', label='Validation accuracy')
-plt.title('Training and validation accuracy')
-plt.xlabel('Epochs')
-plt.ylabel('Accuracy')
-plt.axis([0, 10, 0, 1])
-plt.legend()
-plt.plot()
-plt.savefig("images/reuters-2.png")
-# plt.show()
+# argmax 會找出機率最大的那個位置，就是模型認為的類別
+print(f"第一筆預測結果: 類別 {np.argmax(predictions[0])}")
+print(f"第一筆正確答案: 類別 {np.argmax(one_hot_test_labels[0])}")
 #+end_src
 
-#+RESULTS:
+*** 第四步：畫出訓練過程
 
-#+CAPTION:Reuters-1
+#+begin_src python -r -n :results output :exports both :session reuters
+import matplotlib.pyplot as plt  # 載入繪圖套件
+
+# 繪圖輔助函數（跟 IMDB 用的一樣）
+def plot_train_history(hdict, train_key, val_key, ylabel, filename, axis_range=None):
+    plt.cla()                                          # 清除上一張圖
+    epochs = range(1, len(hdict[train_key]) + 1)       # X 軸：epoch 編號
+    plt.plot(epochs, hdict[train_key], 'bo', label='Training ' + ylabel.lower())   # 訓練曲線
+    plt.plot(epochs, hdict[val_key], 'b', label='Validation ' + ylabel.lower())    # 驗證曲線
+    plt.title(f'Training and validation {ylabel.lower()}')
+    plt.xlabel('Epochs')
+    plt.ylabel(ylabel)
+    if axis_range:         # 設定座標軸範圍（讓圖看起來更整齊）
+        plt.axis(axis_range)
+    plt.legend()           # 顯示圖例
+    plt.savefig(f"images/{filename}")  # 存檔
+
+history_dict = history.history  # 取得訓練歷史紀錄
+# 畫 Loss 曲線（座標軸範圍：x=0~10, y=0~3）
+plot_train_history(history_dict, 'loss', 'val_loss', 'Loss', 'reuters-1.png', [0, 10, 0, 3])
+# 畫 Accuracy 曲線（座標軸範圍：x=0~10, y=0~1）
+plot_train_history(history_dict, 'accuracy', 'val_accuracy', 'Accuracy', 'reuters-2.png', [0, 10, 0, 1])
+#+end_src
+
+#+CAPTION:Reuters Loss
 #+LABEL:fig:Reuters-1
 #+name: fig:Reuters-1
 #+ATTR_LATEX: :width 300
@@ -1562,29 +1622,69 @@ plt.savefig("images/reuters-2.png")
 #+ATTR_HTML: :width 500
 [[file:images/reuters-1.png]]
 
-#+CAPTION:Reuters-2
+#+CAPTION:Reuters Accuracy
 #+LABEL:fig:Reuters-2
 #+name: fig:Reuters-2
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/reuters-2.png]]
-*** 優化 model
-上例中的中間層若將神經元數(維度)降到 4，則其驗證準確率會降至 71%，主要原因是因為這樣會壓縮大量資訊到一個低維度的中間層表示空間，雖然神經網路能將大部份必要的資訊塞進這 4 維表示法中，但仍顯不足。若再提升維度、增加層數、加入 Dropout，結果似乎沒有顯著改善，為什麼？
-#+BEGIN_SRC python -r -n :async :results output :exports both :session reuters
+
+*** 提示（卡住再看，不要一開始就偷看，會折壽）
+
+#+begin_quote
+1. =sigmoid= 輸出的是「屬於某一類的機率」，適合二元分類。如果有多個類別，你需要一個能輸出「每個類別各自機率」的函數 → *softmax*
+2. =binary_crossentropy= 是給 2 個類別用的損失函數。多個類別要用 → *categorical_crossentropy*
+3. 輸出層的神經元數 = 類別數。IMDB 只有 1 個輸出（正或負），Reuters 有 46 個類別，所以需要 → *46 個神經元*
+4. 46 個類別比 2 個類別複雜很多，如果隱藏層的神經元太少（例如 16 個），模型會學不好。建議至少 64 個起跳。
+#+end_quote
+
+*** 預期輸出
+
+如果你填對了，測試集的 Accuracy 應該在 *0.78 ~ 0.80* 左右。如果你的準確率低於 0.5，很可能是啟動函數或損失函數填錯了，回去檢查一下吧！
+
+*** 參考解答                                                       :noexport:
+
+#+begin_src python -r -n :results output :exports both :session reuters-ans
+from keras.datasets import reuters
+from tensorflow.keras.utils import to_categorical
+import numpy as np
+
+# 載入資料
+(train_data, train_labels), (test_data, test_labels) = reuters.load_data(num_words=10000)
+
+# 向量化
+def vectorize_sequences(sequences, dimension=10000):
+    results = np.zeros((len(sequences), dimension))
+    for i, sequence in enumerate(sequences):
+        results[i, sequence] = 1.
+    return results
+
+x_train = vectorize_sequences(train_data)
+x_test = vectorize_sequences(test_data)
+
+one_hot_train_labels = to_categorical(train_labels)
+one_hot_test_labels = to_categorical(test_labels)
+
+# 建立模型
+from keras import models
+from keras import layers
+
 model = models.Sequential()
-model.add(layers.Dense(64, activation='relu', input_shape=(10000,)))
-model.add(layers.Dense(128, activation='relu'))
-model.add(layers.Dropout(0.25))
-model.add(layers.Dense(256, activation='relu'))
-model.add(layers.Dropout(0.3))
-model.add(layers.Dense(512, activation='relu'))
-model.add(layers.Dropout(0.5))
+model.add(layers.Input(shape=(10000,)))
+model.add(layers.Dense(64, activation='relu'))
+model.add(layers.Dense(64, activation='relu'))
 model.add(layers.Dense(46, activation='softmax'))
 
 model.compile(optimizer='rmsprop',
               loss='categorical_crossentropy',
-              metrics=['accuracy'])  (ref:metricsName)
+              metrics=['accuracy'])
+
+# 切出驗證集
+x_val = x_train[:1000]
+partial_x_train = x_train[1000:]
+y_val = one_hot_train_labels[:1000]
+partial_y_train = one_hot_train_labels[1000:]
 
 # 訓練
 history = model.fit(partial_x_train,
@@ -1594,386 +1694,217 @@ history = model.fit(partial_x_train,
                     validation_data=(x_val, y_val),
                     verbose=0)
 
-history_dict = history.history
-print(history_dict.keys())
-
 # 評估
-# Returns the loss value & metrics values for the model in test mode.
-results = model.evaluate(x_test, one_hot_test_labels)               (ref:modelEvaluate)
-print("評估資料內容：",results)
+results = model.evaluate(x_test, one_hot_test_labels)
+print(f"測試集 Loss: {results[0]:.4f}")
+print(f"測試集 Accuracy: {results[1]:.4f}")
 
 # 預測
 predictions = model.predict(x_test)
-print("預測資料架構：",predictions[0].shape)
-print("預測資料內容：",predictions[0])
-print("預測結果:",np.argmax(predictions[0]))
-print("答案:",one_hot_test_labels[0])
-# 畫圖
+print(f"第一筆預測結果: 類別 {np.argmax(predictions[0])}")
+print(f"第一筆正確答案: 類別 {np.argmax(one_hot_test_labels[0])}")
 
+# 畫圖
 import matplotlib.pyplot as plt
 
-loss = history.history['loss']
-val_loss = history.history['val_loss']
+def plot_train_history(hdict, train_key, val_key, ylabel, filename, axis_range=None):
+    plt.cla()
+    epochs = range(1, len(hdict[train_key]) + 1)
+    plt.plot(epochs, hdict[train_key], 'bo', label='Training ' + ylabel.lower())
+    plt.plot(epochs, hdict[val_key], 'b', label='Validation ' + ylabel.lower())
+    plt.title(f'Training and validation {ylabel.lower()}')
+    plt.xlabel('Epochs')
+    plt.ylabel(ylabel)
+    if axis_range:
+        plt.axis(axis_range)
+    plt.legend()
+    plt.savefig(f"images/{filename}")
 
-epochs = range(1, len(loss) + 1)
-plt.cla()
-plt.plot(epochs, loss, 'bo', label='Training loss')
-plt.plot(epochs, val_loss, 'b', label='Validation loss')
-plt.title('Training and validation loss')
-plt.xlabel('Epochs')
-plt.ylabel('Loss')
-plt.axis([0, 10, 0, 3])
-plt.legend()
-plt.plot()
-plt.savefig("images/reuters-3.png")
-#plt.show()
-
-plt.cla()   # clear figure
-
-accuracy = history.history['accuracy']
-val_accuracy = history.history['val_accuracy']
-
-plt.plot(epochs, accuracy, 'bo', label='Training accuracy')
-plt.plot(epochs, val_accuracy, 'b', label='Validation accuracy')
-plt.title('Training and validation accuracy')
-plt.xlabel('Epochs')
-plt.ylabel('Loss')
-plt.axis([0, 10, 0, 1])
-plt.legend()
-plt.plot()
-plt.savefig("images/reuters-4.png")
-# plt.show()
-#+END_SRC
-
-#+RESULTS:
-#+begin_example
-/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/keras/src/layers/core/dense.py:85: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
-  super().__init__(activity_regularizer=activity_regularizer, **kwargs)
-dict_keys(['accuracy', 'loss', 'val_accuracy', 'val_loss'])
-71/71 ━━━━━━━━━━━━━━━━━━━━ 0s 2ms/step - accuracy: 0.7549 - loss: 1.2041
-評估資料內容： [1.2634036540985107, 0.7471059560775757]
-71/71 ━━━━━━━━━━━━━━━━━━━━ 0s 2ms/step
-預測資料架構： (46,)
-預測資料內容： [8.09684124e-08 9.49222340e-07 5.19393861e-09 9.99711692e-01
- 1.80036150e-04 5.10908560e-09 1.91957028e-07 8.43487769e-08
- 4.33161113e-05 5.34591793e-09 8.28265286e-07 2.17356887e-06
- 1.84676892e-07 6.15979616e-07 5.97942105e-08 6.40554010e-09
- 1.57276918e-05 3.67254273e-07 8.75066561e-08 4.16998364e-06
- 3.44055552e-05 2.87553036e-07 9.22512200e-09 1.12576892e-07
- 4.54701921e-09 1.97374948e-06 1.79199517e-08 2.03319690e-08
- 1.43965934e-07 7.99068971e-08 3.35195637e-07 5.80273181e-08
- 3.48503910e-08 4.89572605e-09 8.85782299e-07 2.67696922e-08
- 3.60888407e-07 1.24438397e-08 2.77553855e-08 3.01288338e-07
- 8.20946955e-09 1.16714205e-07 2.22603358e-09 1.22548434e-08
- 2.11367723e-09 2.50342702e-09]
-預測結果: 3
-答案: [0. 0. 0. 1. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
- 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
-#+end_example
-
-#+CAPTION: Rueter-1
-#+LABEL:fig:Rueter-1
-#+name: fig:Rueter-1
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
-[[file:images/reuters-1.png]]
-
-#+CAPTION: Rueter-2
-#+LABEL:fig:Rueter-2
-#+name: fig:Rueter-2
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
-[[file:images/reuters-2.png]]
-
-#+CAPTION: Rueter-3
-#+LABEL:fig:Rueter-3
-#+name: fig:Rueter-3
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
-[[file:images/reuters-3.png]]
-
-#+CAPTION: Rueter-4
-#+LABEL:fig:Rueter-4
-#+name: fig:Rueter-4
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
-[[file:images/reuters-4.png]]
+history_dict = history.history
+plot_train_history(history_dict, 'loss', 'val_loss', 'Loss', 'reuters-1.png', [0, 10, 0, 3])
+plot_train_history(history_dict, 'accuracy', 'val_accuracy', 'Accuracy', 'reuters-2.png', [0, 10, 0, 1])
+#+end_src
 
 ** 迴歸問題：預測房價
+
+前面的 IMDB 和 Reuters 都是分類問題（輸出是「哪一類」），接下來換一個不同類型的問題——迴歸（輸出是「一個數值」）。
+
+本例使用 California Housing 資料集，目標是根據加州各地區的統計數據（如收入中位數、屋齡、人口數等 8 個特徵）來預測該地區的房價中位數（單位：十萬美元）。
+
 *** 準備資料
-#+BEGIN_SRC python -r -n :async :results output :exports both :session boston_housing
-from keras.datasets import boston_housing
-
-(train_data, train_targets), (test_data, test_targets) =  boston_housing.load_data()
-
-print(train_data.shape)
-print(test_data.shape)
-#+END_SRC
-
-#+RESULTS:
-: (404, 13)
-: (102, 13)
-
-**** 資料集標準化
-#+BEGIN_SRC python -r -n :async :results output :exports both :session boston_housing
-mean = train_data.mean(axis=0)
-train_data -= mean
-std = train_data.std(axis=0)
-train_data /= std
-
-test_data -= mean
-test_data /= std
-#+END_SRC
-
-#+RESULTS:
-*** 建立神經網路
-由於可用的樣本很少，所以使用一個較小的神經網路，一般來說，訓練資料集越少，過度配適的情況會越嚴重。
-
-#+BEGIN_SRC python -r -n :async :results output :exports both :session boston_housing
-from keras import models
-from keras import layers
-
-def build_model():
-    # Because we will need to instantiate
-    # the same model multiple times,
-    # we use a function to construct it.
-    model = models.Sequential()
-    model.add(layers.Dense(64, activation='relu',
-                           input_shape=(train_data.shape[1],)))
-    model.add(layers.Dense(64, activation='relu'))
-    model.add(layers.Dense(1))      (ref:OneUnitLayer)
-    model.compile(optimizer='rmsprop', loss='mse', metrics=['mae'])
-    return model
-#+END_SRC
-
-#+RESULTS:
-
-這裡以 1 unit 的神經網路結束而且沒有啟動函數(第[[(OneUnitLayer)]]行)，代表為線性轉換，這是純量迴歸的基本設定，會輸出一個浮點數型別的數值(即迴歸值)，如果使用啟動函數，則只會輸出 0~1 間的值。另，mse 也是迴歸常用的損失函數，在評量指標的選擇方面，則採用 mae(mean absolute error，即預測值與目標值間差異的絕對值)。
-*** 驗證
-本例中由於資料點少，驗證集也只有 100 筆資料，故驗證分數可能會因驗證資料點或訓練資料點的選用而有很大的變化，因而阻礙評估 model 優劣的可靠性。在這種情況下，最好的方式是選用 K-fold corss validation，做法如圖[[fig:K-fold-cross-validation]]，原理是將資料拆分為 K 個區域(通常 K=4 或 5)，每次取一個區域做為驗證資料集，最後求 K 次驗證分數的平均值。
-
-#+CAPTION:K-fold 交叉驗證
-#+LABEL:fig:K-fold-cross-validation
-#+name: fig:K-fold-cross-validation
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
-[[file:images/k-fold-validation.png]]
-
-K-fold cross validation 的 python 實作程式碼如下：
-#+BEGIN_SRC python -r -n :async :results output :exports both :session boston_housing
+#+begin_src python -r -n :results output :exports both :session california
+from sklearn.datasets import fetch_california_housing  # 從 scikit-learn 載入加州房價資料集
+from sklearn.model_selection import train_test_split   # 載入資料分割工具
 import numpy as np
 
-k = 4
-num_val_samples = len(train_data) // k
-num_epochs = 100
-all_scores = []
-for i in range(k):
-    print('processing fold #', i)
-    # Prepare the validation data: data from partition # k
-    val_data = train_data[i * num_val_samples: (i + 1) * num_val_samples]
-    val_targets = train_targets[i * num_val_samples: (i + 1) * num_val_samples]
+housing = fetch_california_housing()                   # 下載並載入資料集
+print(f"資料集大小: {housing.data.shape}")              # 看看有幾筆資料、幾個特徵
+print(f"特徵名稱: {housing.feature_names}")            # 8 個特徵：收入、屋齡、房間數等等
+print(f"目標: 房價中位數（單位：十萬美元）")
 
-    # Prepare the training data: data from all other partitions
-    partial_train_data = np.concatenate([train_data[:i * num_val_samples],
-         train_data[(i + 1) * num_val_samples:]], axis=0)
-    partial_train_targets = np.concatenate([train_targets[:i * num_val_samples],
-         train_targets[(i + 1) * num_val_samples:]], axis=0)
+# 把資料分成訓練集（80%）和測試集（20%），random_state=42 是為了讓每次分割結果一樣
+train_data, test_data, train_targets, test_targets = train_test_split(
+    housing.data, housing.target, test_size=0.2, random_state=42)
+print(f"訓練集: {train_data.shape}, 測試集: {test_data.shape}")
+#+end_src
 
-    # Build the Keras model (already compiled)
-    model = build_model()
-    # Train the model (in silent mode, verbose=0)
-    model.fit(partial_train_data, partial_train_targets,
-              epochs=num_epochs, batch_size=1, verbose=0)
-    # Evaluate the model on the validation data
-    val_mse, val_mae = model.evaluate(val_data, val_targets, verbose=0)
-    all_scores.append(val_mae)
-#+END_SRC
+**** 資料集標準化
+各特徵的單位不同（例如收入是萬美元、屋齡是年、人口是人數），直接丟進神經網路會讓某些特徵因為數值較大而主導學習過程。標準化後每個特徵的平均值為 0、標準差為 1，讓所有特徵站在同一起跑線上。
 
-#+RESULTS:
-: processing fold # 0
-: processing fold # 1
-: processing fold # 2
-: processing fold # 3
+#+begin_src python -r -n :results output :exports both :session california
+# 標準化：讓每個特徵的平均值變 0、標準差變 1（讓所有特徵站在同一起跑線）
+mean = train_data.mean(axis=0)           # 算出每個特徵的平均值（axis=0 表示沿著「每一行」算）
+std = train_data.std(axis=0)             # 算出每個特徵的標準差
+train_data = (train_data - mean) / std   # 標準化公式：(原始值 - 平均值) / 標準差
+test_data = (test_data - mean) / std     # 測試集也要用「訓練集的」平均值和標準差來標準化（不能偷看測試集）
+print("標準化後第一筆資料:", np.round(train_data[0], 3))  # 標準化後數值會落在 -3 ~ 3 左右
+#+end_src
 
-*** 查看結果
-#+BEGIN_SRC python -r -n :async :results output :exports both :session boston_housing
-print(all_scores)
-print(np.mean(all_scores))
-#+END_SRC
+*** 建立神經網路
+#+begin_src python -r -n :results output :exports both :session california
+from keras import models  # 載入模型模組
+from keras import layers  # 載入層模組
 
-#+RESULTS:
-: [2.2767844200134277, 2.619281053543091, 2.72979474067688, 2.562032461166382]
-: 2.546973168849945
+# 把模型建構包成函式，方便重複使用
+def build_model():
+    model = models.Sequential()                                    # 順序型模型
+    model.add(layers.Input(shape=(train_data.shape[1],)))          # 輸入層：8 個特徵
+    model.add(layers.Dense(64, activation='relu'))                 # 隱藏層 1：64 個神經元
+    model.add(layers.Dense(64, activation='relu'))                 # 隱藏層 2：64 個神經元
+    model.add(layers.Dense(1))      (ref:OneUnitLayer)
+    # ↑ 輸出層：1 個神經元，不加啟動函數！因為是迴歸問題，要直接輸出房價數值
+    model.compile(optimizer='rmsprop',    # 優化器：RMSprop
+                  loss='mse',             # 損失函數：均方誤差（Mean Squared Error）
+                  metrics=['mae'])        # 評估指標：平均絕對誤差（Mean Absolute Error）
+    return model
+#+end_src
 
-由上述結果看來，拆成 4 區的驗證分數自 2.28 到 2.73，總平均為 2.54，這個平均值是較為可靠的指標，因為當目標房價的數值很大時，2.28 到 2.73 會變成很大的誤差。
+注意第[[(OneUnitLayer)]]行：輸出層只有 1 個神經元，而且 *沒有啟動函數* 。跟分類問題比較一下：
 
-可能是因為 MAC 與 Linux 版本的 Anaconda 相容性問題，或是 Keras 版本差異問題，MAC 版與 Linux 下的 history.history 架構略有差異：
-#+BEGIN_SRC python -r -n :async :results output :exports both :session boston_housing
-# Linux with Keras 2.2.5
-dict_keys(['val_loss', 'val_mean_absolute_error', 'loss', 'mean_absolute_error'])
-# Mac with Keras 2.3.1
-dict_keys(['val_loss', 'val_mae', 'loss', 'mae'])
-#+END_SRC
-**** 評估結果視覺化
-#+BEGIN_SRC python -r -n :async :results output :exports both :session boston_housing
-# Some memory clean-up
-k = 4
-num_val_samples = len(train_data) // k
-num_epochs = 500
-all_mae_histories = []
-for i in range(k):
-    print('processing fold #', i)
-    # Prepare the validation data: data from partition # k
-    val_data = train_data[i * num_val_samples: (i + 1) * num_val_samples]
-    val_targets = train_targets[i * num_val_samples: (i + 1) * num_val_samples]
-    # Prepare the training data: data from all other partitions
-    partial_train_data = np.concatenate(
-        [train_data[:i * num_val_samples],
-         train_data[(i + 1) * num_val_samples:]],
-        axis=0)
-    partial_train_targets = np.concatenate(
-        [train_targets[:i * num_val_samples],
-         train_targets[(i + 1) * num_val_samples:]],
-        axis=0)
-    # Build the Keras model (already compiled)
-    model = build_model()
-    # Train the model (in silent mode, verbose=0)
-    history = model.fit(partial_train_data, partial_train_targets,
-                        validation_data=(val_data, val_targets),
-                        epochs=num_epochs, batch_size=1, verbose=0)
-    mae_history = history.history['val_mae']
-    all_mae_histories.append(mae_history)
+| | 分類（IMDB） | 迴歸（California Housing） |
+|---+---+---|
+| 輸出層啟動函數 | sigmoid / softmax | *無*（線性輸出） |
+| 輸出值 | 0~1 之間的機率 | 任意實數（房價） |
+| 損失函數 | crossentropy | *mse*（均方誤差） |
+| 評估指標 | accuracy | *mae*（平均絕對誤差） |
 
-average_mae_history = [np.mean([x[i] for x in all_mae_histories]) for i in range(num_epochs)]
+如果迴歸問題也套 sigmoid，輸出值會被壓在 0~1 之間，房價怎麼可能只在這個範圍？所以迴歸的輸出層不加啟動函數，讓神經網路直接輸出原始數值。
+*** 訓練與驗證
+#+begin_src python -r -n :results output :exports both :session california
+model = build_model()  # 呼叫函式建立模型
 
-import matplotlib.pyplot as plt
-plt.plot(range(1, len(average_mae_history) + 1), average_mae_history)
+# 開始訓練！validation_split=0.2 表示自動從訓練資料中切 20% 當驗證集
+history = model.fit(train_data, train_targets,   # 訓練資料和目標值（房價）
+                    validation_split=0.2,        # 自動切 20% 做驗證
+                    epochs=100,                  # 訓練 100 輪
+                    batch_size=32,               # 每批次 32 筆
+                    verbose=0)                   # 安靜模式
+
+# 在測試集上評估模型表現（用模型沒看過的資料來測試）
+test_mse, test_mae = model.evaluate(test_data, test_targets, verbose=0)
+print(f"測試集 MSE: {test_mse:.4f}")   # 均方誤差（越低越好）
+print(f"測試集 MAE: {test_mae:.4f}")   # 平均絕對誤差（越低越好）
+print(f"→ 平均預測誤差約 {test_mae:.2f} 十萬美元（約 {test_mae*10:.1f} 萬美元）")  # 把 MAE 換算成實際金額
+#+end_src
+
+*** 評估結果視覺化
+#+begin_src python -r -n :results output :exports both :session california
+import matplotlib.pyplot as plt  # 載入繪圖套件
+
+history_dict = history.history   # 取得訓練歷史紀錄
+
+plt.cla()                        # 清除上一張圖
+plt.figure(figsize=(12, 4))      # 建立一個寬 12、高 4 的畫布（放兩張子圖剛好）
+
+# 左邊的子圖：Loss (MSE) 曲線
+plt.subplot(1, 2, 1)                                     # 1 列 2 欄的第 1 格
+plt.plot(history_dict['loss'], label='Training')          # 訓練集的 MSE
+plt.plot(history_dict['val_loss'], label='Validation')    # 驗證集的 MSE
+plt.title('Loss (MSE)')        # 圖標題
+plt.xlabel('Epochs')           # X 軸
+plt.ylabel('MSE')              # Y 軸
+plt.legend()                   # 顯示圖例
+
+# 右邊的子圖：MAE 曲線
+plt.subplot(1, 2, 2)                                     # 1 列 2 欄的第 2 格
+plt.plot(history_dict['mae'], label='Training')           # 訓練集的 MAE
+plt.plot(history_dict['val_mae'], label='Validation')     # 驗證集的 MAE
+plt.title('Mean Absolute Error')
 plt.xlabel('Epochs')
-plt.ylabel('Validation MAE')
-plt.plot()
-plt.savefig("images/Boston-House-Price.png")
+plt.ylabel('MAE')
+plt.legend()
 
-# 排除每週期的前10個資料點
-def smooth_curve(points, factor=0.9):
-  smoothed_points = []
-  for point in points:
-    if smoothed_points:
-      previous = smoothed_points[-1]
-      smoothed_points.append(previous * factor + point * (1 - factor))
-    else:
-      smoothed_points.append(point)
-  return smoothed_points
+plt.tight_layout()             # 自動調整子圖間距（避免標題被切掉）
+plt.savefig("images/california-housing-train.png", dpi=300)  # 存成高解析度 PNG
+print("圖已儲存")
+#+end_src
 
-smooth_mae_history = smooth_curve(average_mae_history[10:])
-plt.clf()
-plt.plot(range(1, len(smooth_mae_history) + 1), smooth_mae_history)
-plt.xlabel('Epochs')
-plt.ylabel('Validation MAE')
-plt.plot()
-plt.savefig("images/Boston-House-Price-ex10.png")
-#+END_SRC
+#+CAPTION: California Housing 訓練過程
+#+LABEL:fig:CaliforniaHousingTrain
+#+name: fig:CaliforniaHousingTrain
+#+ATTR_LATEX: :width 500
+#+ATTR_ORG: :width 500
+#+ATTR_HTML: :width 700
+[[file:images/california-housing-train.png]]
 
-#+RESULTS:
-: processing fold # 0
-: processing fold # 1
-: processing fold # 2
-: processing fold # 3
+觀察上圖：如果 validation 的 MAE 在某個 epoch 之後開始往上升而 training 繼續下降，就代表模型開始過度配適（overfitting）——模型把訓練資料「背起來了」，但對新資料的預測能力反而變差。
 
-#+CAPTION: Boston House Price Training MAE
-#+LABEL:fig:BostonHouseMAE
-#+name: fig:BostonHouseMAE
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
-[[file:images/Boston-House-Price.png]]
-
-圖[[fig:BostonHouseMAE]]是由每一訓練週期的平均 MAE 分數所繪出的折線圖，由於單位刻度與 y 軸刻度問題，此圖失去了部份重要細節，經由下列方式進行修正：
-- 省略前 10 個資料點，
-- 把每個資料點替換成前一點的指數移動平均值(exponential moving average, EMA)，讓誤差變平滑。
-
-EMA 常應用於各領域的資料分析中，其核心概念為：現在的資料會被過去的資料所影響，而時間點越近的資料影響越大，反之越小，如股票的漲幅，前 10 年的漲跌與前 10 日的漲跌，自然是後者對未來的影響更大。
-
-EMA 的數學函式如下：
-\( E_t = a \times V_t + (1-a) \times E_{t-1} \)，其中
-- \(E_t\)為時間點\(t\)的指數移動平均值
-- \(a\)為平滑係數，通常介於 0 到 1 之間
-- \(V_t\)為時間點\(t\)的原始數值
-- \(E_{t-1}\)為時間點\(t-1\)的指數移動平均值
-
-為什麼前例中前 10 筆資料的與其他資料差異如此巨大？我們以前 10 天的資料(一天一筆)來看，第 10 天的 EMA 為：
-\( E_{10} = aV_{10} + (1-a)E_9 \)
-展開第 9 天的\(E_9\)後
-\( E_{10} = aV_{10} + (1-a)[aV_9 + (1-a)E_8] \)
-整理後變成
-\( E_{10} = a(V_{10} + (1-a)V_9) + (1-a)^{2}E_8 \)
-若繼續展開所有天數，將得到
-\( E_{10} = a(V_{10} + (1-a)V_9) + (1-a)^{2}E_8+ \dots + (1-a)^{9}V_{1}) + (1-a)^{9}E_1 \)
-通常上式的最後一項會因為時間很長而變太小，故可忽略不計，而由此也可看出，\(E_{10}\)的值會被每天的原始資料\((V_{10} \dots V_{1}\))影響，每多一天，原始數值就會多乘(1-a)倍，成指數關係，故時間越久遠的事件，影響越小。
-
-#+CAPTION: Boston House Price Training MAE (排除前 10 個資料點)
-#+LABEL:fig:BostonHouseMAE-ex10
-#+name: fig:BostonHouseMAE-ex10
-#+ATTR_LATEX: :width 300
-#+ATTR_ORG: :width 300
-#+ATTR_HTML: :width 500
-[[file:images/Boston-House-Price-ex10.png]]
-
-由圖[[fig:BostonHouseMAE-ex10]]是可看出 MAE 在 80 個週期後已停止改善，然後開始往上升，即，過了這點就開始發生過度適配的情況。
 *** 小結
 
 由此範例可知：
-- 進行迴歸分析時，常以 MSE 做為損失函數、以 MAE 做為評估指標(而非 accuracy).
-- 當輸入資料的特徵有不同刻度時，應先將每個特徵進行轉換。
-- 當可用資料很少時，使用 K-fold 驗證來評估模式。
-- 當可用資料很少時，最好使用隠藏層較少(較淺)的小型神經網路，如一個或兩個，以免產生過渡配適。
+- 迴歸問題的輸出層 *不加啟動函數* ，讓模型直接輸出數值。
+- 損失函數用 MSE、評估指標用 MAE（而非分類問題的 accuracy）。
+- 當輸入特徵的刻度不同時，應先做標準化。
 
 ** 圖片識別: MNIST
-此處以最簡單的 NN (Neural Network) 作為範例。以 Keras 的核心為模型，應用最常使用 Sequential 模型。藉由.add()我們可以一層一層的將神經網路疊起。在每一層之中我們只需要簡單的設定每層的大小(units)與激勵函數(activation function)。需要特別記得的是：第一層要記得寫輸入的向量大小、最後一層的 units 要等於輸出的向量大小。在這邊我們最後一層使用的激活函數(activation function)為 softmax。
-*** Import Library
+前面的例子都是處理「數字資料」（文字向量、房價特徵），現在終於要碰 *圖片* 了。MNIST 是手寫數字辨識資料集（0~9），每張圖片是 28×28 像素的灰階影像。
+
+但這裡有個問題：我們目前學的 Dense 層只接受一維向量輸入，而圖片是二維的。最粗暴的做法就是——把圖片「攤平」成一條長長的一維向量（28×28 = 784 個數字），然後丟進 Dense 層。這就像把一張照片剪成 784 條紙條排成一列，再讓模型去猜上面寫了什麼數字。
+
+*** 實作：用神經網路辨識手寫數字
+先用最直覺的方式試試看：把圖片攤平、建模型、開始訓練。
+**** Import Library
 #+BEGIN_SRC python -r -n :results output :exports both :session mnistX :async
-from keras.datasets import mnist
-from tensorflow.keras.utils import to_categorical
+from keras.datasets import mnist               # 載入 MNIST 手寫數字資料集
+from tensorflow.keras.utils import to_categorical  # 載入 one-hot 編碼工具
 import numpy as np
 
+# 載入資料：x 是圖片（28x28 灰階影像），y 是標籤（0~9 的數字）
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
-# 將訓練集特徵x_train攤平成一維向量
+# 把 28x28 的二維圖片「攤平」成 784 的一維向量（Dense 層只吃一維輸入）
+# reshape 的 -1 表示「自動算」，等同於 28*28 = 784
 X_train = x_train.reshape(x_train.shape[0], -1)
-# 將標籤y_train進行獨熱編碼
+# 把標籤做 one-hot 編碼：數字 3 → [0,0,0,1,0,0,0,0,0,0]
 Y_train = to_categorical(y_train)
 
+# 測試資料也做一樣的處理
 X_test = x_test.reshape(x_test.shape[0], -1)
 Y_test = to_categorical(y_test)
 #+end_src
 
 #+RESULTS:
-*** 建立模型
+**** 建立模型
 - Keras的模型有Sequential與Model兩類
-- 決定好要設計的模型類別，還要決定模型裡的layer如何叠力，layer有許多選擇，例如[[https://keras.io/api/layers/][Layer]]的種類就有Dense layer, Activation layer, Conv1D layer, Dropout layer.....
+- 決定好要設計的模型類別，還要決定模型裡的layer如何堆疊，layer有許多選擇，例如[[https://keras.io/api/layers/][Layer]]的種類就有Dense layer, Activation layer, Conv1D layer, Dropout layer.....
 - 決定好layer,還要再選activation function，如 relu, sigmoid, softmax.....
 - [[https://keras.io/api/layers/activations/][Keras API reference / Layers API / Layer activation functions ]]
 #+BEGIN_SRC python -r -n :results output :exports both :session mnistX :async
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.layers import Dropout
+from keras.models import Sequential     # 載入順序型模型
+from keras.layers import Dense, Input   # 載入全連接層和輸入層
+from keras.layers import Dropout        # 載入 Dropout 層（這版還沒用到，先載入備用）
 
-model = Sequential()
-#將模型疊起
-model.add(Dense(input_dim=28*28,units=128,activation='relu'))
-model.add(Dense(units=64,activation='relu'))
-model.add(Dense(units=10,activation='softmax'))
-model.summary()
+model = Sequential()  # 建立順序型模型
+# 一層一層往上疊：
+model.add(Input(shape=(28*28,)))                    # 輸入層：784 個數字（28x28 攤平後的結果）
+model.add(Dense(units=128,activation='relu'))       # 隱藏層 1：128 個神經元，ReLU 啟動
+model.add(Dense(units=64,activation='relu'))        # 隱藏層 2：64 個神經元，ReLU 啟動
+model.add(Dense(units=10,activation='softmax'))     # 輸出層：10 個神經元（對應 0~9 十個數字），softmax 輸出機率
+model.summary()  # 印出模型架構（看看總共有多少參數要訓練）
 #+end_src
 
 #+RESULTS:
 #+begin_example
-/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/keras/src/layers/core/dense.py:85: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
-  super().__init__(activity_regularizer=activity_regularizer, **kwargs)
 Model: "sequential"
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━
 ┃ Layer (type)                         ┃ Output Shape                ┃         P
@@ -1991,17 +1922,21 @@ Model: "sequential"
 
 藉由model.summary()可以簡略輸出模型的大概架構與所使用的參數總數。
 
-此例中叠了三個Dense層，第一層為每張圖的輸入(28*28個點)，有784個神經元(或node)，第二層有64個神經元，這是隱藏層，最後一層有10神經元，分別代表10種數字的可能性。
-
-*** 訓練模型
+此例中疊了三個Dense層，輸入為每張圖攤平後的784個像素值，第一個隱藏層有128個神經元，第二個隱藏層有64個神經元，最後一層（輸出層）有10個神經元，分別代表10種數字的可能性。
+**** 訓練模型
 訓練模型時要決定使用何種loss function、使用何種optimizer，可以到官網([[https://keras.io/api/models/model_training_apis/][Model training APIs]])查看有哪些選項可使用以及何種選項適合哪些類型的資料集與問題。
 #+BEGIN_SRC python -r -n :results output :exports both :session mnistX :async
+# 編譯模型：設定損失函數、優化器、評估指標
+model.compile(loss='categorical_crossentropy',   # 多分類問題用 categorical_crossentropy
+              optimizer='adam',                   # Adam 優化器（目前最常用的優化器）
+              metrics=['accuracy'])               # 追蹤準確率
 
-model.compile(loss='categorical_crossentropy',
-              optimizer='adam', metrics=['accuracy'])
-
-train_history = model.fit(x=X_train, y=Y_train, validation_split=0.2,
-                          epochs=50, batch_size=1000, verbose=2)
+# 開始訓練！
+train_history = model.fit(x=X_train, y=Y_train,  # 訓練資料和標籤
+                          validation_split=0.2,   # 自動切 20% 當驗證集
+                          epochs=50,              # 訓練 50 輪（有點多，等等會看到過度配適）
+                          batch_size=1000,        # 每批次 1000 筆
+                          verbose=2)              # verbose=2 表示每個 epoch 印一行摘要
 #+end_src
 
 #+RESULTS:
@@ -2012,57 +1947,61 @@ Epoch 1/50
 Epoch 50/50
 48/48 - 1s - 12ms/step - accuracy: 0.9961 - loss: 0.0137 - val_accuracy: 0.9631 - val_loss: 0.4587
 #+end_example
-*** 查看訓練過程
+**** 查看訓練過程
 看一下history的結構
 #+BEGIN_SRC python -r -n :results output :exports both :session mnistX :async
-print(train_history.history.keys())
+print(train_history.history.keys())  # 查看訓練歷史紀錄有哪些指標可以畫圖
 #+end_src
 
 #+RESULTS:
 : dict_keys(['accuracy', 'loss', 'val_accuracy', 'val_loss'])
 
 #+BEGIN_SRC python -r -n :results output :exports both :session mnistX :async
-import matplotlib.pyplot as plt
-def show_train_history(ylabel,train,test,fn):
-    plt.cla()
-    plt.plot(train_history.history[train])
-    plt.plot(train_history.history[test])
-    plt.title('Train History')
-    plt.ylabel(ylabel)
-    plt.xlabel('Epoch')
-    plt.legend(['train', 'test'], loc='center left')
-    plt.savefig("images/"+fn, dpi=300)
-    ##plt.show()
+import matplotlib.pyplot as plt  # 載入繪圖套件
 
+# 繪圖函式：把訓練和驗證的曲線畫在同一張圖上比較
+def show_train_history(ylabel,train,test,fn):
+    plt.cla()                                   # 清除上一張圖
+    plt.plot(train_history.history[train])       # 畫訓練集曲線
+    plt.plot(train_history.history[test])        # 畫驗證集曲線
+    plt.title('Train History')                  # 圖表標題
+    plt.ylabel(ylabel)                          # Y 軸標籤（Accuracy 或 Loss）
+    plt.xlabel('Epoch')                         # X 軸標籤
+    plt.legend(['train', 'test'], loc='center left')  # 圖例放在左邊中間
+    plt.savefig("images/"+fn, dpi=300)          # 存成高解析度圖檔
+
+# 畫 Accuracy 曲線（觀察：訓練和驗證的差距越大 = 越嚴重的過度配適）
 show_train_history('Accuracy', 'accuracy','val_accuracy','mnist-acc-val.png')
+# 畫 Loss 曲線
 show_train_history('Loss', 'loss','val_loss','mnist-loss-val.png')
 #+end_src
 
 #+RESULTS:
 
 訓練完就可以透過accuracy與loss來評估模型的效能，可以粗略看出隨著epoch的增加，精確度也隨之提升、loss則隨之下降。
-#+RESULTS:
-#+CAPTION: Accuracy
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: MNIST Accuracy
+#+LABEL:fig:mnist-accuracy
+#+name: fig:mnist-accuracy
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/mnist-acc-val.png]]
 
-#+CAPTION: Loss
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: MNIST Loss
+#+LABEL:fig:mnist-loss
+#+name: fig:mnist-loss
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 500
 [[file:images/mnist-loss-val.png]]
-*** 評估模型準確率
+**** 評估模型準確率
 #+BEGIN_SRC python -r -n :results output :exports both :session mnistX :async
+# 用訓練集評估模型（理論上應該很高，因為模型已經「看過」這些資料了）
 score = model.evaluate(X_train, Y_train, batch_size = 200)
-print ('\nTrain Acc:', score[1])
+print ('\nTrain Acc:', score[1])  # score[0] 是 loss, score[1] 是 accuracy
+# 用測試集評估模型（這才是真正的實力，模型從來沒看過測試集）
 score = model.evaluate(X_test, Y_test, batch_size = 200)
-print ('\nTest Acc:', score[1])
+print ('\nTest Acc:', score[1])   # 如果這個數字比 Train Acc 低很多，就代表過度配適了
 #+end_src
 
 #+RESULTS:
@@ -2072,11 +2011,11 @@ print ('\nTest Acc:', score[1])
 : [1m50/50[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 1ms/step - accuracy: 0.9575 - loss: 0.5729
 :
 : Test Acc: 0.9627000093460083
-*** 實際預測結果
+**** 實際預測結果
 #+BEGIN_SRC python -r -n :results output :exports both :session mnistX
-prediction=model.predict(X_test)
-print(prediction.shape)
-print(prediction[:2])
+prediction=model.predict(X_test)   # 對所有測試圖片進行預測
+print(prediction.shape)            # (10000, 10)：10000 張圖，每張有 10 個類別的機率
+print(prediction[:2])              # 印出前兩張圖的預測結果（10 個機率值，加起來 = 1）
 #+end_src
 
 #+RESULTS:
@@ -2090,168 +2029,177 @@ print(prediction[:2])
 #+BEGIN_SRC python -r -n :results output :exports both :session mnistX :async
 import matplotlib.pyplot as plt
 import numpy as np
-def oneHotDecode(number):
-    return np.argmax(number)
-def plot_images_labels_prediction(images, labels, prediction, num, fn):
-    plt.cla()
-    fig = plt.gcf()
 
-    fig.set_size_inches(10, 14)
+# 把 one-hot 向量轉回數字（例如 [0,0,0,1,0,...] → 3）
+def oneHotDecode(number):
+    return np.argmax(number)  # 找出機率最大的位置，就是對應的數字
+
+# 把圖片、正確答案、預測結果一起畫出來，方便一眼看出哪些猜對、哪些猜錯
+def plot_images_labels_prediction(images, labels, prediction, num, fn):
+    plt.cla()                          # 清除上一張圖
+    fig = plt.gcf()                    # 取得目前的畫布
+    fig.set_size_inches(10, 14)        # 設定畫布大小
 
     idx = 0
-    for i in range(0, num):
-        ax=plt.subplot(5, 5, 1+i)
-        ax.imshow(images[idx].reshape(28, 28), cmap='binary')
+    for i in range(0, num):            # 畫出指定數量的圖片
+        ax=plt.subplot(5, 5, 1+i)     # 排成 5x5 的格子（最多 25 張）
+        ax.imshow(images[idx].reshape(28, 28), cmap='binary')  # 把一維向量轉回 28x28 圖片顯示
 
+        # 在每張圖上面標註：正確答案（label）和模型的預測結果（predict）
         ax.set_title("label=" +str(oneHotDecode(labels[idx]))+
                      ",\npredict="+str(np.argmax(prediction[idx]))
                      ,fontsize=10)
         idx+=1
-    plt.savefig("images/"+fn, dpi=300, bbox_inches='tight',pad_inches = 0.2)
-plot_images_labels_prediction(x_test, y_test, prediction, 20, 'mnist-predic-perf.png')
+    plt.savefig("images/"+fn, dpi=300, bbox_inches='tight',pad_inches = 0.2)  # 存檔
+
+# 畫出前 20 張測試圖片的預測結果
+plot_images_labels_prediction(x_test, Y_test, prediction, 20, 'mnist-predic-perf.png')
 
 #+end_src
 
 #+RESULTS:
 
 最後輸出測試資料集的前20筆資料的圖、label以及預測結果
-#+RESULTS:
 #+CAPTION: 前20筆測試集預測結果
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:mnist-prediction
+#+name: fig:mnist-prediction
 #+ATTR_LATEX: :width 500
 #+ATTR_ORG: :width 500
 #+ATTR_HTML: :width 500
 [[file:images/mnist-predic-perf.png]]
 
-** 圖片識別版本2: MNIST
-*** 另一版本
-#+BEGIN_SRC python -r -n :results output :exports both :noeval
-# 載入資料
-from keras.datasets import mnist
-from tensorflow.keras.utils import to_categorical
+*** 思考：攤平影像丟 Dense 層，真的是好方法嗎？
 
-def load_data():
-    # 載入minst的資料
-    (x_train, y_train), (x_test, y_test) = mnist.load_data()
-    # 將圖片轉換為一個60000*784的向量，並且標準化
-    x_train = x_train.reshape(x_train.shape[0], 28*28)
-    x_test = x_test.reshape(x_test.shape[0], 28*28)
-    x_train = x_train.astype('float32')
-    x_test = x_test.astype('float32')
-    x_train = x_train/255
-    x_test = x_test/255
-    # 將y轉換成one-hot encoding
-    y_train = to_categorical(y_train, 10)
-    y_test = to_categorical(y_test, 10)
-    # 回傳處理完的資料
-    return (x_train, y_train), (x_test, y_test)
+我們剛才把 28×28 的影像攤平成 784 個數字丟進 Dense 層。這就像把一張照片剪成 784 條紙條排成一列——所有「像素之間的空間關係」都被破壞了。左上角的像素和右下角的像素，對 Dense 層來說只是一串數字中的兩個位置，它根本不知道它們在原圖上離得很遠。
 
+想像一下：如果有人把你的大頭照剪成紙條打亂順序，你還認得出那是誰嗎？Dense 層就是在做這種事，而且它居然還能達到 97% 以上的準確率——手寫數字實在是太簡單了。
+
+但如果換成更複雜的影像（例如貓狗辨識、醫學影像），攤平就行不通了。不信？我們馬上來試。
+
+*** 實證：用 CIFAR-10 戳破 Dense 的天花板
+
+CIFAR-10 也是 Keras 內建的資料集，包含 10 類彩色圖片（飛機、汽車、鳥、貓、鹿、狗、青蛙、馬、船、卡車），每張 32×32 像素、3 個色彩通道。比起 MNIST 那種乾乾淨淨的黑白手寫數字，這才比較接近「真實世界的圖片」。
+
+**** 先看看 CIFAR-10 長什麼樣
+#+begin_src python -r -n :results output :exports both :session cifar
+from keras.datasets import cifar10
+import matplotlib.pyplot as plt
 import numpy as np
-from keras import layers
-from keras import models
+import ssl
+(x_train, y_train), (x_test, y_test) = cifar10.load_data()
 
-def build_model():#建立模型
-    model = models.Sequential()
-    #將模型疊起
-    model.add(layers.Dense(input_dim=28*28,units=128,activation='relu'))
-    model.add(layers.Dense(units=64,activation='relu'))
-    model.add(layers.Dense(units=10,activation='softmax'))
-    model.summary()
-    return model
+# CIFAR-10 的 10 個類別名稱
+class_names = ['飛機', '汽車', '鳥', '貓', '鹿', '狗', '青蛙', '馬', '船', '卡車']
 
-# 開始訓練模型，此處使用了Adam做為我們的優化器，loss function選用了categorical_crossentropy。
-(x_train,y_train),(x_test,y_test)=load_data()
-model = build_model()
-#開始訓練模型
-model.compile(loss='categorical_crossentropy',optimizer="adam",metrics=['accuracy'])
-model.fit(x_train, y_train, batch_size=100, epochs=5, verbose=0)
-#顯示訓練結果
-score = model.evaluate(x_train, y_train)
-print ('\nTrain Acc:', score[1])
-score = model.evaluate(x_test,y_test)
-print ('\nTest Acc:', score[1])
+print(f"訓練集: {x_train.shape}")   # (50000, 32, 32, 3)：5 萬張 32x32 彩色圖
+print(f"測試集: {x_test.shape}")    # (10000, 32, 32, 3)
 
-### 進行預測
-prediction = model.predict(x_test)
-print(prediction[:10])
-
-import pandas as pd
-# 将预测结果转换为类别标签
-predicted_labels = np.argmax(prediction, axis=1)
-# 将真实标签转换为类别标签
-true_labels = np.argmax(y_test, axis=1)
-
-p = pd.crosstab(true_labels, predicted_labels, rownames=['label'], colnames=['predict'])
-print(p)
-
-#+END_SRC
+# 隨機挑 10 張圖出來看看
+plt.close('all')
+fig, axes = plt.subplots(2, 5, figsize=(10, 4))
+for i, ax in enumerate(axes.flat):
+    ax.imshow(x_train[i])
+    ax.set_title(class_names[y_train[i][0]], fontsize=12)
+    ax.axis('off')
+plt.tight_layout()
+plt.savefig("images/cifar10-samples.png", dpi=150)
+print("圖已儲存")
+#+end_src
 
 #+RESULTS:
-#+begin_example
-Model: "sequential"
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓
-┃ Layer (type)                    ┃ Output Shape           ┃       Param # ┃
-┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩
-│ dense (Dense)                   │ (None, 128)            │       100,480 │
-├─────────────────────────────────┼────────────────────────┼───────────────┤
-│ dense_1 (Dense)                 │ (None, 64)             │         8,256 │
-├─────────────────────────────────┼────────────────────────┼───────────────┤
-│ dense_2 (Dense)                 │ (None, 10)             │           650 │
-└─────────────────────────────────┴────────────────────────┴───────────────┘
- Total params: 109,386 (427.29 KB)
- Trainable params: 109,386 (427.29 KB)
- Non-trainable params: 0 (0.00 B)
-[1m   1/1875[0m [37m━━━━━━━━━━━━━━━━━━━━[0m [1m1:11[0m 38ms/step - accuracy: 1.0000 - loss: 0.0060[1m 119/1875[0m [32m━[0m[37m━━━━━━━━━━━━━━━━━━━[0m [1m0s[0m 426us/step - accuracy: 0.9900 - loss: 0.0408 [1m 266/1875[0m [32m━━[0m[37m━━━━━━━━━━━━━━━━━━[0m [1m0s[0m 379us/step - accuracy: 0.9910 - loss: 0.0376[1m 406/1875[0m [32m━━━━[0m[37m━━━━━━━━━━━━━━━━[0m [1m0s[0m 372us/step - accuracy: 0.9909 - loss: 0.0371[1m 553/1875[0m [32m━━━━━[0m[37m━━━━━━━━━━━━━━━[0m [1m0s[0m 364us/step - accuracy: 0.9909 - loss: 0.0365[1m 691/1875[0m [32m━━━━━━━[0m[37m━━━━━━━━━━━━━[0m [1m0s[0m 364us/step - accuracy: 0.9908 - loss: 0.0361[1m 838/1875[0m [32m━━━━━━━━[0m[37m━━━━━━━━━━━━[0m [1m0s[0m 360us/step - accuracy: 0.9907 - loss: 0.0359[1m 975/1875[0m [32m━━━━━━━━━━[0m[37m━━━━━━━━━━[0m [1m0s[0m 361us/step - accuracy: 0.9906 - loss: 0.0358[1m1115/1875[0m [32m━━━━━━━━━━━[0m[37m━━━━━━━━━[0m [1m0s[0m 360us/step - accuracy: 0.9904 - loss: 0.0358[1m1261/1875[0m [32m━━━━━━━━━━━━━[0m[37m━━━━━━━[0m [1m0s[0m 358us/step - accuracy: 0.9903 - loss: 0.0358[1m1410/1875[0m [32m━━━━━━━━━━━━━━━[0m[37m━━━━━[0m [1m0s[0m 356us/step - accuracy: 0.9903 - loss: 0.0358[1m1554/1875[0m [32m━━━━━━━━━━━━━━━━[0m[37m━━━━[0m [1m0s[0m 355us/step - accuracy: 0.9902 - loss: 0.0359[1m1686/1875[0m [32m━━━━━━━━━━━━━━━━━[0m[37m━━━[0m [1m0s[0m 357us/step - accuracy: 0.9901 - loss: 0.0360[1m1801/1875[0m [32m━━━━━━━━━━━━━━━━━━━[0m[37m━[0m [1m0s[0m 362us/step - accuracy: 0.9900 - loss: 0.0361[1m1875/1875[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m1s[0m 364us/step - accuracy: 0.9900 - loss: 0.0361
+#+CAPTION: CIFAR-10 樣本圖片
+#+name: fig:cifar10-samples
+#+ATTR_LATEX: :width 500
+#+ATTR_ORG: :width 500
+#+ATTR_HTML: :width 600
+[[file:images/cifar10-samples.png]]
 
-Train Acc: 0.9893333315849304
-[1m  1/313[0m [37m━━━━━━━━━━━━━━━━━━━━[0m [1m14s[0m 45ms/step - accuracy: 1.0000 - loss: 0.0102[1m144/313[0m [32m━━━━━━━━━[0m[37m━━━━━━━━━━━[0m [1m0s[0m 350us/step - accuracy: 0.9736 - loss: 0.0826[1m279/313[0m [32m━━━━━━━━━━━━━━━━━[0m[37m━━━[0m [1m0s[0m 361us/step - accuracy: 0.9729 - loss: 0.0823[1m313/313[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 359us/step - accuracy: 0.9733 - loss: 0.0810
+跟 MNIST 比一下：MNIST 每張圖是 28×28×1 = 784 個數字，CIFAR-10 每張圖是 32×32×3 = 3072 個數字，複雜度差了好幾倍。
 
-Test Acc: 0.9764999747276306
-[1m  1/313[0m [37m━━━━━━━━━━━━━━━━━━━━[0m [1m5s[0m 17ms/step[1m139/313[0m [32m━━━━━━━━[0m[37m━━━━━━━━━━━━[0m [1m0s[0m 364us/step[1m288/313[0m [32m━━━━━━━━━━━━━━━━━━[0m[37m━━[0m [1m0s[0m 350us/step[1m313/313[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 378us/step
-[[1.58942123e-06 4.56630090e-07 1.44183810e-04 7.96658918e-04
-  4.83289035e-08 5.57914291e-07 8.43276837e-12 9.98949349e-01
-  7.18311139e-06 9.99482872e-05]
- [9.20066245e-11 8.16951651e-05 9.99909282e-01 7.55548444e-06
-  9.96026872e-11 2.12249276e-07 8.12293024e-08 3.26049777e-11
-  1.17174454e-06 2.21182258e-14]
- [1.82215524e-06 9.96792972e-01 3.96484742e-04 1.60194541e-04
-  1.02035912e-04 1.21604295e-04 6.79323348e-05 8.09717865e-04
-  1.49104348e-03 5.62478417e-05]
- [9.99915719e-01 5.35815747e-09 4.51234046e-05 5.88590240e-07
-  1.43257850e-07 3.82396547e-06 1.11071859e-05 1.55277394e-06
-  2.66697526e-08 2.18579280e-05]
- [4.33285859e-05 1.10104907e-06 1.34856982e-05 1.56399324e-06
-  9.93066788e-01 4.01588704e-06 4.50718362e-05 1.48709762e-04
-  9.48531579e-06 6.66645123e-03]
- [6.66389894e-08 9.97991085e-01 3.08640438e-06 4.88619798e-06
-  1.13685437e-05 2.65808126e-07 6.75553053e-08 1.93838566e-03
-  2.31987287e-05 2.76108785e-05]
- [7.66120678e-08 4.94036567e-06 2.84373783e-07 6.58262920e-08
-  9.98910308e-01 1.59385650e-06 7.10860562e-08 8.05889431e-06
-  4.70556435e-04 6.04005065e-04]
- [6.92483184e-07 7.98684960e-06 4.36144364e-05 3.25308600e-03
-  4.72561878e-05 9.02633201e-06 8.00792588e-09 1.29608334e-05
-  2.07478279e-05 9.96604562e-01]
- [1.25154367e-08 2.27490159e-06 1.40500115e-03 6.09770814e-06
-  4.96629109e-05 8.98099899e-01 9.85215753e-02 2.18058993e-08
-  1.91533507e-03 1.61481594e-07]
- [6.98578688e-08 2.19913043e-09 5.58190187e-08 9.24819687e-06
-  1.30430009e-04 7.13636261e-09 4.16892909e-12 4.35012007e-05
-  2.02734009e-06 9.99814689e-01]]
-predict    0     1     2    3    4    5    6     7    8    9
-label
-0        960     0     6    0    2    0    7     1    4    0
-1          0  1128     3    0    0    0    1     0    3    0
-2          2     4  1015    2    1    0    1     4    2    1
-3          0     0    11  979    0    9    0     4    2    5
-4          0     1     1    0  955    0    6     4    2   13
-5          2     0     0   14    1  860    4     1    7    3
-6          3     3     2    1    1    3  942     1    2    0
-7          0     4     7    1    1    0    0  1004    0   11
-8          5     1     4    7    3    2    3     5  938    6
-9          3     2     2    6    6    1    2     3    0  984
-#+end_example
+**** 用 MNIST 同款的 Dense 模型來挑戰 CIFAR-10
+我們直接把 MNIST 版本二那個效果不錯的架構（128 → 64 → 10）搬過來用，唯一的差別是輸入從 784 變成 3072：
+
+#+begin_src python -r -n :results output :exports both :session cifar
+from keras import models, layers
+from tensorflow.keras.utils import to_categorical
+
+# 攤平 + 正規化（跟 MNIST 一模一樣的套路）
+X_train = x_train.reshape(x_train.shape[0], -1).astype('float32') / 255
+X_test = x_test.reshape(x_test.shape[0], -1).astype('float32') / 255
+Y_train = to_categorical(y_train, 10)
+Y_test = to_categorical(y_test, 10)
+
+print(f"攤平後的輸入維度: {X_train.shape[1]}")  # 3072
+
+# 建立跟 MNIST 一樣的 Dense 模型
+model = models.Sequential()
+model.add(layers.Input(shape=(3072,)))              # 輸入：3072 維（32×32×3 攤平）
+model.add(layers.Dense(128, activation='relu'))     # 隱藏層 1：128 神經元
+model.add(layers.Dense(64, activation='relu'))      # 隱藏層 2：64 神經元
+model.add(layers.Dense(10, activation='softmax'))   # 輸出層：10 個類別
+
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+# 訓練（用跟 MNIST 版本二一樣的設定）
+history = model.fit(X_train, Y_train, batch_size=100, epochs=20,
+                    validation_split=0.2, verbose=1)
+
+# 評估
+score = model.evaluate(X_test, Y_test, verbose=0)
+print(f"\n測試集準確率: {score[1]:.4f}")
+print(f"（MNIST 同架構的測試集準確率: 0.9765）")
+print(f"（隨機亂猜 10 類的準確率: 0.1000）")
+#+end_src
+
+**** 視覺化比較
+#+begin_src python -r -n :results output :exports both :session cifar
+import matplotlib.pyplot as plt
+
+plt.close('all')
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
+
+# Loss 曲線
+ax1.plot(history.history['loss'], label='Training')
+ax1.plot(history.history['val_loss'], label='Validation')
+ax1.set_title('CIFAR-10 Dense Model - Loss')
+ax1.set_xlabel('Epochs')
+ax1.set_ylabel('Loss')
+ax1.legend()
+
+# Accuracy 曲線
+ax2.plot(history.history['accuracy'], label='Training')
+ax2.plot(history.history['val_accuracy'], label='Validation')
+ax2.set_title('CIFAR-10 Dense Model - Accuracy')
+ax2.set_xlabel('Epochs')
+ax2.set_ylabel('Accuracy')
+ax2.legend()
+
+plt.tight_layout()
+plt.savefig("images/cifar10-dense-result.png", dpi=150)
+print("圖已儲存")
+#+end_src
+
+#+CAPTION: CIFAR-10 用 Dense 模型的訓練結果
+#+name: fig:cifar10-dense
+#+ATTR_LATEX: :width 500
+#+ATTR_ORG: :width 500
+#+ATTR_HTML: :width 700
+[[file:images/cifar10-dense-result.png]]
+
+**** 結果分析
+
+| 資料集 | 模型架構 | 測試準確率 |
+|--------+----------+----------|
+| MNIST  | Dense (128→64→10) | ~97.6%   |
+| CIFAR-10 | Dense (128→64→10) | ~47%     |
+
+同一個模型，MNIST 上表現優異，CIFAR-10 上卻慘不忍睹。為什麼？
+
+1. *空間資訊被破壞*：攤平後，「貓的眼睛在鼻子上方」這種空間關係全部消失。MNIST 的數字形狀簡單到靠「哪些像素亮了」就能猜出來，但真實圖片不行。
+2. *參數量爆炸但沒效率*：Dense(128) 在 MNIST 要學 784×128 ≈ 10 萬個參數，在 CIFAR-10 要學 3072×128 ≈ 39 萬個參數。參數變多了，但學到的全是「第 N 號像素亮不亮」這種低層次資訊，完全沒有「邊緣」「紋理」「形狀」的概念。
+3. *沒有平移不變性*：一隻貓出現在圖片左上角和右下角，對 Dense 來說是完全不同的輸入。但對人類（和 CNN）來說，那明明就是同一隻貓。
+
+我們需要一種能「看懂圖片空間結構」的神經網路——這就是下一章要介紹的[[id:20221023T101414.457264][卷積神經網路（CNN）]]。CNN 用滑動的濾波器掃描圖片，不管特徵出現在哪個位置都能偵測到，而且參數量遠比 Dense 少。同樣的 CIFAR-10 資料集，簡單的 CNN 就能把準確率從 47% 拉到 70% 以上。
 
 * Footnotes
 
@@ -2263,7 +2211,7 @@ label
 
 [fn:4] [[https://medium.com/image-processing-and-ml-note/inception-v1-googlenet-winner-of-ilsvrc-2014-image-classification-15b1ea62cc11][Inception-v1 (GoogLeNet) — Winner of ILSVRC 2014 (Image Classification)]]
 
-[fn:5] [[https://medium.com/ai-blog-tw/deep-learning-residual-leaning-%E8%AA%8D%E8%AD%98resnet%E8%88%87%E4%BB%96%E7%9A%84%E5%86%A0%E5%90%8D%E5%BE%8C%E7%B9%BC%E8%80%85resnext-resnest-6bedf9389ce][Residual Leaning: 認識ResNet與他的冠名後繼者ResNeXt、ResNeSt]]
+[fn:5] [[https://medium.com/ai-blog-tw/deep-learning-residual-leaning-%E8%AA%8D%E8%AD%98resnet%E8%88%87%E4%BB%96%E7%9A%84%E5%86%A0%E5%90%8D%E5%BE%8C%E7%B9%BC%E8%80%85resnext-resnest-6bedf9389ce][Residual Learning: 認識ResNet與他的冠名後繼者ResNeXt、ResNeSt]]
 
 [fn:6][[https://medium.com/@rossleecooloh/%E7%9B%B4%E8%A7%80%E7%90%86%E8%A7%A3resnet-%E7%B0%A1%E4%BB%8B-%E8%A7%80%E5%BF%B5%E5%8F%8A%E5%AF%A6%E4%BD%9C-python-keras-8d1e2e057de2][直觀理解ResNet —簡介、 觀念及實作(Python Keras)]]
 
@@ -2272,21 +2220,3 @@ label
 [fn:8] [[http://tkdbooks.com/PC14110][台科大資訊科技]]
 
 [fn:9] [[https://www.baeldung.com/cs/cost-vs-loss-vs-objective-function][Difference Between the Cost, Loss, and the Objective Function]]
-
-[fn:18][[https://morvanzhou.github.io/tutorials/machine-learning/ML-intro/3-09-l1l2regularization/][L1 / L2 正規化]]
-
-[fn:17][[https://ithelp.ithome.com.tw/articles/10219648?sc=rss.iron][Google ML課程筆記 - Overfitting 與 L1 /L2 Regularization ]]
-
-[fn:16][[https://www.itread01.com/content/1549579879.html][機器學習十大演算法---8. 隨機森林演算法]]
-
-[fn:15][[https://medium.com/@chih.sheng.huang821/%E6%A9%9F%E5%99%A8-%E7%B5%B1%E8%A8%88%E5%AD%B8%E7%BF%92-%E4%B8%BB%E6%88%90%E5%88%86%E5%88%86%E6%9E%90-principle-component-analysis-pca-58229cd26e71][機器/統計學習:主成分分析(Principal Component Analysis, PCA)]]
-
-[fn:14][[https://blog.csdn.net/dongyanwen6036/article/details/78311071][LDA與PCA都是常用的降維方法，二者的區別]]
-
-[fn:13][[https://keras-cn.readthedocs.io/en/latest/models/model/][函數式模型接口]]
-
-[fn:12][[https://keras.io/zh/getting-started/sequential-model-guide/][Sequential 順序模型指引]]
-
-[fn:11][[https://medium.com/yiyi-network/transfer-learning-1f87d4f1886f][Kaggle Learn | Deep Learning 深度學習 | 學習資源介紹 (Part 2)]]
-
-[fn:10] Goodfello, Ian J., Oriol Vinyals & Andrew M. Saxe, Qualitatively characterizing neural ntwork optimization problems, arXiv preprint arXiv: 1412.6544 (2014).

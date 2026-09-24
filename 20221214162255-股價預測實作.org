@@ -2,31 +2,833 @@
 :ID:       e062f4b4-d6cd-4627-ace0-304ef4098d15
 :END:
 #+title: 股價預測實作
+#+AUTHOR: 顏永進
+# -*- org-export-babel-evaluate: nil -*-
+#+TAGS: AI, stock, CNN
+#+OPTIONS: toc:2 ^:nil num:5
+#+PROPERTY: header-args :python :python "/Users/letranger/Dropbox/notes/roam/venv/bin/python3" :eval never-export
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/muse.css" />
+#+HTML_HEAD_EXTRA: <script src="../css/copy_code.js"></script>
+#+EXCLUDE_TAGS: noexport
 
-* Let's Get Greedy
-** First Try
-李宏毅預測Youtube點擊率影片
+#+begin_export html
+<a href="https://letranger.github.io/AI/20221214162255-股價預測實作.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20221214162255-股價預測實作.html.svg"/></a>
+#+end_export
+
+以下範例均假設於 Google Colab 上執行。如果你在本機 IDE（如 PyCharm、Spyder）上跑，部分指令要略做修正。
+
+* 為此 org 啟用 venv                                              :noexport:
+#+begin_src shell -r -n :results output :exports none
+source ./venv/bin/activate
+#+end_src
+
+* 讓 AI 幫你炒股？先別急著辭職
+
+你可能在 YouTube 上看過標題像「AI 自動交易月入百萬」的影片，然後想：「學 AI 不就是為了這個嗎？」
+
+先潑一盆冷水：如果 AI 真的能準確預測股價，華爾街那些年薪千萬的交易員早就全部失業了。事實上，股價受到戰爭、疫情、某個 CEO 在社群媒體上發了一則貼文等無數因素影響，沒有任何模型能完美預測。
+
+那我們為什麼還要做這個實作？因為：
+1. 股價資料是現成的、免費的、格式整齊的——拿來練手再好不過
+2. 這是學習「時間序列預測」的經典案例
+3. 就算預測不準，整個流程（下載資料 → 預處理 → 建模 → 訓練 → 評估）跟其他 AI 應用完全一樣
+4. 最重要的是——很好玩
+
+** 參考資源
 - [[https://www.youtube.com/watch?v=cCDu5i6UQEM][股價預測AI實作，Python程式碼逐行解說，實測結果大公開]]
-- [[https://www.youtube.com/watch?v=9wPUcn5RZv8][Python股票自动交易从零开始~第八集~深度学习预测股价]]
-- [[https://www.finlab.tw/%E8%B6%85%E7%B0%A1%E5%96%AE-machine-learning-%E9%A0%90%E6%B8%AC%E8%82%A1%E5%83%B9/][超簡單用Python預測股價]]
 - [[https://data-flair.training/blogs/stock-price-prediction-machine-learning-project-in-python/][Stock Price Prediction Project]]
-- [[https://weikaiwei.com/finance/stocker/][Python 股票分析：Stocker 強大的股價預測分析工具 (附完整程式碼)]]
-** 胡搞瞎搞一翻
-* Let's Be More Realistic
-** 不要那麼貪心好不好
-- [[https://www.youtube.com/watch?v=2wB5YX7-wFA][AI發大財】利用AI預測股票升跌｜Stock Prediction with AI techniques ]]
-- [[https://www.youtube.com/watch?v=A3EPfaQPPmY&t=1s][Python 機器學習】學用python投資 | 如何預測股票方向？下一個交易日將會升或跌？ ]]
-- [[https://youtu.be/imyTXXmQabI][投資工具】貝式定理預測股票漲跌 | 投資都犯的錯誤 | 避免這個陷阱成為投資神手｜ FinLab 財經實驗室]]
-- [[https://www.youtube.com/watch?v=9wPUcn5RZv8][Python股票自动交易从零开始~第八集~深度学习预测股价 ]]
-** 時間序列
-- [[https://www.youtube.com/watch?v=RAkNhip5MT8][长短期记忆神经网络（LSTM）预测股票价格02 - 数据预处理 ]]
-- [[https://www.youtube.com/watch?v=cUQlpt-p7jg][用LSTM預測下個月乘客數 ]]
-- [[https://www.youtube.com/watch?v=v1YQXWPVOX0][Python零基础学习64课 使用Stacked LSTM预测Apple股票价格T+N ]]
-- [[https://www.finlab.tw/python-%E6%99%82%E9%96%93%E5%BA%8F%E5%88%97%E5%AF%A6%E4%BD%9C%EF%BC%81/][Python 時間序列實做！]]
-** 其他ideas
-- 模型不準確的原因
-  1. 時間拉長、影響因素太多：戰爭、疫情
-  2. 人為拉抬放空
-- solution:
-  1. 間距由時改分
-  2. 給予更多特徵值
+
+* 實作：用 CNN 預測台積電股價
+
+我們已經學過 CNN 可以辨識圖片，但其實 CNN 也能拿來做預測——把過去 N 天的股價當成一張「很瘦的圖片」（高度 = N 天，寬度 = 1），讓 CNN 的卷積核去掃描這張圖，找出股價中隱藏的漲跌模式。
+
+我們要做的事情很簡單：餵給模型過去 N 天的收盤價，讓它猜第 N+1 天的收盤價。就像看了前 10 集的連續劇，猜第 11 集的劇情——雖然常常猜錯，但偶爾會猜中。
+
+** Step 0：安裝套件
+
+=yfinance= 是一個可以免費下載 Yahoo Finance 股價資料的 Python 套件。
+#+begin_src shell -r -n :results output :exports both
+pip install yfinance
+#+end_src
+
+** Step 1：下載股價資料
+
+我們用 =yfinance= 下載台積電（股票代號 =2330.TW=）近 10 年的股價資料。下載下來的資料是一個 Pandas DataFrame，每一列是一個交易日，欄位包含開盤價(Open)、最高價(High)、最低價(Low)、收盤價(Close)、成交量(Volume) 等。
+#+begin_src python -r -n :results output :exports both :session stock :async
+import yfinance as yf
+
+df = yf.Ticker('2330.TW').history(period='10y')
+print(f'資料筆數：{len(df)}')
+print(f'資料期間：{df.index[0].date()} ~ {df.index[-1].date()}')
+print(df.head())
+#+end_src
+
+我們只需要收盤價（Close），把它取出來：
+#+begin_src python -r -n :results output :exports both :session stock :async
+data = df[['Close']].copy()
+print(data.head())
+print(f'\n資料形狀：{data.shape}')
+#+end_src
+
+** Step 2：看一下資料長什麼樣
+
+在動手建模之前，先畫張圖看看台積電這些年的股價走勢。這個步驟很重要——永遠要先「看」資料，別急著丟給模型。
+#+begin_src python -r -n :results output :exports both :session stock :async
+import matplotlib.pyplot as plt
+plt.clf()
+plt.figure(figsize=(12, 5))
+plt.plot(data.index, data['Close'])
+plt.title('TSMC (2330.TW) Close Price')
+plt.xlabel('Date')
+plt.ylabel('Price (TWD)')
+plt.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.savefig('images/stock-raw.png', dpi=150)
+plt.show()
+#+end_src
+
+#+ATTR_HTML: :width 600
+[[file:images/stock-raw.png]]
+
+** Step 3：資料預處理
+
+*** 為什麼要標準化？
+
+神經網路對數值的大小很敏感。台積電的股價可能從 100 塊漲到 1000 塊，這麼大的數值範圍會讓模型訓練變得很不穩定（梯度爆炸或消失）。所以我們要把數值縮放到 0~1 之間，這個過程叫做「標準化」(normalization)。
+
+=MinMaxScaler= 的公式很簡單：
+\[ x_{scaled} = \frac{x - x_{min}}{x_{max} - x_{min}} \]
+
+#+begin_src python -r -n :results output :exports both :session stock :async
+from sklearn.preprocessing import MinMaxScaler
+import numpy as np
+
+scaler = MinMaxScaler(feature_range=(0, 1))
+scaled_data = scaler.fit_transform(data.values)
+
+print(f'原始資料範圍：{data.values.min():.2f} ~ {data.values.max():.2f}')
+print(f'標準化後範圍：{scaled_data.min():.4f} ~ {scaled_data.max():.4f}')
+#+end_src
+
+*** 製作「時間窗格」資料
+
+我們要把股價切成一段一段的窗格：「用過去 N 天的資料，預測第 N+1 天」。假設 N=10（用過去 10 天預測明天），資料會像這樣：
+
+| 窗格 | 輸入 (x)         | 標籤 (y)   |
+|------+------------------+-----------|
+|    1 | 第 1~10 天的收盤價 | 第 11 天   |
+|    2 | 第 2~11 天的收盤價 | 第 12 天   |
+|    3 | 第 3~12 天的收盤價 | 第 13 天   |
+|  ... | ...              | ...       |
+
+#+begin_src python -r -n :results output :exports both :session stock :async
+# 用過去幾天來預測？
+window_size = 10
+
+x_all, y_all = [], []
+for i in range(len(scaled_data) - window_size):
+    x_all.append(scaled_data[i : i + window_size])
+    y_all.append(scaled_data[i + window_size])
+
+x_all = np.array(x_all)
+y_all = np.array(y_all)
+
+print(f'x 形狀：{x_all.shape}  （樣本數, 天數, 特徵數）')
+print(f'y 形狀：{y_all.shape}  （樣本數, 特徵數）')
+#+end_src
+
+*** 為什麼 CNN 能吃股價資料？
+
+等一下，CNN 不是拿來辨識圖片的嗎？圖片是 2D 的，股價明明就是一條線啊？
+
+沒錯。所以我們要對資料做一個小手術：把形狀從 =(樣本數, 10, 1)= 變成 =(樣本數, 10, 1, 1)=，也就是把每筆資料看成一張「高度=10、寬度=1」的超級瘦圖片。卷積核會沿著「高度」方向（也就是時間軸）滑動，找出連續幾天股價之間的局部模式。
+
+#+begin_src python -r -n :results output :exports both :session stock :async
+# 在最後面加一個維度，讓 Conv2D 能吃
+x_all = x_all.reshape(x_all.shape[0], window_size, 1, 1)
+print(f'reshape 後的 x 形狀：{x_all.shape}  （樣本數, 高度, 寬度, 通道數）')
+#+end_src
+
+*** 分割訓練集與測試集
+
+把前 80% 的資料拿來訓練，後 20% 拿來測試。注意：時間序列資料 *不能* 隨機打亂，因為順序很重要——你不能拿未來的資料去預測過去。
+#+begin_src python -r -n :results output :exports both :session stock :async
+train_size = int(len(x_all) * 0.8)
+
+x_train, y_train = x_all[:train_size], y_all[:train_size]
+x_test, y_test = x_all[train_size:], y_all[train_size:]
+
+print(f'訓練集：{x_train.shape[0]} 筆')
+print(f'測試集：{x_test.shape[0]} 筆')
+#+end_src
+
+** Step 4：建立 CNN 模型
+
+我們的模型結構很簡單：
+1. *Conv2D 卷積層*（512 個 filter）：掃描股價序列，找出局部模式
+2. *Flatten 攤平層*：把卷積後的 2D 結果壓成 1D
+3. *Dense 全連接層*（1 個神經元）：輸出預測的收盤價
+
+#+begin_src python -r -n :results output :exports both :session stock :async
+import tensorflow as tf
+from tensorflow.keras import layers
+
+model = tf.keras.Sequential([
+    layers.Input(shape=(window_size, 1, 1)),
+    layers.Conv2D(filters=512, kernel_size=(3, 1), activation='relu'),
+    layers.Flatten(),
+    layers.Dense(1)  # 回歸問題，輸出層不加激活函數
+])
+
+model.summary()
+#+end_src
+
+幾個重點：
+- =kernel_size=(3, 1)=：卷積核的大小是「3 天 × 1」，意思是每次看連續 3 天的股價。寬度設 1 是因為我們的「圖片」只有 1 個像素寬
+- =filters=512=：用 512 個不同的卷積核去掃描，每個都會學到不同的局部模式
+- 最後一層 =Dense(1)= 沒有加激活函數（線性輸出）。這是因為我們在做「回歸」（預測一個連續的數值），不是「分類」。如果加了 =sigmoid=，輸出會被壓到 0~1，對回歸問題反而不利[fn:1]
+
+** Step 5：編譯與訓練
+
+- *loss 用 =mse=*（均方誤差）：回歸問題的標準選擇，衡量預測值和真實值的差距
+- *optimizer 用 =adam=*：萬用最佳化器，幾乎什麼場景都好用
+- 注意：回歸問題 *不用* =accuracy= 指標，因為預測值不可能「剛好」等於答案[fn:2]。我們改用 =mae=（平均絕對誤差），更直覺——它告訴你「平均偏差多少」
+
+#+begin_src python -r -n :results output :exports both :session stock :async
+model.compile(
+    loss='mse',
+    optimizer='adam',
+    metrics=['mae']
+)
+
+history = model.fit(
+    x_train, y_train,
+    validation_data=(x_test, y_test),
+    batch_size=200,
+    epochs=30,
+    verbose=1
+)
+#+end_src
+
+** Step 6：看看訓練過程
+
+畫出訓練過程中 loss 的變化，確認模型有在「學東西」，同時檢查有沒有過擬合（overfitting）。
+#+begin_src python -r -n :results output :exports both :session stock :async
+plt.clf()
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+# Loss 圖
+axes[0].plot(history.history['loss'], 'bo-', markersize=3, label='Training loss')
+axes[0].plot(history.history['val_loss'], 'r-', label='Validation loss')
+axes[0].set_title('Training and Validation Loss')
+axes[0].set_xlabel('Epoch')
+axes[0].set_ylabel('Loss (MSE)')
+axes[0].legend()
+axes[0].grid(True, alpha=0.3)
+
+# MAE 圖
+axes[1].plot(history.history['mae'], 'bo-', markersize=3, label='Training MAE')
+axes[1].plot(history.history['val_mae'], 'r-', label='Validation MAE')
+axes[1].set_title('Training and Validation MAE')
+axes[1].set_xlabel('Epoch')
+axes[1].set_ylabel('MAE')
+axes[1].legend()
+axes[1].grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.savefig('images/stock-training.png', dpi=150)
+plt.show()
+#+end_src
+
+#+ATTR_HTML: :width 700
+[[file:images/stock-training.png]]
+
+** Step 7：預測並還原真實股價
+
+模型預測出來的是 0~1 之間的標準化數值，我們要用 =scaler.inverse_transform()= 把它還原回真實的股價。
+#+begin_src python -r -n :results output :exports both :session stock :async
+# 預測
+predicted = model.predict(x_test)
+
+# 還原成真實股價
+predicted_price = scaler.inverse_transform(predicted).flatten()
+actual_price = scaler.inverse_transform(y_test).flatten()
+
+# 看看前 5 筆的預測 vs 實際
+print('       預測股價    實際股價')
+for i in range(5):
+    print(f'第{i+1}筆：{predicted_price[i]:>8.1f}    {actual_price[i]:>8.1f}')
+#+end_src
+
+** Step 8：畫出預測結果
+
+這是最令人期待（也最容易幻滅）的一步——把預測的股價和實際股價畫在一起比較。
+#+begin_src python -r -n :results output :exports both :session stock :async
+plt.clf()
+plt.figure(figsize=(14, 6))
+plt.plot(actual_price, label='Actual Price', color='blue')
+plt.plot(predicted_price, label='Predicted Price', color='red', alpha=0.7)
+plt.title('TSMC Stock Price: Predicted vs Actual (CNN)')
+plt.xlabel('Trading Days (Test Set)')
+plt.ylabel('Price (TWD)')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.savefig('images/stock-predict.png', dpi=150)
+plt.show()
+
+# 計算整體誤差
+mae = np.mean(np.abs(predicted_price - actual_price))
+print(f'\n平均絕對誤差 (MAE)：{mae:.2f} 元')
+print(f'（意思是模型平均每天的預測偏差大約 {mae:.0f} 元）')
+#+end_src
+
+#+ATTR_HTML: :width 700
+[[file:images/stock-predict.png]]
+
+** 為什麼看起來「很準」但其實沒用？
+
+你可能會發現預測線和實際線貼得很近，心想：「哇，這模型也太強了吧！」
+
+別高興得太早。仔細看你會發現，預測線幾乎就是把實際線「往右平移了一天」。也就是說，模型學到的策略基本上是：「明天的股價大概跟今天差不多。」這當然準——但這種預測毫無用處，因為你不需要 AI 就知道這件事。
+
+這就是股價預測的殘酷真相：
+- 模型只能學到「慣性」，無法預測突發事件（例如戰爭、疫情、CEO 跑路）
+- 如果真的有一個模型能準確預測股價，那所有人都會用它交易，市場會立刻調整，模型就失效了——這就是「效率市場假說」
+- 真正在量化交易中賺錢的模型，用的特徵遠比「過去 N 天收盤價」複雜得多
+
+但是！這個實作的價值在於：你學會了完整的時間序列預測流程，這個流程可以套用在天氣預測、用電量預測、疫情趨勢分析等真正有用的場景上。
+
+* 能怎麼胡搞
+
+上面的模型只是最基本的版本，你可以嘗試：
+- 改用不同的股票（例如 =0050.TW= 台灣50 ETF、=AAPL= 蘋果、=NVDA= 輝達）
+- 調整 =window_size=（用更多或更少天來預測）
+- 加入更多特徵值（成交量、開盤價、最高價等）
+- 增加卷積層數或 filter 數量
+- 調整 =batch_size= 和 =epochs=
+
+* 番外：如果用 LSTM 呢？
+
+CNN 把股價當「圖片」來掃描，但股價的本質是「時間序列」——今天的價格跟昨天有關，昨天又跟前天有關，這種前後因果的關係正是 CNN 的弱項。
+
+有沒有一種模型天生就擅長處理「有順序」的資料？有，那就是 *LSTM*（長短期記憶網路），屬於 RNN（循環神經網路）家族。我們在後續的 RNN 單元會詳細介紹它，這裡先偷跑一下，用同樣的股價資料比較看看 CNN 和 LSTM 的表現差多少。
+
+#+begin_src python -r -n :results output :exports both :session compare :async
+import yfinance as yf
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import MinMaxScaler
+import tensorflow as tf
+from tensorflow.keras import layers
+
+# === 共用的資料準備 ===
+df = yf.Ticker('2330.TW').history(period='10y')
+data = df[['Close']].copy()
+scaler = MinMaxScaler(feature_range=(0, 1))
+scaled = scaler.fit_transform(data.values)
+
+window_size = 10
+x_all, y_all = [], []
+for i in range(len(scaled) - window_size):
+    x_all.append(scaled[i : i + window_size])
+    y_all.append(scaled[i + window_size])
+x_all, y_all = np.array(x_all), np.array(y_all)
+
+split = int(len(x_all) * 0.8)
+x_train, y_train = x_all[:split], y_all[:split]
+x_test, y_test = x_all[split:], y_all[split:]
+
+# === CNN 模型 ===
+x_train_cnn = x_train.reshape(-1, window_size, 1, 1)
+x_test_cnn = x_test.reshape(-1, window_size, 1, 1)
+
+cnn_model = tf.keras.Sequential([
+    layers.Input(shape=(window_size, 1, 1)),
+    layers.Conv2D(512, kernel_size=(3, 1), activation='relu'),
+    layers.Flatten(),
+    layers.Dense(1)
+])
+cnn_model.compile(loss='mse', optimizer='adam', metrics=['mae'])
+print('--- 訓練 CNN ---')
+cnn_model.fit(x_train_cnn, y_train, batch_size=200, epochs=20, verbose=0)
+
+# === LSTM 模型 ===
+# LSTM 吃的格式是 (樣本數, 時間步, 特徵數)，剛好就是 x_train 的形狀，不用 reshape！
+lstm_model = tf.keras.Sequential([
+    layers.Input(shape=(window_size, 1)),
+    layers.LSTM(50),
+    layers.Dense(25, activation='relu'),
+    layers.Dense(1)
+])
+lstm_model.compile(loss='mse', optimizer='adam', metrics=['mae'])
+print('--- 訓練 LSTM ---')
+lstm_model.fit(x_train, y_train, batch_size=32, epochs=20, verbose=0)
+
+# === 比較結果 ===
+cnn_pred = scaler.inverse_transform(cnn_model.predict(x_test_cnn)).flatten()
+lstm_pred = scaler.inverse_transform(lstm_model.predict(x_test)).flatten()
+actual = scaler.inverse_transform(y_test).flatten()
+
+cnn_mae = np.mean(np.abs(cnn_pred - actual))
+lstm_mae = np.mean(np.abs(lstm_pred - actual))
+
+print(f'\nCNN  MAE：{cnn_mae:.2f} 元')
+print(f'LSTM MAE：{lstm_mae:.2f} 元')
+if lstm_mae < cnn_mae:
+    print(f'LSTM 贏了 {cnn_mae - lstm_mae:.2f} 元！')
+else:
+    print(f'CNN 贏了 {lstm_mae - cnn_mae:.2f} 元！')
+#+end_src
+
+把兩個模型的預測結果畫在一起：
+#+begin_src python -r -n :results output :exports both :session compare :async
+plt.clf()
+plt.figure(figsize=(14, 6))
+plt.plot(actual, label='Actual', color='blue')
+plt.plot(cnn_pred, label=f'CNN (MAE={cnn_mae:.1f})', color='red', alpha=0.7)
+plt.plot(lstm_pred, label=f'LSTM (MAE={lstm_mae:.1f})', color='green', alpha=0.7)
+plt.title('CNN vs LSTM: Stock Price Prediction')
+plt.xlabel('Trading Days (Test Set)')
+plt.ylabel('Price (TWD)')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.savefig('images/stock-cnn-vs-lstm.png', dpi=150)
+plt.show()
+#+end_src
+
+#+ATTR_HTML: :width 700
+[[file:images/stock-cnn-vs-lstm.png]]
+
+為什麼 LSTM 通常會表現得比 CNN 好？因為：
+- CNN 只能看到「局部窗格」內的模式（受限於 kernel_size），像是拿放大鏡一小段一小段看
+- LSTM 天生有「記憶」機制，能把很久以前的資訊一路帶到現在，像是看完整部連續劇後做出判斷
+
+想深入了解 LSTM 怎麼運作？我們在 [[id:263cb433-d0eb-4400-a373-35175c000c01][RNN 單元]] 會詳細拆解它的內部構造。
+
+* 課堂練習
+
+** 練習一：換一支股票——你的 AI 偏心誰？
+
+每支股票的「個性」不一樣：有的像坐雲霄飛車（高波動），有的像在散步（低波動）。同一個模型套在不同股票上，表現可能天差地遠。
+
+底下是完整的台積電 CNN 預測程式，請你換成另一支股票試試看：
+#+begin_src python -r -n :results output :exports both :session ex1 :async
+import yfinance as yf
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import MinMaxScaler
+import tensorflow as tf
+from tensorflow.keras import layers
+
+# === 下載資料 ===
+ticker = '2330.TW'  # 台積電
+df = yf.Ticker(ticker).history(period='10y')
+data = df[['Close']].copy()
+print(f'{ticker} 資料筆數：{len(data)}')
+
+# === 標準化 ===
+scaler = MinMaxScaler(feature_range=(0, 1))
+scaled = scaler.fit_transform(data.values)
+
+# === 製作時間窗格 ===
+window_size = 10
+x_all, y_all = [], []
+for i in range(len(scaled) - window_size):
+    x_all.append(scaled[i : i + window_size])
+    y_all.append(scaled[i + window_size])
+x_all, y_all = np.array(x_all), np.array(y_all)
+# reshape 成 Conv2D 需要的 4D 格式
+x_all = x_all.reshape(-1, window_size, 1, 1)
+
+# === 分割資料 ===
+split = int(len(x_all) * 0.8)
+x_train, y_train = x_all[:split], y_all[:split]
+x_test, y_test = x_all[split:], y_all[split:]
+
+# === 建模、訓練 ===
+model = tf.keras.Sequential([
+    layers.Input(shape=(window_size, 1, 1)),
+    layers.Conv2D(512, kernel_size=(3, 1), activation='relu'),
+    layers.Flatten(),
+    layers.Dense(1)
+])
+model.compile(loss='mse', optimizer='adam', metrics=['mae'])
+model.fit(x_train, y_train, validation_data=(x_test, y_test),
+          batch_size=200, epochs=20, verbose=1)
+
+# === 預測並還原 ===
+pred = scaler.inverse_transform(model.predict(x_test)).flatten()
+actual = scaler.inverse_transform(y_test).flatten()
+mae = np.mean(np.abs(pred - actual))
+
+# === 畫圖 ===
+plt.clf()
+plt.figure(figsize=(12, 5))
+plt.plot(actual, label='Actual')
+plt.plot(pred, label='Predicted', alpha=0.7)
+plt.title(f'{ticker} Prediction (MAE={mae:.2f})')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.savefig('images/stock-ex1.png', dpi=150)
+plt.show()
+print(f'\nMAE：{mae:.2f} 元')
+#+end_src
+
+*** 你的任務
+請修改程式碼，把股票從台積電換成以下任一支：
+1. =0050.TW=（元大台灣50 ETF）——大盤的縮影，波動相對小
+2. =AAPL=（蘋果）——科技巨頭，美股代表
+3. =2317.TW=（鴻海）——台灣電子股老大哥
+
+你只需要改 *一個地方*：把 =ticker = '2330.TW'= 改成你選的股票代號。
+
+跑完之後回答以下問題：
+- 你選的股票 MAE 是多少？比台積電高還是低？
+- 看預測圖，哪支股票的預測看起來比較「準」？你覺得為什麼？
+
+*** 預期輸出
+不同股票的 MAE 會不一樣。大致範圍：
+#+begin_example
+0050.TW → MAE 大約 2~10 元（因為股價本身較低）
+AAPL    → MAE 大約 3~15 美元
+2317.TW → MAE 大約 2~8 元
+#+end_example
+
+*** 參考解答                                                     :noexport:
+#+begin_src python -r -n :results output :exports both :session ex1_ans :async
+import yfinance as yf
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import MinMaxScaler
+import tensorflow as tf
+from tensorflow.keras import layers
+
+# 改這行：換成鴻海
+ticker = '2317.TW'
+df = yf.Ticker(ticker).history(period='10y')
+data = df[['Close']].copy()
+print(f'{ticker} 資料筆數：{len(data)}')
+
+scaler = MinMaxScaler(feature_range=(0, 1))
+scaled = scaler.fit_transform(data.values)
+
+window_size = 10
+x_all, y_all = [], []
+for i in range(len(scaled) - window_size):
+    x_all.append(scaled[i : i + window_size])
+    y_all.append(scaled[i + window_size])
+x_all, y_all = np.array(x_all), np.array(y_all)
+x_all = x_all.reshape(-1, window_size, 1, 1)
+
+split = int(len(x_all) * 0.8)
+x_train, y_train = x_all[:split], y_all[:split]
+x_test, y_test = x_all[split:], y_all[split:]
+
+model = tf.keras.Sequential([
+    layers.Input(shape=(window_size, 1, 1)),
+    layers.Conv2D(512, kernel_size=(3, 1), activation='relu'),
+    layers.Flatten(),
+    layers.Dense(1)
+])
+model.compile(loss='mse', optimizer='adam', metrics=['mae'])
+model.fit(x_train, y_train, validation_data=(x_test, y_test),
+          batch_size=200, epochs=20, verbose=1)
+
+pred = scaler.inverse_transform(model.predict(x_test)).flatten()
+actual = scaler.inverse_transform(y_test).flatten()
+mae = np.mean(np.abs(pred - actual))
+
+plt.clf()
+plt.figure(figsize=(12, 5))
+plt.plot(actual, label='Actual')
+plt.plot(pred, label='Predicted', alpha=0.7)
+plt.title(f'{ticker} Prediction (MAE={mae:.2f})')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.savefig('images/stock-ex1-ans.png', dpi=150)
+plt.show()
+print(f'\nMAE：{mae:.2f} 元')
+#+end_src
+
+** 練習二：加入成交量——多一個線索會更準嗎？
+
+目前模型只看「收盤價」來預測，就像只看一個人的臉來猜體重——資訊太少了。如果我們再加入「成交量」(Volume) 這個特徵呢？成交量代表當天有多少人在買賣這支股票，理論上量大的時候股價波動也比較劇烈。
+
+當特徵從 1 個變成 2 個，我們那張「超瘦圖片」就從寬度 1 變成寬度 2 了，相應的 =input_shape= 和 =kernel_size= 也要跟著調整。
+
+底下的程式只用收盤價一個特徵：
+#+begin_src python -r -n :results output :exports both :session ex2 :async
+import yfinance as yf
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import MinMaxScaler
+import tensorflow as tf
+from tensorflow.keras import layers
+
+df = yf.Ticker('2330.TW').history(period='10y')
+
+# === 目前只用 Close（1 個特徵）===
+feature_data = df[['Close']].copy()
+target_data = df[['Close']].copy()
+num_features = 1  # 特徵數量
+
+# === 分別標準化 ===
+feature_scaler = MinMaxScaler(feature_range=(0, 1))
+target_scaler = MinMaxScaler(feature_range=(0, 1))
+scaled_features = feature_scaler.fit_transform(feature_data.values)
+scaled_target = target_scaler.fit_transform(target_data.values)
+
+# === 製作窗格 ===
+window_size = 10
+x_all, y_all = [], []
+for i in range(len(scaled_features) - window_size):
+    x_all.append(scaled_features[i : i + window_size])
+    y_all.append(scaled_target[i + window_size])
+x_all, y_all = np.array(x_all), np.array(y_all)
+# reshape 成 (樣本數, 天數, 特徵數, 1)
+x_all = x_all.reshape(-1, window_size, num_features, 1)
+
+# === 分割 ===
+split = int(len(x_all) * 0.8)
+x_train, y_train = x_all[:split], y_all[:split]
+x_test, y_test = x_all[split:], y_all[split:]
+print(f'x_train 形狀：{x_train.shape}')
+
+# === 建模 ===
+model = tf.keras.Sequential([
+    layers.Input(shape=(window_size, num_features, 1)),
+    layers.Conv2D(512, kernel_size=(3, 1), activation='relu'),
+    layers.Flatten(),
+    layers.Dense(1)
+])
+model.compile(loss='mse', optimizer='adam', metrics=['mae'])
+model.fit(x_train, y_train, validation_data=(x_test, y_test),
+          batch_size=200, epochs=20, verbose=1)
+
+# === 評估 ===
+pred = target_scaler.inverse_transform(model.predict(x_test)).flatten()
+actual = target_scaler.inverse_transform(y_test).flatten()
+mae = np.mean(np.abs(pred - actual))
+print(f'\n只用收盤價的 MAE：{mae:.2f} 元')
+#+end_src
+
+*** 你的任務
+把特徵從「只有 Close」改成「Close + Volume」（2 個特徵）。你需要修改 *兩個地方*：
+
+1. 取出特徵的那行，改成：
+   : feature_data = df[['Close', 'Volume']].copy()
+2. 特徵數量改成：
+   : num_features = 2
+
+其他不用改——=input_shape= 和 =kernel_size= 都會根據 =num_features= 自動調整。
+
+跑完之後比較兩個版本的 MAE，看看加入成交量有沒有幫助。
+
+*** 預期輸出
+#+begin_example
+x_train 形狀：(xxxx, 10, 2, 1)
+
+加入成交量的 MAE：xx.xx 元
+#+end_example
+
+有趣的是，加入成交量不一定會讓結果更好！因為成交量和股價的關係並不是那麼直接。這也告訴我們：特徵不是越多越好，要選「有用的」特徵才行。
+
+*** 參考解答                                                     :noexport:
+#+begin_src python -r -n :results output :exports both :session ex2_ans :async
+import yfinance as yf
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import MinMaxScaler
+import tensorflow as tf
+from tensorflow.keras import layers
+
+df = yf.Ticker('2330.TW').history(period='10y')
+
+# 改這行：加入 Volume
+feature_data = df[['Close', 'Volume']].copy()
+target_data = df[['Close']].copy()
+# 改這行：2 個特徵
+num_features = 2
+
+feature_scaler = MinMaxScaler(feature_range=(0, 1))
+target_scaler = MinMaxScaler(feature_range=(0, 1))
+scaled_features = feature_scaler.fit_transform(feature_data.values)
+scaled_target = target_scaler.fit_transform(target_data.values)
+
+window_size = 10
+x_all, y_all = [], []
+for i in range(len(scaled_features) - window_size):
+    x_all.append(scaled_features[i : i + window_size])
+    y_all.append(scaled_target[i + window_size])
+x_all, y_all = np.array(x_all), np.array(y_all)
+x_all = x_all.reshape(-1, window_size, num_features, 1)
+
+split = int(len(x_all) * 0.8)
+x_train, y_train = x_all[:split], y_all[:split]
+x_test, y_test = x_all[split:], y_all[split:]
+print(f'x_train 形狀：{x_train.shape}')
+
+model = tf.keras.Sequential([
+    layers.Input(shape=(window_size, num_features, 1)),
+    layers.Conv2D(512, kernel_size=(3, 1), activation='relu'),
+    layers.Flatten(),
+    layers.Dense(1)
+])
+model.compile(loss='mse', optimizer='adam', metrics=['mae'])
+model.fit(x_train, y_train, validation_data=(x_test, y_test),
+          batch_size=200, epochs=20, verbose=1)
+
+pred = target_scaler.inverse_transform(model.predict(x_test)).flatten()
+actual = target_scaler.inverse_transform(y_test).flatten()
+mae = np.mean(np.abs(pred - actual))
+print(f'\n加入成交量的 MAE：{mae:.2f} 元')
+#+end_src
+
+** 練習三：預測未來 5 天——你是先知還是韭菜？
+
+目前模型只預測「明天」一天的股價。但如果你是投資人，你更想知道的是「接下來一週」的走勢吧？這個練習要把模型改成一次預測未來 5 天的收盤價。
+
+底下是預測 1 天的版本：
+#+begin_src python -r -n :results output :exports both :session ex3 :async
+import yfinance as yf
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import MinMaxScaler
+import tensorflow as tf
+from tensorflow.keras import layers
+
+df = yf.Ticker('2330.TW').history(period='10y')
+data = df[['Close']].copy()
+
+scaler = MinMaxScaler(feature_range=(0, 1))
+scaled = scaler.fit_transform(data.values)
+
+window_size = 10
+predict_days = 1  # 預測幾天
+
+x_all, y_all = [], []
+for i in range(len(scaled) - window_size - predict_days + 1):
+    x_all.append(scaled[i : i + window_size, 0])
+    y_all.append(scaled[i + window_size : i + window_size + predict_days, 0])
+x_all = np.array(x_all).reshape(-1, window_size, 1, 1)
+y_all = np.array(y_all)
+
+split = int(len(x_all) * 0.8)
+x_train, y_train = x_all[:split], y_all[:split]
+x_test, y_test = x_all[split:], y_all[split:]
+
+model = tf.keras.Sequential([
+    layers.Input(shape=(window_size, 1, 1)),
+    layers.Conv2D(512, kernel_size=(3, 1), activation='relu'),
+    layers.Flatten(),
+    layers.Dense(predict_days)  # 輸出神經元數 = 預測天數
+])
+model.compile(loss='mse', optimizer='adam', metrics=['mae'])
+model.fit(x_train, y_train, validation_data=(x_test, y_test),
+          batch_size=200, epochs=20, verbose=1)
+
+# 取最後一筆測試資料的預測結果
+last_pred = model.predict(x_test[-1:]).flatten()
+last_actual = y_test[-1]
+
+# 還原股價
+last_pred_price = scaler.inverse_transform(last_pred.reshape(-1, 1)).flatten()
+last_actual_price = scaler.inverse_transform(last_actual.reshape(-1, 1)).flatten()
+
+print(f'預測 {predict_days} 天的結果：')
+for d in range(predict_days):
+    print(f'  第 {d+1} 天：預測 {last_pred_price[d]:.1f} / 實際 {last_actual_price[d]:.1f}')
+#+end_src
+
+*** 你的任務
+把 =predict_days= 從 =1= 改成 =5=，讓模型一次預測未來 5 天的股價。只需要改一個地方：
+: predict_days = 5
+
+跑完之後觀察：
+- 預測第 1 天 vs 第 5 天，哪個比較準？
+- 為什麼越往後預測越不準？（想想看：天氣預報也是一樣的道理）
+
+*** 預期輸出
+#+begin_example
+預測 5 天的結果：
+  第 1 天：預測 xxx.x / 實際 xxx.x
+  第 2 天：預測 xxx.x / 實際 xxx.x
+  第 3 天：預測 xxx.x / 實際 xxx.x
+  第 4 天：預測 xxx.x / 實際 xxx.x
+  第 5 天：預測 xxx.x / 實際 xxx.x
+#+end_example
+
+你應該會發現第 1 天的預測還算接近，但到了第 5 天偏差就明顯變大了。這就像天氣預報一樣——明天的天氣還能猜個八九不離十，但下週的就只能靠擲骰子了。
+
+*** 參考解答                                                     :noexport:
+#+begin_src python -r -n :results output :exports both :session ex3_ans :async
+import yfinance as yf
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import MinMaxScaler
+import tensorflow as tf
+from tensorflow.keras import layers
+
+df = yf.Ticker('2330.TW').history(period='10y')
+data = df[['Close']].copy()
+
+scaler = MinMaxScaler(feature_range=(0, 1))
+scaled = scaler.fit_transform(data.values)
+
+window_size = 10
+# 改這行：預測 5 天
+predict_days = 5
+
+x_all, y_all = [], []
+for i in range(len(scaled) - window_size - predict_days + 1):
+    x_all.append(scaled[i : i + window_size, 0])
+    y_all.append(scaled[i + window_size : i + window_size + predict_days, 0])
+x_all = np.array(x_all).reshape(-1, window_size, 1, 1)
+y_all = np.array(y_all)
+
+split = int(len(x_all) * 0.8)
+x_train, y_train = x_all[:split], y_all[:split]
+x_test, y_test = x_all[split:], y_all[split:]
+
+model = tf.keras.Sequential([
+    layers.Input(shape=(window_size, 1, 1)),
+    layers.Conv2D(512, kernel_size=(3, 1), activation='relu'),
+    layers.Flatten(),
+    layers.Dense(predict_days)
+])
+model.compile(loss='mse', optimizer='adam', metrics=['mae'])
+model.fit(x_train, y_train, validation_data=(x_test, y_test),
+          batch_size=200, epochs=20, verbose=1)
+
+last_pred = model.predict(x_test[-1:]).flatten()
+last_actual = y_test[-1]
+
+last_pred_price = scaler.inverse_transform(last_pred.reshape(-1, 1)).flatten()
+last_actual_price = scaler.inverse_transform(last_actual.reshape(-1, 1)).flatten()
+
+print(f'預測 {predict_days} 天的結果：')
+for d in range(predict_days):
+    print(f'  第 {d+1} 天：預測 {last_pred_price[d]:.1f} / 實際 {last_actual_price[d]:.1f}')
+#+end_src
+
+* 小結
+
+在這個實作中，我們完成了：
+1. 用 =yfinance= 下載真實股價資料
+2. 用 =MinMaxScaler= 將資料標準化到 0~1
+3. 把時間序列切成「窗格」，再 reshape 成 CNN 能吃的 4D 格式
+4. 用 Conv2D 建立預測模型
+5. 訓練、評估、還原預測結果並視覺化
+6. 偷跑比較了 CNN 和 LSTM 的差異
+
+最重要的收穫不是「預測股價」，而是學會了時間序列預測的完整流程。這個流程可以套用在任何跟「時間順序」有關的預測問題上：天氣、用電量、網站流量、疫情趨勢等等。
+
+至於用 AI 炒股發大財？還是先把期末報告交了再說吧。
+
+* Footnotes
+
+[fn:1] 回歸問題的輸出層不需要激活函數。=sigmoid= 會把輸出壓到 0~1 之間，=softmax= 會把所有輸出轉成加起來等於 1 的機率——這些都是分類問題才需要的。回歸問題預測的是連續數值，不需要限制輸出範圍。
+
+[fn:2] 在分類問題中，模型輸出的類別不是「對」就是「錯」，所以可以用 accuracy 來衡量。但在回歸問題中，模型預測的數值幾乎不可能「剛好」等於正確答案（差 0.01 算對還是錯？差 1 呢？），所以用 accuracy 沒有意義。取而代之的是 MAE（平均絕對誤差）或 MSE（均方誤差），它們衡量的是「偏離多少」而不是「對還是錯」。

@@ -3,26 +3,40 @@
 :ROAM_ALIASES: 強化學習
 :END:
 #+title: 增強式學習
+#+AUTHOR: 顏永進
 
 #+TAGS: AI
 #+INCLUDE: ../pdf.org
 #+OPTIONS: toc:2     ^:nil num:5
-#+PROPERTY: header-args :eval never-export
+#+PROPERTY: header-args :python :python "/Users/letranger/Dropbox/notes/roam/venv/bin/python3" :eval never-export
 #+EXCLUDE_TAGS: noexport
 #+latex:\newpage
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/muse.css" />
-#+EXCLUDE_TAGS: noexport
+#+HTML_HEAD_EXTRA: <script src="../css/copy_code.js"></script>
 
 #+begin_export html
-<a href="https://hits.sh/letranger.github.io/AI/20230210172919-增強式學習.html/"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20230210172919-增強式學習.html.svg"/></a>
+<a href="https://letranger.github.io/AI/20230210172919-增強式學習.html"><img align="right" alt="Hits" src="https://hits.sh/letranger.github.io/AI/20230210172919-增強式學習.html.svg"/></a>
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4EJ3V5BG0Z"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-4EJ3V5BG0Z');
+</script>
 #+end_export
 
 * 增強式學習
 :PROPERTIES:
 :CUSTOM_ID: AI-RL
 :END:
-- 強化學習的目標在於開發一個系統（或代理人，agent）,他會藉由與環境的互動來改進自身的效能。由於當前的環境狀態資訊通常就包含了所謂「奬勵信號」(reward signal)，強化學習的目的就是找到一個最好的 Policy(策略)，可以讓 reward 最多。所以也可以把「強化學習」視為與「監督式學習」相關聯的領域，然而在強化學習中，環境回饋不能視為真實正的事實（或是說，正確的標籤），只能將之視為：測量函數對特定行動所觀測到並回報的一個度量值。如圖[[fig:ReinforcementLearning]]，Agent
-- 最常見的應用是教機器如何「玩遊戲」，在這種情境下，我們不會對某個動作貼標籤說它是「好」或「壞」，而是根據遊戲的結果（輸或是贏）或是遊戲中的信號（得分或失分）來做為回饋。
+想像你正在學騎腳踏車：沒有人告訴你「左手用力 3.7 牛頓、右腳踩 45 度」這種標準答案，你只知道一件事 — *摔倒了就是做錯了，沒摔倒就繼續* 。透過不斷嘗試和修正，你最終學會了騎車。這就是增強式學習（Reinforcement Learning, RL）的核心精神[fn:1]。
+
+在 RL 中，有一個 *Agent*（代理人）會不斷與 *環境* 互動：做出一個動作（Action），環境回饋一個獎勵（Reward），Agent 再根據獎勵調整自己的策略（Policy）。如圖[[fig:ReinforcementLearning]]所示。RL 的目標就是找到一個最佳策略，讓累積的 Reward 最多。
+
+最常見的應用是教 AI 玩遊戲 — 在這種情境下，我們不會對某個動作貼標籤說它是「好」或「壞」，而是根據遊戲的結果（贏或輸、得分或失分）來做為回饋。
 
 #+BEGIN_SRC ditaa :file images/ReinforcementLearning.png
                   +-------------+
@@ -44,56 +58,61 @@
 #+RESULTS:
 [[file:images/ReinforcementLearning.png]]
 
-- 機器為了達成目標，隨著環境的變動，而逐步調整其行為，並評估每一個行動之後所到 的回饋是正向的或負向的，即，在 try-and-error 的過程中一步步從失敗中找出成功的路徑。
-- 強化學習的效果之所以優於監督式學習，主要原因是：監督式學習是人示範給電腦看，電腦照著做，但如果人做的不夠好，電腦再厲害也無法超越(例如，醫師給的 X 光片在判讀上本身就出現誤解 )；而強化學習則是在做中學，進一步脫離人的指導(或人類的經驗限制)，自行發展出更好的規則。
-- 強化學習其實就是訓練一個 AI 可以通過每一次的錯誤來學習，就跟我們小時候學騎腳踏車一樣，一開始學的時候會一直跌倒，然後經過幾次的失敗後，我們就可以上手也不會跌倒了[fn:1]。強化學習在過去曾被長期忽視，但在 Google DeepMind 成功將其應用來玩 Atari 遊戲後，就開始受到許多關注。
-- 較常用於以下領域：電腦遊戲、下棋、自駕車、機器人。
+RL 的學習過程就是不斷 try-and-error：做了一個動作 → 看看結果好不好 → 好就記住、不好就避免。強化學習在過去曾被長期忽視，但在 Google DeepMind 成功用它玩 Atari 遊戲後（AI 從零開始學會打磚塊，還自己發現了把球打到磚塊後面的密技），就開始受到大量關注。
+
+常見的 RL 應用領域：
+- 電腦遊戲（Atari、星海爭霸）
+- 棋類對弈（AlphaGo、AlphaZero）
+- 自動駕駛
+- 機器人控制
 
 ** 與[[id:20221023T101626.420918][監督式學習]]的比較
-- 監督式學習會有一個 tutor 或判斷依據，以圍棋來說是有一個棋譜
-- 增強式學習沒有依據，完全從行為的經驗去自行判斷，以 alpha-go 為例，是以兩台 alpha-go 多次互相對奕來訓練，用這種方式的好處是可以生成大量資料
+| 比較項目   | 監督式學習                               | 增強式學習                           |
+|----------+----------------------------------------+--------------------------------------|
+| 學習方式   | 有老師教（給正確答案）                    | 自己摸索（只知道做得好不好）           |
+| 圍棋的例子 | 看大量棋譜，模仿人類下棋                  | 兩台 AI 互相對弈，自己發明招式        |
+| 優點       | 有明確的標準答案，學習效率高              | 能突破人類的經驗限制，可能找到更好的策略 |
+| 缺點       | 受限於人類提供的資料品質                  | 需要大量的嘗試，訓練時間長             |
 
 ** 與[[id:20221023T101228.247381][深度學習]]的比較
-*** 深度學習
-Deep Learning,是一種機器學習的技術，由於深度學習在現代機器學習中的比重和價值非常巨大，因此常常將深度學習單獨拿出來說。最初的深度學習網絡是利用神經網絡來解決特徵層分佈的一種學習過程。通常我們瞭解的 DNN（深度神經網絡），CNN（[[id:20221023T101414.457264][卷積神經網路]]），RNN（[[id:263cb433-d0eb-4400-a373-35175c000c01][循環神經網路]]），LSTM（長短期記憶網絡）都是隸屬於深度學習的範疇。也是現代機器學習最常用的一些手段。通過這些手段，深度學習在視覺識別，語音識別，[[id:20221023T101534.642520][自然語言處理]]（NLP）等領域取得了使用傳統機器學習算法所無法取得的成就。
+深度學習和強化學習不是互斥的，它們可以搭配使用。最經典的例子就是 AlphaGo 和 AlphaZero[fn:2]：
 
-*** 強化學習(Reinforcement Learning)
-又稱再勵學習或者評價學習。也是機器學習的技術之一。所謂強化學習就是智能系統從環境到行為映射的學習，以使獎勵信號（強化信號）函數值最大，由於外部給出的信息很少，強化學習系統必須依靠自身的經歷進行自我學習。通過這種學習獲取知識，改進行動方案以適應環境。強化學習最關鍵的三個因素是狀態，行為和環境獎勵。關於強化學習和深度學習的實例，最典型的莫過於谷歌的 AlphaGo 和 AlphaZero 兩位了，前者通過深度學習中的深度卷積神經網絡，在訓練了大約三千萬組人類的下棋數據，無數度電的情況下才搞出來的模型，而後者使用強化學習的方式，通過自己和自己下棋的方式搞出來的模型。而最終的實驗結果也很讓人震撼。AlphaGo 干敗了人類圍棋頂尖高手,而 AlphaZero 干敗了 AlphaGo[fn:2].
+- *AlphaGo* ：用[[id:20221023T101414.457264][深度學習]]（CNN）學習三千萬盤人類棋譜 → 打敗了世界冠軍柯潔
+- *AlphaZero* ：完全不看人類棋譜，只用 *強化學習* 自己和自己下棋 → 打敗了 AlphaGo
+
+AlphaZero 的故事告訴我們：當 AI 不再被人類經驗束縛，反而可能找到人類從沒想過的策略。
 
 ** 實例
 - [[https://www.youtube.com/watch?v=AJ1TR28KNqY][“影分身之术”！训练50亿次的AI能有多智能]]
 - [[https://www.youtube.com/watch?v=Z6fjTZAtziQ][讓人工智慧玩捉迷藏，最後居然發展出連人類都想不到的策略!? | 一探啾竟 第80集 | 啾啾鞋]]
 
-使用代理人(agent)來對環境進行觀察、選擇與執行行動，藉由因行動獲取來自環境的回應（可能是rewards或penalties，奬勵或懲罰），然後自行學習最佳策略（policy），最後隨著時間取得最多的奬勵[fn:1]。
+** 探索與利用的兩難（Exploration vs. Exploitation）
+RL 有一個很有趣的兩難問題[fn:3]：假設你發現了一家還不錯的餐廳，你應該：
+- *每次都去那家*（利用 Exploitation）— 穩穩拿到不錯的分數
+- *還是嘗試新餐廳*（探索 Exploration）— 可能踩雷，但也可能發現更棒的
 
-典型的增強式學習是用來訓練機器人走路，DeepMind的AlphaGo也是應用增強式學習打敗柯潔（與柯潔比賽時AlphaGo關閉了學習機制，只應用之前已學習過的policy）。
+這就是 RL 中最經典的 *Exploration-Exploitation Tradeoff* 。Agent 必須在「利用已知的好策略」和「探索未知的可能性」之間取得平衡。
 
-對RL稍有了解的同學都知道，Exploration是一件很重要同時也很困難的事情。與其他機器學習範式相比，RL通常只知道某個動作的能得多少分，卻不知道該動作是不是最好的——這就是基於evaluate的強化學習與基於instruct的監督學習的根本區別。
+最常見的做法叫做 $\epsilon$-greedy：設定一個探索率 $\epsilon$（例如 0.1），Agent 有 10% 的機率隨機選動作（探索），90% 的機率選目前已知最好的動作（利用）。隨著訓練進行，$\epsilon$ 會逐漸降低 — 因為 Agent 越來越有經驗了，不需要再那麼常亂試了。
 
-正因如此，RL的本質決定了它極其需要Exploration，我們需要通過不斷地探索來發現更好的決策，或者至少證明當前的決策是最好的——所以Exploration-Exploitation成為了強化學習領域諸個Tradeoff中最出名的一個[fn:3]。
-
-最簡單的exploration方法就是epsilon-greedy，即設置一個探索率epsilon來平衡兩者的關係——在大部分時間裡採用現階段最優策略，在少部分時間裡實現探索。Epsilon-greedy很簡單，它根本不會考慮更加有針對性的探索機制，它僅僅是在純貪心的基礎上加入了一定機率的uniform噪聲——所以epsilon-greedy又被稱為Naive Exploration[fn:3]。
-
-#+CAPTION: Caption
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+CAPTION: 增強式學習的探索與利用
+#+LABEL:fig:RL-explore
+#+name: fig:RL-explore
 #+ATTR_LATEX: :width 300
 #+ATTR_ORG: :width 300
 #+ATTR_HTML: :width 400
 [[file:images/2022-04-30_10-09-00.jpg]]
 
-* Open AI Gym
-- [[http://ukko.life.nctu.edu.tw/~u0517047/present.html][OpenAI gym 介紹]]
-OpenAI Gym 是一個提供許多測試環境的工具，讓大家有一個共同的環境可以測試自己的 RL 演算法，而不用花時間去搭建自己的測試環境。
-** module
-於本機執行至少會用到以下兩個python module，若要在遠端主機或colab上執行則要再做其他額外設定。
+* Gymnasium（前身為 OpenAI Gym）
+OpenAI Gym 曾經是強化學習界最受歡迎的工具包，提供許多現成的測試環境（遊戲），讓大家可以專心開發 RL 演算法，不用自己寫遊戲。2022 年後，Gym 由 Farama Foundation 接手維護，改名為 *Gymnasium* ，API 也做了些調整。
+
+安裝方式很簡單：
 #+begin_src shell -r :results output :exports both
-pip install --user gym
-pip install --user pyglet==1.5.11 (或是1.5.14)
+pip install gymnasium
 #+end_src
 
-* CartPole
-Gym上有許多可用工具，CartPole是其中較為簡單常見的一種，CartPole是一個桿子連在一個小車上，小車可以無摩擦的左右運動，桿子（倒立擺）一開始是豎直線向上的。小車通過左右運動使得桿子不倒。
+* CartPole：讓桿子不要倒！
+Gymnasium 上有許多可用的環境，CartPole 是其中最經典也最簡單的一種。想像一台小車上面立著一根桿子（倒立擺），小車可以左右移動，你的目標就是 *透過左右移動小車，讓桿子盡可能不要倒下來* 。就像你小時候玩過的平衡遊戲一樣！
 #+CAPTION: Cart-pole system
 #+LABEL:fig:Cart-pole
 #+name: fig:Cart-pole
@@ -103,21 +122,23 @@ Gym上有許多可用工具，CartPole是其中較為簡單常見的一種，Car
 [[file:images/cartpole-sys.jpg]]
 
 ** 執行測試與環境變數
-以下是一段最基本的測試程式
-#+begin_src python -r :noeval
-import gym
+以下是一段最基本的測試程式，讓 Agent 完全隨機地操控小車：
+#+begin_src python -r -n :results output :exports both
+import gymnasium as gym
+
 # 建立執行環境
-env = gym.make('CartPole-v0')
-# 將執行環境初始化
-env.reset()
+env = gym.make('CartPole-v1')
+# 將執行環境初始化（回傳初始觀測值和額外資訊）
+observation, info = env.reset()
 for _ in range(100):
-    env.render()
-    # 隨機籨action_space中挑選下一動作(action)丟入step執行
-    env.step(env.action_space.sample())
+    # 隨機從action_space中挑選下一動作(action)丟入step執行
+    observation, reward, terminated, truncated, info = env.step(env.action_space.sample())
+    if terminated or truncated:
+        break
 env.close()
+print("隨機亂動，遊戲結束！")
 #+end_src
-如下圖所示，增強式學習的核心就是: Agent採取Action，採取行動後，環境可能會被改變，而環境會給Agent一個Reward，讓Agent知道這Action好不好。其中：
-action有0或1兩種可能值，代表將將車子向左或向右控制。
+如下圖所示，增強式學習的核心就是：Agent 採取 Action，採取行動後環境可能會改變，而環境會給 Agent 一個 Reward，讓 Agent 知道這個 Action 好不好。其中 action 有 0 或 1 兩種可能值，代表將車子向左或向右推動。
 #+CAPTION: Cartpole cycle
 #+LABEL:fig:Cart-cycle
 #+name: fig:Cart-cycle
@@ -126,62 +147,48 @@ action有0或1兩種可能值，代表將將車子向左或向右控制。
 #+ATTR_HTML: :width 300
 [[file:images/cartpole-cycle.jpg]]
 
-就Cartpole來說，action丟入環境執行後，可以得到幾個相關的環境資訊(由step function傳回)，這些變數可由以下方式取得
-#+begin_src python -r :results output :exports both
-import gym
-# 建立執行環境
-env = gym.make('CartPole-v0')
-# 將執行環境清空為預設值(從新開始)
-env.reset()
+就 CartPole 來說，action 丟入環境執行後，可以得到幾個相關的環境資訊（由 =step= 函式傳回），這些變數可由以下方式取得：
+#+begin_src python -r -n :results output :exports both
+import gymnasium as gym
+
+env = gym.make('CartPole-v1')
+observation, info = env.reset()
 rewards = 0
 for _ in range(100):
-    env.render()
-    # 仍然隨機產生 action
-    action = env.action_space.sample()
-    # actionh去入環境執行，傳回環境資訊
-    observation, reward, done, info = env.step(action)
-    # 輸出來查看一下
+    action = env.action_space.sample()  # 仍然隨機產生 action
+    # action丟入環境執行，傳回環境資訊（5個回傳值）
+    observation, reward, terminated, truncated, info = env.step(action)
     rewards += reward
     print(observation)
-    if done: # 回合結束，可能柱子太傾斜或車子跑遠
-        # 若達到結束條件，就離開for loop
-        print("Rewards: ", rewards)
+    if terminated or truncated:  # 回合結束，可能柱子太傾斜或車子跑遠
+        print("Rewards:", rewards)
         break
 env.close()
 #+end_src
-
-#+RESULTS:
+每次執行的結果都不同（因為是隨機動作），但大致上會看到類似這樣的輸出：
 #+begin_example
 [-0.00943879  0.18031594 -0.0417659  -0.35468228]
 [-0.00583247  0.37600609 -0.04885955 -0.66023713]
-[ 0.00168765  0.57177271 -0.06206429 -0.96789561]
-[ 0.01312311  0.76767064 -0.0814222  -1.27941193]
-[ 0.02847652  0.57367526 -0.10701044 -1.01329459]
-[ 0.03995002  0.38013086 -0.12727633 -0.75603972]
-[ 0.04755264  0.18697153 -0.14239713 -0.50596262]
-[ 0.05129207  0.38378269 -0.15251638 -0.83991479]
-[ 0.05896772  0.58062118 -0.16931468 -1.17641133]
-[ 0.07058015  0.77748867 -0.1928429  -1.51703092]
-[ 0.08612992  0.58515093 -0.22318352 -1.29021731]
-Rewards:  11.0
+...
+Rewards: 11.0
 #+end_example
-如執行結果所示，雖然我們在程式中指定跑100次動作，但是更可能的是因為隨機動作而提前結束，而每一次的執行都會帶來不同的環境變數內容。
+雖然程式指定跑 100 次動作，但因為隨機亂動，桿子很快就倒了，所以通常 10 幾步就結束了。
 ** 重要環境變數
-在 Gym 的仿真環境中，有運動空間 action_space 和觀測空間observation_space 兩個指標，程序中被定義爲 Space類型，用於描述有效的運動和觀測的格式和範圍。我們可以利用以下程式碼大致觀察一下這兩個Space:
-#+begin_src python -r :results output :exports both
-import gym
-env = gym.make('CartPole-v0')
-print(env.action_space)
-print(env.observation_space)
+在 Gymnasium 的環境中，有兩個重要的空間：動作空間 =action_space= 和觀測空間 =observation_space= ，分別描述了 Agent 能做什麼動作、以及能看到什麼資訊。
+#+begin_src python -r -n :results output :exports both
+import gymnasium as gym
+env = gym.make('CartPole-v1')
+print("動作空間:", env.action_space)
+print("觀測空間:", env.observation_space)
 #+end_src
 
 #+RESULTS:
-: Discrete(2)
-: Box(-3.4028234663852886e+38, 3.4028234663852886e+38, (4,), float32)
-由結果可以看出:
-- action_space 是一個離散Discrete類型，從discrete.py源碼可知，範圍是一個{0,1,…,n-1} 長度爲 n 的非負整數集合，在CartPole-v0例子中，動作空間表示爲{0,1}。
-- observation_space 是一個Box類型，從box.py源碼可知，表示一個 n 維的盒子，所以在上一節打印出來的observation是一個長度爲 4 的數組。數組中的每個元素都具有上下界。
-*** Observation:
+: 動作空間: Discrete(2)
+: 觀測空間: Box([-4.8 ...], [4.8 ...], (4,), float32)
+由結果可以看出：
+- =action_space= 是離散型 =Discrete(2)= ，代表只有兩個動作：0（向左推）和 1（向右推）。
+- =observation_space= 是連續型 =Box= ，代表觀測值是一個長度為 4 的浮點數陣列，每個元素都有上下界。
+*** Observation（觀測值）:
 Type: Box(4)[fn:4]
 | Num | Observation           |                  Min |                Max |
 |-----+-----------------------+----------------------+--------------------|
@@ -189,65 +196,65 @@ Type: Box(4)[fn:4]
 |   1 | Cart Velocity         |                 -Inf |                Inf |
 |   2 | Pole Angle            | -0.418 rad (-24 deg) | 0.418 rad (24 deg) |
 |   3 | Pole Angular Velocity |                 -Inf |                Inf |
-*** Actions: 動作空間是離散空間
+*** Actions（動作空間，離散空間）
 Type: Discrete(2)
 | Num | Action                 |
 |-----+------------------------|
 |   0 | Push cart to the left  |
 |   1 | Push cart to the right |
 註：施加的力大小是固定的，但減小或增大的速度不是固定的，它取決於當時桿子與豎直方向的角度。角度不同，產生的速度和位移也不同。
-*** Reward
-Reward is 1 for every step taken, including the termination step. The threshold is 475 for v1.
-每一步都給出1的獎勵，包括終止狀態。
+*** Reward（獎勵）
+每撐過一步就得到 1 分獎勵（包括結束那一步）。在 CartPole-v1 中，最高可以撐 500 步，所以滿分是 500 分。
 *** 初始狀態:
 初始狀態所有觀測值都從[-0.05, 0.05]中隨機取值。
-*** 達到下列條件之一即結束一回合(片段):
-1. 桿子與豎直方向角度超過12度
-2. 小車位置距離中心超過2.4（小車中心超出畫面）
-3. 片段長度超過200連續100次
-4. 嘗試的平均獎勵大於等於195。
-** 分組作業:
-上述程式只執行了一回合的模擬，請你修改上述程式，進行200回合的模擬，記錄每回合隨機運作的reward結果，並將結果畫成折線圖，x軸為回合數；y軸為每回合的reward，
+*** 達到下列條件之一即結束一回合:
+1. 桿子與豎直方向角度超過 12 度（ =terminated=True= ）
+2. 小車位置距離中心超過 2.4（小車跑出畫面， =terminated=True= ）
+3. 回合步數達到 500 步（ =truncated=True= ，恭喜你撐到滿分！）
+** 小練習
+上述程式只執行了一回合的模擬，請你修改上述程式，進行 200 回合的模擬，記錄每回合隨機運作的 reward 結果，並將結果畫成折線圖（x 軸為回合數，y 軸為每回合的 reward）。你覺得隨機亂動平均能撐幾步？
 
-* 直覺反應的CartPole
-前節程式以隨機方式來左右擺動車子，這很顯然不符合真實情境，再笨的人也會隨杆子的擺動來控制車子，例如：當杆子快往左傾，就把車子往左移，以下就是這種實作的程式碼：
-#+begin_src python -r :results output :exports both
-import gym
+* 直覺反應的 CartPole
+前面的程式用隨機方式來操控小車，效果當然很差。但就算是最笨的人，也知道「桿子往左倒，車就往左推」這種直覺反應。讓我們把這個簡單策略寫成程式：
+#+begin_src python -r -n :results output :exports both
+import gymnasium as gym
 
-# 建立環境, 定義訓練的遊戲
-env = gym.make('CartPole-v0')
-
-observation = env.reset() # 把柱子擺好
+env = gym.make('CartPole-v1')
+observation, info = env.reset()
 rewards = 0
-for t in range(200):
-    #env.render()
-    #取得目前狀態
+for t in range(500):
+    # 取得目前狀態
     pos, v, ang, rot = observation
-    # 進行自己設計的Action
+    # 直覺策略：桿子往左傾就往左推，往右傾就往右推
     if ang < 0:
-        action = 0 ##車往左移
+        action = 0  # 車往左推
     else:
-        action = 1 ## 車往右移
-        # 在環境中做出 action
-    observation, reward, done, info = env.step(action)
-    # 累加 reward
+        action = 1  # 車往右推
+    observation, reward, terminated, truncated, info = env.step(action)
     rewards += reward
-    if done: # 回合結束，可能柱子太傾斜或車子跑遠
-        print('Rewards: ', rewards)
+    if terminated or truncated:
+        print('Rewards:', rewards)
         break
 
 env.close()
 #+end_src
-因為沒有在學習，趨勢肯定是平的。不過平均每回合的總 reward 明顯比隨機來得好，大概能撐兩倍時間。
+這個策略沒有在「學習」，只是一個固定的 if-else 規則。但比起隨機亂動，已經好很多了 — 大概能撐 40~60 步。
 
 #+RESULTS:
-: Rewards:  51.0
-** 分組作業
-上述程式只是簡單的依杆子角度來移動車子，你能否再想出更好的策略(即可以在結束前得到更多reward，最多到200)?請觀察observation的內容，傾全組之力想出最佳策略並實作出來，進行200次模擬，畫出模擬的rewards折線統計圖。
+: Rewards: 51.0
 
-* Hill Climbing Strategy [fn:5]
-爲了能夠有效控制倒立擺首先應建立一個控制模型。明顯的，這個控制模型的輸入應該是當前倒立擺的狀態（observation）而輸出爲對當前狀態做出的決策動作（action）。從前面的知識我們瞭解到決定倒立擺狀態的observation是一個四維向量，包含小車位置（\(x\)）、杆子夾角（\(\theta\)）、小車速度（\(\dot{x}\)）及角變化率（\(\dot{\theta}\)），如果對這個向量求它的加權和，那麼就可以根據加權和值的符號來決定採取的動作（action），用sigmoid函數將這個問題轉化爲二分類問題，從而可以建立一個簡單的控制模型。其模型如下圖所示：
-#+CAPTION: Hill Climbing Moddel
+不過離滿分 500 還差得遠。為什麼？因為這個策略只看了「桿子角度」一個特徵，完全忽略了速度、位置等資訊。
+
+** 小練習
+上述程式只看了桿子角度，你能否再想出更好的策略？提示：觀察 observation 的 4 個數值，思考哪些資訊也該納入決策。目標是讓 reward 超過 100！
+
+* Hill Climbing：讓電腦自己找最佳策略 [fn:5]
+前面的「直覺策略」是我們人類自己寫的規則，但如果讓電腦 *自己去找* 最好的策略呢？這就是「爬山演算法」（Hill Climbing）的概念。
+
+想像你在一座山上，被蒙住眼睛，你要爬到最高點。你的策略很簡單：往四周摸一摸，哪邊比較高就往哪邊走一步。這就是爬山演算法的精神 — *每次微調一點點，如果變好就保留，變差就放棄* 。
+
+具體來說，我們建立一個簡單的模型：把觀測值（4個數字）分別乘上一組權重，求加權和，如果和為正就往右推、為負就往左推。模型如下圖所示：
+#+CAPTION: Hill Climbing Model
 #+LABEL:fig:HCModel
 #+name: fig:HCModel
 #+ATTR_LATEX: :width 300
@@ -255,188 +262,171 @@ env.close()
 #+ATTR_HTML: :width 500
 [[file:images/hillclimbing.png]]
 
-上圖的實際功能與神經網絡有幾分相似，但比神經網絡要簡單得多。通過加入四個權值，我們可以通過改變權重值來改變決策（policy），即有加權和$$H_{sum} = w_1x+w_2\theta + w_3\dot{x} + w_4\dot\theta + b$$，若\(H_{sum}\)的符號爲正判定輸出爲1，否則爲0。
+這個模型的決策公式為：
+$$H_{sum} = w_1 \cdot x + w_2 \cdot \theta + w_3 \cdot \dot{x} + w_4 \cdot \dot{\theta} + b$$
+如果 $H_{sum} \geq 0$，就往右推（action=1）；否則往左推（action=0）。
 
-爬山算法的基本思路是每次迭代時給當前取得的最優權重加上一組隨機值，如果加上這組值使得有效控制倒立擺的持續時間變長了那麼就更新它爲最優權重，如果沒有得到改善就保持原來的值不變，直到迭代結束。在迭代過程中，模型的參數不斷得到優化，最終得到一組最優的權值作爲控制模型的解。
-** Source code
-#+begin_src python -r :results output :exports both
+爬山演算法的流程很簡單：
+1. 隨機生成一組權重
+2. 用這組權重跑一回合遊戲，記錄得分
+3. 在當前最佳權重上加入一點隨機微調
+4. 如果微調後得分更高 → 更新最佳權重
+5. 如果沒有改善 → 保持原來的權重
+6. 重複步驟 3~5，直到找到滿分的權重
+** 程式碼
+#+begin_src python -r -n :results output :exports both :session hc
 import numpy as np
-import gym
+import gymnasium as gym
+import matplotlib.pyplot as plt
 
-def get_sum_reward_by_weights(env, weights):
-    #測試不同權重的model所得到的奬勵
-    observation = env.reset() #重置狀態
+def run_one_episode(env, weights):
+    """用指定的權重跑一回合，回傳總 reward"""
+    observation, info = env.reset()
     rewards = 0
-    for t in range(1000):
-        env.render()
-        # 依目前權值針對當前狀態來選action
-        # 原來的做法為: action = env.action_space.sample()
+    for t in range(500):
+        # 加權和決定動作
         action = 1 if np.dot(weights[:4], observation) + weights[4] >= 0 else 0
-        # 執行action, 取得下一步狀態
-        observation, reward, done, info = env.step(action)
+        observation, reward, terminated, truncated, info = env.step(action)
         rewards += reward
-        if done:
-            print(t)
+        if terminated or truncated:
             break
     return rewards
 
+# 爬山演算法主程式
+env = gym.make("CartPole-v1")
+np.random.seed(10)
 
+best_reward = 0
+best_weights = np.random.rand(5)  # 初始權重隨機
+reward_history = []
 
-def get_best_result():
-    np.random.seed(10)
-    best_reward = 0 # 初始最佳奬勵
-    best_weights = np.random.rand(5) # 初始權值為隨機值
+for i in range(300):
+    # 在最佳權重上加入微小隨機擾動
+    new_weights = best_weights + np.random.normal(0, 0.1, 5)
+    r = run_one_episode(env, new_weights)
+    reward_history.append(r)
+    if r > best_reward:
+        best_reward = r
+        best_weights = new_weights
+    if best_reward >= 500:  # CartPole-v1 滿分 500
+        print(f"第 {i} 次迭代就找到滿分策略！")
+        break
 
-    for iter in range(1000): #迭代100次
-        cur_weights = None
-        print("iteration:",iter)
-        cur_weights = best_weights + np.random.normal(0, 0.1, 5) #在當前最佳權值加入隨機值
-        # cur_weights = np.random.rand(5) #隨機猜測
-        cur_sum_reward = get_sum_reward_by_weights(env, cur_weights)
-        reward_rec.append(cur_sum_reward) #記錄用
-        if cur_sum_reward > best_reward:
-            best_reward = cur_sum_reward
-            best_weights = cur_weights
-        if best_reward >= 200:
-            print(iter,":",best_reward)
-            print("best_weight",best_weights)
-            break;
-
-env = gym.make("CartPole-v0")
-reward_rec = []
-
-print(get_best_result())
-# 輸出統計
-import matplotlib.pyplot as plt
-plt.clf()
-x = range(1, len(reward_rec)+1)
-plt.plot(x, reward_rec)
+print(f"最佳 reward: {best_reward}")
 env.close()
 
+# 畫出學習過程
+plt.figure(figsize=(10, 4))
+plt.plot(reward_history)
+plt.xlabel("Iteration")
+plt.ylabel("Reward")
+plt.title("Hill Climbing: Reward per Iteration")
+plt.grid(True)
+plt.tight_layout()
+plt.savefig("images/hill_climbing_result.png", dpi=150)
 #+end_src
-爬山算法本質是一種局部擇優的方法，效率高但因爲不是全局搜索，所以結果可能不是最優。
+爬山演算法本質上是一種「局部搜尋」的方法 — 效率很高（通常幾十次就能找到不錯的解），但因為不是全局搜索，找到的不一定是最佳解。就像蒙著眼睛爬山，你可能爬到一座小丘就以為到了山頂，卻不知道隔壁還有更高的山。
 
-* Q-Learnin g
-QLearning是強化學習算法中value-based的算法，Q即為Q（s,a）就是在某一時刻的 s 狀態下(s∈S)，採取 動作a (a∈A)動作能夠獲得收益的期望，環境會根據agent的動作反饋相應的回報reward r，所以算法的主要思想就是將State與Action構建成一張Q-table來存儲Q值，然後根據Q值來選取能夠獲得最大的收益的動作[fn:6]。
+* Q-Learning：讓 Agent 自己學會查表決策
+前面的爬山演算法只是在「碰運氣」找好的權重，並沒有真正在學習。Q-Learning 才是強化學習中最經典的學習演算法之一[fn:6]。
 
-一個 Q-learning 非常簡單的實現法複是用一個 model 來 approximate Q-value function，並藉由下面的 update rule 來訓練這個 model：
-$$Q(S_t, a_t) = Q(s_t, a_t) + \alpha(R_{t+1} + \gamma\max_aQ(s_{s_t+1},a)-Q(s_t,a_t))$$
-Q-table 是用 lookup table 來 approximate Q-value function，並用 Q-learning 訓練的一個方法。這個 lookup table 會將每個 state-action pair (s, a) 對應到 approximation Q(s, a)，一開始 table 裡的 Q-value 隨機設置，並在訓練過程中更新這些 Q-value。所以我們其實沒有在訓練一個 model 更新參數讓預測數值更接近 Q-value，而是直接用一個 table 記錄這些值並更新。
+Q-Learning 的核心概念很簡單：建立一張「作弊表」（Q-Table），記錄「在某個狀態下，做某個動作，預期能得到多少分」。Agent 每次遇到新狀態時，就查表選擇分數最高的動作。
 
-另外我們的 state 是連續值，這樣會有無限多個可能的 state-action pair，因此我們要 discretize 這些值才能建立一個 lookup table。
+這張表一開始是空白的（全部填 0），Agent 必須透過一次又一次的嘗試來填入正確的數值。更新公式如下：
+$$Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha \Big[ R_{t+1} + \gamma \max_a Q(s_{t+1}, a) - Q(s_t, a_t) \Big]$$
+其中：
+- $\alpha$ 是學習率（每次更新幅度多大）
+- $\gamma$ 是折扣因子（多重視未來的獎勵）
+- $R_{t+1}$ 是這一步實際得到的獎勵
+- $\max_a Q(s_{t+1}, a)$ 是下一步最好的預期分數
 
-例如實作中我們把 state 的 4 個 feature (position, velocity, angle, rotation rate) 分別 discretize 成 (1, 1, 6, 3) 個 bucket，6 個 bucket 就代表 angle 的範圍 [-0.5, 0.5] 被切成 6 個區間，區間中的值都對應到相同的 discrete value。
+簡單來說：Agent 不只看眼前的獎勵，還會估計「到了下一個狀態後，最多還能拿多少分」，就像下棋時不只看當前這步，還要想後面幾步。
 ** Algorithms
 #+CAPTION: Q-Learning Algorithm
-#+LABEL:fig:Labl
-#+name: fig:Name
+#+LABEL:fig:Q-Learning-Algo
+#+name: fig:Q-Learning-Algo
 #+ATTR_LATEX: :width 500
 #+ATTR_ORG: :width 600
 #+ATTR_HTML: :width 500
 [[file:images/q-learning.png]]
 
-在更新 Q table 時，計算 reward 不只包含採取 action \(a\)獲得的 reward \(r\)r，還包含 \(\gamma max_{a^{'}}Q(s^{'},q^{'})\)。這個概念是，agent 不僅僅看當下採取的行動帶來的好處，他也會估計到達下一個 state \(s^{'}\) 後，最多可以有多少好處（因為在\(s^{'}\)也可以採取各種 action）。
-換句話說，這個 agent 不是一個目光如豆的 agent，他會考慮未來。因為加上了\(\gamma max_{a^{'}}Q(s^{'},q^{'})\)(當然\(\gamma\)不能是 0)，讓我們的 agent 從 會立刻吃掉棉花糖的小朋友，進化成可以晚一點再吃多一點棉花糖的小朋友，是不是很有趣呢！
-** Q-Table
-一個 Q-learning 非常簡單的實現法。複習一下我們在前篇提到 Q-learning，是用一個 model 來 approximate Q-value function，並藉由下面的 update rule 來訓練這個 model：
-$$ Q(s_t,a_t) = Q(s_t,a_t) + \alpha(R_{t+1}) + \gamma \max_{a} Q(s_{t+1}, - Q(s_t,a_t)) $$
-Q-table 是用 lookup table 來 approximate Q-value function，並用 Q-learning 訓練的一個方法。這個 lookup table 會將每個 state-action pair (s, a) 對應到 approximation Q(s, a)，一開始 table 裡的 Q-value 隨機設置，並在訓練過程中更新這些 Q-value。所以我們其實沒有在訓練一個 model 更新參數讓預測數值更接近 Q-value，而是直接用一個 table 記錄這些值並更新。
+用一個經典的比喻來解釋：想像你是一個小朋友，眼前有一顆棉花糖。如果 $\gamma = 0$，你只看到眼前的棉花糖就立刻吃掉了；但如果 $\gamma$ 接近 1，你會想：「如果我現在忍住不吃，等一下可能會有兩顆棉花糖！」。這就是 Q-Learning 厲害的地方 — 它讓 Agent 學會為了更大的未來回報，而犧牲眼前的小利。
+** Q-Table 實作細節
+上面講了一堆理論，現在讓我們看看 Q-Table 在 CartPole 中要怎麼實作。
 
-另外我們的 state 是連續值，這樣會有無限多個可能的 state-action pair，因此我們要 discretize 這些值才能建立一個 lookup table。
+由於 CartPole 的 state 是連續值（角度可以是 0.123456...），這樣會有無限多種狀態，沒辦法建一個無限大的表格。所以我們要把連續值「離散化」（discretize），把它們分成幾個區間（bucket）。
 
-例如實作中我們把 state 的 4 個 feature (position, velocity, angle, rotation rate) 分別 discretize 成 (1, 1, 6, 3) 個 bucket，6 個 bucket 就代表 angle 的範圍 [-0.5, 0.5] 被切成 6 個區間，區間中的值都對應到相同的 discrete value。
+例如我們把 state 的 4 個特徵 (position, velocity, angle, rotation rate) 分別離散化成 (1, 1, 6, 3) 個 bucket — 其中 6 個 bucket 代表角度的範圍被切成 6 個區間，區間中的值都對應到同一個離散值。
 
-1. 整個 discretization 大概是這樣：
-   #+begin_src python -r :results output :exports both
-# state bucket 設定
+1. 首先，我們要把連續的觀測值離散化，建立 Q-Table：
+   #+begin_src python -r -n :results output :exports both
+import numpy as np
+import math
+import gymnasium as gym
+
+env = gym.make('CartPole-v1')
+
+# 每個特徵要切成幾個區間（bucket）
 n_buckets = (1, 1, 6, 3)
+n_actions = env.action_space.n  # = 2
 
-# action 已經是 discrete value
-n_actions = env.action_space.n
-
-# 建立 Q-table
+# 建立 Q-table（所有值初始為 0）
 q_table = np.zeros(n_buckets + (n_actions,))
+print(f"Q-table 大小: {q_table.shape}")  # (1, 1, 6, 3, 2)
 
-# 設定好每個 state feature 的上下界
+# 設定每個特徵的上下界
 state_bounds = list(zip(env.observation_space.low, env.observation_space.high))
-state_bounds[1] = [-0.5, 0.5]
-state_bounds[3] = [-math.radians(50), math.radians(50)]
+state_bounds[1] = [-0.5, 0.5]  # 速度範圍限制
+state_bounds[3] = [-math.radians(50), math.radians(50)]  # 角速度範圍限制
 
-# 將 env 給的 state 轉換成 discretized state
 def get_state(observation, n_buckets, state_bounds):
+    """將連續的觀測值轉換成離散的 bucket 索引"""
     state = [0] * len(observation)
     for i, s in enumerate(observation):
-        # 每個 feature 上界、下界
         l, u = state_bounds[i][0], state_bounds[i][1]
-        if s <= l: # 低於下界屬於第 1 個 bucket
+        if s <= l:
             state[i] = 0
-        elif s >= u: # 高於下界屬於最後一個 bucket
+        elif s >= u:
             state[i] = n_buckets[i] - 1
-        else: # 其他看你在哪個區間，決定你在哪個 bucket
+        else:
             state[i] = int(((s - l) / (u - l)) * n_buckets[i])
     return tuple(state)
 #+end_src
-state_bounds初始內容為
-#+begin_src python -r :results output :exports both
+=state_bounds= 初始內容為
+#+begin_example
 [(-4.8, 4.8),
  [-0.5, 0.5],
  (-0.41887903, 0.41887903),
  [-0.8726646259971648, 0.8726646259971648]]
-#+end_src
-q_table為(1, 1, 6, 3, 2)的ndarray，初始內容為
-#+begin_src python -r :results output :exports both
-
-
-array([[[[[0., 0.],
-          [0., 0.],
-          [0., 0.]],
-
-         [[0., 0.],
-          [0., 0.],
-          [0., 0.]],
-
-         [[0., 0.],
-          [0., 0.],
-          [0., 0.]],
-
-         [[0., 0.],
-          [0., 0.],
-          [0., 0.]],
-
-         [[0., 0.],
-          [0., 0.],
-          [0., 0.]],
-
-         [[0., 0.],
-          [0., 0.],
-          [0., 0.]]]]])
-#+end_src
-2. 再來是\(\epsilon-greedy\)的使用，選擇 action 時，有\(\epsilon\)的機率隨機選擇以增加 exploration，其他時間照著現有 policy 選擇：
-   #+begin_src python -r :results output :exports both
+#+end_example
+=q_table= 為 =(1, 1, 6, 3, 2)= 的 ndarray，初始值全為 0，代表 Agent 一開始對所有狀態-動作的組合完全沒有任何經驗。
+2. 再來是 $\epsilon$-greedy 策略。選動作時，有 $\epsilon$ 的機率隨機選（exploration，探索未知），其他時間照著 Q-Table 選最高分的動作（exploitation，利用已知）：
+   #+begin_src python -r -n :results output :exports both
 def choose_action(state, q_table, action_space, epsilon):
-    if np.random.random_sample() < epsilon: # 隨機
+    if np.random.random_sample() < epsilon:  # 探索：隨機選
         return action_space.sample()
-    else: # 根據 Q-table 選擇最大 Q-value 的 action
+    else:  # 利用：選 Q 值最大的動作
         return np.argmax(q_table[state])
    #+end_src
-3. 最後就是做出 action 收集到 observation 和 reward 後，就可以 update Q-table：
-   #+begin_src python -r :results output :exports both
-# 算出下個 state
+3. 做出 action 後，收到 observation 和 reward，就可以更新 Q-Table：
+   #+begin_src python -r -n :results output :exports both
+# 算出下個 state 的離散值
 next_state = get_state(observation, n_buckets, state_bounds)
 
-# Q-learning
+# Q-learning 更新公式
 q_next_max = np.amax(q_table[next_state])
 q_table[state + (action,)] += lr * (reward + gamma * q_next_max - q_table[state + (action,)])
 
-# Transition 到下個 state
+# 移動到下個 state
 state = next_state
    #+end_src
-4. 剩下就跟前面的框架差不多了。實作中，還另外加了一些方法讓訓練成果更好，例如因為訓練後期有比較好的 policy，讓 https://chart.googleapis.com/chart?cht=tx&chl=%5Cepsilon 隨著訓練降低以減少 exploration，以及讓 learning rate 降低使訓練能收斂。
-   #+begin_src python -r :results output :exports both
+4. 訓練過程中，$\epsilon$ 和學習率 $\alpha$ 會隨著訓練逐漸降低。一開始 Agent 什麼都不知道，所以多探索（高 $\epsilon$）；後期已經學到不少經驗了，就多利用已學的知識（低 $\epsilon$）。
+   #+begin_src python -r -n :results output :exports both
+# epsilon 和 lr 隨回合數遞減
 get_epsilon = lambda i: max(0.01, min(1, 1.0 - math.log10((i+1)/25)))
 get_lr = lambda i: max(0.01, min(0.5, 1.0 - math.log10((i+1)/25)))
 
-# 每回合更新 epsilon 和 lr
+# 每回合開始時更新
 epsilon = get_epsilon(i_episode)
 lr = get_lr(i_episode)
    #+end_src
@@ -449,14 +439,277 @@ lr = get_lr(i_episode)
 #+ATTR_HTML: :width 500
 [[file:images/q-learning-result.png]]
 
-* 增強式學習有多強[fn:7]
-我們可以使用強化學習來訓練圍棋機器人，知名的Alpha Go 就是基於強化學習來打敗人類的!
-又或者學習如何玩超級馬力歐，透過一次又一次的死亡，Agent會慢慢地學習什麼時間點該跳躍閃避怪物，或者殺掉怪物。
+* 增強式學習有多強？[fn:7]
+RL 的戰績相當輝煌：
+- *圍棋* ：AlphaGo/AlphaZero 擊敗世界冠軍
+- *電玩* ：DeepMind 的 AI 學會玩 57 種 Atari 遊戲，其中 29 種超越人類水準
+- *超級瑪利歐* ：AI 透過一次又一次的死亡，學會了跳躍、閃避怪物的時機
+- *機器人* ：OpenAI 訓練機械手臂學會轉魔術方塊
 
-那麼強化學習無敵了嗎?當然不是的，強化學習需要大量的訓練，如果要在電玩遊戲中贏過人類，需要的禎數可能要很高，且例如射擊遊戲需要超高的反應速度，目前的強化學習可能還無法應付。
-又或者自動駕駛，假設車子已經能完美的沿著路線前進了，且能應對紅綠燈等狀況，但如果因為某些原因，影像辨識誤把紅燈當成了綠燈，這樣可能會導致嚴重的事故。
+那麼 RL 無敵了嗎？當然不是：
+- *訓練成本高* ：要跑幾百萬、甚至幾十億次模擬才能學會，非常耗時耗能
+- *安全問題* ：自動駕駛中如果 AI 誤判了紅綠燈，後果不堪設想
+- *獎勵設計困難* ：如果獎勵函數設計不好，AI 可能會找到「作弊」的方式拿高分，卻完全不是我們想要的行為
 
-強化學習是很有趣的，但可能不是這麼萬用，但在一些領域中，可以達到超過人類水準的表現!
+RL 很強大也很有趣，但它不是萬能的。在特定領域（遊戲、棋類、機器人控制），RL 可以達到超越人類的表現！
+
+* 作業：強化學習大冒險
+** 作業一：隨機 vs 直覺 — 200 回合大對決
+讓隨機策略和直覺策略各跑 200 回合，畫出兩條 reward 折線圖，看看誰比較厲害。
+
+以下範例程式跑 200 回合的「隨機策略」：
+
+#+begin_src python -r -n :results output :exports both :session hw_rl1
+import gymnasium as gym
+import matplotlib.pyplot as plt
+import numpy as np
+
+def run_episodes(strategy, n_episodes=200):
+    """跑 n_episodes 回合，回傳每回合的 reward 列表"""
+    env = gym.make('CartPole-v1')
+    rewards_list = []
+    for _ in range(n_episodes):
+        obs, info = env.reset()
+        total_reward = 0
+        for t in range(500):
+            if strategy == 'random':
+                action = env.action_space.sample()
+            elif strategy == 'intuition':
+                # 直覺策略：桿子往左傾就往左推
+                action = 0 if obs[2] < 0 else 1
+            obs, reward, terminated, truncated, info = env.step(action)
+            total_reward += reward
+            if terminated or truncated:
+                break
+        rewards_list.append(total_reward)
+    env.close()
+    return rewards_list
+
+# 只跑隨機策略
+random_rewards = run_episodes('random')
+print(f"隨機策略平均 reward: {np.mean(random_rewards):.1f}")
+#+end_src
+
+*** 你的任務
+1. 修改上面的程式，再跑一次「直覺策略」（ =intuition= ）的 200 回合
+2. 把兩條折線畫在同一張圖上（用不同顏色），加上圖例（legend）
+3. 在圖的標題中顯示兩種策略的平均 reward
+
+*** 預期輸出
+#+begin_example
+隨機策略平均 reward: 22.x
+直覺策略平均 reward: 42.x
+
+（一張折線圖，藍色=隨機、橘色=直覺，直覺策略明顯比隨機高）
+#+end_example
+
+*** 參考解答 :noexport:
+#+begin_src python -r -n :results output :exports both :session hw_rl1_ans
+import gymnasium as gym
+import matplotlib.pyplot as plt
+import numpy as np
+
+def run_episodes(strategy, n_episodes=200):
+    env = gym.make('CartPole-v1')
+    rewards_list = []
+    for _ in range(n_episodes):
+        obs, info = env.reset()
+        total_reward = 0
+        for t in range(500):
+            if strategy == 'random':
+                action = env.action_space.sample()
+            elif strategy == 'intuition':
+                action = 0 if obs[2] < 0 else 1
+            obs, reward, terminated, truncated, info = env.step(action)
+            total_reward += reward
+            if terminated or truncated:
+                break
+        rewards_list.append(total_reward)
+    env.close()
+    return rewards_list
+
+random_rewards = run_episodes('random')
+intuition_rewards = run_episodes('intuition')
+
+plt.figure(figsize=(10, 4))
+plt.plot(random_rewards, alpha=0.7, label=f'Random (avg={np.mean(random_rewards):.1f})')
+plt.plot(intuition_rewards, alpha=0.7, label=f'Intuition (avg={np.mean(intuition_rewards):.1f})')
+plt.xlabel('Episode')
+plt.ylabel('Reward')
+plt.title(f'Random vs Intuition Strategy')
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.savefig('images/hw_rl_compare.png', dpi=150)
+print(f"隨機策略平均 reward: {np.mean(random_rewards):.1f}")
+print(f"直覺策略平均 reward: {np.mean(intuition_rewards):.1f}")
+#+end_src
+
+** 作業二：爬山高手 — 微調的藝術
+在教材的爬山演算法中，我們用 =np.random.normal(0, 0.1, 5)= 來產生微調的隨機值，其中 0.1 是「步幅」（step size）。步幅太大，權重會亂跳；步幅太小，搜尋速度太慢。
+
+以下範例程式用步幅 0.1 來跑爬山演算法：
+
+#+begin_src python -r -n :results output :exports both :session hw_rl2
+import numpy as np
+import gymnasium as gym
+
+def hill_climb(step_size, max_iter=300, seed=42):
+    """用指定步幅跑爬山演算法，回傳找到的最佳 reward 和歷史紀錄"""
+    env = gym.make('CartPole-v1')
+    np.random.seed(seed)
+    best_reward = 0
+    best_weights = np.random.rand(5)
+    history = []
+
+    for i in range(max_iter):
+        new_weights = best_weights + np.random.normal(0, step_size, 5)
+        obs, info = env.reset()
+        total = 0
+        for _ in range(500):
+            action = 1 if np.dot(new_weights[:4], obs) + new_weights[4] >= 0 else 0
+            obs, reward, terminated, truncated, info = env.step(action)
+            total += reward
+            if terminated or truncated:
+                break
+        history.append(total)
+        if total > best_reward:
+            best_reward = total
+            best_weights = new_weights
+    env.close()
+    return best_reward, history
+
+best, hist = hill_climb(step_size=0.1)
+print(f"步幅 0.1 → 最佳 reward: {best}")
+#+end_src
+
+*** 你的任務
+測試三種不同的步幅：0.01、0.1、0.5，各跑一次爬山演算法（300 次迭代），比較哪個步幅最快找到好的策略。
+
+提示：用迴圈呼叫 =hill_climb()= 三次就好。
+
+*** 預期輸出
+#+begin_example
+步幅 0.01 → 最佳 reward: xxx
+步幅 0.10 → 最佳 reward: xxx
+步幅 0.50 → 最佳 reward: xxx
+
+結論：步幅 0.1 左右效果最好
+#+end_example
+
+*** 參考解答 :noexport:
+#+begin_src python -r -n :results output :exports both :session hw_rl2_ans
+import numpy as np
+import gymnasium as gym
+
+def hill_climb(step_size, max_iter=300, seed=42):
+    env = gym.make('CartPole-v1')
+    np.random.seed(seed)
+    best_reward = 0
+    best_weights = np.random.rand(5)
+    history = []
+
+    for i in range(max_iter):
+        new_weights = best_weights + np.random.normal(0, step_size, 5)
+        obs, info = env.reset()
+        total = 0
+        for _ in range(500):
+            action = 1 if np.dot(new_weights[:4], obs) + new_weights[4] >= 0 else 0
+            obs, reward, terminated, truncated, info = env.step(action)
+            total += reward
+            if terminated or truncated:
+                break
+        history.append(total)
+        if total > best_reward:
+            best_reward = total
+            best_weights = new_weights
+    env.close()
+    return best_reward, history
+
+for step in [0.01, 0.1, 0.5]:
+    best, hist = hill_climb(step_size=step)
+    print(f"步幅 {step:.2f} → 最佳 reward: {best}")
+#+end_src
+
+** 作業三：自創策略挑戰賽 — 你能打敗直覺嗎？
+直覺策略只看了桿子角度（ =obs[2]= ），但 observation 其實有 4 個數值。如果我們把更多資訊加入決策，應該能做得更好！
+
+以下是直覺策略的程式，平均大概能撐 40~60 步：
+
+#+begin_src python -r -n :results output :exports both :session hw_rl3
+import gymnasium as gym
+import numpy as np
+
+def my_strategy(obs):
+    """直覺策略：只看桿子角度"""
+    pos, vel, angle, ang_vel = obs
+    if angle < 0:
+        return 0  # 往左推
+    else:
+        return 1  # 往右推
+
+# 測試策略
+env = gym.make('CartPole-v1')
+rewards = []
+for _ in range(100):
+    obs, info = env.reset()
+    total = 0
+    for _ in range(500):
+        action = my_strategy(obs)
+        obs, reward, terminated, truncated, info = env.step(action)
+        total += reward
+        if terminated or truncated:
+            break
+    rewards.append(total)
+env.close()
+print(f"直覺策略平均 reward: {np.mean(rewards):.1f}")
+#+end_src
+
+*** 你的任務
+修改 =my_strategy()= 函式，設計你自己的策略，目標是讓平均 reward 超過 *100* ！
+
+提示：
+- =obs[0]= 是車子位置，太偏左偏右都不好
+- =obs[1]= 是車子速度，跑太快要煞車
+- =obs[2]= 是桿子角度，快倒了要趕快救
+- =obs[3]= 是桿子角速度，正在加速倒的時候更緊急
+- 你可以組合多個條件，例如：「如果桿子角度 + 角速度 < 0，就往左推」
+
+*** 預期輸出
+#+begin_example
+我的策略平均 reward: 1xx.x （超過 100 就算過關！）
+#+end_example
+
+*** 參考解答 :noexport:
+#+begin_src python -r -n :results output :exports both :session hw_rl3_ans
+import gymnasium as gym
+import numpy as np
+
+def my_strategy(obs):
+    """改良策略：同時考慮角度和角速度"""
+    pos, vel, angle, ang_vel = obs
+    # 綜合考慮角度和角速度（角速度的影響力更大）
+    score = angle + 0.5 * ang_vel
+    if score < 0:
+        return 0
+    else:
+        return 1
+
+env = gym.make('CartPole-v1')
+rewards = []
+for _ in range(100):
+    obs, info = env.reset()
+    total = 0
+    for _ in range(500):
+        action = my_strategy(obs)
+        obs, reward, terminated, truncated, info = env.step(action)
+        total += reward
+        if terminated or truncated:
+            break
+    rewards.append(total)
+env.close()
+print(f"改良策略平均 reward: {np.mean(rewards):.1f}")
+#+end_src
 
 * Footnotes
 
