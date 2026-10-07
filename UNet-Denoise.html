@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>博美去噪實驗</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap">
+<style>
+body { margin: 0; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+/* Layout: 實驗記錄本——上方是設定與總覽，中間是仿投影片的逐步檢視器，下方是完整步驟表 */
+:root {
+  --bg: #f1f3f6;
+  --surface: #ffffff;
+  --ink: #17202b;
+  --muted: #5a6575;
+  --line: #d6dce4;
+  --unet: #cadcf6;
+  --unet-line: #3d6ec3;
+  --accent: #b2650f;
+  --accent-soft: #f6e7d3;
+  --display: "Noto Serif TC", "Songti TC", serif;
+  --body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f141b; --surface: #17202a; --ink: #e5eaf0; --muted: #96a2b2; --line: #2a3542;
+    --unet: #21344e; --unet-line: #7ea6ea; --accent: #e59a3e; --accent-soft: #3a2a16; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f141b; --surface: #17202a; --ink: #e5eaf0; --muted: #96a2b2; --line: #2a3542;
+  --unet: #21344e; --unet-line: #7ea6ea; --accent: #e59a3e; --accent-soft: #3a2a16; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.7; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 64px; display: grid; gap: 48px; }
+h1, h2 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.25; }
+h1 { font-size: clamp(30px, 5vw, 44px); font-weight: 900; }
+h2 { font-size: 22px; font-weight: 600; }
+p { margin: 0; max-width: 66ch; }
+.eyebrow { font-size: 12px; letter-spacing: .12em; color: var(--accent); font-weight: 700; }
+.muted { color: var(--muted); }
+.mono, .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+sub { font-size: .72em; }
+section { display: grid; gap: 16px; }
+.head { display: grid; gap: 12px; }
+
+/* 實驗設定 */
+.facts { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 4px 0 0; padding: 14px 0 0; border-top: 1px solid var(--line); }
+.facts div { display: grid; }
+.facts dt { font-size: 12px; color: var(--muted); letter-spacing: .06em; }
+.facts dd { margin: 0; font-family: var(--mono); font-size: 14px; }
+
+/* 總覽 */
+.overview { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; align-items: start; }
+figure { margin: 0; display: grid; gap: 6px; }
+figure img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; border-radius: 4px; background: var(--line); }
+figcaption { font-size: 13px; color: var(--muted); }
+figcaption b { color: var(--ink); font-weight: 500; }
+
+/* 逐步檢視器 */
+.viewer { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 20px; display: grid; gap: 18px; }
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.controls input[type=range] { flex: 1 1 240px; accent-color: var(--accent); min-width: 0; }
+button { font: inherit; font-size: 14px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 4px 12px; cursor: pointer; }
+button:hover { border-color: var(--accent); }
+button:focus-visible, input:focus-visible, tr:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.stepno { font-family: var(--mono); font-size: 14px; min-width: 9ch; }
+.stepno b { font-size: 20px; color: var(--accent); font-weight: 500; }
+
+.row { display: grid; grid-template-columns: minmax(0, 1.05fr) 1px minmax(0, 1fr); gap: 18px; align-items: center; }
+.divider { align-self: stretch; border-left: 1px dashed var(--line); }
+.left { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, .9fr) auto minmax(0, 1fr); align-items: center; gap: 8px; }
+.inputs { display: grid; gap: 8px; }
+.tchip { display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 13px; }
+.tchip span.bar { display: flex; height: 18px; flex: 1; border-radius: 2px; overflow: hidden; }
+.tchip span.bar i { flex: 1; }
+.arrow { color: var(--muted); font-size: 18px; }
+.unet { background: var(--unet); border: 2px solid var(--unet-line); border-radius: 4px; aspect-ratio: 3 / 4; display: grid; place-items: center; font-weight: 700; font-size: 17px; }
+.right { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px; }
+.op { font-family: var(--mono); font-size: 20px; color: var(--muted); text-align: center; }
+.cell figcaption { text-align: center; }
+
+.readout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 220px); gap: 18px; align-items: start; border-top: 1px solid var(--line); padding-top: 16px; }
+.formula { font-family: var(--mono); font-size: 14px; overflow-x: auto; white-space: nowrap; padding: 10px 12px; background: var(--bg); border-radius: 6px; }
+.stats { display: flex; flex-wrap: wrap; gap: 6px 24px; margin-top: 10px; }
+.stats div { display: grid; }
+.stats dt { font-size: 12px; color: var(--muted); }
+.stats dd { margin: 0; font-family: var(--mono); font-size: 16px; }
+.readout p { margin-top: 10px; font-size: 14px; }
+.predx0 figcaption { text-align: left; }
+
+/* 前向 */
+.strip { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 8px; }
+.explain { display: grid; gap: 8px; }
+.explain .eq { font-size: 17px; padding: 8px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; justify-self: start; }
+.strip figcaption { text-align: center; line-height: 1.5; }
+.strip figure.start img { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* 表 */
+.tablebox { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+table { border-collapse: collapse; width: 100%; min-width: 640px; }
+th, td { padding: 6px 10px; text-align: center; border-bottom: 1px solid var(--line); }
+th { font-size: 12px; color: var(--muted); font-weight: 500; letter-spacing: .04em; position: sticky; top: 0; background: var(--surface); }
+td img { width: 72px; height: 72px; display: block; margin: 0 auto; border-radius: 3px; }
+td.num { font-size: 13px; }
+tbody tr { cursor: pointer; }
+tbody tr:hover, tbody tr.on { background: var(--accent-soft); }
+
+code { font-family: var(--mono); font-size: .92em; background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
+
+@media (max-width: 760px) {
+  .row { grid-template-columns: minmax(0, 1fr); }
+  .divider { border-left: 0; border-top: 1px dashed var(--line); }
+  .readout { grid-template-columns: minmax(0, 1fr); }
+  .overview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .strip { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <div class="eyebrow">擴散模型 · 反向去噪實測</div>
+    <h1>博美去噪實驗</h1>
+    <p class="muted">把「狗1.jpg」加雜訊加到第 <span class="num" data-t0></span> 步，再交給預訓練的 DDPM U-Net 一步一步去噪。下面每一張圖都是模型真的跑出來的，沒有手動合成。</p>
+    <dl class="facts" id="facts"></dl>
+  </header>
+
+  <section>
+    <h2>從照片到雜訊，再回來</h2>
+    <div class="overview" id="overview"></div>
+  </section>
+
+  <section>
+    <h2>逐步檢視</h2>
+    <p class="muted">拖曳滑桿或按播放。版面跟投影片一樣：左邊是 U-Net 預測雜訊，右邊是扣掉雜訊得到下一步。</p>
+    <div class="viewer">
+      <div class="controls">
+        <button id="play" type="button">▶ 播放</button>
+        <button id="prev" type="button" aria-label="上一步">←</button>
+        <button id="next" type="button" aria-label="下一步">→</button>
+        <input id="slider" type="range" min="0" value="0" step="1" aria-label="選擇步驟">
+        <span class="stepno">t = <b id="tnow"></b></span>
+      </div>
+
+      <div class="row">
+        <div class="left">
+          <div class="inputs">
+            <figure class="cell"><img id="v-xin" alt="輸入圖 X_t"><figcaption><b>X<sub id="c-xin"></sub></b></figcaption></figure>
+            <div class="tchip"><span class="bar"><i style="background:#f3d27a"></i><i style="background:#a9d39a"></i><i style="background:#b8cff2"></i><i style="background:#cfc1e6"></i><i style="background:#f1aeb0"></i></span><span id="c-t"></span></div>
+          </div>
+          <span class="arrow" aria-hidden="true">→</span>
+          <div class="unet">U-Net</div>
+          <span class="arrow" aria-hidden="true">→</span>
+          <figure class="cell"><img id="v-noise" alt="U-Net 預測的雜訊"><figcaption><b>pred noise</b> ε̂</figcaption></figure>
+        </div>
+        <div class="divider" aria-hidden="true"></div>
+        <div class="right">
+          <figure class="cell"><img id="v-xout" alt="輸出圖 X_t-1"><figcaption><b>X<sub id="c-xout"></sub></b></figcaption></figure>
+          <span class="op">≈</span>
+          <figure class="cell"><img id="v-xin2" alt="輸入圖 X_t"><figcaption><b>X<sub id="c-xin2"></sub></b></figcaption></figure>
+          <span class="op">−</span>
+          <figure class="cell"><img id="v-noise2" alt="預測的雜訊"><figcaption><b id="c-coef"></b> × ε̂</figcaption></figure>
+        </div>
+      </div>
+
+      <div class="readout">
+        <div>
+          <div class="formula" id="formula"></div>
+          <dl class="stats">
+            <div><dt>ε̂ 標準差</dt><dd id="s-std"></dd></div>
+            <div><dt>ε̂ 前的係數</dt><dd id="s-coef"></dd></div>
+            <div><dt>補回的隨機雜訊 σ</dt><dd id="s-sigma"></dd></div>
+            <div><dt>這一步平均改變量</dt><dd id="s-change"></dd></div>
+          </dl>
+          <p class="muted">U-Net 每一步預測的雜訊，標準差都在 1 附近。真正從圖上扣掉的只有「係數 × ε̂」，大約 0.006 到 0.008 倍，所以相鄰兩步肉眼幾乎看不出差別。</p>
+        </div>
+        <figure class="predx0"><img id="v-predx0" alt="這一步推估的乾淨圖"><figcaption><b>預測的 X<sub>0</sub></b>：U-Net 在這一步推估的乾淨圖</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>前向過程：把雜訊一步一步加上去</h2>
+    <div class="explain">
+      <p>X 右下角的小數字代表「加了幾步雜訊」。X<sub>0</sub> 是原本的照片，X<sub>1</sub> 加了 1 步，X<sub>1000</sub> 加滿 1000 步，已經完全看不出原圖，只剩雜訊。</p>
+      <p>擴散模型規定總共有 1000 步，每一步只加一點點雜訊。但我們不需要真的加 1000 次，因為數學上可以直接算出任何一步的樣子：</p>
+      <p class="eq">X<sub>t</sub> = 原圖 × a ＋ 雜訊 × b</p>
+      <p>步數 t 越大，a（原圖留下多少）越小，b（雜訊佔多少）越大。下面 8 張圖都是用這個式子，從原圖直接算出來的，用的是同一份雜訊（上面的「加入的雜訊 ε」）。每張圖下方標出這一步的 a 和 b。</p>
+      <p>框起來的 X<sub><span data-t0></span></sub> 就是這次去噪的起點。</p>
+    </div>
+    <div class="strip" id="strip"></div>
+  </section>
+
+  <section>
+    <h2>全部紀錄的步驟</h2>
+    <p class="muted">每 10 步存一次，最後 10 步每一步都存。點任一列可以跳到上面的檢視器。</p>
+    <div class="tablebox">
+      <table>
+        <thead><tr><th>t</th><th>輸入 X<sub>t</sub></th><th>pred noise ε̂</th><th>輸出 X<sub>t−1</sub></th><th>預測的 X<sub>0</sub></th><th>ε̂ 標準差</th><th>係數</th><th>平均改變量</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>為什麼從 X<sub><span data-t0></span></sub> 開始，而不是 X<sub>1000</sub></h2>
+    <div class="explain">
+      <p>這裡用的模型 <code>ddpm-cat-256</code> 是用貓的照片訓練的（目前沒有公開的狗模型）。如果從 X<sub>1000</sub> 開始，圖裡的原圖只剩 0.006 倍，幾乎什麼都沒留下，模型只會照它學過的東西，畫出一隻貓。</p>
+      <p>從 X<sub><span data-t0></span></sub> 開始，原圖還留著 <span class="num" id="startA"></span> 倍，狗的輪廓和毛色都還在。模型會順著這些線索把雜訊去掉，所以還原出來仍然是博美，只是眼睛和毛的細節是模型重新畫的。</p>
+      <p><span data-t0></span> 這個數字是實驗時自己選的：選太小，圖幾乎沒被破壞，看不出去噪的過程；選太大，狗就會被畫成貓。</p>
+    </div>
+  </section>
+</div>
+
+<script>
+const D = {"T0": 300, "model": "google/ddpm-cat-256", "seed": 0, "device": "mps", "original": "images/unet-denoise/x0_original.jpg", "true_noise": "images/unet-denoise/true_noise.jpg", "final": "images/unet-denoise/x_0000.jpg", "forward": [{"t": 1, "x": "images/unet-denoise/fwd_0001.jpg", "signal": 1.0, "noise": 0.01}, {"t": 50, "x": "images/unet-denoise/fwd_0050.jpg", "signal": 0.985, "noise": 0.17}, {"t": 100, "x": "images/unet-denoise/fwd_0100.jpg", "signal": 0.947, "noise": 0.321}, {"t": 200, "x": "images/unet-denoise/fwd_0200.jpg", "signal": 0.812, "noise": 0.584}, {"t": 300, "x": "images/unet-denoise/fwd_0300.jpg", "signal": 0.63, "noise": 0.777}, {"t": 500, "x": "images/unet-denoise/fwd_0500.jpg", "signal": 0.28, "noise": 0.96}, {"t": 700, "x": "images/unet-denoise/fwd_0700.jpg", "signal": 0.083, "noise": 0.997}, {"t": 1000, "x": "images/unet-denoise/fwd_1000.jpg", "signal": 0.006, "noise": 1.0}], "steps": [{"n": 300, "x_in": "images/unet-denoise/x_0300.jpg", "noise": "images/unet-denoise/noise_0300.jpg", "x_out": "images/unet-denoise/x_0299.jpg", "pred_x0": "images/unet-denoise/predx0_0300.jpg", "noise_std": 0.994, "change": 0.062, "coef": 0.0078, "scale": 1.00304, "sigma": 0.07766}, {"n": 290, "x_in": "images/unet-denoise/x_0290.jpg", "noise": "images/unet-denoise/noise_0290.jpg", "x_out": "images/unet-denoise/x_0289.jpg", "pred_x0": "images/unet-denoise/predx0_0290.jpg", "noise_std": 0.994, "change": 0.0611, "coef": 0.0077, "scale": 1.00294, "sigma": 0.07637}, {"n": 280, "x_in": "images/unet-denoise/x_0280.jpg", "noise": "images/unet-denoise/noise_0280.jpg", "x_out": "images/unet-denoise/x_0279.jpg", "pred_x0": "images/unet-denoise/predx0_0280.jpg", "noise_std": 0.993, "change": 0.0601, "coef": 0.0076, "scale": 1.00284, "sigma": 0.07504}, {"n": 270, "x_in": "images/unet-denoise/x_0270.jpg", "noise": "images/unet-denoise/noise_0270.jpg", "x_out": "images/unet-denoise/x_0269.jpg", "pred_x0": "images/unet-denoise/predx0_0270.jpg", "noise_std": 0.992, "change": 0.059, "coef": 0.00751, "scale": 1.00274, "sigma": 0.0737}, {"n": 260, "x_in": "images/unet-denoise/x_0260.jpg", "noise": "images/unet-denoise/noise_0260.jpg", "x_out": "images/unet-denoise/x_0259.jpg", "pred_x0": "images/unet-denoise/predx0_0260.jpg", "noise_std": 0.991, "change": 0.058, "coef": 0.00742, "scale": 1.00264, "sigma": 0.07233}, {"n": 250, "x_in": "images/unet-denoise/x_0250.jpg", "noise": "images/unet-denoise/noise_0250.jpg", "x_out": "images/unet-denoise/x_0249.jpg", "pred_x0": "images/unet-denoise/predx0_0250.jpg", "noise_std": 0.991, "change": 0.0568, "coef": 0.00733, "scale": 1.00254, "sigma": 0.07093}, {"n": 240, "x_in": "images/unet-denoise/x_0240.jpg", "noise": "images/unet-denoise/noise_0240.jpg", "x_out": "images/unet-denoise/x_0239.jpg", "pred_x0": "images/unet-denoise/predx0_0240.jpg", "noise_std": 0.989, "change": 0.0556, "coef": 0.00725, "scale": 1.00244, "sigma": 0.06951}, {"n": 230, "x_in": "images/unet-denoise/x_0230.jpg", "noise": "images/unet-denoise/noise_0230.jpg", "x_out": "images/unet-denoise/x_0229.jpg", "pred_x0": "images/unet-denoise/predx0_0230.jpg", "noise_std": 0.988, "change": 0.0545, "coef": 0.00717, "scale": 1.00234, "sigma": 0.06806}, {"n": 220, "x_in": "images/unet-denoise/x_0220.jpg", "noise": "images/unet-denoise/noise_0220.jpg", "x_out": "images/unet-denoise/x_0219.jpg", "pred_x0": "images/unet-denoise/predx0_0220.jpg", "noise_std": 0.987, "change": 0.0533, "coef": 0.0071, "scale": 1.00224, "sigma": 0.06657}, {"n": 210, "x_in": "images/unet-denoise/x_0210.jpg", "noise": "images/unet-denoise/noise_0210.jpg", "x_out": "images/unet-denoise/x_0209.jpg", "pred_x0": "images/unet-denoise/predx0_0210.jpg", "noise_std": 0.985, "change": 0.052, "coef": 0.00703, "scale": 1.00214, "sigma": 0.06505}, {"n": 200, "x_in": "images/unet-denoise/x_0200.jpg", "noise": "images/unet-denoise/noise_0200.jpg", "x_out": "images/unet-denoise/x_0199.jpg", "pred_x0": "images/unet-denoise/predx0_0200.jpg", "noise_std": 0.984, "change": 0.0509, "coef": 0.00696, "scale": 1.00204, "sigma": 0.0635}, {"n": 190, "x_in": "images/unet-denoise/x_0190.jpg", "noise": "images/unet-denoise/noise_0190.jpg", "x_out": "images/unet-denoise/x_0189.jpg", "pred_x0": "images/unet-denoise/predx0_0190.jpg", "noise_std": 0.982, "change": 0.0496, "coef": 0.0069, "scale": 1.00194, "sigma": 0.0619}, {"n": 180, "x_in": "images/unet-denoise/x_0180.jpg", "noise": "images/unet-denoise/noise_0180.jpg", "x_out": "images/unet-denoise/x_0179.jpg", "pred_x0": "images/unet-denoise/predx0_0180.jpg", "noise_std": 0.98, "change": 0.0484, "coef": 0.00683, "scale": 1.00184, "sigma": 0.06027}, {"n": 170, "x_in": "images/unet-denoise/x_0170.jpg", "noise": "images/unet-denoise/noise_0170.jpg", "x_out": "images/unet-denoise/x_0169.jpg", "pred_x0": "images/unet-denoise/predx0_0170.jpg", "noise_std": 0.978, "change": 0.047, "coef": 0.00678, "scale": 1.00174, "sigma": 0.05859}, {"n": 160, "x_in": "images/unet-denoise/x_0160.jpg", "noise": "images/unet-denoise/noise_0160.jpg", "x_out": "images/unet-denoise/x_0159.jpg", "pred_x0": "images/unet-denoise/predx0_0160.jpg", "noise_std": 0.978, "change": 0.0457, "coef": 0.00672, "scale": 1.00164, "sigma": 0.05686}, {"n": 150, "x_in": "images/unet-denoise/x_0150.jpg", "noise": "images/unet-denoise/noise_0150.jpg", "x_out": "images/unet-denoise/x_0149.jpg", "pred_x0": "images/unet-denoise/predx0_0150.jpg", "noise_std": 0.977, "change": 0.0441, "coef": 0.00667, "scale": 1.00154, "sigma": 0.05507}, {"n": 140, "x_in": "images/unet-denoise/x_0140.jpg", "noise": "images/unet-denoise/noise_0140.jpg", "x_out": "images/unet-denoise/x_0139.jpg", "pred_x0": "images/unet-denoise/predx0_0140.jpg", "noise_std": 0.975, "change": 0.0428, "coef": 0.00662, "scale": 1.00144, "sigma": 0.05323}, {"n": 130, "x_in": "images/unet-denoise/x_0130.jpg", "noise": "images/unet-denoise/noise_0130.jpg", "x_out": "images/unet-denoise/x_0129.jpg", "pred_x0": "images/unet-denoise/predx0_0130.jpg", "noise_std": 0.971, "change": 0.0412, "coef": 0.00657, "scale": 1.00134, "sigma": 0.05132}, {"n": 120, "x_in": "images/unet-denoise/x_0120.jpg", "noise": "images/unet-denoise/noise_0120.jpg", "x_out": "images/unet-denoise/x_0119.jpg", "pred_x0": "images/unet-denoise/predx0_0120.jpg", "noise_std": 0.967, "change": 0.0396, "coef": 0.00653, "scale": 1.00124, "sigma": 0.04933}, {"n": 110, "x_in": "images/unet-denoise/x_0110.jpg", "noise": "images/unet-denoise/noise_0110.jpg", "x_out": "images/unet-denoise/x_0109.jpg", "pred_x0": "images/unet-denoise/predx0_0110.jpg", "noise_std": 0.964, "change": 0.038, "coef": 0.00649, "scale": 1.00114, "sigma": 0.04727}, {"n": 100, "x_in": "images/unet-denoise/x_0100.jpg", "noise": "images/unet-denoise/noise_0100.jpg", "x_out": "images/unet-denoise/x_0099.jpg", "pred_x0": "images/unet-denoise/predx0_0100.jpg", "noise_std": 0.96, "change": 0.0363, "coef": 0.00646, "scale": 1.00104, "sigma": 0.04511}, {"n": 90, "x_in": "images/unet-denoise/x_0090.jpg", "noise": "images/unet-denoise/noise_0090.jpg", "x_out": "images/unet-denoise/x_0089.jpg", "pred_x0": "images/unet-denoise/predx0_0090.jpg", "noise_std": 0.956, "change": 0.0345, "coef": 0.00642, "scale": 1.00094, "sigma": 0.04284}, {"n": 80, "x_in": "images/unet-denoise/x_0080.jpg", "noise": "images/unet-denoise/noise_0080.jpg", "x_out": "images/unet-denoise/x_0079.jpg", "pred_x0": "images/unet-denoise/predx0_0080.jpg", "noise_std": 0.951, "change": 0.0326, "coef": 0.00639, "scale": 1.00084, "sigma": 0.04044}, {"n": 70, "x_in": "images/unet-denoise/x_0070.jpg", "noise": "images/unet-denoise/noise_0070.jpg", "x_out": "images/unet-denoise/x_0069.jpg", "pred_x0": "images/unet-denoise/predx0_0070.jpg", "noise_std": 0.946, "change": 0.0305, "coef": 0.00637, "scale": 1.00074, "sigma": 0.0379}, {"n": 60, "x_in": "images/unet-denoise/x_0060.jpg", "noise": "images/unet-denoise/noise_0060.jpg", "x_out": "images/unet-denoise/x_0059.jpg", "pred_x0": "images/unet-denoise/predx0_0060.jpg", "noise_std": 0.939, "change": 0.0284, "coef": 0.00634, "scale": 1.00064, "sigma": 0.03517}, {"n": 50, "x_in": "images/unet-denoise/x_0050.jpg", "noise": "images/unet-denoise/noise_0050.jpg", "x_out": "images/unet-denoise/x_0049.jpg", "pred_x0": "images/unet-denoise/predx0_0050.jpg", "noise_std": 0.93, "change": 0.0261, "coef": 0.00632, "scale": 1.00054, "sigma": 0.03221}, {"n": 40, "x_in": "images/unet-denoise/x_0040.jpg", "noise": "images/unet-denoise/noise_0040.jpg", "x_out": "images/unet-denoise/x_0039.jpg", "pred_x0": "images/unet-denoise/predx0_0040.jpg", "noise_std": 0.916, "change": 0.0235, "coef": 0.0063, "scale": 1.00044, "sigma": 0.02895}, {"n": 30, "x_in": "images/unet-denoise/x_0030.jpg", "noise": "images/unet-denoise/noise_0030.jpg", "x_out": "images/unet-denoise/x_0029.jpg", "pred_x0": "images/unet-denoise/predx0_0030.jpg", "noise_std": 0.899, "change": 0.0206, "coef": 0.00629, "scale": 1.00034, "sigma": 0.02527}, {"n": 20, "x_in": "images/unet-denoise/x_0020.jpg", "noise": "images/unet-denoise/noise_0020.jpg", "x_out": "images/unet-denoise/x_0019.jpg", "pred_x0": "images/unet-denoise/predx0_0020.jpg", "noise_std": 0.878, "change": 0.0173, "coef": 0.0063, "scale": 1.00024, "sigma": 0.02095}, {"n": 10, "x_in": "images/unet-denoise/x_0010.jpg", "noise": "images/unet-denoise/noise_0010.jpg", "x_out": "images/unet-denoise/x_0009.jpg", "pred_x0": "images/unet-denoise/predx0_0010.jpg", "noise_std": 0.839, "change": 0.013, "coef": 0.00642, "scale": 1.00014, "sigma": 0.01543}, {"n": 9, "x_in": "images/unet-denoise/x_0009.jpg", "noise": "images/unet-denoise/noise_0009.jpg", "x_out": "images/unet-denoise/x_0008.jpg", "pred_x0": "images/unet-denoise/predx0_0009.jpg", "noise_std": 0.834, "change": 0.0125, "coef": 0.00645, "scale": 1.00013, "sigma": 0.01476}, {"n": 8, "x_in": "images/unet-denoise/x_0008.jpg", "noise": "images/unet-denoise/noise_0008.jpg", "x_out": "images/unet-denoise/x_0007.jpg", "pred_x0": "images/unet-denoise/predx0_0008.jpg", "noise_std": 0.828, "change": 0.012, "coef": 0.0065, "scale": 1.00012, "sigma": 0.01404}, {"n": 7, "x_in": "images/unet-denoise/x_0007.jpg", "noise": "images/unet-denoise/noise_0007.jpg", "x_out": "images/unet-denoise/x_0006.jpg", "pred_x0": "images/unet-denoise/predx0_0007.jpg", "noise_std": 0.822, "change": 0.0114, "coef": 0.00657, "scale": 1.00011, "sigma": 0.01328}, {"n": 6, "x_in": "images/unet-denoise/x_0006.jpg", "noise": "images/unet-denoise/noise_0006.jpg", "x_out": "images/unet-denoise/x_0005.jpg", "pred_x0": "images/unet-denoise/predx0_0006.jpg", "noise_std": 0.814, "change": 0.0109, "coef": 0.00666, "scale": 1.0001, "sigma": 0.01246}, {"n": 5, "x_in": "images/unet-denoise/x_0005.jpg", "noise": "images/unet-denoise/noise_0005.jpg", "x_out": "images/unet-denoise/x_0004.jpg", "pred_x0": "images/unet-denoise/predx0_0005.jpg", "noise_std": 0.806, "change": 0.0102, "coef": 0.0068, "scale": 1.00009, "sigma": 0.01155}, {"n": 4, "x_in": "images/unet-denoise/x_0004.jpg", "noise": "images/unet-denoise/noise_0004.jpg", "x_out": "images/unet-denoise/x_0003.jpg", "pred_x0": "images/unet-denoise/predx0_0004.jpg", "noise_std": 0.795, "change": 0.0095, "coef": 0.00701, "scale": 1.00008, "sigma": 0.01052}, {"n": 3, "x_in": "images/unet-denoise/x_0003.jpg", "noise": "images/unet-denoise/noise_0003.jpg", "x_out": "images/unet-denoise/x_0002.jpg", "pred_x0": "images/unet-denoise/predx0_0003.jpg", "noise_std": 0.78, "change": 0.0087, "coef": 0.00737, "scale": 1.00007, "sigma": 0.00925}, {"n": 2, "x_in": "images/unet-denoise/x_0002.jpg", "noise": "images/unet-denoise/noise_0002.jpg", "x_out": "images/unet-denoise/x_0001.jpg", "pred_x0": "images/unet-denoise/predx0_0002.jpg", "noise_std": 0.758, "change": 0.0076, "coef": 0.00809, "scale": 1.00006, "sigma": 0.00738}, {"n": 1, "x_in": "images/unet-denoise/x_0001.jpg", "noise": "images/unet-denoise/noise_0001.jpg", "x_out": "images/unet-denoise/x_0000.jpg", "pred_x0": "images/unet-denoise/predx0_0001.jpg", "noise_std": 0.711, "change": 0.0057, "coef": 0.01, "scale": 1.00005, "sigma": 0.0}]};
+const S = D.steps;
+const $ = id => document.getElementById(id);
+document.querySelectorAll("[data-t0]").forEach(el => el.textContent = D.T0);
+$("startA").textContent = D.forward.find(f => f.t === D.T0).signal.toFixed(2);
+
+$("facts").innerHTML = [
+  ["模型", D.model], ["起點", `X<sub>${D.T0}</sub>`], ["去噪步數", D.T0], ["解析度", "256 × 256"], ["隨機種子", D.seed], ["運算裝置", D.device === "mps" ? "Apple MPS" : D.device]
+].map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("");
+
+const first = S[0];
+const startF = D.forward.find(f => f.t === D.T0);
+$("overview").innerHTML = [
+  [D.original, "原始照片", "狗1.jpg，裁成 256×256"],
+  [D.true_noise, "加入的雜訊 ε", "標準常態分布，彩色是因為 RGB 三個通道各自獨立"],
+  [first.x_in, `加雜訊後 X<sub>${D.T0}</sub>`, `原圖 × ${startF.signal.toFixed(2)} ＋ 雜訊 × ${startF.noise.toFixed(2)}`],
+  [D.final, "去噪後 X<sub>0</sub>", `U-Net 跑完 ${D.T0} 步的結果`],
+].map(([src, t, c]) => `<figure><img src="${src}" alt="${t.replace(/<[^>]+>/g, "")}" loading="lazy"><figcaption><b>${t}</b><br>${c}</figcaption></figure>`).join("");
+
+const fwdNear = D.forward.reduce((a, f) => Math.abs(f.t - D.T0) < Math.abs(a.t - D.T0) ? f : a);
+$("strip").innerHTML = D.forward.map(f =>
+  `<figure class="${f === fwdNear ? "start" : ""}"><img src="${f.x}" alt="加了 ${f.t} 步雜訊的圖" loading="lazy"><figcaption><b>X<sub>${f.t}</sub></b><br><span class="num">a = ${f.signal.toFixed(2)}<br>b = ${f.noise.toFixed(2)}</span></figcaption></figure>`).join("");
+
+$("rows").innerHTML = S.map((s, i) => `<tr data-i="${i}" tabindex="0">
+  <td class="num">${s.n}</td><td><img src="${s.x_in}" alt="" loading="lazy"></td><td><img src="${s.noise}" alt="" loading="lazy"></td>
+  <td><img src="${s.x_out}" alt="" loading="lazy"></td><td><img src="${s.pred_x0}" alt="" loading="lazy"></td>
+  <td class="num">${s.noise_std.toFixed(3)}</td><td class="num">${s.coef.toFixed(4)}</td><td class="num">${s.change.toFixed(4)}</td></tr>`).join("");
+
+// 預載檢視器圖片，播放時不閃
+S.forEach(s => [s.x_in, s.noise, s.x_out, s.pred_x0].forEach(src => { const im = new Image(); im.src = src; }));
+
+const slider = $("slider");
+slider.max = S.length - 1;
+let cur = 0;
+function show(i) {
+  cur = Math.max(0, Math.min(S.length - 1, i));
+  const s = S[cur], n = s.n;
+  slider.value = cur;
+  $("tnow").textContent = n;
+  $("v-xin").src = $("v-xin2").src = s.x_in;
+  $("v-noise").src = $("v-noise2").src = s.noise;
+  $("v-xout").src = s.x_out;
+  $("v-predx0").src = s.pred_x0;
+  $("c-xin").textContent = $("c-xin2").textContent = n;
+  $("c-xout").textContent = n - 1;
+  $("c-t").textContent = n;
+  $("c-coef").textContent = s.coef.toFixed(4);
+  $("s-std").textContent = s.noise_std.toFixed(3);
+  $("s-coef").textContent = s.coef.toFixed(4);
+  $("s-sigma").textContent = s.sigma.toFixed(4);
+  $("s-change").textContent = s.change.toFixed(4);
+  $("formula").innerHTML = `X<sub>${n - 1}</sub> = ${s.scale.toFixed(4)} × ( X<sub>${n}</sub> − ${s.coef.toFixed(4)} × ε̂ )` + (s.sigma > 0 ? ` + ${s.sigma.toFixed(4)} × z` : `　（最後一步不加 z）`);
+  document.querySelectorAll("#rows tr").forEach(tr => tr.classList.toggle("on", +tr.dataset.i === cur));
+}
+slider.addEventListener("input", () => { stop(); show(+slider.value); });
+$("prev").onclick = () => { stop(); show(cur - 1); };
+$("next").onclick = () => { stop(); show(cur + 1); };
+let timer = null;
+function stop() { clearInterval(timer); timer = null; $("play").textContent = "▶ 播放"; }
+$("play").onclick = () => {
+  if (timer) return stop();
+  if (cur >= S.length - 1) show(0);
+  $("play").textContent = "❚❚ 暫停";
+  timer = setInterval(() => { if (cur >= S.length - 1) stop(); else show(cur + 1); }, 350);
+};
+$("rows").addEventListener("click", e => { const tr = e.target.closest("tr"); if (tr) { stop(); show(+tr.dataset.i); $("slider").scrollIntoView({ behavior: "smooth", block: "center" }); } });
+$("rows").addEventListener("keydown", e => { if (e.key === "Enter") e.target.closest("tr")?.click(); });
+show(0);
+</script>
+</body>
+</html>
