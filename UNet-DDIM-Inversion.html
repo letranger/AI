@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DDIM 反演實驗</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap">
+<style>
+body { margin: 0; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+
+/* Layout: 同系列實驗記錄本——上方總覽一趟來回，中間來回檢視器，下方成績單與兩組對照 */
+:root {
+  --bg: #f1f3f6;
+  --surface: #ffffff;
+  --ink: #17202b;
+  --muted: #5a6575;
+  --line: #d6dce4;
+  --inv: #2f7d76;         /* 反演方向：照片 → 雜訊 */
+  --inv-soft: #d9ece9;
+  --accent: #b2650f;      /* 還原方向：雜訊 → 照片 */
+  --accent-soft: #f6e7d3;
+  --display: "Noto Serif TC", "Songti TC", serif;
+  --body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f141b; --surface: #17202a; --ink: #e5eaf0; --muted: #96a2b2; --line: #2a3542;
+    --inv: #5fbcb2; --inv-soft: #17332f; --accent: #e59a3e; --accent-soft: #3a2a16; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f141b; --surface: #17202a; --ink: #e5eaf0; --muted: #96a2b2; --line: #2a3542;
+  --inv: #5fbcb2; --inv-soft: #17332f; --accent: #e59a3e; --accent-soft: #3a2a16; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.7; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 64px; display: grid; gap: 52px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.25; }
+h1 { font-size: clamp(30px, 5vw, 44px); font-weight: 900; }
+h2 { font-size: 22px; font-weight: 600; }
+h3 { font-size: 17px; font-weight: 600; }
+p { margin: 0; max-width: 66ch; }
+.eyebrow { font-size: 12px; letter-spacing: .12em; color: var(--accent); font-weight: 700; }
+.muted { color: var(--muted); }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+sub { font-size: .72em; }
+section { display: grid; gap: 16px; }
+.head { display: grid; gap: 12px; }
+.inv { color: var(--inv); font-weight: 700; }
+.rec { color: var(--accent); font-weight: 700; }
+
+.facts { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 4px 0 0; padding: 14px 0 0; border-top: 1px solid var(--line); }
+.facts div { display: grid; }
+.facts dt { font-size: 12px; color: var(--muted); letter-spacing: .06em; }
+.facts dd { margin: 0; font-family: var(--mono); font-size: 14px; }
+
+figure { margin: 0; display: grid; gap: 6px; align-content: start; }
+figure img { width: 100%; aspect-ratio: 2 / 3; object-fit: cover; display: block; border-radius: 4px; background: var(--line); }
+figcaption { font-size: 13px; color: var(--muted); line-height: 1.55; }
+figcaption b { color: var(--ink); font-weight: 500; }
+
+/* 總覽：照片 → 雜訊 → 照片 */
+.trip { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr); gap: 10px; align-items: start; }
+.trip .arr { display: grid; justify-items: center; gap: 2px; padding-top: 30%; font-size: 12px; white-space: nowrap; }
+.trip .arr span { font-size: 22px; line-height: 1; }
+.trip .arr.i { color: var(--inv); }
+.trip .arr.r { color: var(--accent); }
+
+.idea { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.idea > div { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+.idea p { font-size: 14px; }
+
+/* 來回檢視器 */
+.viewer { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 20px; display: grid; gap: 18px; }
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.track { flex: 1 1 280px; min-width: 0; display: grid; gap: 4px; }
+.track input { width: 100%; accent-color: var(--ink); margin: 0; }
+.track .lanes { display: grid; grid-template-columns: 13fr 13fr; font-size: 12px; gap: 4px; }
+.track .lanes span { border-top: 3px solid; padding-top: 2px; }
+.track .lanes .a { border-color: var(--inv); color: var(--inv); }
+.track .lanes .b { border-color: var(--accent); color: var(--accent); text-align: right; }
+button { font: inherit; font-size: 14px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 4px 12px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button:focus-visible, input:focus-visible, .thumbs button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.dir { font-size: 14px; font-weight: 700; padding: 2px 10px; border-radius: 999px; }
+.dir.i { background: var(--inv-soft); color: var(--inv); }
+.dir.r { background: var(--accent-soft); color: var(--accent); }
+
+.panels { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.panels figure[hidden] { display: none; }
+.mix { display: grid; gap: 6px; border-top: 1px solid var(--line); padding-top: 14px; }
+.mixbar { display: flex; height: 22px; border-radius: 4px; overflow: hidden; font-size: 12px; font-family: var(--mono); }
+.mixbar i { display: flex; align-items: center; padding-inline: 6px; white-space: nowrap; font-style: normal; transition: flex-basis .25s; min-width: 0; overflow: hidden; }
+.mixbar .ph { background: #e0b878; color: #3a2508; }
+.mixbar .nz { background: repeating-linear-gradient(45deg, #9aa6b5 0 4px, #b7c1cd 4px 8px); color: #17202b; justify-content: flex-end; }
+#say { font-size: 14px; }
+
+.thumbs { display: grid; grid-template-columns: repeat(13, minmax(0, 1fr)); gap: 4px; }
+.thumbs button { padding: 0; border: 2px solid transparent; border-radius: 3px; background: none; overflow: hidden; }
+.thumbs button img { width: 100%; aspect-ratio: 2 / 3; object-fit: cover; display: block; }
+.thumbs button.on { border-color: var(--ink); }
+.thumbrow { display: grid; gap: 4px; }
+.thumbrow > span { font-size: 12px; }
+
+/* 成績單 */
+.score { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.tablebox { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+table { border-collapse: collapse; width: 100%; min-width: 520px; }
+th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--line); }
+tr:last-child td { border-bottom: 0; }
+th { font-size: 12px; color: var(--muted); font-weight: 500; letter-spacing: .04em; }
+td.num, th.num { text-align: right; }
+.barcell { width: 34%; }
+.hbar { height: 10px; border-radius: 2px; background: var(--ink); opacity: .75; }
+tr.best td { background: var(--accent-soft); }
+.note { font-size: 13px; color: var(--muted); }
+
+
+@media (max-width: 760px) {
+  .trip { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); }
+  .trip .arr.mid { grid-column: 1 / -1; padding-top: 0; transform: rotate(90deg); }
+  .idea { grid-template-columns: minmax(0, 1fr); }
+  .panels, .score { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .thumbs { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="head">
+    <div class="eyebrow">擴散模型 · DDIM 反演實測</div>
+    <h1>DDIM 反演實驗</h1>
+    <p class="muted">平常的擴散模型是「從雜訊畫出一張圖」。這次倒過來：拿一張真的照片，讓 Stable Diffusion 一步一步把它<span class="inv">倒推成雜訊</span>，再從那份雜訊<span class="rec">一步一步畫回來</span>。下面每一張圖都是模型真的跑出來的。</p>
+    <dl class="facts" id="facts"></dl>
+  </header>
+
+  <section>
+    <h2>一趟來回</h2>
+    <div class="trip" id="trip"></div>
+  </section>
+
+  <section>
+    <h2>為什麼能倒著走？</h2>
+    <div class="idea">
+      <div><h3>路線是固定的</h3><p>DDIM 去噪時，每一步都不再加入新的隨機雜訊。同樣的起點一定走到同樣的終點，像一條畫好的路線。路線固定，就能沿著原路走回去。</p></div>
+      <div><h3>每一步都問 U-Net</h3><p>不管往哪個方向走，每一步都請 U-Net 看看目前這張圖「裡面有多少雜訊、長什麼樣子」，再依照它的回答前進一小步。這次來回各走 <b class="num" data-steps></b> 步。</p></div>
+      <div><h3>倒著走要多看幾次</h3><p>倒著走時，U-Net 其實應該在「下一步的位置」看雜訊，但我們還沒走到那裡。所以先走一步、在新位置再問一次 U-Net、再修正，重複 <b class="num" data-iters></b> 次，路線就能和回程對得上。</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>來回檢視</h2>
+    <p class="muted">拖曳滑桿或按播放。前半段是<span class="inv">反演</span>（照片 → 雜訊），後半段是<span class="rec">還原</span>（雜訊 → 照片）。</p>
+    <div class="viewer">
+      <div class="controls">
+        <button id="play" type="button">▶ 播放</button>
+        <button id="prev" type="button" aria-label="上一格">←</button>
+        <button id="next" type="button" aria-label="下一格">→</button>
+        <div class="track">
+          <input id="slider" type="range" min="0" value="0" step="1" aria-label="選擇位置">
+          <div class="lanes"><span class="a">反演：照片 → 雜訊</span><span class="b">還原：雜訊 → 照片</span></div>
+        </div>
+        <span id="dir" class="dir i"></span>
+      </div>
+
+      <div class="panels">
+        <figure><img id="p-x" alt="目前的圖"><figcaption><b id="c-x"></b><br>目前這一步的樣子</figcaption></figure>
+        <figure><img id="p-lat" alt="壓縮圖"><figcaption><b>壓縮圖（latent）</b><br>U-Net 實際處理的 64 × 96 小格子</figcaption></figure>
+        <figure id="f-eps"><img id="p-eps" alt="U-Net 看到的雜訊"><figcaption><b>U-Net 看到的雜訊 ε̂</b><br>它認為圖裡混了這樣的雜訊</figcaption></figure>
+        <figure id="f-x0"><img id="p-x0" alt="U-Net 猜的終點"><figcaption><b>U-Net 猜的終點</b><br>把雜訊全扣掉的話，照片大概會長這樣</figcaption></figure>
+      </div>
+
+      <div class="mix">
+        <div class="mixbar" aria-hidden="true"><i class="ph" id="m-ph"></i><i class="nz" id="m-nz"></i></div>
+        <p id="say"></p>
+      </div>
+
+      <div class="thumbrow"><span class="inv">反演路上</span><div class="thumbs" id="th-inv"></div></div>
+      <div class="thumbrow"><span class="rec">還原路上（U-Net 猜的終點）</span><div class="thumbs" id="th-rec"></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>走回來的照片，和原本一樣嗎？</h2>
+    <div class="score" id="score"></div>
+    <p>還原出來的照片，和「只壓縮再解壓、完全沒進擴散模型」的那張相比，平均每個像素只差 <b class="num" data-pxdiff></b>（滿分 255），幾乎是全黑的差異圖。也就是說，<b>反演本身幾乎沒有損失</b>。</p>
+    <p>和原照片的差距，來自 Stable Diffusion 一開始就會把 512 × 768 的照片壓縮成 64 × 96 的小格子，草地和狗毛這種細碎的紋理在壓縮時就已經模糊掉了。</p>
+    <div class="tablebox"><table>
+      <thead><tr><th>比較對象</th><th class="num">PSNR（dB）</th><th class="num">SSIM</th><th class="barcell">相似度（SSIM，越長越像）</th></tr></thead>
+      <tbody id="metrics"></tbody>
+    </table></div>
+    <p class="note">PSNR 和 SSIM 都是「兩張圖有多像」的分數，越大越像。SSIM 最高是 1，代表完全相同。</p>
+  </section>
+</div>
+
+<script>
+const D = {"model": "stable-diffusion-v1-5/stable-diffusion-v1-5", "vae": "stabilityai/sd-vae-ft-mse", "prompt": "a photo of a fluffy orange pomeranian dog standing on green grass, looking at the camera", "size": [512, 768], "latent_size": [4, 96, 64], "steps": 200, "iters": 3, "seed": 0, "device": "mps", "zT_mean": 0.003, "zT_std": 1.004, "zR_mean": -0.008, "zR_std": 1.002, "metrics": {"vae_only": {"psnr": 21.46, "ssim": 0.4964}, "reconstructed": {"psnr": 21.46, "ssim": 0.4964}, "random_cfg1": {"psnr": 11.97, "ssim": 0.1098}, "random_cfg75": {"psnr": 11.74, "ssim": 0.1372}}, "inversion": [{"t": 2, "x": "inv_x_0000.jpg", "latent": "inv_lat_0000.jpg", "noise": "inv_eps_0000.jpg"}, {"t": 87, "x": "inv_x_0017.jpg", "latent": "inv_lat_0017.jpg", "noise": "inv_eps_0017.jpg"}, {"t": 167, "x": "inv_x_0033.jpg", "latent": "inv_lat_0033.jpg", "noise": "inv_eps_0033.jpg"}, {"t": 252, "x": "inv_x_0050.jpg", "latent": "inv_lat_0050.jpg", "noise": "inv_eps_0050.jpg"}, {"t": 332, "x": "inv_x_0066.jpg", "latent": "inv_lat_0066.jpg", "noise": "inv_eps_0066.jpg"}, {"t": 417, "x": "inv_x_0083.jpg", "latent": "inv_lat_0083.jpg", "noise": "inv_eps_0083.jpg"}, {"t": 502, "x": "inv_x_0100.jpg", "latent": "inv_lat_0100.jpg", "noise": "inv_eps_0100.jpg"}, {"t": 582, "x": "inv_x_0116.jpg", "latent": "inv_lat_0116.jpg", "noise": "inv_eps_0116.jpg"}, {"t": 667, "x": "inv_x_0133.jpg", "latent": "inv_lat_0133.jpg", "noise": "inv_eps_0133.jpg"}, {"t": 747, "x": "inv_x_0149.jpg", "latent": "inv_lat_0149.jpg", "noise": "inv_eps_0149.jpg"}, {"t": 832, "x": "inv_x_0166.jpg", "latent": "inv_lat_0166.jpg", "noise": "inv_eps_0166.jpg"}, {"t": 912, "x": "inv_x_0182.jpg", "latent": "inv_lat_0182.jpg", "noise": "inv_eps_0182.jpg"}, {"t": 997, "x": "inv_x_0199.jpg", "latent": "inv_lat_0199.jpg", "noise": "inv_eps_0199.jpg"}], "reconstruction": [{"t": 997, "x_in": "rec_x_0199.jpg", "latent": "rec_lat_0199.jpg", "noise": "rec_eps_0199.jpg", "x0": "rec_x0_0199.jpg"}, {"t": 912, "x_in": "rec_x_0182.jpg", "latent": "rec_lat_0182.jpg", "noise": "rec_eps_0182.jpg", "x0": "rec_x0_0182.jpg"}, {"t": 832, "x_in": "rec_x_0166.jpg", "latent": "rec_lat_0166.jpg", "noise": "rec_eps_0166.jpg", "x0": "rec_x0_0166.jpg"}, {"t": 747, "x_in": "rec_x_0149.jpg", "latent": "rec_lat_0149.jpg", "noise": "rec_eps_0149.jpg", "x0": "rec_x0_0149.jpg"}, {"t": 667, "x_in": "rec_x_0133.jpg", "latent": "rec_lat_0133.jpg", "noise": "rec_eps_0133.jpg", "x0": "rec_x0_0133.jpg"}, {"t": 582, "x_in": "rec_x_0116.jpg", "latent": "rec_lat_0116.jpg", "noise": "rec_eps_0116.jpg", "x0": "rec_x0_0116.jpg"}, {"t": 502, "x_in": "rec_x_0100.jpg", "latent": "rec_lat_0100.jpg", "noise": "rec_eps_0100.jpg", "x0": "rec_x0_0100.jpg"}, {"t": 417, "x_in": "rec_x_0083.jpg", "latent": "rec_lat_0083.jpg", "noise": "rec_eps_0083.jpg", "x0": "rec_x0_0083.jpg"}, {"t": 332, "x_in": "rec_x_0066.jpg", "latent": "rec_lat_0066.jpg", "noise": "rec_eps_0066.jpg", "x0": "rec_x0_0066.jpg"}, {"t": 252, "x_in": "rec_x_0050.jpg", "latent": "rec_lat_0050.jpg", "noise": "rec_eps_0050.jpg", "x0": "rec_x0_0050.jpg"}, {"t": 167, "x_in": "rec_x_0033.jpg", "latent": "rec_lat_0033.jpg", "noise": "rec_eps_0033.jpg", "x0": "rec_x0_0033.jpg"}, {"t": 87, "x_in": "rec_x_0017.jpg", "latent": "rec_lat_0017.jpg", "noise": "rec_eps_0017.jpg", "x0": "rec_x0_0017.jpg"}, {"t": 2, "x_in": "rec_x_0000.jpg", "latent": "rec_lat_0000.jpg", "noise": "rec_eps_0000.jpg", "x0": "rec_x0_0000.jpg"}], "sweep": [{"name": "只經過 VAE 編碼/解碼", "psnr": 21.46, "ssim": 0.4964}, {"steps": 50, "iters": 0, "psnr": 20.85, "ssim": 0.4663, "sec": 36}, {"steps": 50, "iters": 3, "psnr": 21.46, "ssim": 0.4963, "sec": 94}, {"steps": 200, "iters": 0, "psnr": 21.15, "ssim": 0.483, "sec": 200}, {"steps": 200, "iters": 3, "psnr": 21.46, "ssim": 0.4964, "sec": 416}], "pxdiff": "0.24"};
+const $ = id => document.getElementById(id);
+document.querySelectorAll("[data-steps]").forEach(el => el.textContent = D.steps);
+document.querySelectorAll("[data-iters]").forEach(el => el.textContent = D.iters);
+document.querySelectorAll("[data-pxdiff]").forEach(el => el.textContent = D.pxdiff);
+
+$("facts").innerHTML = [
+  ["模型", "Stable Diffusion 1.5"], ["照片", "狗1.jpg，512 × 768"], ["壓縮後", "64 × 96 × 4"],
+  ["來回步數", `${D.steps} ＋ ${D.steps}`], ["每步多看", `${D.iters} 次`], ["運算裝置", "Apple MPS"]
+].map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("");
+
+const F = "images/unet-ddim/";
+const fig = (src, t, c) => `<figure><img src="${F + src}" alt="${t.replace(/<[^>]+>/g, "")}" loading="lazy"><figcaption><b>${t}</b><br>${c}</figcaption></figure>`;
+$("trip").innerHTML = [
+  fig("original.jpg", "原始照片 X<sub>0</sub>", "狗1.jpg"),
+  `<div class="arr i"><span>→</span>壓縮</div>`,
+  fig("latent_x0.jpg", "壓縮圖", "64 × 96 的小格子"),
+  `<div class="arr i mid"><span>→</span>反演 ${D.steps} 步</div>`,
+  fig("latent_zT.jpg", `反演得到的雜訊 X<sub>T</sub>`, "看起來就是一片雜訊"),
+  `<div class="arr r"><span>→</span>還原 ${D.steps} 步</div>`,
+  fig("reconstructed.jpg", "還原的照片", "跟原圖幾乎一樣"),
+].join("");
+
+// ᾱ：Stable Diffusion 1.5 的雜訊排程，照片在第 t 步還剩多少比例
+const ab = (() => { const a = [], lo = Math.sqrt(0.00085), hi = Math.sqrt(0.012); let p = 1;
+  for (let i = 0; i < 1000; i++) { const b = (lo + (hi - lo) * i / 999) ** 2; p *= 1 - b; a.push(p); } return a; })();
+const photoShare = t => t <= 0 ? 1 : ab[t - 1];
+
+// 來回共 26 格：反演 13 格（t 由小到大），還原 13 格（t 由大到小）
+const stops = [
+  ...D.inversion.map(f => ({ dir: "i", t: f.t, x: f.x, lat: f.latent, eps: f.noise })),
+  ...D.reconstruction.map(f => ({ dir: "r", t: f.t, x: f.x_in, lat: f.latent, eps: f.noise, x0: f.x0 })),
+];
+stops.forEach(s => [s.x, s.lat, s.eps, s.x0].forEach(src => { if (src) { const im = new Image(); im.src = F + src; } }));
+
+const thumbs = (arr, key, off) => arr.map((f, i) => `<button type="button" data-i="${i + off}" aria-label="t = ${f.t}"><img src="${F + f[key]}" alt="" loading="lazy"></button>`).join("");
+$("th-inv").innerHTML = thumbs(D.inversion, "x", 0);
+$("th-rec").innerHTML = thumbs(D.reconstruction, "x0", D.inversion.length);
+document.querySelectorAll(".thumbs button").forEach(b => b.onclick = () => { stop(); show(+b.dataset.i); });
+
+const slider = $("slider");
+slider.max = stops.length - 1;
+let cur = 0;
+function show(i) {
+  cur = Math.max(0, Math.min(stops.length - 1, i));
+  const s = stops[cur];
+  slider.value = cur;
+  $("p-x").src = F + s.x; $("p-lat").src = F + s.lat; $("p-eps").src = F + s.eps;
+  $("f-x0").hidden = !s.x0;
+  if (s.x0) $("p-x0").src = F + s.x0;
+  $("c-x").innerHTML = `X<sub>${s.t}</sub>`;
+  const d = $("dir");
+  d.className = "dir " + s.dir;
+  d.textContent = (s.dir === "i" ? "反演" : "還原") + ` · t = ${s.t}`;
+  const ph = photoShare(s.t), pct = Math.round(ph * 100);
+  $("m-ph").style.flexBasis = (ph * 100) + "%"; $("m-nz").style.flexBasis = ((1 - ph) * 100) + "%";
+  $("m-ph").textContent = pct >= 12 ? `照片 ${pct}%` : ""; $("m-nz").textContent = pct <= 88 ? `雜訊 ${100 - pct}%` : "";
+  $("say").innerHTML = s.dir === "i"
+    ? `走到第 <b class="num">${s.t}</b> 步（共 1000），照片成分還剩 <b class="num">${pct}%</b>。U-Net 看出這張圖裡的雜訊，我們順著它把圖再推向雜訊一點。`
+    : `在第 <b class="num">${s.t}</b> 步，照片成分只有 <b class="num">${pct}%</b>，但 U-Net 已經猜得出終點大概的樣子。扣掉它看到的雜訊，就往照片前進一步。`;
+  document.querySelectorAll(".thumbs button").forEach(b => b.classList.toggle("on", +b.dataset.i === cur));
+}
+slider.addEventListener("input", () => { stop(); show(+slider.value); });
+$("prev").onclick = () => { stop(); show(cur - 1); };
+$("next").onclick = () => { stop(); show(cur + 1); };
+let timer = null;
+function stop() { clearInterval(timer); timer = null; $("play").textContent = "▶ 播放"; }
+$("play").onclick = () => {
+  if (timer) return stop();
+  if (cur >= stops.length - 1) show(0);
+  $("play").textContent = "❚❚ 暫停";
+  timer = setInterval(() => { if (cur >= stops.length - 1) return stop(); show(cur + 1); }, 650);
+};
+show(0);
+
+const M = D.metrics;
+$("score").innerHTML = [
+  fig("original.jpg", "原始照片", "512 × 768"),
+  fig("vae_only.jpg", "只壓縮再解壓", "沒進擴散模型，這是能做到的上限"),
+  fig("reconstructed.jpg", "反演後還原", `PSNR ${M.reconstructed.psnr} · SSIM ${M.reconstructed.ssim}`),
+  fig("diff_vs_vae.jpg", "還原圖 vs 只壓縮", "差異放大 5 倍，越亮差越多"),
+].join("");
+const rows = [
+  ["只壓縮再解壓（上限）", M.vae_only], ["反演後還原", M.reconstructed],
+];
+$("metrics").innerHTML = rows.map(([n, m]) => `<tr><td>${n}</td><td class="num">${m.psnr.toFixed(2)}</td><td class="num">${m.ssim.toFixed(3)}</td><td class="barcell"><div class="hbar" style="width:${m.ssim * 100 / 0.5}%"></div></td></tr>`).join("");
+
+</script>
+</body>
+</html>
